@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?android:colorBackground"
+    android:fitsSystemWindows="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <!-- ================= TITLE ================= -->
+        <TextView
+            android:id="@+id/txtTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="12dp"
+            android:paddingBottom="8dp"
+            android:text="My Designs"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="?attr/colorOnBackground"/>
+
+        <!-- ================= TABS ================= -->
+        <LinearLayout
+            android:id="@+id/tabContainer"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/txtLikes"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Likes"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:textColor="#4A6CF7"/>
+
+            <TextView
+                android:id="@+id/txtFav"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Favorite"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:textColor="?attr/colorOnSurface"/>
+
+            <TextView
+                android:id="@+id/txtEdits"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Edits"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:textColor="?attr/colorOnSurface"/>
+
+            <TextView
+                android:id="@+id/txtSaved"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Saved"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:textColor="?attr/colorOnSurface"/>
+        </LinearLayout>
+
+        <!-- UNDERLINE -->
+        <View
+            android:id="@+id/tabUnderline"
+            android:layout_width="0dp"
+            android:layout_height="3dp"
+            android:background="#4A6CF7"/>
+
+        <!-- ================= GRID ================= -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:padding="12dp"
+            android:clipToPadding="false"/>
+    </LinearLayout>
+
+    <!-- BOTTOM NAV -->
+    <include layout="@layout/bottom_nav_layout"/>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

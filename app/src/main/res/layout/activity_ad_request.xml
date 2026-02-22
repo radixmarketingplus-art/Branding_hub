@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="?attr/colorSurface"
+    android:paddingBottom="16dp">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="20dp">
+
+        <!-- HEADER -->
+        <TextView
+            android:text="Advertisement Request"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:text="Fill details to publish your advertisement"
+            android:textSize="14sp"
+            android:layout_marginBottom="24dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <!-- WEBSITE LINK -->
+        <EditText
+            android:id="@+id/etLink"
+            android:hint="Advertisement Website / Link"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@drawable/bg_glass_input"
+            android:padding="12dp"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- TEMPLATE IMAGE -->
+        <TextView
+            android:text="Upload Advertisement Template"
+            android:textStyle="bold"
+            android:layout_marginBottom="6dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <ImageView
+            android:id="@+id/imgTemplate"
+            android:layout_width="match_parent"
+            android:layout_height="180dp"
+            android:background="@drawable/bg_image_preview"
+            android:visibility="gone"
+            android:layout_marginBottom="8dp"/>
+
+        <Button
+            android:id="@+id/btnUploadTemplate"
+            android:text="Upload Template"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/bg_secondary_button"/>
+
+        <!-- SCANNER IMAGE -->
+        <TextView
+            android:text="Scan And Pay"
+            android:textStyle="bold"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="6dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:src="@drawable/qr_1month" />
+
+        <!-- PROOF IMAGE -->
+        <ImageView
+            android:id="@+id/imgProof"
+            android:layout_width="match_parent"
+            android:layout_height="180dp"
+            android:background="@drawable/bg_image_preview"
+            android:visibility="gone"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="8dp"/>
+
+        <Button
+            android:id="@+id/btnUploadProof"
+            android:text="Upload Payment Proof"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/bg_secondary_button"/>
+
+        <!-- SUBMIT -->
+        <Button
+            android:id="@+id/btnSubmitAd"
+            android:text="Submit Advertisement Request"
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:layout_marginTop="24dp"
+            android:background="@drawable/bg_primary_button"/>
+
+    </LinearLayout>
+
+</androidx.core.widget.NestedScrollView>

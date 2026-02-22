@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.RMPlus"
+        tools:targetApi="31">
+        <activity
+            android:name=".AdRequestDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AdminAdvertisementRequestsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AdRequestActivity"
+            android:exported="false" />
+        <activity
+            android:name=".StatsDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AdminTemplateDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".UploadManagerActivity"
+            android:exported="false" /> <!-- i have added this meta-data -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-3940256099942544~3347511713" />
+
+        <activity
+            android:name=".MyDesignActivity"
+            android:exported="false" />
+        <activity
+            android:name=".BaseActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SearchActivity"
+            android:exported="false" />
+        <activity
+            android:name=".TemplatePreviewActivity"
+            android:exported="false" />
+        <activity
+            android:name=".TemplateGalleryActivity"
+            android:exported="false" />
+        <activity
+            android:name=".HomeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ImagePreviewActivity"
+            android:exported="false" />
+        <activity
+            android:name=".RequestDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ContactRequestsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AdminDecisionActivity"
+            android:exported="false" />
+        <activity
+            android:name=".RequestChatActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AdminContactRequestsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".MyRequestsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".CreateRequestActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ContactActivity"
+            android:exported="false" />
+        <activity
+            android:name=".NotificationActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ManageTemplatesActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SubscriptionRequestsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".UploadTemplatesActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ApproveRejectActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AdminSubscriptionListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".TermsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PrivacyPolicyActivity"
+            android:exported="false" />
+        <activity
+            android:name=".WebPageActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AppReferenceActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SettingsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SubscriptionActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AdminPanelActivity"
+            android:exported="false" />
+        <activity
+            android:name=".EditProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".DashboardActivity"
+            android:exported="false" />
+        <activity
+            android:name=".VerifyEmailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ForgotPasswordActivity"
+            android:exported="false" />
+        <activity
+            android:name=".RegisterActivity"
+            android:windowSoftInputMode="stateHidden|adjustResize" />
+        <activity
+            android:name=".LoginActivity"
+            android:exported="false" />
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity> <!-- added by me -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+        </provider>
+    </application>
+
+</manifest>

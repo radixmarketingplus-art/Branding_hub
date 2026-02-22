@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/home"
+        android:title="Home"
+        android:icon="@drawable/ic_home"/>
+
+<!--    <item-->
+<!--        android:id="@+id/notification"-->
+<!--        android:title="Notifications"-->
+<!--        android:icon="@android:drawable/ic_dialog_email"/>-->
+
+    <item
+        android:id="@+id/template"
+        android:title="Template"
+        android:icon="@drawable/ic_template"/>
+
+    <item
+        android:id="@+id/contact"
+        android:title="Contact"
+        android:icon="@drawable/ic_call"/>
+
+    <item
+        android:id="@+id/myDesign"
+        android:title="MyDesign"
+        android:icon="@drawable/ic_my_designs"/>
+
+</menu>

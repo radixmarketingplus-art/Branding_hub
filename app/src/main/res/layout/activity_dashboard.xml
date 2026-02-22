@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/colorSurface"
+    android:fitsSystemWindows="true">
+
+    <!-- ================= MAIN CONTENT ================= -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <!-- ================= HEADER ================= -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:paddingHorizontal="16dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:background="?attr/colorSurface"
+            android:elevation="4dp">
+
+            <TextView
+                android:id="@+id/businessName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="RM PLUS"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="?attr/colorOnSurface"/>
+
+            <ImageView
+                android:id="@+id/profileBtn"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@android:drawable/ic_menu_myplaces"
+                android:tint="?attr/colorOnSurface"/>
+        </LinearLayout>
+
+        <!-- ================= SEARCH ================= -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:background="?attr/colorSurface">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="12dp"
+                android:background="?attr/colorSurfaceVariant">
+
+                <EditText
+                    android:id="@+id/searchBox"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="Search"
+                    android:background="@null"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textColorHint="?attr/colorOnSurfaceVariant"/>
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@android:drawable/ic_btn_speak_now"
+                    android:tint="?attr/colorOnSurfaceVariant"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- ================= CONTENT ================= -->
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:clipToPadding="false"
+            android:paddingBottom="16dp">
+
+            <!-- BUTTON GRID (2 COLUMN) -->
+            <GridLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:columnCount="2"
+                android:padding="16dp"
+                android:useDefaultMargins="true">
+
+                <Button
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_columnWeight="1"
+                    android:text="Advertisements"/>
+
+                <Button
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_columnWeight="1"
+                    android:text="Festival Calendar"/>
+
+                <Button
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_columnWeight="1"
+                    android:text="Latest Updates"/>
+
+                <Button
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_columnWeight="1"
+                    android:text="Business Specials"/>
+
+                <Button
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_columnWeight="1"
+                    android:text="Motivation"/>
+
+                <Button
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_columnWeight="1"
+                    android:text="Greetings"/>
+
+                <Button
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_columnWeight="1"
+                    android:text="Digital Cards"/>
+
+                <Button
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_columnWeight="1"
+                    android:text="Reel Maker"/>
+
+            </GridLayout>
+        </ScrollView>
+    </LinearLayout>
+
+    <!-- ================= BADGE ================= -->
+    <TextView
+        android:id="@+id/badgeText"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:background="?attr/colorError"
+        android:textColor="?attr/colorOnError"
+        android:gravity="center"
+        android:textSize="12sp"
+        android:visibility="gone"
+        android:layout_gravity="end"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="72dp"/>
+
+    <!-- ================= BOTTOM NAV ================= -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNav"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"/>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

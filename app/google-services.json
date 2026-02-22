@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "973927789788",
+    "firebase_url": "https://rm-plus-default-rtdb.firebaseio.com",
+    "project_id": "rm-plus",
+    "storage_bucket": "rm-plus.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:973927789788:android:1f2aecfaa799e416ebf019",
+        "android_client_info": {
+          "package_name": "com.example.rmplus"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDuX5VOntSu7fVQ3MtmWWKG8ttETTQUEp8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="?attr/colorSurface"
+    android:fitsSystemWindows="true">
+
+    <!-- TOP APP BAR -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:orientation="horizontal"
+        android:gravity="end|center_vertical"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:background="?attr/colorSurface"
+        android:elevation="6dp">
+
+        <ImageButton
+            android:id="@+id/btnSearch"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@android:drawable/ic_menu_search"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:tint="?attr/colorOnSurface"
+            android:contentDescription="Search" />
+
+        <ImageButton
+            android:id="@+id/btnEditIcon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="4dp"
+            android:src="@android:drawable/ic_menu_edit"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:tint="?attr/colorOnSurface"
+            android:contentDescription="Edit" />
+
+        <ImageButton
+            android:id="@+id/btnDeleteIcon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="4dp"
+            android:src="@android:drawable/ic_menu_delete"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:tint="?attr/colorError"
+            android:contentDescription="Delete" />
+    </LinearLayout>
+
+    <!-- CONTENT WRAPPER -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:clipToPadding="false">
+
+        <!-- TEMPLATE PREVIEW -->
+        <ImageView
+            android:id="@+id/imgPreview"
+            android:layout_width="match_parent"
+            android:layout_height="260dp"
+            android:scaleType="fitCenter"
+            android:background="?attr/colorSurfaceVariant"
+            android:contentDescription="Template Preview" />
+
+        <!-- CATEGORY TEXT -->
+        <TextView
+            android:id="@+id/txtCategory"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="?attr/colorOnSurface"
+            android:lineSpacingExtra="4dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnOpenAd"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="Open Advertisement"
+            android:visibility="gone"
+            android:layout_marginTop="12dp"
+            app:cornerRadius="14dp"
+            app:backgroundTint="#4A6CF7"
+            android:textColor="@android:color/white"/>
+
+
+        <!-- STATS SECTION -->
+        <include
+            android:id="@+id/layout_admin_stats"
+            layout="@layout/layout_admin_stats"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp" />
+
+    </LinearLayout>
+
+</LinearLayout>

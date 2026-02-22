@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:background="?android:attr/colorBackground">
+
+    <!-- ================= CONTENT ================= -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <!-- ================= TOP ACTION BAR ================= -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:orientation="horizontal"
+            android:gravity="end|center_vertical"
+            android:paddingHorizontal="8dp"
+            android:background="?attr/colorSurface"
+            android:elevation="6dp">
+
+            <ImageButton
+                android:id="@+id/btnSearch"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@android:drawable/ic_menu_search"
+                android:background="@drawable/bg_icon_button"
+                android:tint="?attr/colorOnSurface"
+                android:contentDescription="Search"/>
+
+            <ImageButton
+                android:id="@+id/btnLike"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@android:drawable/btn_star_big_off"
+                android:background="@drawable/bg_icon_button"
+                android:tint="?attr/colorOnSurface"
+                android:contentDescription="Like"/>
+
+            <ImageButton
+                android:id="@+id/btnFav"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@android:drawable/btn_star"
+                android:background="@drawable/bg_icon_button"
+                android:tint="?attr/colorOnSurface"
+                android:contentDescription="Favorite"/>
+
+            <ImageButton
+                android:id="@+id/btnShare"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@android:drawable/ic_menu_share"
+                android:background="@drawable/bg_icon_button"
+                android:tint="?attr/colorOnSurface"
+                android:contentDescription="Share"/>
+
+            <ImageButton
+                android:id="@+id/btnEdit"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@android:drawable/ic_menu_edit"
+                android:background="@drawable/bg_icon_button"
+                android:tint="?attr/colorOnSurface"
+                android:contentDescription="Edit"/>
+
+            <ImageButton
+                android:id="@+id/btnSave"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@android:drawable/ic_menu_save"
+                android:background="@drawable/bg_icon_button"
+                android:tint="?attr/colorOnSurface"
+                android:contentDescription="Save"/>
+        </LinearLayout>
+
+        <!-- ================= PREVIEW CARD ================= -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:padding="16dp">
+
+            <ImageView
+                android:id="@+id/imgPreview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitCenter"
+                android:background="@drawable/bg_surface_card"
+                android:padding="12dp"/>
+        </FrameLayout>
+
+        <!-- ================= SIMILAR TEMPLATES ================= -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Similar Templates"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:textColor="?attr/colorOnBackground"
+            android:paddingStart="16dp"
+            android:paddingBottom="8dp"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvSimilar"
+            android:layout_width="match_parent"
+            android:layout_height="240dp"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="24dp"
+            android:clipToPadding="false"/>
+
+    </LinearLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

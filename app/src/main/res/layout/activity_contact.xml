@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="?attr/colorSurface"
+    android:fitsSystemWindows="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:paddingHorizontal="24dp"
+        android:paddingVertical="32dp">
+
+        <!-- Title -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Support Center"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:layout_marginBottom="8dp"/>
+
+        <!-- Subtitle -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Manage your requests or contact the admin"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:layout_marginBottom="32dp"/>
+
+        <!-- Primary Action -->
+        <Button
+            android:id="@+id/btnContact"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:text="Contact Admin"
+            android:textAllCaps="false"
+            android:textSize="16sp"
+            android:textColor="@android:color/white"
+            android:background="@drawable/bg_primary_button"/>
+
+        <!-- Spacing -->
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="16dp"/>
+
+        <!-- Secondary Action -->
+        <Button
+            android:id="@+id/btnMy"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:text="My Requests"
+            android:textAllCaps="false"
+            android:textSize="16sp"
+            android:background="@drawable/bg_secondary_button"/>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="16dp"/>
+
+        <!-- NEW BUTTON -->
+        <Button
+            android:id="@+id/btnAdRequest"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:text="Request Advertisement"
+            android:textAllCaps="false"
+            android:textSize="16sp"
+            android:textColor="@android:color/white"
+            android:background="@drawable/bg_primary_button"/>
+
+    </LinearLayout>
+    <!-- BOTTOM NAV -->
+    <include layout="@layout/bottom_nav_layout"/>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

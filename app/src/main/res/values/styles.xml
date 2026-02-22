@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="sectionTitle">
+        <!-- REQUIRED -->
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <!-- MARGIN -->
+        <item name="android:layout_marginTop">14dp</item>
+        <item name="android:layout_marginBottom">6dp</item>
+
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:letterSpacing">0.05</item>
+    </style>
+
+    <style name="horizontalRecycler">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">140dp</item>
+        <item name="android:background">@drawable/bg_glass_card</item>
+        <item name="android:padding">8dp</item>
+    </style>
+
+    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:textColorHighlight">#33FFFFFF</item>
+        <item name="colorControlActivated">#66FFFFFF</item>
+    </style>
+
+    <style name="PrimaryButton">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">50dp</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:background">@drawable/bg_primary_button</item>
+    </style>
+
+    <style name="SecondaryButton">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">50dp</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:background">@drawable/bg_secondary_button</item>
+    </style>
+
+    <style name="TopRoundedCard">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopLeft">28dp</item>
+        <item name="cornerSizeTopRight">28dp</item>
+        <item name="cornerSizeBottomLeft">0dp</item>
+        <item name="cornerSizeBottomRight">0dp</item>
+    </style>
+
+    <style name="SectionTitle">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">?colorOnSurface</item>
+        <item name="android:layout_marginTop">28dp</item>
+    </style>
+
+    <style name="BottomNavText">
+        <item name="android:textSize">10sp</item>
+        <item name="android:textColor">?android:textColorSecondary</item>
+    </style>
+
+    <style name="SettingsIcon">
+        <item name="android:tint">?attr/colorOnSurface</item>
+    </style>
+
+    <style name="SettingsText">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+
+    <style name="SettingsHeader">
+        <item name="android:textSize">13sp</item>
+        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
+    </style>
+
+<!--    <style name="BottomNavText" parent="TextAppearance.MaterialComponents.Caption">-->
+<!--        <item name="android:textStyle">bold</item>-->
+<!--    </style>-->
+
+</resources>
