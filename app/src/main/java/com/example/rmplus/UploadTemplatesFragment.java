@@ -488,8 +488,16 @@ public class UploadTemplatesFragment extends Fragment {
 
     private void saveTemplateDetails(String section, String imageUrl) {
         if (isEditMode) {
-            // 1. Remove from old Firebase path (prevents duplicates if category changed)
-            if (!oldRealId.isEmpty() && !oldCategory.isEmpty()) {
+            String newCategoryPath = section;
+            if (section.equalsIgnoreCase("Business Frame")) {
+                newCategoryPath += "/" + spinnerSubSection.getSelectedItem().toString();
+            }
+
+            // 🎯 Only remove the old node if the location (category) or ID is changing.
+            // If they are the same, Firebase's setValue() will simply update the existing node.
+            boolean locationChanged = !oldCategory.equals(newCategoryPath);
+            
+            if (locationChanged && !oldRealId.isEmpty() && !oldCategory.isEmpty()) {
                 com.google.firebase.database.FirebaseDatabase.getInstance()
                         .getReference("templates")
                         .child(oldCategory)
@@ -497,10 +505,10 @@ public class UploadTemplatesFragment extends Fragment {
                         .removeValue();
             }
 
-            // 2. Remove from Local Storage (prevents duplicates in list)
+            // Remove from old local list (always safest to refresh the list)
             removeFromLocal(oldUrl, oldCategory);
 
-            // 3. Clear file from VPS & Stats ONLY if image changed
+            // 🛡️ VPS & Stats Cleanup: Only if image URL is actually different
             if (!oldUrl.isEmpty() && !oldUrl.equals(imageUrl)) {
                 deleteFromVPS(oldUrl);
                 
