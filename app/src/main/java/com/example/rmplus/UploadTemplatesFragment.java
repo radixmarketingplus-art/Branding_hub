@@ -83,15 +83,21 @@ public class UploadTemplatesFragment extends Fragment {
                             Uri sourceUri = result.getData().getData();
                             if (sourceUri != null) {
                                 String section = spinnerSection.getSelectedItem().toString();
-                                    if (section.equalsIgnoreCase("Reel Maker")) {
-                                        // Videos don't need cropping here (uCrop is for images)
-                                        selectedImageUri = sourceUri;
-                                        previewImage.setVisibility(View.VISIBLE);
-                                        previewImage.setImageURI(selectedImageUri);
-                                    } else {
-                                        originalImageUri = sourceUri;
-                                        startCrop(sourceUri);
-                                    }
+                                if (section.equalsIgnoreCase("Reel Maker")) {
+                                    // Videos don't need cropping here (uCrop is for images)
+                                    selectedImageUri = sourceUri;
+                                    previewImage.setVisibility(View.VISIBLE);
+                                    previewImage.setImageURI(selectedImageUri);
+                                } else if (section.equalsIgnoreCase("Frame")) {
+                                    // 🚫 SKIPPING UCROP FOR FRAMES (to keep PNG transparency)
+                                    selectedImageUri = sourceUri;
+                                    previewImage.setVisibility(View.VISIBLE);
+                                    previewImage.setImageURI(selectedImageUri);
+                                    toast("Frame selected (PNG preserved)");
+                                } else {
+                                    originalImageUri = sourceUri;
+                                    startCrop(sourceUri);
+                                }
                             }
                         }
                     });
@@ -192,6 +198,15 @@ public class UploadTemplatesFragment extends Fragment {
                 } else {
                     btnSelectImage.setEnabled(true);
                     btnSelectImage.setAlpha(1.0f);
+                }
+
+                // 🧹 AUTO-CLEAR IMAGE ON SECTION CHANGE
+                // This ensures old non-PNG images are removed when switching to 'Frame'
+                if (!isPopulating && selectedImageUri != null) {
+                    selectedImageUri = null;
+                    originalImageUri = null;
+                    previewImage.setVisibility(View.GONE);
+                    toast("Please re-select image for the new section");
                 }
 
                 // 🛑 PREVENT RESET IF POPULATING
@@ -337,14 +352,13 @@ public class UploadTemplatesFragment extends Fragment {
         previewImage.setOnClickListener(v12 -> {
             String section = spinnerSection.getSelectedItem().toString();
             if (selectedImageUri != null) {
-                if (section.equalsIgnoreCase("Reel Maker")) {
-                    Intent i = new Intent(requireContext(),
-                            ImagePreviewActivity.class);
+                if (section.equalsIgnoreCase("Reel Maker") || section.equalsIgnoreCase("Frame")) {
+                    // Frame and Video: Open full-screen preview instead of crop
+                    Intent i = new Intent(requireContext(), ImagePreviewActivity.class);
                     i.putExtra("img", selectedImageUri.toString());
                     startActivity(i);
                 } else {
-                    // 🛡️ FIX: Only allow cropping local images. 
-                    // In Edit Mode, selectedImageUri is a web URL and cannot be cropped directly.
+                    // 🛡️ FIX: Only allow cropping local images for other sections
                     if (originalImageUri != null) {
                         startCrop(originalImageUri);
                     } else if (isEditMode) {
@@ -446,6 +460,23 @@ public class UploadTemplatesFragment extends Fragment {
                     toast("Frame section accepts only PNG format");
                     return;
                 }
+                
+                // 📏 SQUARE ASPECT RATIO CHECK FOR FRAME
+                try {
+                    InputStream is = requireContext().getContentResolver().openInputStream(selectedImageUri);
+                    android.graphics.BitmapFactory.Options opts = new android.graphics.BitmapFactory.Options();
+                    opts.inJustDecodeBounds = true;
+                    android.graphics.BitmapFactory.decodeStream(is, null, opts);
+                    if (is != null) is.close();
+
+                    if (opts.outWidth != opts.outHeight) {
+                        toast("Frame must be a perfectly SQUARE image (1:1 ratio)");
+                        return;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
             } else {
                 // For other sections, allow JPG/JPEG/PNG
                 boolean validFormat = (mimeType != null && (mimeType.contains("jpeg") || mimeType.contains("jpg") || mimeType.contains("png")))
