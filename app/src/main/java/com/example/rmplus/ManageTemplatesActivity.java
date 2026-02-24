@@ -1,6 +1,7 @@
 package com.example.rmplus;
 
 import android.app.AlertDialog;
+import java.util.ArrayList;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -15,7 +16,15 @@ import android.widget.*;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.ViewPager2;
+import android.view.ViewGroup;
+import androidx.annotation.NonNull;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -28,6 +37,8 @@ public class ManageTemplatesActivity extends AppCompatActivity {
     TextView txtEdit;
     ImageButton btnText, btnFrame, btnSave;
     Button btnLogo, btnColor;
+    ViewPager2 vpFrames;
+    ArrayList<String> slidingFrames = new ArrayList<>();
     LinearLayout textControls, logoControls;
     SeekBar seekTextSize, seekLogoSize;
     ImageView imgDelete;
@@ -68,6 +79,7 @@ public class ManageTemplatesActivity extends AppCompatActivity {
         frameControls = findViewById(R.id.frameControls);
         rvFrames = findViewById(R.id.rvFrames);
         seekFrameSize = findViewById(R.id.seekFrameSize);
+        vpFrames = findViewById(R.id.vpFrames);
 
 
         uid = FirebaseAuth.getInstance().getUid();
@@ -78,9 +90,7 @@ public class ManageTemplatesActivity extends AppCompatActivity {
 
         if (originalPath != null) {
             templateId = makeSafeKey(originalPath);
-            imgTemplate.setImageURI(
-                    Uri.fromFile(new java.io.File(originalPath))
-            );
+            loadImageSmart(originalPath, imgTemplate);
         }
 
         imgLogo.setClipToOutline(true);
@@ -118,18 +128,16 @@ public class ManageTemplatesActivity extends AppCompatActivity {
 
         // ==== FRAME ====
         btnFrame.setOnClickListener(v -> {
-
             frameControls.setVisibility(View.VISIBLE);
-
-            rvFrames.setVisibility(View.VISIBLE);
+            vpFrames.setVisibility(View.VISIBLE);
+            rvFrames.setVisibility(View.GONE);
             seekFrameSize.setVisibility(View.GONE);
-
             textControls.setVisibility(View.GONE);
             logoControls.setVisibility(View.GONE);
-
         });
 
         // ==== COLOR ====
+        loadSlidingFrames();
         btnColor.setOnClickListener(v -> {
             new AmbilWarnaDialog(
                     this,
@@ -234,11 +242,10 @@ public class ManageTemplatesActivity extends AppCompatActivity {
         rvFrames.setAdapter(
                 new FrameAdapter(frames, path -> {
 
-                    imgFrame.setImageURI(
-                            Uri.fromFile(new java.io.File(path))
-                    );
+                    loadImageSmart(path, imgFrame);
 
-                    // 🔥 FIX FRAME SIZE = MATCH TEMPLATE
+                    // 🔥 FIX FRAME SIZE = SQUARE OVERLAY (1080x1080 aspect)
+                    // We match parent but ensure parent canvas is square in layout
                     FrameLayout.LayoutParams params =
                             new FrameLayout.LayoutParams(
                                     FrameLayout.LayoutParams.MATCH_PARENT,
@@ -248,8 +255,10 @@ public class ManageTemplatesActivity extends AppCompatActivity {
 
                     imgFrame.setScaleType(ImageView.ScaleType.FIT_XY);
                     imgFrame.setVisibility(View.VISIBLE);
+                    
+                    // Frames are now fixed overlays, no dragging
+                    imgFrame.setOnTouchListener(null); 
 
-                    // ❌ NO SIZE CONTROL
                     rvFrames.setVisibility(View.GONE);
                     seekFrameSize.setVisibility(View.GONE);
                 })
@@ -281,6 +290,18 @@ public class ManageTemplatesActivity extends AppCompatActivity {
         if (rc == PICK_LOGO && res == RESULT_OK && data != null) {
             imgLogo.setImageURI(data.getData());
         }
+    }
+
+    private void loadImageSmart(String path, ImageView imageView) {
+        if (path == null || path.isEmpty()) return;
+
+        // 🌐 LOAD FROM VPS URL OR LOCAL FILE (Glide handles both)
+        Glide.with(this)
+                .load(path)
+                .placeholder(android.R.drawable.ic_menu_gallery)
+                .error(android.R.drawable.ic_menu_report_image)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(imageView);
     }
 
     // ================= DRAG =================
@@ -415,6 +436,74 @@ public class ManageTemplatesActivity extends AppCompatActivity {
                 value.getBytes(),
                 android.util.Base64.NO_WRAP
         );
+    }
+
+    private void loadSlidingFrames() {
+        rootRef.child("templates").child("Frame")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot snapshot) {
+                        slidingFrames.clear();
+                        for (DataSnapshot d : snapshot.getChildren()) {
+                            String f = d.hasChild("url") ? d.child("url").getValue(String.class) : d.child("imagePath").getValue(String.class);
+                            if (f != null) slidingFrames.add(f);
+                        }
+
+                        if (!slidingFrames.isEmpty()) {
+                            vpFrames.setAdapter(new FrameOverlayAdapter(slidingFrames));
+                            
+                            // Check for passed frame from intent
+                            String passedFrame = getIntent().getStringExtra("selected_frame");
+                            int startIndex = (Integer.MAX_VALUE / 2);
+                            startIndex = startIndex - (startIndex % (slidingFrames.size() + 1));
+                            
+                            if (passedFrame != null) {
+                                for(int i=0; i<slidingFrames.size(); i++) {
+                                    if(slidingFrames.get(i).equals(passedFrame)) {
+                                        startIndex += (i + 1);
+                                        vpFrames.setVisibility(View.VISIBLE);
+                                        break;
+                                    }
+                                }
+                            }
+                            
+                            vpFrames.setCurrentItem(startIndex, false);
+                        }
+                    }
+                    @Override public void onCancelled(DatabaseError error) {}
+                });
+    }
+
+    class FrameOverlayAdapter extends RecyclerView.Adapter<FrameOverlayAdapter.VH> {
+        ArrayList<String> frames;
+        FrameOverlayAdapter(ArrayList<String> frames) { this.frames = frames; }
+
+        @NonNull @Override
+        public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            ImageView imageView = new ImageView(parent.getContext());
+            imageView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+            return new VH(imageView);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull VH h, int pos) {
+            int actualPos = pos % (frames.size() + 1);
+            if (actualPos == 0) {
+                h.img.setImageDrawable(null);
+            } else {
+                Glide.with(h.img.getContext())
+                        .load(frames.get(actualPos - 1))
+                        .into(h.img);
+            }
+        }
+
+        @Override public int getItemCount() { return frames.size() > 0 ? Integer.MAX_VALUE : 0; }
+
+        class VH extends RecyclerView.ViewHolder {
+            ImageView img;
+            VH(View v) { super(v); img = (ImageView) v; }
+        }
     }
 
 }

@@ -196,38 +196,117 @@ public class RequestChatActivity extends AppCompatActivity {
 
     void sendImage() {
 
-        String localPath =
-                copyImageToLocal(selectedImageUri);
+        if (selectedImageUri == null) return;
 
-        if (localPath.isEmpty()) {
-            Toast.makeText(this,
-                    "Image send failed",
-                    Toast.LENGTH_SHORT).show();
-            return;
-        }
+        uploadImageToServer(selectedImageUri, url -> {
 
-        String id = FirebaseDatabase.getInstance()
+            if (url == null || url.isEmpty()) {
+                runOnUiThread(() ->
+                        Toast.makeText(this,
+                                "Upload failed",
+                                Toast.LENGTH_SHORT).show());
+                return;
+            }
+
+
+            String id = FirebaseDatabase.getInstance()
                 .getReference("request_chats")
                 .child(requestId)
                 .push()
                 .getKey();
 
-        ChatMessage m = new ChatMessage();
-        m.senderId = myUid;
-        m.imageUrl = localPath;
-        m.time = System.currentTimeMillis();
-        m.seen = false;
+            ChatMessage m = new ChatMessage();
+            m.senderId = myUid;
+            m.imageUrl = url;
+            m.time = System.currentTimeMillis();
+            m.seen = false;
 
-        FirebaseDatabase.getInstance()
-                .getReference("request_chats")
-                .child(requestId)
-                .child(id)
-                .setValue(m);
+            FirebaseDatabase.getInstance()
+                    .getReference("request_chats")
+                    .child(requestId)
+                    .child(id)
+                    .setValue(m);
 
-        // Clear preview
-        selectedImageUri = null;
-        imgPreview.setImageDrawable(null);
-        imgPreview.setVisibility(ImageView.GONE);
+            runOnUiThread(() -> {
+                selectedImageUri = null;
+                imgPreview.setImageDrawable(null);
+                imgPreview.setVisibility(ImageView.GONE);
+            });
+        });
+    }
+
+    private void uploadImageToServer(Uri uri, UrlCallback cb){
+
+        new Thread(() -> {
+            try {
+
+                String boundary = "----RMPLUS" + System.currentTimeMillis();
+
+                java.net.URL url =
+                        new java.net.URL("http://187.77.184.84/upload.php");
+
+                java.net.HttpURLConnection conn =
+                        (java.net.HttpURLConnection) url.openConnection();
+
+                conn.setRequestMethod("POST");
+                conn.setDoOutput(true);
+
+                conn.setRequestProperty(
+                        "Content-Type",
+                        "multipart/form-data; boundary=" + boundary
+                );
+
+                java.io.DataOutputStream out =
+                        new java.io.DataOutputStream(conn.getOutputStream());
+
+                out.writeBytes("--" + boundary + "\r\n");
+                out.writeBytes(
+                        "Content-Disposition: form-data; name=\"file\"; filename=\"chat.jpg\"\r\n"
+                );
+                out.writeBytes("Content-Type: image/jpeg\r\n\r\n");
+
+                InputStream input =
+                        getContentResolver().openInputStream(uri);
+
+                byte[] buffer = new byte[4096];
+                int len;
+
+                while ((len = input.read(buffer)) != -1)
+                    out.write(buffer, 0, len);
+
+                input.close();
+
+                out.writeBytes("\r\n--" + boundary + "--\r\n");
+                out.flush();
+                out.close();
+
+                java.io.BufferedReader reader =
+                        new java.io.BufferedReader(
+                                new java.io.InputStreamReader(conn.getInputStream())
+                        );
+
+                StringBuilder res = new StringBuilder();
+                String line;
+
+                while((line=reader.readLine())!=null)
+                    res.append(line);
+
+                reader.close();
+
+                org.json.JSONObject json =
+                        new org.json.JSONObject(res.toString());
+
+                cb.onResult(json.getString("url"));
+
+            } catch (Exception e){
+                e.printStackTrace();
+                cb.onResult(null);
+            }
+        }).start();
+    }
+
+    interface UrlCallback {
+        void onResult(String url);
     }
 
 

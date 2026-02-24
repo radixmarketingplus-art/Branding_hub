@@ -2,6 +2,7 @@
 
 <androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
@@ -108,7 +109,65 @@
             android:layout_marginBottom="16dp"/>
 
 
+        <!-- ================= PLAN GRANT ================= -->
+        <LinearLayout
+            android:id="@+id/planGrantContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:background="@drawable/bg_surface_card"
+            android:layout_marginBottom="16dp"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Grant Plan (Determines Expiry)"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp"/>
+
+            <Spinner
+                android:id="@+id/spinnerPlan"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:background="@drawable/bg_spinner"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"/>
+        </LinearLayout>
+
+        <!-- ================= EXPIRY INFO (FOR APPROVED) ================= -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:background="@drawable/bg_surface_card"
+            android:layout_marginBottom="16dp"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/txtCurrentExpiry"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Expires On: --"
+                android:textStyle="bold"
+                android:visibility="gone"/>
+
+            <Button
+                android:id="@+id/btnUpdateExpiry"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:backgroundTint="#F44336"
+                android:text="Update Expiry"
+                android:textAllCaps="false"
+                android:layout_marginTop="8dp"
+                android:visibility="gone"
+                style="@style/Widget.MaterialComponents.Button.TextButton"/>
+        </LinearLayout>
+
         <!-- ================= ADMIN ACTIONS ================= -->
+
 
         <LinearLayout
             android:layout_width="match_parent"

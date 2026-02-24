@@ -57,8 +57,10 @@ public class AdRequestListFragment extends Fragment {
         rv.setLayoutManager(
                 new LinearLayoutManager(getContext()));
 
-        status = getArguments().getString(ARG_STATUS);
-        isAdmin = getArguments().getBoolean(ARG_ADMIN);
+        // ===== SAFE ARGUMENTS =====
+        Bundle args = getArguments();
+        status  = args != null ? args.getString(ARG_STATUS, "") : "";
+        isAdmin = args != null && args.getBoolean(ARG_ADMIN, false);
 
         // 🔥 ADVERTISEMENT DATABASE
         DatabaseReference ref =
@@ -74,6 +76,9 @@ public class AdRequestListFragment extends Fragment {
                 ArrayList<AdvertisementRequest> list =
                         new ArrayList<>();
 
+                String currentUid =
+                        FirebaseAuth.getInstance().getUid();
+
                 for (DataSnapshot d : snapshot.getChildren()) {
 
                     AdvertisementRequest r =
@@ -82,17 +87,19 @@ public class AdRequestListFragment extends Fragment {
                     if (r == null) continue;
 
                     // USER FILTER
-                    if (!isAdmin &&
-                            !r.uid.equals(
-                                    FirebaseAuth
-                                            .getInstance()
-                                            .getUid())) {
-                        continue;
+                    if (!isAdmin) {
+
+                        if (currentUid == null ||
+                                r.uid == null ||
+                                !r.uid.equals(currentUid)) {
+                            continue;
+                        }
                     }
 
                     // STATUS FILTER
                     if (r.status != null &&
-                            r.status.equals(status)) {
+                            r.status.equalsIgnoreCase(status)) {
+
                         list.add(r);
                     }
                 }

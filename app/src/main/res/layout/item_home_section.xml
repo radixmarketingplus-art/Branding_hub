@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:layout_marginTop="24dp">
+
+    <TextView
+        android:id="@+id/txtSectionTitle"
+        style="@style/sectionTitle"
+        android:textColor="?android:textColorPrimary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Section Title" />
+
+    <!-- SUB-CATEGORY FILTERS (Hidden by default) -->
+    <HorizontalScrollView
+        android:id="@+id/scrollFilters"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:scrollbars="none"
+        android:visibility="gone">
+        <LinearLayout
+            android:id="@+id/filterContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingHorizontal="4dp"/>
+    </HorizontalScrollView>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvSectionItems"
+        android:layout_width="match_parent"
+        android:layout_height="160dp"
+        android:layout_marginTop="8dp"
+        android:clipToPadding="false" />
+
+</LinearLayout>

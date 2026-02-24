@@ -8,6 +8,9 @@ import android.widget.ImageView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+
 import java.io.File;
 import java.util.ArrayList;
 
@@ -34,20 +37,42 @@ public class AdvertisementAdapter
 
         AdvertisementItem item = list.get(position);
 
-        // Show image
-        h.img.setImageURI(Uri.fromFile(new File(item.imagePath)));
+        boolean isVideo = item.imagePath != null && (
+                item.imagePath.toLowerCase().endsWith(".mp4") ||
+                item.imagePath.toLowerCase().endsWith(".mkv") ||
+                item.imagePath.toLowerCase().endsWith(".webm")
+        );
+
+        if (isVideo) {
+            h.img.setVisibility(View.GONE);
+            h.videoView.setVisibility(View.VISIBLE);
+            h.videoView.setVideoPath(item.imagePath);
+            h.videoView.setOnPreparedListener(mp -> {
+                mp.setLooping(true);
+                h.videoView.start();
+            });
+        } else {
+            h.img.setVisibility(View.VISIBLE);
+            h.videoView.setVisibility(View.GONE);
+            // 🌐 LOAD FROM VPS URL (Glide handles caching automatically)
+            Glide.with(h.img.getContext())
+                    .load(item.imagePath)
+                    .placeholder(android.R.drawable.ic_menu_gallery)
+                    .error(android.R.drawable.ic_menu_report_image)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(h.img);
+        }
 
         // 🔥 CLICK → OPEN LINK IN BROWSER
         h.itemView.setOnClickListener(v -> {
-
             Context ctx = v.getContext();
-
-            Intent i = new Intent(
-                    Intent.ACTION_VIEW,
-                    Uri.parse(item.link)
-            );
-
-            ctx.startActivity(i);
+            if (item.link != null && !item.link.isEmpty()) {
+                Intent i = new Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse(item.link)
+                );
+                ctx.startActivity(i);
+            }
         });
     }
 
@@ -59,10 +84,12 @@ public class AdvertisementAdapter
     static class VH extends RecyclerView.ViewHolder {
 
         ImageView img;
+        android.widget.VideoView videoView;
 
         VH(View v) {
             super(v);
             img = v.findViewById(R.id.img);
+            videoView = v.findViewById(R.id.videoView);
         }
     }
 }

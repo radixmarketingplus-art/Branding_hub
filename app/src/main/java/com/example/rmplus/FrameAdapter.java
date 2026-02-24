@@ -7,6 +7,9 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+
 import java.io.File;
 import java.util.ArrayList;
 
@@ -41,9 +44,13 @@ public class FrameAdapter
     public void onBindViewHolder(@NonNull VH h, int pos) {
         String path = list.get(pos);
 
-        h.img.setImageURI(
-                android.net.Uri.fromFile(new File(path))
-        );
+        // 🌐 LOAD FROM VPS URL (Glide handles caching)
+        Glide.with(h.img.getContext())
+                .load(path)
+                .placeholder(android.R.drawable.ic_menu_gallery)
+                .error(android.R.drawable.ic_menu_report_image)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(h.img);
 
         h.img.setOnClickListener(v -> {
             if (listener != null)

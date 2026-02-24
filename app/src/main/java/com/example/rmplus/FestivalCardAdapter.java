@@ -11,6 +11,9 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -44,18 +47,23 @@ public class FestivalCardAdapter
             return;
         }
 
-        h.img.setImageURI(Uri.fromFile(new File(item.imagePath)));
+        // 🌐 LOAD FROM VPS URL OR LOCAL FILE (Glide handles both)
+        Glide.with(h.img.getContext())
+                .load(item.imagePath)
+                .placeholder(android.R.drawable.ic_menu_gallery)
+                .error(android.R.drawable.ic_menu_report_image)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(h.img);
+
         h.dateBadge.setVisibility(View.VISIBLE);
         h.dateBadge.setText(format(item.date));
 
-// 🔥 PREVIEW CLICK (MAIN FIX)
+        // 🔥 PREVIEW CLICK
         h.itemView.setOnClickListener(v -> {
             Context ctx = v.getContext();
             Intent i = new Intent(ctx, TemplatePreviewActivity.class);
-//            i.putExtra("uri", item.imagePath);
             i.putExtra("path", item.imagePath);
             i.putExtra("category", "Festival Cards");
-
             ctx.startActivity(i);
         });
     }

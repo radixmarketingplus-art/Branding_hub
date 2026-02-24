@@ -33,6 +33,9 @@ public class AdRequestDetailActivity extends AppCompatActivity {
     ImageView imgTemplate, imgProof;
 
     Button btnApprove, btnReject;
+    Spinner spinnerDuration;
+    View expiryPickerContainer;
+    long expiryTime = 0;
 
     String requestId;
     boolean isAdmin;
@@ -58,6 +61,8 @@ public class AdRequestDetailActivity extends AppCompatActivity {
 
         btnApprove = findViewById(R.id.btnApprove);
         btnReject = findViewById(R.id.btnReject);
+        spinnerDuration = findViewById(R.id.spinnerDuration);
+        expiryPickerContainer = findViewById(R.id.expiryPickerContainer);
 
         requestId = getIntent().getStringExtra("id");
         isAdmin = getIntent().getBooleanExtra("isAdmin", false);
@@ -109,8 +114,7 @@ public class AdRequestDetailActivity extends AppCompatActivity {
                                         !r.templatePath.isEmpty()) {
 
                                     imgTemplate.setVisibility(View.VISIBLE);
-                                    imgTemplate.setImageURI(
-                                            android.net.Uri.parse(r.templatePath));
+                                    loadImageFromUrl(r.templatePath, imgTemplate);
 
                                     imgTemplate.setOnClickListener(v -> {
                                         Intent i = new Intent(
@@ -126,8 +130,7 @@ public class AdRequestDetailActivity extends AppCompatActivity {
                                         !r.proofPath.isEmpty()) {
 
                                     imgProof.setVisibility(View.VISIBLE);
-                                    imgProof.setImageURI(
-                                            android.net.Uri.parse(r.proofPath));
+                                    loadImageFromUrl(r.proofPath, imgProof);
 
                                     imgProof.setOnClickListener(v -> {
                                         Intent i = new Intent(
@@ -139,13 +142,39 @@ public class AdRequestDetailActivity extends AppCompatActivity {
                                 }
 
                                 // ADMIN ACTIONS
-                                if (isAdmin && r.status.equals("pending")) {
+                                if (isAdmin &&
+                                        r.status != null &&
+                                        r.status.equalsIgnoreCase("pending")) {
+
                                     btnApprove.setVisibility(View.VISIBLE);
                                     btnReject.setVisibility(View.VISIBLE);
+                                    expiryPickerContainer.setVisibility(View.VISIBLE);
+
+                                    // Setup Spinner
+                                    String[] durations = {"Select Duration", "7 Days", "1 Month", "1 Year"};
+                                    android.widget.ArrayAdapter<String> adapter = new android.widget.ArrayAdapter<>(
+                                            AdRequestDetailActivity.this,
+                                            android.R.layout.simple_spinner_item,
+                                            durations
+                                    );
+                                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                                    spinnerDuration.setAdapter(adapter);
                                 }
 
-                                btnApprove.setOnClickListener(v ->
-                                        changeStatus("accepted"));
+                                btnApprove.setOnClickListener(v -> {
+                                    int pos = spinnerDuration.getSelectedItemPosition();
+                                    if (pos == 0) {
+                                        Toast.makeText(AdRequestDetailActivity.this, "Please select duration first", Toast.LENGTH_SHORT).show();
+                                        return;
+                                    }
+
+                                    long now = System.currentTimeMillis();
+                                    if (pos == 1) expiryTime = now + (7L * 24 * 60 * 60 * 1000);
+                                    else if (pos == 2) expiryTime = now + (30L * 24 * 60 * 60 * 1000);
+                                    else if (pos == 3) expiryTime = now + (365L * 24 * 60 * 60 * 1000);
+
+                                    changeStatus("accepted");
+                                });
 
                                 btnReject.setOnClickListener(v ->
                                         changeStatus("rejected"));
@@ -154,6 +183,37 @@ public class AdRequestDetailActivity extends AppCompatActivity {
                             @Override
                             public void onCancelled(DatabaseError error) {}
                         });
+    }
+
+    private void loadImageFromUrl(String url, ImageView imageView) {
+
+        new Thread(() -> {
+            try {
+
+                java.net.URL u = new java.net.URL(url);
+                java.net.HttpURLConnection conn =
+                        (java.net.HttpURLConnection) u.openConnection();
+
+                conn.setDoInput(true);
+                conn.connect();
+
+                java.io.InputStream input = conn.getInputStream();
+
+                android.graphics.Bitmap bitmap =
+                        android.graphics.BitmapFactory.decodeStream(input);
+
+                imageView.post(() -> imageView.setImageBitmap(bitmap));
+
+            } catch (Exception e) {
+                e.printStackTrace();
+
+                imageView.post(() ->
+                        imageView.setImageResource(
+                                android.R.drawable.ic_menu_report_image
+                        )
+                );
+            }
+        }).start();
     }
 
 //    void changeStatus(String s) {
@@ -214,6 +274,27 @@ public class AdRequestDetailActivity extends AppCompatActivity {
         if (r.templatePath == null || r.templatePath.isEmpty()) return;
         if (r.adLink == null || r.adLink.isEmpty()) return;
 
+        // --- STRUCTURED FIREBASE SAVE ---
+        String section = "Advertisement";
+        DatabaseReference dbRef = FirebaseDatabase.getInstance()
+                .getReference("templates")
+                .child(section);
+
+        String templateId = dbRef.push().getKey();
+        if (templateId == null) templateId = String.valueOf(System.currentTimeMillis());
+
+        AdvertisementItem adItem = new AdvertisementItem(
+                r.templatePath,
+                r.adLink,
+                expiryTime,
+                r.userName != null ? r.userName : "User",
+                r.time
+        );
+
+        // 1. Firebase
+        dbRef.child(templateId).setValue(adItem);
+
+        // 2. SharedPreferences
         SharedPreferences sp =
                 getSharedPreferences("HOME_DATA", MODE_PRIVATE);
 
@@ -232,10 +313,7 @@ public class AdRequestDetailActivity extends AppCompatActivity {
             list = new ArrayList<>();
 
         // Add newest first
-        list.add(0, new AdvertisementItem(
-                r.templatePath,
-                r.adLink
-        ));
+        list.add(0, adItem);
 
         sp.edit()
                 .putString("Advertisement",

@@ -114,67 +114,12 @@
                     android:layout_marginTop="12dp"
                     android:clipToPadding="false"/>
 
-                <!-- REUSABLE SECTIONS -->
-                <TextView style="@style/sectionTitle"
-                    android:textColor="?android:textColorPrimary"
-                    android:text="Latest Update"/>
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvLatest"
+                <!-- DYNAMIC SECTIONS CONTAINER -->
+                <LinearLayout
+                    android:id="@+id/dynamicSectionContainer"
                     android:layout_width="match_parent"
-                    android:layout_height="160dp"/>
-
-                <TextView style="@style/sectionTitle"
-                    android:textColor="?android:textColorPrimary"
-                    android:text="Business Special"/>
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvBusinessSpecial"
-                    android:layout_width="match_parent"
-                    android:layout_height="160dp"/>
-
-                <TextView style="@style/sectionTitle"
-                    android:textColor="?android:textColorPrimary"
-                    android:text="Reel Maker"/>
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvReelMaker"
-                    android:layout_width="match_parent"
-                    android:layout_height="160dp"/>
-
-                <TextView style="@style/sectionTitle"
-                    android:textColor="?android:textColorPrimary"
-                    android:text="Business Frame"/>
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvBusinessFrame"
-                    android:layout_width="match_parent"
-                    android:layout_height="160dp"/>
-
-                <TextView style="@style/sectionTitle"
-                    android:textColor="?android:textColorPrimary"
-                    android:text="Motivation"/>
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvMotivation"
-                    android:layout_width="match_parent"
-                    android:layout_height="160dp"/>
-
-                <TextView style="@style/sectionTitle"
-                    android:textColor="?android:textColorPrimary"
-                    android:text="Good Morning"/>
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvGoodMorning"
-                    android:layout_width="match_parent"
-                    android:layout_height="160dp"/>
-
-                <TextView style="@style/sectionTitle"
-                    android:textColor="?android:textColorPrimary"
-                    android:text="Business Ethics"/>
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvBusinessEthics"
-                    android:layout_width="match_parent"
-                    android:layout_height="160dp"/>
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"/>
 
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>

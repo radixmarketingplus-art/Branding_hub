@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.ads.MobileAds;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;   // ✅ ADDED
 import com.google.firebase.database.DatabaseReference;
@@ -29,6 +30,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FirebaseApp.initializeApp(this);   // 🔥 ADD THIS
+        
+        // 🔥 Initialize Google Ads (Fixes missing QPL/Tigon background logs)
+        new Thread(() -> {
+            MobileAds.initialize(this, initializationStatus -> {});
+        }).start();
+
         setContentView(R.layout.activity_main);
 
         logoImg = findViewById(R.id.logoImg);

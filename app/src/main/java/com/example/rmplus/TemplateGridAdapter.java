@@ -15,19 +15,19 @@ public class TemplateGridAdapter
         extends RecyclerView.Adapter<TemplateGridAdapter.Holder> {
 
     public interface ClickListener {
-        void onClick(String path);
+        void onClick(TemplateModel template);
     }
 
-    ArrayList<String> list;
+    ArrayList<TemplateModel> list;
     ClickListener listener;
 
-    public TemplateGridAdapter(ArrayList<String> list,
+    public TemplateGridAdapter(ArrayList<TemplateModel> list,
                                ClickListener l) {
         this.list = list;
         listener = l;
     }
 
-    public void setData(ArrayList<String> newList) {
+    public void setData(ArrayList<TemplateModel> newList) {
         list = newList;
         notifyDataSetChanged();
     }
@@ -44,18 +44,18 @@ public class TemplateGridAdapter
     @Override
     public void onBindViewHolder(Holder h, int i) {
 
-        File f = new File(list.get(i));
+        TemplateModel template = list.get(i);
 
-        h.img.setImageURI(Uri.fromFile(f)); // same as pehle
+        // 🔥 Load from URL or local automatically
+        // ⭐ UNIVERSAL IMAGE LOADING (VPS + Local + Uri)
+        Glide.with(h.img.getContext())
+                .load(template.url)
+                .placeholder(R.drawable.ic_launcher_foreground)
+                .error(R.drawable.ic_launcher_foreground)
+                .into(h.img);
 
-        // 🔳 square image (CORRECT)
-        h.img.post(() -> {
-            int width = h.img.getWidth();
-            ViewGroup.LayoutParams params = h.img.getLayoutParams();
-            params.height = width;
-            h.img.setLayoutParams(params);
-        });
-
+        // Image will now respect layout params and adjustViewBounds from XML
+ 
         h.itemView.setOnClickListener(v ->
                 listener.onClick(list.get(i)));
     }

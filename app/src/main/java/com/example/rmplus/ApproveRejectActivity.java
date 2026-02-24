@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.view.View;
 import android.widget.*;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -29,6 +30,12 @@ public class ApproveRejectActivity extends AppCompatActivity {
     DatabaseReference requestRef,userRef;
     String uid;
     String proofPath="";
+    Spinner spinnerPlan;
+    String userRequestedPlan = "";
+    long currentExpiry = 0;
+    Button btnUpdateExpiry;
+    View planGrantContainer;
+    TextView txtCurrentExpiry;
 
     @Override
     protected void onCreate(Bundle b) {
@@ -44,6 +51,10 @@ public class ApproveRejectActivity extends AppCompatActivity {
         approveBtn=findViewById(R.id.approveBtn);
         rejectBtn=findViewById(R.id.rejectBtn);
         downloadBtn=findViewById(R.id.downloadBtn);
+        spinnerPlan=findViewById(R.id.spinnerPlan);
+        btnUpdateExpiry=findViewById(R.id.btnUpdateExpiry); // Will add this to XML too
+        planGrantContainer=findViewById(R.id.planGrantContainer); // Wrap spinner in this
+        txtCurrentExpiry=findViewById(R.id.txtCurrentExpiry); // To show expiry if approved
 
         uid=getIntent().getStringExtra("uid");
 
@@ -60,6 +71,10 @@ public class ApproveRejectActivity extends AppCompatActivity {
         approveBtn.setOnClickListener(v->approve());
         rejectBtn.setOnClickListener(v->reject());
         downloadBtn.setOnClickListener(v->saveToGallery());
+        
+        if (btnUpdateExpiry != null) {
+            btnUpdateExpiry.setOnClickListener(v -> pickNewExpiry());
+        }
     }
 
     // ---------------------------
@@ -70,72 +85,162 @@ public class ApproveRejectActivity extends AppCompatActivity {
                 new ValueEventListener() {
                     public void onDataChange(DataSnapshot s){
 
-                        nameTxt.setText("Name : " +
-                                s.child("name").getValue(String.class));
+                        userRequestedPlan = s.child("plan").getValue(String.class);
+                        planTxt.setText("Plan Requested: " + userRequestedPlan);
 
-                        emailTxt.setText("Email : " +
-                                s.child("email").getValue(String.class));
+                        String status = s.child("status").getValue(String.class);
+                        
+                        // Setup Spinner
+                        String[] plans = {"Silver Plan (1 Month)", "Gold Plan (6 Month)", "Diamond Plan (1 Year)", "Custom (7 Days)"};
+                        ArrayAdapter<String> adapter = new ArrayAdapter<>(ApproveRejectActivity.this, android.R.layout.simple_spinner_item, plans);
+                        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                        spinnerPlan.setAdapter(adapter);
 
-                        mobileTxt.setText("Mobile : " +
-                                s.child("mobile").getValue(String.class));
+                        // Auto-select based on user request
+                        if (userRequestedPlan != null) {
+                            for (int i = 0; i < plans.length; i++) {
+                                if (plans[i].toLowerCase().contains(userRequestedPlan.toLowerCase())) {
+                                    spinnerPlan.setSelection(i);
+                                    break;
+                                }
+                            }
+                        }
 
-                        planTxt.setText("Plan : " +
-                                s.child("plan").getValue(String.class));
+                        if ("approved".equalsIgnoreCase(status)) {
+                            approveBtn.setVisibility(View.GONE);
+                            rejectBtn.setVisibility(View.GONE);
+                            if (planGrantContainer != null) planGrantContainer.setVisibility(View.GONE);
+                            
+                            // Load and show expiry
+                            loadExpiryFromUser();
+                        } else if ("pending".equalsIgnoreCase(status)) {
+                            approveBtn.setVisibility(View.VISIBLE);
+                            rejectBtn.setVisibility(View.VISIBLE);
+                            if (planGrantContainer != null) planGrantContainer.setVisibility(View.VISIBLE);
+                        }
 
                         Long t=s.child("time")
                                 .getValue(Long.class);
 
                         if(t!=null){
-                            dateTxt.setText(
-                                    new Date(t).toString());
+                            dateTxt.setText("Requested On: " + new Date(t).toString());
                         }
 
-                        proofImage.setOnClickListener(v -> {
-                            Intent i = new Intent(
-                                    ApproveRejectActivity.this,
-                                    ImagePreviewActivity.class
-                            );
-                            i.putExtra("img", proofPath);
-                            startActivity(i);
-                        });
-
-
-                        proofPath=s.child("proofPath")
+                        proofPath = s.child("proofPath")
                                 .getValue(String.class);
 
-                        if(proofPath!=null){
-                            proofImage.setImageURI(
-                                    Uri.fromFile(
-                                            new File(proofPath)));
+                        if (proofPath != null && !proofPath.isEmpty()) {
+
+                            loadImageFromUrl(proofPath, proofImage);
+
+                            proofImage.setOnClickListener(v -> {
+
+                                Intent i = new Intent(
+                                        ApproveRejectActivity.this,
+                                        ImagePreviewActivity.class
+                                );
+
+                                i.putExtra("img", proofPath);
+                                startActivity(i);
+                            });
+
+                        } else {
+                            proofImage.setVisibility(View.GONE);
+                            downloadBtn.setEnabled(false);
                         }
                     }
                     public void onCancelled(DatabaseError e){}
                 });
     }
 
+    void loadExpiryFromUser() {
+        userRef.child("subscriptionExpiry").get().addOnSuccessListener(s -> {
+            if (s.exists()) {
+                currentExpiry = (long) s.getValue();
+                String dateStr = new java.text.SimpleDateFormat("dd-MM-yyyy", java.util.Locale.getDefault())
+                        .format(new Date(currentExpiry));
+                txtCurrentExpiry.setText("Subscription Expires: " + dateStr);
+                txtCurrentExpiry.setVisibility(View.VISIBLE);
+                btnUpdateExpiry.setVisibility(View.VISIBLE);
+            }
+        });
+    }
+
+    void pickNewExpiry() {
+        android.icu.util.Calendar c = android.icu.util.Calendar.getInstance();
+        if (currentExpiry > 0) c.setTimeInMillis(currentExpiry);
+
+        new android.app.DatePickerDialog(this, (view, year, month, day) -> {
+            android.icu.util.Calendar s = android.icu.util.Calendar.getInstance();
+            s.set(year, month, day, 23, 59, 59);
+            long newExpiry = s.getTimeInMillis();
+            updateExpiryInDatabase(newExpiry);
+        }, c.get(android.icu.util.Calendar.YEAR), c.get(android.icu.util.Calendar.MONTH), c.get(android.icu.util.Calendar.DAY_OF_MONTH)).show();
+    }
+
+    void updateExpiryInDatabase(long newExpiry) {
+        userRef.child("subscriptionExpiry").setValue(newExpiry).addOnSuccessListener(aVoid -> {
+            currentExpiry = newExpiry;
+            loadExpiryFromUser();
+            Toast.makeText(this, "Expiry Updated", Toast.LENGTH_SHORT).show();
+        });
+    }
+
     // ---------------------------
+
+    private void loadImageFromUrl(String url, ImageView imageView) {
+
+        imageView.setImageResource(
+                android.R.drawable.ic_menu_gallery);
+
+        new Thread(() -> {
+            try {
+
+                java.net.URL u = new java.net.URL(url);
+                java.net.HttpURLConnection conn =
+                        (java.net.HttpURLConnection) u.openConnection();
+
+                conn.setDoInput(true);
+                conn.connect();
+
+                java.io.InputStream input = conn.getInputStream();
+
+                Bitmap bitmap =
+                        BitmapFactory.decodeStream(input);
+
+                imageView.post(() ->
+                        imageView.setImageBitmap(bitmap));
+
+            } catch (Exception e) {
+                e.printStackTrace();
+
+                imageView.post(() ->
+                        imageView.setImageResource(
+                                android.R.drawable.ic_menu_report_image
+                        ));
+            }
+        }).start();
+    }
 
     void approve(){
 
-        requestRef.child("status")
-                .setValue("approved");
+        String grantedPlan = spinnerPlan.getSelectedItem().toString();
+        long now = System.currentTimeMillis();
+        long expiry = now + (7L * 24 * 60 * 60 * 1000); // Default 7 days
 
-        userRef.child("subscribed")
-                .setValue(true);
+        if (grantedPlan.contains("1 Month")) expiry = now + (30L * 24 * 60 * 60 * 1000);
+        else if (grantedPlan.contains("6 Month")) expiry = now + (180L * 24 * 60 * 60 * 1000);
+        else if (grantedPlan.contains("1 Year")) expiry = now + (365L * 24 * 60 * 60 * 1000);
 
-        userRef.child("subscriptionStatus")
-                .setValue("approved");
+        requestRef.child("status").setValue("approved");
+        requestRef.child("plan").setValue(grantedPlan);
+        requestRef.child("expiryDate").setValue(expiry);
 
-        requestRef.child("plan")
-                .addListenerForSingleValueEvent(
-                        new ValueEventListener() {
-                            public void onDataChange(DataSnapshot s) {
-                                userRef.child("plan")
-                                        .setValue(
-                                                s.getValue(String.class));
-                            }
-                            public void onCancelled(DatabaseError e){}
-                        });
+        userRef.child("subscribed").setValue(true);
+        userRef.child("subscriptionStatus").setValue("approved");
+        userRef.child("plan").setValue(grantedPlan);
+        userRef.child("subscriptionExpiry").setValue(expiry);
+        userRef.child("subscriptionStartDate").setValue(now);
 
         Toast.makeText(this,
                 "Approved",
@@ -180,42 +285,64 @@ public class ApproveRejectActivity extends AppCompatActivity {
 
     void saveToGallery(){
 
-        try{
-
-            FileInputStream fis =
-                    new FileInputStream(proofPath);
-
-            Bitmap bitmap =
-                    BitmapFactory.decodeStream(fis);
-
-            ContentValues values = new ContentValues();
-            values.put(MediaStore.Images.Media.DISPLAY_NAME,
-                    "proof_"+uid+".jpg");
-            values.put(MediaStore.Images.Media.MIME_TYPE,
-                    "image/jpeg");
-            values.put(MediaStore.Images.Media.RELATIVE_PATH,
-                    "Pictures/RMPlus");
-
-            Uri uri = getContentResolver().insert(
-                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                    values);
-
-            OutputStream out =
-                    getContentResolver().openOutputStream(uri);
-
-            bitmap.compress(Bitmap.CompressFormat.JPEG,
-                    100,out);
-
-            out.close();
-
+        if (proofPath == null || proofPath.isEmpty()) {
             Toast.makeText(this,
-                    "Saved in Gallery",
-                    Toast.LENGTH_LONG).show();
-
-        }catch(Exception e){
-            Toast.makeText(this,
-                    "Save Failed",
+                    "No image to download",
                     Toast.LENGTH_SHORT).show();
+            return;
         }
+
+        new Thread(() -> {
+            try {
+
+                java.net.URL url = new java.net.URL(proofPath);
+                java.net.HttpURLConnection conn =
+                        (java.net.HttpURLConnection) url.openConnection();
+
+                conn.connect();
+
+                Bitmap bitmap =
+                        BitmapFactory.decodeStream(conn.getInputStream());
+
+                ContentValues values = new ContentValues();
+                values.put(MediaStore.Images.Media.DISPLAY_NAME,
+                        "proof_" + uid + ".jpg");
+                values.put(MediaStore.Images.Media.MIME_TYPE,
+                        "image/jpeg");
+                values.put(MediaStore.Images.Media.RELATIVE_PATH,
+                        "Pictures/RMPlus");
+
+                Uri uri = getContentResolver().insert(
+                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                        values);
+
+                OutputStream out =
+                        getContentResolver().openOutputStream(uri);
+
+                bitmap.compress(
+                        Bitmap.CompressFormat.JPEG,
+                        100,
+                        out
+                );
+
+                out.close();
+
+                runOnUiThread(() ->
+                        Toast.makeText(
+                                this,
+                                "Saved in Gallery",
+                                Toast.LENGTH_LONG
+                        ).show());
+
+            } catch (Exception e){
+
+                runOnUiThread(() ->
+                        Toast.makeText(
+                                this,
+                                "Save Failed",
+                                Toast.LENGTH_SHORT
+                        ).show());
+            }
+        }).start();
     }
 }

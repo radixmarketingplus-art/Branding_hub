@@ -13,6 +13,9 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+
 import java.io.InputStream;
 import java.util.ArrayList;
 
@@ -23,8 +26,6 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.VH> {
     private int layout;
     private boolean isUri;                  // 🔥 TYPE FLAG
     private String category;
-
-    // ✅ SINGLE CONSTRUCTOR (NO ERASURE ISSUE)
 
     public ImageAdapter(ArrayList<String> uriList,
                         ArrayList<Integer> resList,
@@ -60,18 +61,16 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.VH> {
             if (isUri) {
                 String item = uriList.get(position);
 
-                // Dummy card
                 if ("DUMMY".equals(item)) {
                     holder.img.setImageResource(R.drawable.ic_add);
-                }
-                // ✅ REAL IMAGE (FILE PATH)
-                else {
-                    Bitmap bitmap = BitmapFactory.decodeFile(item);
-                    if (bitmap != null) {
-                        holder.img.setImageBitmap(bitmap);
-                    } else {
-                        holder.img.setImageResource(R.drawable.ic_launcher_foreground);
-                    }
+                } else {
+                    // 🌐 LOAD FROM VPS URL (Glide handles caching automatically)
+                    Glide.with(holder.img.getContext())
+                            .load(item)
+                            .placeholder(android.R.drawable.ic_menu_gallery)
+                            .error(android.R.drawable.ic_menu_report_image)
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+                            .into(holder.img);
                 }
 
             } else {

@@ -27,7 +27,7 @@ public class CheckUploadsFragment extends Fragment {
     HorizontalScrollView tabScroll;
 
     TemplateGridAdapter adapter;
-    ArrayList<String> allTemplates = new ArrayList<>();
+    ArrayList<TemplateModel> allTemplates = new ArrayList<>();
 
     String[] categories = {
             "All",
@@ -38,8 +38,9 @@ public class CheckUploadsFragment extends Fragment {
             "Reel Maker",
             "Business Frame",
             "Motivation",
-            "Good Morning",
-            "Business Ethics"
+            "Greetings",
+            "Business Ethics",
+            "Frame"
     };
 
     String currentCategory = "All";
@@ -61,12 +62,12 @@ public class CheckUploadsFragment extends Fragment {
                 new GridLayoutManager(requireContext(), 3)
         );
 
-        adapter = new TemplateGridAdapter(allTemplates, path -> {
+        adapter = new TemplateGridAdapter(allTemplates, t -> {
             Intent i = new Intent(
                     requireContext(),
                     AdminTemplateDetailActivity.class
             );
-            i.putExtra("path", path);
+            i.putExtra("path", t.url);
             i.putExtra("category", currentCategory);
             startActivity(i);
         });
@@ -162,7 +163,7 @@ public class CheckUploadsFragment extends Fragment {
                 );
 
         Gson gson = new Gson();
-        ArrayList<String> result = new ArrayList<>();
+        ArrayList<TemplateModel> result = new ArrayList<>();
 
         if (key.equals("All")) {
 
@@ -173,8 +174,9 @@ public class CheckUploadsFragment extends Fragment {
                     "Reel Maker",
                     "Business Frame",
                     "Motivation",
-                    "Good Morning",
-                    "Business Ethics"
+                    "Greetings",
+                    "Business Ethics",
+                    "Frame"
             };
 
             for (String k : allKeys) {
@@ -192,7 +194,7 @@ public class CheckUploadsFragment extends Fragment {
 
                     if (list != null) {
                         for (FestivalCardItem f : list) {
-                            result.add(f.imagePath);
+                            result.add(new TemplateModel(makeSafeKey(f.imagePath), f.imagePath, k));
                         }
                     }
                 } else {
@@ -203,11 +205,15 @@ public class CheckUploadsFragment extends Fragment {
                     ArrayList<String> list =
                             gson.fromJson(json, t);
 
-                    if (list != null) result.addAll(list);
+                    if (list != null) {
+                        for (String s : list) {
+                            result.add(new TemplateModel(makeSafeKey(s), s, k));
+                        }
+                    }
                 }
             }
 
-            reverse(result);
+            // reverse(result);
             adapter.setData(result);
             return;
         }
@@ -226,14 +232,14 @@ public class CheckUploadsFragment extends Fragment {
             ArrayList<FestivalCardItem> list =
                     gson.fromJson(json, t);
 
-            ArrayList<String> paths = new ArrayList<>();
+            ArrayList<TemplateModel> paths = new ArrayList<>();
             if (list != null) {
                 for (FestivalCardItem f : list) {
-                    paths.add(f.imagePath);
+                    paths.add(new TemplateModel(makeSafeKey(f.imagePath), f.imagePath, key));
                 }
             }
-
-            reverse(paths);
+ 
+            // reverse(paths);
             adapter.setData(paths);
             return;
         }
@@ -256,15 +262,15 @@ public class CheckUploadsFragment extends Fragment {
             ArrayList<AdvertisementItem> list =
                     gson.fromJson(json, t);
 
-            ArrayList<String> paths = new ArrayList<>();
-
+            ArrayList<TemplateModel> paths = new ArrayList<>();
+ 
             if (list != null) {
                 for (AdvertisementItem ad : list) {
-                    paths.add(ad.imagePath);
+                    paths.add(new TemplateModel(makeSafeKey(ad.imagePath), ad.imagePath, key));
                 }
             }
-
-            reverse(paths);
+ 
+            // reverse(paths);
             adapter.setData(paths);
             return;
         }
@@ -278,11 +284,20 @@ public class CheckUploadsFragment extends Fragment {
 
         ArrayList<String> images =
                 gson.fromJson(json, type);
+ 
+        ArrayList<TemplateModel> finalResult = new ArrayList<>();
+        if (images != null) {
+            for (String s : images) {
+                finalResult.add(new TemplateModel(makeSafeKey(s), s, key));
+            }
+        }
+ 
+        // reverse(images);
+        adapter.setData(finalResult);
+    }
 
-        if (images == null) images = new ArrayList<>();
-
-        reverse(images);
-        adapter.setData(images);
+    private String makeSafeKey(String s) {
+        return android.util.Base64.encodeToString(s.getBytes(), android.util.Base64.NO_WRAP);
     }
 
     private int getColorFromAttr(int attr) {
@@ -291,14 +306,5 @@ public class CheckUploadsFragment extends Fragment {
         return typedValue.data;
     }
 
-    void reverse(ArrayList<String> list) {
-        int i = 0, j = list.size() - 1;
-        while (i < j) {
-            String t = list.get(i);
-            list.set(i, list.get(j));
-            list.set(j, t);
-            i++;
-            j--;
-        }
-    }
+
 }

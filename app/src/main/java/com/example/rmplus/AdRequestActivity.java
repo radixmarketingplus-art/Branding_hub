@@ -17,9 +17,8 @@ public class AdRequestActivity extends AppCompatActivity {
     EditText etLink;
     ImageView imgTemplate, imgProof;
     Button btnUploadTemplate, btnUploadProof, btnSubmit;
-
     Uri templateUri, proofUri;
-    String templatePath = "", proofPath = "";
+    String templateUrl = "", proofUrl = "";
 
     DatabaseReference usersRef, adRef;
 
@@ -54,6 +53,8 @@ public class AdRequestActivity extends AppCompatActivity {
     void pickImage(int type){
         Intent i = new Intent(Intent.ACTION_GET_CONTENT);
         i.setType("image/*");
+        String[] mimeTypes = {"image/jpeg", "image/jpg", "image/png"};
+        i.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
         startActivityForResult(i, type);
     }
 
@@ -64,53 +65,107 @@ public class AdRequestActivity extends AppCompatActivity {
         if(c==RESULT_OK && d!=null){
 
             Uri uri = d.getData();
+            if (uri == null) return;
+
+            // Validate format
+            String mimeType = getContentResolver().getType(uri);
+            if (mimeType == null || (!mimeType.equals("image/jpeg") && !mimeType.equals("image/jpg") && !mimeType.equals("image/png"))) {
+                Toast.makeText(this, "Only JPG, JPEG, or PNG allowed", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
             if(r==1){
                 templateUri = uri;
                 imgTemplate.setImageURI(uri);
                 imgTemplate.setVisibility(ImageView.VISIBLE);
-                templatePath = copyImage(uri);
+
+                uploadImageToServer(uri, url -> templateUrl = url);
             }
 
             if(r==2){
                 proofUri = uri;
                 imgProof.setImageURI(uri);
                 imgProof.setVisibility(ImageView.VISIBLE);
-                proofPath = copyImage(uri);
+
+                uploadImageToServer(uri, url -> proofUrl = url);
             }
         }
     }
 
     // ---------------- SAVE IMAGE LOCALLY ----------------
-
-    String copyImage(Uri uri){
-        try{
-            InputStream in = getContentResolver().openInputStream(uri);
-
-            File folder = new File(getFilesDir(),"ad_images");
-            if(!folder.exists()) folder.mkdir();
-
-            File file = new File(folder,
-                    System.currentTimeMillis()+".jpg");
-
-            OutputStream out = new FileOutputStream(file);
-
-            byte[] buf = new byte[1024];
-            int len;
-
-            while((len=in.read(buf))>0){
-                out.write(buf,0,len);
-            }
-
-            in.close();
-            out.close();
-
-            return file.getAbsolutePath();
-
-        }catch(Exception e){
-            return "";
-        }
+    interface UrlCallback{
+        void onResult(String url);
     }
+    private void uploadImageToServer(Uri uri, UrlCallback cb){
+
+        new Thread(() -> {
+            try {
+
+                String boundary = "----RMPLUS" + System.currentTimeMillis();
+
+                java.net.URL url =
+                        new java.net.URL("http://187.77.184.84/upload.php");
+
+                java.net.HttpURLConnection conn =
+                        (java.net.HttpURLConnection) url.openConnection();
+
+                conn.setRequestMethod("POST");
+                conn.setDoOutput(true);
+
+                conn.setRequestProperty(
+                        "Content-Type",
+                        "multipart/form-data; boundary=" + boundary
+                );
+
+                java.io.DataOutputStream out =
+                        new java.io.DataOutputStream(conn.getOutputStream());
+
+                out.writeBytes("--" + boundary + "\r\n");
+                out.writeBytes(
+                        "Content-Disposition: form-data; name=\"file\"; filename=\"img.jpg\"\r\n"
+                );
+                out.writeBytes("Content-Type: image/jpeg\r\n\r\n");
+
+                InputStream input =
+                        getContentResolver().openInputStream(uri);
+
+                byte[] buffer = new byte[4096];
+                int len;
+
+                while ((len = input.read(buffer)) != -1)
+                    out.write(buffer, 0, len);
+
+                input.close();
+
+                out.writeBytes("\r\n--" + boundary + "--\r\n");
+                out.flush();
+                out.close();
+
+                java.io.BufferedReader reader =
+                        new java.io.BufferedReader(
+                                new java.io.InputStreamReader(conn.getInputStream())
+                        );
+
+                StringBuilder res = new StringBuilder();
+                String line;
+
+                while((line=reader.readLine())!=null)
+                    res.append(line);
+
+                reader.close();
+
+                org.json.JSONObject json =
+                        new org.json.JSONObject(res.toString());
+
+                cb.onResult(json.getString("url"));
+
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+        }).start();
+    }
+
+
 
     // ---------------- SAVE REQUEST ----------------
 
@@ -142,8 +197,8 @@ public class AdRequestActivity extends AppCompatActivity {
                         r.mobile = mobile;
 
                         r.adLink = etLink.getText().toString();
-                        r.templatePath = templatePath;
-                        r.proofPath = proofPath;
+                        r.templatePath = templateUrl;
+                        r.proofPath = proofUrl;
 
                         r.status = "pending";
                         r.time = System.currentTimeMillis();

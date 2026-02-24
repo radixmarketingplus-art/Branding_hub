@@ -127,7 +127,33 @@
             android:layout_marginBottom="16dp"
             android:visibility="gone"/>
 
+        <!-- ================= APPROVAL EXPIRY ================= -->
+        <LinearLayout
+            android:id="@+id/expiryPickerContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginBottom="16dp"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Approval Duration (Default 7 Days)"
+                android:textStyle="bold"
+                android:layout_marginBottom="6dp"/>
+
+            <Spinner
+                android:id="@+id/spinnerDuration"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:background="@drawable/bg_spinner"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp" />
+        </LinearLayout>
+
         <!-- ================= ADMIN ACTIONS ================= -->
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -73,6 +73,20 @@ public class UploadManagerActivity extends AppCompatActivity {
     }
 
     void loadFragment(Fragment f) {
+        // Pass intent extras to the fragment if editing
+        if (f instanceof UploadTemplatesFragment) {
+            Bundle args = new Bundle();
+            if (getIntent().hasExtra("edit_url")) {
+                args.putString("edit_url", getIntent().getStringExtra("edit_url"));
+                args.putString("category", getIntent().getStringExtra("category"));
+                args.putString("date", getIntent().getStringExtra("date"));
+                args.putString("link", getIntent().getStringExtra("link"));
+                args.putLong("expiryDate", getIntent().getLongExtra("expiryDate", 0));
+                args.putString("realId", getIntent().getStringExtra("realId"));
+            }
+            f.setArguments(args);
+        }
+
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.fragmentContainer, f)

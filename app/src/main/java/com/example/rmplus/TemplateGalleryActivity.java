@@ -15,12 +15,14 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.button.MaterialButton;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import com.google.gson.reflect.TypeToken;
+ 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
@@ -28,24 +30,14 @@ import java.util.ArrayList;
 public class TemplateGalleryActivity extends BaseActivity {
 
     RecyclerView recycler;
-    LinearLayout filterContainer;
-
+    LinearLayout filterContainer, subFilterContainer;
+    View subFilterScroll;
     TemplateGridAdapter adapter;
-    ArrayList<String> allTemplates = new ArrayList<>();
-
+    ArrayList<TemplateModel> allTemplatesModel = new ArrayList<>();
     HorizontalScrollView tabScroll;
+    String currentSubCategory = "";
 
-    String[] categories = {
-            "All",
-            "Festival Cards",
-            "Latest Update",
-            "Business Special",
-            "Reel Maker",
-            "Business Frame",
-            "Motivation",
-            "Good Morning",
-            "Business Ethics"
-    };
+    ArrayList<String> categories = new ArrayList<>();
 
     String currentCategory = "All";
 
@@ -63,6 +55,8 @@ public class TemplateGalleryActivity extends BaseActivity {
 
         recycler = findViewById(R.id.recyclerTemplates);
         filterContainer = findViewById(R.id.filterContainer);
+        subFilterContainer = findViewById(R.id.subFilterContainer);
+        subFilterScroll = findViewById(R.id.subFilterScroll);
         tabScroll = findViewById(R.id.tabScroll);
 
         ViewCompat.setOnApplyWindowInsetsListener(bottomNav, (view, insets) -> {
@@ -82,22 +76,43 @@ public class TemplateGalleryActivity extends BaseActivity {
                 new GridLayoutManager(this, 3)
         );
 
-        adapter = new TemplateGridAdapter(allTemplates, path -> {
+        adapter = new TemplateGridAdapter(allTemplatesModel, template -> {
 
             Intent i = new Intent(
                     TemplateGalleryActivity.this,
                     TemplatePreviewActivity.class
             );
-            i.putExtra("path", path);
-            i.putExtra("category", currentCategory);
+            i.putExtra("id", template.id);
+            i.putExtra("path", template.url); // for instant glide load
+            i.putExtra("category", template.category);
             startActivity(i);
 
         });
 
         recycler.setAdapter(adapter);
 
-        createFilterButtons();
+        loadDynamicCategories();
         loadCategory("All");
+    }
+
+    void loadDynamicCategories() {
+        com.google.firebase.database.FirebaseDatabase.getInstance().getReference("templates")
+                .addListenerForSingleValueEvent(new com.google.firebase.database.ValueEventListener() {
+                    @Override
+                    public void onDataChange(com.google.firebase.database.DataSnapshot snapshot) {
+                        categories.clear();
+                        categories.add("All");
+                        for (com.google.firebase.database.DataSnapshot d : snapshot.getChildren()) {
+                            if (d.getKey() != null && !d.getKey().equals("Trending Now") && !d.getKey().equals("Advertisement") && !d.getKey().equals("Frame")) {
+                                categories.add(d.getKey());
+                            }
+                        }
+                        createFilterButtons();
+                    }
+
+                    @Override
+                    public void onCancelled(com.google.firebase.database.DatabaseError error) {}
+                });
     }
 
     void createFilterButtons() {
@@ -126,13 +141,79 @@ public class TemplateGalleryActivity extends BaseActivity {
             chip.setOnClickListener(v -> {
                 currentCategory = c;
                 updateTabUI();
-                loadCategory(c);
+                if (c.equalsIgnoreCase("Business Frame")) {
+                    showSubFilters();
+                } else {
+                    subFilterScroll.setVisibility(View.GONE);
+                    loadCategory(c);
+                }
             });
 
             filterContainer.addView(chip);
         }
 
         updateTabUI();
+    }
+
+    void showSubFilters() {
+        subFilterScroll.setVisibility(View.VISIBLE);
+        subFilterContainer.removeAllViews();
+        String[] subs = {"All", "Political", "NGO", "Business"};
+        for (String s : subs) {
+            TextView chip = new TextView(this);
+            chip.setText(s);
+            chip.setPadding(30, 10, 30, 10);
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-2, -2);
+            lp.setMargins(8, 0, 8, 0);
+            chip.setLayoutParams(lp);
+            chip.setBackgroundResource(R.drawable.bg_filter_chip);
+            chip.setOnClickListener(v -> {
+                currentSubCategory = s;
+                for (int i = 0; i < subFilterContainer.getChildCount(); i++) {
+                    subFilterContainer.getChildAt(i).setBackgroundResource(R.drawable.bg_filter_chip);
+                }
+                chip.setBackgroundResource(R.drawable.bg_filter_chip_selected);
+                loadBusinessSubCategory(s);
+            });
+            subFilterContainer.addView(chip);
+        }
+        // Select 'All' by default
+        ((TextView)subFilterContainer.getChildAt(0)).performClick();
+    }
+
+    void loadBusinessSubCategory(String sub) {
+        DatabaseReference rootRef = com.google.firebase.database.FirebaseDatabase.getInstance().getReference("templates").child("Business Frame");
+
+        if ("All".equalsIgnoreCase(sub)) {
+            rootRef.addListenerForSingleValueEvent(new com.google.firebase.database.ValueEventListener() {
+                @Override
+                public void onDataChange(com.google.firebase.database.DataSnapshot snapshot) {
+                    ArrayList<TemplateModel> result = new ArrayList<>();
+                    for (com.google.firebase.database.DataSnapshot subSnap : snapshot.getChildren()) {
+                        for (com.google.firebase.database.DataSnapshot itemSnap : subSnap.getChildren()) {
+                            String url = itemSnap.hasChild("imagePath") ? itemSnap.child("imagePath").getValue(String.class) : itemSnap.child("url").getValue(String.class);
+                            if (url != null) result.add(new TemplateModel(itemSnap.getKey(), url, "Business Frame/" + subSnap.getKey()));
+                        }
+                    }
+                    adapter.setData(result);
+                }
+                @Override public void onCancelled(com.google.firebase.database.DatabaseError error) {}
+            });
+        } else {
+            rootRef.child(sub).addListenerForSingleValueEvent(new com.google.firebase.database.ValueEventListener() {
+                @Override
+                public void onDataChange(com.google.firebase.database.DataSnapshot snapshot) {
+                    ArrayList<TemplateModel> result = new ArrayList<>();
+                    for (com.google.firebase.database.DataSnapshot d : snapshot.getChildren()) {
+                        String url = d.hasChild("imagePath") ? d.child("imagePath").getValue(String.class) : d.child("url").getValue(String.class);
+                        if (url != null) result.add(new TemplateModel(d.getKey(), url, "Business Frame/" + sub));
+                    }
+                    adapter.setData(result);
+                }
+                @Override
+                public void onCancelled(com.google.firebase.database.DatabaseError error) {}
+            });
+        }
     }
 
 //    void animateUnderline(View tab) {
@@ -201,119 +282,57 @@ public class TemplateGalleryActivity extends BaseActivity {
 
 
     void loadCategory(String key) {
-
         currentCategory = key;
+        DatabaseReference templatesRef = com.google.firebase.database.FirebaseDatabase.getInstance().getReference("templates");
 
-        SharedPreferences sp =
-                getSharedPreferences("HOME_DATA", MODE_PRIVATE);
-
-        Gson gson = new Gson();
-
-        ArrayList<String> result = new ArrayList<>();
-
-        // ================= ALL =================
         if (key.equals("All")) {
-
-            String[] allKeys = {
-                    "Festival Cards",
-                    "Latest Update",
-                    "Business Special",
-                    "Reel Maker",
-                    "Business Frame",
-                    "Motivation",
-                    "Good Morning",
-                    "Business Ethics"
-            };
-
-            for (String k : allKeys) {
-
-                String json = sp.getString(k, null);
-                if (json == null) continue;
-
-                // Festival objects
-                if (k.equals("Festival Cards")) {
-
-                    Type t =
-                            new TypeToken<ArrayList<FestivalCardItem>>(){}.getType();
-
-                    ArrayList<FestivalCardItem> list =
-                            gson.fromJson(json, t);
-
-                    if (list != null) {
-                        for (FestivalCardItem f : list) {
-                            result.add(f.imagePath);
+            templatesRef.addListenerForSingleValueEvent(new com.google.firebase.database.ValueEventListener() {
+                @Override
+                public void onDataChange(com.google.firebase.database.DataSnapshot snapshot) {
+                    ArrayList<TemplateModel> result = new ArrayList<>();
+                    for (com.google.firebase.database.DataSnapshot categorySnapshot : snapshot.getChildren()) {
+                        String cat = categorySnapshot.getKey();
+                        for (com.google.firebase.database.DataSnapshot itemSnapshot : categorySnapshot.getChildren()) {
+                            String path = null;
+                            if (itemSnapshot.hasChild("imagePath")) {
+                                path = itemSnapshot.child("imagePath").getValue(String.class);
+                            } else if (itemSnapshot.hasChild("url")) {
+                                path = itemSnapshot.child("url").getValue(String.class);
+                            }
+                            if (path != null && !cat.equals("Frame")) {
+                                result.add(new TemplateModel(itemSnapshot.getKey(), path, cat));
+                            }
                         }
                     }
+                    adapter.setData(result);
                 }
-                else {
 
-                    Type t =
-                            new TypeToken<ArrayList<String>>(){}.getType();
-
-                    ArrayList<String> list =
-                            gson.fromJson(json, t);
-
-                    if (list != null) {
-                        result.addAll(list);
+                @Override
+                public void onCancelled(com.google.firebase.database.DatabaseError error) {}
+            });
+        } else {
+            templatesRef.child(key).addListenerForSingleValueEvent(new com.google.firebase.database.ValueEventListener() {
+                @Override
+                public void onDataChange(com.google.firebase.database.DataSnapshot snapshot) {
+                    ArrayList<TemplateModel> result = new ArrayList<>();
+                    for (com.google.firebase.database.DataSnapshot itemSnapshot : snapshot.getChildren()) {
+                        String path = null;
+                        if (itemSnapshot.hasChild("imagePath")) {
+                            path = itemSnapshot.child("imagePath").getValue(String.class);
+                        } else if (itemSnapshot.hasChild("url")) {
+                            path = itemSnapshot.child("url").getValue(String.class);
+                        }
+                        if (path != null) {
+                            result.add(new TemplateModel(itemSnapshot.getKey(), path, key));
+                        }
                     }
+                    adapter.setData(result);
                 }
-            }
 
-            // 🔥 Latest first
-            reverse(result);
-
-            adapter.setData(result);
-            return;
+                @Override
+                public void onCancelled(com.google.firebase.database.DatabaseError error) {}
+            });
         }
-
-        // ================= FESTIVAL =================
-        if (key.equals("Festival Cards")) {
-
-            String json = sp.getString(key, null);
-
-            if (json == null) {
-                adapter.setData(new ArrayList<>());
-                return;
-            }
-
-            Type t =
-                    new TypeToken<ArrayList<FestivalCardItem>>(){}.getType();
-
-            ArrayList<FestivalCardItem> list =
-                    gson.fromJson(json, t);
-
-            ArrayList<String> paths = new ArrayList<>();
-
-            if (list != null) {
-                for (FestivalCardItem f : list) {
-                    paths.add(f.imagePath);
-                }
-            }
-
-            reverse(paths);
-            adapter.setData(paths);
-            return;
-        }
-
-        // ================= NORMAL =================
-        String json = sp.getString(key, null);
-
-        if (json == null) {
-            adapter.setData(new ArrayList<>());
-            return;
-        }
-
-        Type type =
-                new TypeToken<ArrayList<String>>(){}.getType();
-
-        ArrayList<String> images =
-                gson.fromJson(json, type);
-
-        if (images == null)
-            images = new ArrayList<>();
-
-        reverse(images);
-        adapter.setData(images);
     }
 
     private int getColorFromAttr(int attr) {
@@ -321,19 +340,7 @@ public class TemplateGalleryActivity extends BaseActivity {
         getTheme().resolveAttribute(attr, typedValue, true);
         return typedValue.data;
     }
-    void reverse(ArrayList<String> list) {
 
-        int i = 0;
-        int j = list.size() - 1;
-
-        while (i < j) {
-            String temp = list.get(i);
-            list.set(i, list.get(j));
-            list.set(j, temp);
-            i++;
-            j--;
-        }
-    }
 
 
 }

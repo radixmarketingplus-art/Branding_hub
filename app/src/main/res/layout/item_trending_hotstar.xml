@@ -11,12 +11,25 @@
     card_view:cardBackgroundColor="?attr/colorSurface"
     android:foreground="?attr/selectableItemBackground">
 
-    <!-- FEATURE IMAGE -->
-    <ImageView
-        android:id="@+id/img"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="centerCrop"
-        android:contentDescription="Featured image"/>
+        android:layout_height="match_parent">
+ 
+        <!-- FEATURE IMAGE -->
+        <ImageView
+            android:id="@+id/img"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:contentDescription="Featured image"/>
+ 
+        <VideoView
+            android:id="@+id/videoView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:visibility="gone"/>
+ 
+    </FrameLayout>
 
 </androidx.cardview.widget.CardView>

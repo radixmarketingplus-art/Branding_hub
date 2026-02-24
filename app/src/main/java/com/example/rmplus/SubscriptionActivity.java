@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.*;
 
+import java.io.InputStream;
 import java.util.HashMap;
 
 public class SubscriptionActivity extends AppCompatActivity {
@@ -24,7 +25,7 @@ public class SubscriptionActivity extends AppCompatActivity {
     DatabaseReference userRef, requestRef;
 
     Uri proofUri;
-    String localProofPath="";
+    String proofUrl="";
 
     String[] plans={"1 Month","3 Month","6 Month","1 Year"};
 
@@ -130,6 +131,8 @@ public class SubscriptionActivity extends AppCompatActivity {
     void pickImage(){
         Intent i=new Intent(Intent.ACTION_GET_CONTENT);
         i.setType("image/*");
+        String[] mimeTypes = {"image/jpeg", "image/jpg", "image/png"};
+        i.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
         startActivityForResult(i,101);
     }
 
@@ -140,13 +143,96 @@ public class SubscriptionActivity extends AppCompatActivity {
         if (r == 101 && c == RESULT_OK && data != null) {
 
             proofUri = data.getData();
+            if (proofUri == null) return;
 
-            if (proofUri != null) {
+            // Validate format
+            String mimeType = getContentResolver().getType(proofUri);
+            if (mimeType == null || (!mimeType.equals("image/jpeg") && !mimeType.equals("image/jpg") && !mimeType.equals("image/png"))) {
+                Toast.makeText(this, "Only JPG, JPEG, or PNG allowed", Toast.LENGTH_SHORT).show();
+                return;
+            }
                 proofPreview.setImageURI(proofUri);
                 proofPreview.setVisibility(View.VISIBLE);  // ⭐ IMPORTANT
-                localProofPath = proofUri.toString();
-            }
+                // 🔥 UPLOAD TO VPS
+                uploadImageToServer(proofUri,
+                        url -> proofUrl = url);
         }
+    }
+
+    private void uploadImageToServer(Uri uri,
+                                     UrlCallback cb) {
+
+        new Thread(() -> {
+            try {
+
+                String boundary =
+                        "----RMPLUS" + System.currentTimeMillis();
+
+                java.net.URL url =
+                        new java.net.URL(
+                                "http://187.77.184.84/upload.php");
+
+                java.net.HttpURLConnection conn =
+                        (java.net.HttpURLConnection) url.openConnection();
+
+                conn.setRequestMethod("POST");
+                conn.setDoOutput(true);
+
+                conn.setRequestProperty(
+                        "Content-Type",
+                        "multipart/form-data; boundary=" + boundary
+                );
+
+                java.io.DataOutputStream out =
+                        new java.io.DataOutputStream(conn.getOutputStream());
+
+                out.writeBytes("--" + boundary + "\r\n");
+                out.writeBytes(
+                        "Content-Disposition: form-data; name=\"file\"; filename=\"proof.jpg\"\r\n"
+                );
+                out.writeBytes("Content-Type: image/jpeg\r\n\r\n");
+
+                InputStream input =
+                        getContentResolver().openInputStream(uri);
+
+                byte[] buffer = new byte[4096];
+                int len;
+
+                while ((len = input.read(buffer)) != -1)
+                    out.write(buffer, 0, len);
+
+                input.close();
+
+                out.writeBytes("\r\n--" + boundary + "--\r\n");
+                out.flush();
+                out.close();
+
+                java.io.BufferedReader reader =
+                        new java.io.BufferedReader(
+                                new java.io.InputStreamReader(conn.getInputStream())
+                        );
+
+                StringBuilder res = new StringBuilder();
+                String line;
+
+                while ((line = reader.readLine()) != null)
+                    res.append(line);
+
+                reader.close();
+
+                org.json.JSONObject json =
+                        new org.json.JSONObject(res.toString());
+
+                cb.onResult(json.getString("url"));
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+
+    interface UrlCallback {
+        void onResult(String url);
     }
 
 
@@ -154,7 +240,7 @@ public class SubscriptionActivity extends AppCompatActivity {
 
     void submitRequest(){
 
-        if(localProofPath.isEmpty()){
+        if(proofUrl.isEmpty()){
             Toast.makeText(this,
                     "Upload proof",
                     Toast.LENGTH_SHORT).show();
@@ -182,7 +268,7 @@ public class SubscriptionActivity extends AppCompatActivity {
                                 u.child("mobile")
                                         .getValue(String.class));
                         map.put("plan",plan);
-                        map.put("proofPath",localProofPath);
+                        map.put("proofPath",proofUrl);
                         map.put("status","pending");
                         map.put("time",
                                 System.currentTimeMillis());

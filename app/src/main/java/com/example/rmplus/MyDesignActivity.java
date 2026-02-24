@@ -28,7 +28,7 @@ public class MyDesignActivity extends BaseActivity {
     View tabUnderline;
 
     TemplateGridAdapter adapter;
-    ArrayList<String> list = new ArrayList<>();
+    ArrayList<TemplateModel> list = new ArrayList<>();
 
     String currentType = "likes";
     String uid;
@@ -72,10 +72,11 @@ public class MyDesignActivity extends BaseActivity {
 
         recycler.setLayoutManager(new GridLayoutManager(this, 2));
 
-        adapter = new TemplateGridAdapter(list, path -> {
+        adapter = new TemplateGridAdapter(list, t -> {
             Intent i = new Intent(this, TemplatePreviewActivity.class);
-            i.putExtra("path", path);
-            i.putExtra("category", "MyDesign");
+            i.putExtra("id", t.id);
+            i.putExtra("path", t.url);
+            i.putExtra("category", t.category);
             startActivity(i);
         });
 
@@ -157,34 +158,25 @@ public class MyDesignActivity extends BaseActivity {
     }
 
     void loadTemplates() {
-        rootRef.child("template_activity")
+        rootRef.child("user_activity")
+                .child(uid)
+                .child(currentType)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot snapshot) {
                         list.clear();
-
                         for (DataSnapshot snap : snapshot.getChildren()) {
-                            String key = snap.getKey();
-                            if (key == null) continue;
-
-                            if (snap.child(currentType).child(uid).exists()) {
-                                String path = decodeKey(key);
-                                if (path != null) list.add(path);
+                            String templateId = snap.getKey();
+                            String url = snap.getValue(String.class);
+                            if (templateId != null && url != null) {
+                                list.add(new TemplateModel(templateId, url, "MyDesign"));
                             }
                         }
                         adapter.setData(list);
                     }
-
+ 
                     @Override public void onCancelled(DatabaseError error) {}
                 });
-    }
-
-    String decodeKey(String key) {
-        try {
-            return new String(Base64.decode(key, Base64.NO_WRAP));
-        } catch (Exception e) {
-            return null;
-        }
     }
 
     private int getColorFromAttr(int attr) {

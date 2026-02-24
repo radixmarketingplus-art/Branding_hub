@@ -20,7 +20,7 @@ public class CreateRequestActivity extends AppCompatActivity {
     ImageView imgPreview;
 
     Uri selectedUri;
-    String savedImagePath = "";
+    String attachmentUrl = "";
 
     DatabaseReference usersRef, requestRef;
 
@@ -73,6 +73,8 @@ public class CreateRequestActivity extends AppCompatActivity {
     void pickImage(){
         Intent i = new Intent(Intent.ACTION_GET_CONTENT);
         i.setType("image/*");
+        String[] mimeTypes = {"image/jpeg", "image/jpg", "image/png"};
+        i.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
         startActivityForResult(i,101);
     }
 
@@ -83,54 +85,107 @@ public class CreateRequestActivity extends AppCompatActivity {
 
         if(r==101 && c==RESULT_OK && d!=null){
             selectedUri = d.getData();
+            if (selectedUri == null) return;
+
+            // Validate format
+            String mimeType = getContentResolver().getType(selectedUri);
+            if (mimeType == null || (!mimeType.equals("image/jpeg") && !mimeType.equals("image/jpg") && !mimeType.equals("image/png"))) {
+                Toast.makeText(this, "Only JPG, JPEG, or PNG allowed", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
             imgPreview.setImageURI(selectedUri);
             imgPreview.setVisibility(ImageView.VISIBLE);
 
-            savedImagePath = copyImageToLocal(selectedUri);
+            uploadImageToServer(selectedUri, url -> attachmentUrl = url);
         }
     }
 
     // -----------------------
-    String copyImageToLocal(Uri uri){
 
-        try{
-            InputStream in = getContentResolver()
-                    .openInputStream(uri);
+    private void uploadImageToServer(Uri uri, UrlCallback cb){
 
-            File folder =
-                    new File(getFilesDir(),"request_images");
+        new Thread(() -> {
+            try {
 
-            if(!folder.exists())
-                folder.mkdir();
+                String boundary = "----RMPLUS" + System.currentTimeMillis();
 
-            File file =
-                    new File(folder,
-                            System.currentTimeMillis()+".jpg");
+                java.net.URL url =
+                        new java.net.URL("http://187.77.184.84/upload.php");
 
-            OutputStream out =
-                    new FileOutputStream(file);
+                java.net.HttpURLConnection conn =
+                        (java.net.HttpURLConnection) url.openConnection();
 
-            byte[] buf = new byte[1024];
-            int len;
+                conn.setRequestMethod("POST");
+                conn.setDoOutput(true);
 
-            while((len=in.read(buf))>0){
-                out.write(buf,0,len);
+                conn.setRequestProperty(
+                        "Content-Type",
+                        "multipart/form-data; boundary=" + boundary
+                );
+
+                java.io.DataOutputStream out =
+                        new java.io.DataOutputStream(conn.getOutputStream());
+
+                out.writeBytes("--" + boundary + "\r\n");
+                out.writeBytes(
+                        "Content-Disposition: form-data; name=\"file\"; filename=\"img.jpg\"\r\n"
+                );
+                out.writeBytes("Content-Type: image/jpeg\r\n\r\n");
+
+                InputStream input =
+                        getContentResolver().openInputStream(uri);
+
+                byte[] buffer = new byte[4096];
+                int len;
+
+                while ((len = input.read(buffer)) != -1)
+                    out.write(buffer, 0, len);
+
+                input.close();
+
+                out.writeBytes("\r\n--" + boundary + "--\r\n");
+                out.flush();
+                out.close();
+
+                java.io.BufferedReader reader =
+                        new java.io.BufferedReader(
+                                new java.io.InputStreamReader(conn.getInputStream())
+                        );
+
+                StringBuilder res = new StringBuilder();
+                String line;
+
+                while((line=reader.readLine())!=null)
+                    res.append(line);
+
+                reader.close();
+
+                org.json.JSONObject json =
+                        new org.json.JSONObject(res.toString());
+
+                cb.onResult(json.getString("url"));
+
+            } catch (Exception e){
+                runOnUiThread(() ->
+                        Toast.makeText(this,
+                                "Upload failed. Try again.",
+                                Toast.LENGTH_SHORT).show());
             }
-
-            in.close();
-            out.close();
-
-            return file.getAbsolutePath();
-
-        }catch(Exception e){
-            e.printStackTrace();
-            return "";
-        }
+        }).start();
     }
-
+    interface UrlCallback{
+        void onResult(String url);
+    }
     // -----------------------
     void saveRequest(){
+
+        if (selectedUri != null && attachmentUrl.isEmpty()) {
+            Toast.makeText(this,
+                    "Image uploading... Please wait",
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         if(etTitle.getText().toString().isEmpty()){
             etTitle.setError("Enter title");
@@ -168,7 +223,7 @@ public class CreateRequestActivity extends AppCompatActivity {
                         r.description = etDesc.getText().toString();
                         r.status = "pending";
                         r.time = System.currentTimeMillis();
-                        r.attachmentUrl = savedImagePath;
+                        r.attachmentUrl = attachmentUrl;
 
                         requestRef.child(id)
                                 .setValue(r)

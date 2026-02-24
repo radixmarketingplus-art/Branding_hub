@@ -15,7 +15,8 @@ public class AdminAdvertisementRequestsActivity
         TabLayout tab = findViewById(R.id.tabLayout);
         ViewPager2 pager = findViewById(R.id.viewPager);
 
-        pager.setAdapter(new AdRequestPagerAdapter(this,true));
+//        pager.setAdapter(new AdRequestPagerAdapter(this,true));
+        pager.setAdapter(new AdminAdRequestPagerAdapter(this, true));
 
         new TabLayoutMediator(tab,pager,(t,p)->{
             if(p==0)t.setText("Pending");

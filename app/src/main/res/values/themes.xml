@@ -13,4 +13,12 @@
         <item name="android:colorBackground">@color/background_light</item>
     </style>
 
+    <!-- Custom Theme for Crop Page to fix visibility on edge-to-edge displays -->
+    <style name="Theme.UCrop" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:fitsSystemWindows">true</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:statusBarColor">@android:color/black</item>
+        <item name="android:navigationBarColor">@android:color/black</item>
+    </style>
+
 </resources>

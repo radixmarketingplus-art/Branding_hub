@@ -78,6 +78,16 @@
             android:textColor="?attr/colorOnSurface"
             android:lineSpacingExtra="4dp" />
 
+        <!-- EXPIRY INFO -->
+        <TextView
+            android:id="@+id/txtExpiryStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Expiry: loading..."
+            android:textSize="14sp"
+            android:textColor="?attr/colorOnSurfaceVariant" />
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnOpenAd"
             android:layout_width="match_parent"

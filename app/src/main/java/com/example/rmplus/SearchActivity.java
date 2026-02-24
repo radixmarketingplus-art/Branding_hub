@@ -12,6 +12,10 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.*;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -71,11 +75,7 @@ public class SearchActivity extends AppCompatActivity {
     // --------------------------------------
 
     void performSearch() {
-
-        String q = edtSearch.getText()
-                .toString()
-                .trim()
-                .toLowerCase();
+        String q = edtSearch.getText().toString().trim().toLowerCase();
 
         if (q.isEmpty()) {
             adapter.setData(new ArrayList<>());
@@ -83,25 +83,25 @@ public class SearchActivity extends AppCompatActivity {
             return;
         }
 
-        ArrayList<String> result = new ArrayList<>();
+        ArrayList<TemplateModel> result = new ArrayList<>();
 
         for (TemplateSearchItem item : allTemplates) {
-
-            if ( item.title.contains(q)
+            if (item.title.contains(q)
                     || item.category.toLowerCase().contains(q)
-                    || item.keywords.contains(q)
+                    || (item.keywords != null && item.keywords.contains(q))
             ) {
-                result.add(item.path);
+                // Determine ID (extracting from path or using item.title if ID is not available in TemplateSearchItem)
+                // Actually, let's just use the path as the "url" and some generated ID if missing
+                result.add(new TemplateModel(makeSafeKey(item.path), item.path, item.category));
             }
         }
 
         adapter.setData(result);
-
-        txtEmpty.setVisibility(
-                result.isEmpty()
-                        ? View.VISIBLE
-                        : View.GONE
-        );
+        txtEmpty.setVisibility(result.isEmpty() ? View.VISIBLE : View.GONE);
+    }
+    
+    private String makeSafeKey(String s) {
+        return s.replaceAll("[^a-zA-Z0-9]", "");
     }
 
 
@@ -132,10 +132,11 @@ public class SearchActivity extends AppCompatActivity {
 
     // --------------------------------------
 
-    void openPreview(String path) {
-        Intent i = new Intent(this,
-                TemplatePreviewActivity.class);
-        i.putExtra("path", path);
+    void openPreview(TemplateModel template) {
+        Intent i = new Intent(this, TemplatePreviewActivity.class);
+        i.putExtra("id", template.id);
+        i.putExtra("path", template.url);
+        i.putExtra("category", template.category);
         startActivity(i);
     }
 
@@ -172,71 +173,37 @@ public class SearchActivity extends AppCompatActivity {
     // --------------------------------------
 
     void loadAllTemplates() {
+        allTemplates.clear();
+        FirebaseDatabase.getInstance().getReference("templates")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot snapshot) {
+                        for (DataSnapshot categorySnapshot : snapshot.getChildren()) {
+                            String k = categorySnapshot.getKey();
+                            if (k == null || k.equals("Advertisement") || k.equals("Frame")) continue;
 
-        String[] keys = {
-                "Trending Now", "Festival Cards",
-                "Latest Update", "Business Special",
-                "Reel Maker", "Business Frame",
-                "Motivation", "Good Morning",
-                "Business Ethics"
-        };
+                            for (DataSnapshot itemSnapshot : categorySnapshot.getChildren()) {
+                                String path = itemSnapshot.hasChild("imagePath") ? itemSnapshot.child("imagePath").getValue(String.class) : itemSnapshot.child("url").getValue(String.class);
+                                if (path == null) continue;
 
-        SharedPreferences sp =
-                getSharedPreferences("HOME_DATA", MODE_PRIVATE);
+                                String title = extractTitle(path);
+                                String keywords = buildKeywords(title, k);
+                                if (k.equals("Festival Cards")) {
+                                    String date = itemSnapshot.child("date").getValue(String.class);
+                                    if (date != null) {
+                                        keywords += " festival greeting celebration wishes " + date;
+                                    } else {
+                                        keywords += " festival greeting celebration wishes";
+                                    }
+                                }
 
-        Gson gson = new Gson();
-
-        for (String k : keys) {
-
-            String json = sp.getString(k, null);
-            if (json == null) continue;
-
-            if (k.equals("Festival Cards")) {
-
-                Type t = new TypeToken<
-                        ArrayList<FestivalCardItem>>() {}.getType();
-
-                ArrayList<FestivalCardItem> list =
-                        gson.fromJson(json, t);
-
-                if (list != null) {
-                    for (FestivalCardItem f : list) {
-
-                        allTemplates.add(
-                                new TemplateSearchItem(
-                                        f.imagePath,
-                                        "festival card",
-                                        k,
-                                        "festival greeting celebration wishes"
-                                )
-                        );
+                                allTemplates.add(new TemplateSearchItem(path, title, k, keywords));
+                            }
+                        }
                     }
-                }
 
-            } else {
-
-                Type t = new TypeToken<
-                        ArrayList<String>>() {}.getType();
-
-                ArrayList<String> list =
-                        gson.fromJson(json, t);
-
-                if (list != null) {
-                    for (String path : list) {
-
-                        String title = extractTitle(path);
-
-                        allTemplates.add(
-                                new TemplateSearchItem(
-                                        path,
-                                        title,
-                                        k,
-                                        buildKeywords(title, k)
-                                )
-                        );
-                    }
-                }
-            }
-        }
+                    @Override
+                    public void onCancelled(DatabaseError error) {}
+                });
     }
 }

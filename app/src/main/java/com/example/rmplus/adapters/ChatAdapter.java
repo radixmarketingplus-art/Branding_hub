@@ -77,11 +77,7 @@ public class ChatAdapter
             h.txtMsg.setVisibility(View.GONE);
             h.imgChat.setVisibility(View.VISIBLE);
 
-            File f = new File(m.imageUrl);
-
-            if (f.exists()) {
-                h.imgChat.setImageURI(Uri.fromFile(f));
-            }
+            loadImageFromUrl(m.imageUrl, h.imgChat);
 
 
             // Fullscreen on click
@@ -96,6 +92,31 @@ public class ChatAdapter
 
             });
         }
+    }
+
+    private void loadImageFromUrl(String url, ImageView imageView) {
+
+        new Thread(() -> {
+            try {
+
+                java.net.URL u = new java.net.URL(url);
+                java.net.HttpURLConnection conn =
+                        (java.net.HttpURLConnection) u.openConnection();
+
+                conn.setDoInput(true);
+                conn.connect();
+
+                java.io.InputStream input = conn.getInputStream();
+
+                android.graphics.Bitmap bitmap =
+                        android.graphics.BitmapFactory.decodeStream(input);
+
+                imageView.post(() -> imageView.setImageBitmap(bitmap));
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 
     @Override

@@ -93,8 +93,7 @@ public class RequestDetailActivity extends AppCompatActivity {
                                         !r.attachmentUrl.isEmpty()) {
 
                                     imgProof.setVisibility(View.VISIBLE);
-                                    imgProof.setImageURI(
-                                            android.net.Uri.parse(r.attachmentUrl));
+                                    loadImageFromUrl(r.attachmentUrl, imgProof);
 
                                     imgProof.setOnClickListener(v -> {
                                         Intent i = new Intent(
@@ -132,6 +131,37 @@ public class RequestDetailActivity extends AppCompatActivity {
                             @Override
                             public void onCancelled(DatabaseError error) {}
                         });
+    }
+
+    private void loadImageFromUrl(String url, ImageView imageView) {
+
+        new Thread(() -> {
+            try {
+
+                java.net.URL u = new java.net.URL(url);
+                java.net.HttpURLConnection conn =
+                        (java.net.HttpURLConnection) u.openConnection();
+
+                conn.setDoInput(true);
+                conn.connect();
+
+                java.io.InputStream input = conn.getInputStream();
+
+                android.graphics.Bitmap bitmap =
+                        android.graphics.BitmapFactory.decodeStream(input);
+
+                imageView.post(() ->
+                        imageView.setImageBitmap(bitmap));
+
+            } catch (Exception e) {
+                e.printStackTrace();
+
+                imageView.post(() ->
+                        imageView.setImageResource(
+                                android.R.drawable.ic_menu_report_image
+                        ));
+            }
+        }).start();
     }
 
     void changeStatus(String s) {
