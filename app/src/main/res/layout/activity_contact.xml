@@ -19,7 +19,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Support Center"
+            android:text="@string/title_support_center"
             android:textSize="22sp"
             android:textStyle="bold"
             android:gravity="center"
@@ -29,7 +29,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Manage your requests or contact the admin"
+            android:text="@string/desc_support_center"
             android:textSize="14sp"
             android:gravity="center"
             android:layout_marginBottom="32dp"/>
@@ -39,7 +39,7 @@
             android:id="@+id/btnContact"
             android:layout_width="match_parent"
             android:layout_height="52dp"
-            android:text="Contact Admin"
+            android:text="@string/btn_contact_admin"
             android:textAllCaps="false"
             android:textSize="16sp"
             android:textColor="@android:color/white"
@@ -55,7 +55,7 @@
             android:id="@+id/btnMy"
             android:layout_width="match_parent"
             android:layout_height="52dp"
-            android:text="My Requests"
+            android:text="@string/btn_my_requests"
             android:textAllCaps="false"
             android:textSize="16sp"
             android:background="@drawable/bg_secondary_button"/>
@@ -69,7 +69,7 @@
             android:id="@+id/btnAdRequest"
             android:layout_width="match_parent"
             android:layout_height="52dp"
-            android:text="Request Advertisement"
+            android:text="@string/btn_request_adv"
             android:textAllCaps="false"
             android:textSize="16sp"
             android:textColor="@android:color/white"

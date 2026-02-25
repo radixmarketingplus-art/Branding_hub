@@ -1,5 +1,695 @@
 <resources>
     <string name="app_name">RM Plus</string>
-    <!-- TODO: Remove or change this placeholder text -->
+    <string name="splash_tagline">Grow Your Business Digitally</string>
+    <string name="desc_app_logo">App Logo</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_template">Template</string>
+    <string name="nav_contact">Contact</string>
+    <string name="nav_my_design">My Design</string>
+    <string name="nav_profile">Profile</string>
+    <string name="nav_upload">Upload</string>
+    <string name="nav_admin">Admin</string>
+    <string name="greeting_format">Hi, %1$s</string>
+    <string name="default_user">User</string>
+    <string name="tab_pending">Pending</string>
+    <string name="tab_accepted">Accepted</string>
+    <string name="tab_rejected">Rejected</string>
+    <string name="label_plan_requested">Plan Requested: %1$s</string>
+    <string name="label_requested_on">Requested On: %1$s</string>
+    <string name="label_payment_proof">Payment Proof</string>
+    <string name="btn_download_proof">Download Proof</string>
+    <string name="label_grant_plan">Grant Plan (Determines Expiry)</string>
+    <string name="label_expires_on">Expires On: %1$s</string>
+    <string name="btn_update_expiry">Update Expiry</string>
+    <string name="plan_silver">Silver Plan (1 Month)</string>
+    <string name="plan_gold">Gold Plan (6 Month)</string>
+    <string name="plan_diamond">Diamond Plan (1 Year)</string>
+    <string name="plan_custom">Custom (7 Days)</string>
+    <string name="msg_select_duration_first">Please select a duration first</string>
+    <string name="dur_select">Select Duration</string>
+    <string name="dur_7_days">7 Days</string>
+    <string name="dur_1_month">1 Month</string>
+    <string name="dur_1_year">1 Year</string>
+    <string name="tab_new">New</string>
+    <string name="tab_read">Read</string>
+    <string name="msg_no_notifications">No Notifications</string>
+    <string name="msg_no_notifications_desc">You don\'t have any notifications yet</string>
+    <string name="msg_expiry_updated">Expiry Updated</string>
+    <string name="msg_approved">Approved</string>
+    <string name="msg_rejected">Rejected</string>
+    <string name="title_sub_approved">Subscription Approved</string>
+    <string name="desc_sub_approved">Your subscription has been approved</string>
+    <string name="title_sub_rejected">Subscription Rejected</string>
+    <string name="desc_sub_rejected">Your subscription has been rejected</string>
+    <string name="msg_no_image">No image to download</string>
+    <string name="msg_save_failed">Save Failed</string>
+    <string name="msg_status_checking">Checking subscription...</string>
+    <string name="title_request_details">Request Details</string>
+    <string name="label_type">Type : %1$s</string>
+    <string name="label_description">Description : %1$s</string>
+    <string name="label_status">Status : %1$s</string>
+    <string name="label_time">Time : %1$s</string>
+    <string name="btn_approve">Approve</string>
+    <string name="btn_reject">Reject</string>
+    <string name="btn_open_chat">Open Chat</string>
+    <string name="hint_type_message">Type a message</string>
+    <string name="msg_chat_error">Chat cannot open</string>
+    <string name="msg_updated">Updated</string>
+    <string name="msg_request_status_format">Request %1$s</string>
+    <string name="title_support_center">Support Center</string>
+    <string name="desc_support_center">Manage your requests or contact the admin</string>
+    <string name="btn_contact_admin">Contact Admin</string>
+    <string name="btn_my_requests">My Requests</string>
+    <string name="btn_request_adv">Request Advertisement</string>
+    <string name="label_contact_prefix">Contact : %1$s</string>
+    <string name="label_ad_prefix">Ad : %1$s</string>
+    <string name="msg_advertisement">Advertisement</string>
+    <string name="label_ad_link">Ad Link : %1$s</string>
+    <string name="label_ad_request_desc">Advertisement Request</string>
+    <string name="msg_adv_notif_title">Advertisement %1$s</string>
+    <string name="msg_plan_format">Plan : %1$s</string>
+    <string name="title_my_designs">My Designs</string>
+    <string name="title_my_likes">My Likes</string>
+    <string name="title_my_favorite">My Favorite</string>
+    <string name="title_my_edits">My Edits</string>
+    <string name="title_my_saved">My Saved Designs</string>
+    <string name="tab_likes">Likes</string>
+    <string name="tab_favorite">Favorite</string>
+    <string name="tab_edits">Edits</string>
+    <string name="tab_saved">Saved</string>
+    <string name="filter_all">All</string>
+    <string name="cat_political">Political</string>
+    <string name="cat_ngo">NGO</string>
+    <string name="cat_business">Business</string>
+    <string name="title_sponsored_ads">Sponsored Ads</string>
+    <string name="title_festival_calendar">Festival Calendar</string>
+    <string name="btn_see_all">See All</string>
+    <string name="title_admin_panel">Admin Panel</string>
+    <string name="desc_admin_panel">Manage application content and users</string>
+    <string name="title_upload_templates">Upload Templates</string>
+    <string name="desc_upload_templates">Add images to home page sections</string>
+    <string name="title_subscription_requests">Subscription Requests</string>
+    <string name="desc_subscription_requests">Approve or reject subscription plans</string>
+    <string name="title_adv_requests">Advertisement Request</string>
+    <string name="desc_adv_requests">Check Advertisement Requests sent by users</string>
+    <string name="title_contact_requests">Contact Requests</string>
+    <string name="desc_contact_requests">View messages sent by users</string>
+    <string name="title_user_info">User Information</string>
+    <string name="desc_user_info">View and manage user details</string>
+    <string name="title_user_details">User Details</string>
+    <string name="label_user_id">User ID: %1$s</string>
+    <string name="msg_no_users">No users found</string>
+    <string name="label_city">City</string>
+    <string name="label_role">Role (admin/user)</string>
+    <string name="btn_open">Open</string>
+    <string name="btn_view">View</string>
+    <string name="btn_check">Check</string>
+    <string name="nav_search">Search</string>
+    <string name="search_hint">Search templates...</string>
+    <string name="hint_search_users">Search name, email, phone or UID...</string>
+    <string name="msg_no_templates">No matching templates 😕</string>
+    <string name="msg_video_edit_not_supported">Video editing is not supported yet.</string>
+    <string name="title_save_template">Save Template</string>
+    <string name="msg_save_confirm">Do you really want to save?</string>
+    <string name="msg_sharing_video_link">Sharing video link...</string>
+    <string name="title_share_video">Share Video</string>
+    <string name="msg_video_download_not_supported">Video download not supported yet</string>
+    <string name="msg_saved_to_gallery">Saved to Gallery</string>
+    <string name="hint_enter_email">Enter Email</string>
+    <string name="hint_enter_phone">Enter Phone Number</string>
+    <string name="err_invalid_phone">Invalid Phone Number</string>
+    <string name="err_invalid_email">Invalid Email</string>
+    <string name="msg_enter_creds">Enter email/phone and password</string>
+    <string name="msg_no_internet">No internet connection</string>
+    <string name="msg_phone_not_registered">Phone not registered</string>
+    <string name="msg_email_not_found_phone">Email not found for this phone</string>
+    <string name="msg_auth_error">Authentication error</string>
+    <string name="msg_network_error">Network error</string>
+    <string name="msg_login_success">Login Success</string>
+    <string name="msg_wrong_credentials">Wrong Credentials</string>
+    <string name="btn_please_wait">Please wait...</string>
+    <string name="btn_login">Login</string>
+    <string name="err_only_letters">Only letters allowed</string>
+    <string name="err_invalid_mobile">Invalid Mobile Number</string>
+    <string name="err_weak_password">Weak Password</string>
+    <string name="title_uploads">Uploads</string>
+    <string name="tab_upload_templates">Upload Templates</string>
+    <string name="tab_check_uploads">Check Uploads</string>
+    <string name="section_select">Select Section</string>
+    <string name="section_advertisement">Advertisement</string>
+    <string name="section_festival_cards">Festival Cards</string>
+    <string name="section_latest_update">Latest Update</string>
+    <string name="section_business_special">Business Special</string>
+    <string name="section_reel_maker">Reel Maker</string>
+    <string name="section_business_frame">Business Frame</string>
+    <string name="section_motivation">Motivation</string>
+    <string name="section_greetings">Greetings</string>
+    <string name="section_business_ethics">Business Ethics</string>
+    <string name="section_frame">Frame</string>
+    <string name="btn_pick_date">Pick Date</string>
+    <string name="btn_set_expiry">Set Expiry Date</string>
+    <string name="label_selected">Selected: %1$s</string>
+    <string name="label_expires">Expires on: %1$s</string>
+    <string name="btn_update_template">Update Template</string>
+    <string name="title_confirm_upload">Confirm Upload</string>
+    <string name="msg_confirm_upload_format">Save image to \"%1$s\" section?</string>
+    <string name="msg_please_select_img">Please select image</string>
+    <string name="msg_invalid_section">Please select a valid section</string>
+    <string name="msg_enter_ad_link">Enter advertisement link</string>
+    <string name="msg_select_fest_date">Please select festival date</string>
+    <string name="msg_only_png_frames">Only PNG allowed for frames</string>
+    <string name="msg_frame_square">Frame must be a perfectly SQUARE image (1:1 ratio)</string>
+    <string name="title_crop_image">Crop Your Image</string>
+    <string name="msg_select_valid_video">Please select a valid video</string>
+    <string name="msg_select_valid_img">Please select a valid image (JPG, PNG)</string>
+    <string name="msg_format_supported">Supported image formats: JPG, JPEG, PNG</string>
+    <string name="msg_upload_success">Upload Success</string>
+    <string name="msg_reselect_section">Please re-select image for the new section</string>
+    <string name="msg_image_selected">Image selected</string>
+    <string name="msg_template_loaded">Template data loaded correctly</string>
+    <string name="desc_manage_home_content">Manage home page content</string>
+    <string name="msg_crop_success">Image Cropped &amp; Selected</string>
+    <string name="msg_video_selected">Video Selected</string>
+    <string name="msg_file_size_limit">File size must be ≤ %1$s</string>
+    <string name="label_likes">❤ Like</string>
+    <string name="label_favorites">★ Favorite</string>
+    <string name="label_edits">✎ Edits</string>
+    <string name="label_saves">⬇ Saved</string>
+    <string name="desc_search">Search</string>
+    <string name="desc_edit">Edit</string>
+    <string name="desc_delete">Delete</string>
+    <string name="desc_template_preview">Template Preview</string>
+    <string name="msg_expiry_loading">Expiry: loading...</string>
+    <string name="btn_open_ad">Open Advertisement</string>
+    <string name="msg_fetching_info">Still fetching template info...</string>
+    <string name="msg_preparing_edit">Preparing for edit...</string>
+    <string name="msg_no_expiry">No expiry set</string>
+    <string name="label_external_content">External Content</string>
+    <string name="label_unknown_cat">Unknown Category</string>
+    <string name="msg_finding_cat">Finding category, please wait...</string>
+    <string name="title_delete_template">Delete Template</string>
+    <string name="msg_confirm_delete">This will permanently remove the template from VPS, Firebase, and Local Storage. Continue?</string>
+    <string name="btn_delete">Delete</string>
+    <string name="msg_cannot_delete">Cannot delete: Category not identified</string>
+    <string name="msg_cleaning_nodes">Cleaning all nodes...</string>
+    <string name="msg_deleted_everywhere">Template Deleted Everywhere</string>
+    <string name="msg_deleted_success">Template Deleted Successfully</string>
+    <string name="msg_vps_delete_failed">VPS Deletion failed: %1$d</string>
+    <string name="label_select_sub_cat">Select Sub-Category</string>
+    <string name="label_festival_date">Festival Date</string>
+    <string name="label_expiry_date_desc">Expiry Date (Default 7 Days)</string>
+    <string name="label_upload_media">Upload Template Image/Video</string>
+    <string name="msg_select_cat_first">Select a category first to enable selection</string>
+    <string name="btn_select_item">Select Item</string>
+    <string name="btn_save_continue">Save &amp; Continue</string>
+    <string name="ph_edit_text">Edit Text</string>
+    <string name="btn_color">Color</string>
+    <string name="btn_text">Text</string>
+    <string name="btn_logo">Logo</string>
+    <string name="btn_gallery">Gallery</string>
+    <string name="btn_add_frame">Add Frame</string>
+    <string name="label_size">Size</string>
+    <string name="btn_apply">Apply</string>
+    <string name="btn_yes">Yes</string>
+    <string name="btn_no">No</string>
+    <string name="msg_no_frames_found">No frames found for %1$s</string>
+    <string name="msg_frame_list_empty">Frame list empty</string>
+    <string name="desc_edited_template">Edited Template</string>
+
+    <!-- Headers -->
+    <string name="header_account">Account</string>
+    <string name="header_preferences">Preferences</string>
+
+    
+
+    <!-- Profile Screen -->
+    <string name="my_profile">My Profile</string>
+    <string name="label_name">Name : %1$s</string>
+    <string name="label_email">Email : %1$s</string>
+    <string name="label_mobile">Mobile : %1$s</string>
+    <string name="btn_edit_profile">Edit Profile</string>
+    <string name="menu_subscription">Premium Subscription</string>
+    <string name="menu_language">Language</string>
+    <string name="menu_mode">Mode (Light/Dark)</string>
+    <string name="menu_settings">Settings</string>
+    <string name="menu_rate">Rate App</string>
+    <string name="menu_support">Contact Support</string>
+    <string name="menu_logout">Logout</string>
+    <string name="menu_delete_account">Delete Account</string>
+    <string name="header_app">App</string>
+    <string name="header_account_mgmt">Account Management</string>
+    <string name="menu_share">Share App</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">Settings</string>
+    <string name="btn_change_password">Change Password</string>
+    <string name="btn_notifications">Notifications</string>
+    <string name="btn_clear_cache">Clear Cache</string>
+    <string name="btn_privacy">Privacy Policy</string>
+    <string name="btn_terms">Terms And Conditions</string>
+    <string name="version_label">Version</string>
+    <string name="desc_reset_email">Reset via email</string>
+    <string name="desc_notifications">Enable app notifications</string>
+    <string name="desc_clear_cache">Remove temporary files</string>
+    <string name="version_text">Version %1$s</string>
+
+    <!-- Auth Screens -->
+    <string name="btn_register">Register</string>
+    <string name="link_forgot_password">Forgot your password?</string>
+    <string name="hint_email">Email Address</string>
+    <string name="hint_password">Password</string>
+    <string name="msg_no_account">Don\'t have an account? Register</string>
+    <string name="msg_already_account">Already have an account? Login</string>
+    <string name="title_welcome_back">Welcome Back</string>
+    <string name="desc_signin_continue">Sign in to continue</string>
+    <string name="label_email_tab">Email</string>
+    <string name="label_phone_tab">Phone</string>
+    <string name="btn_signin">Sign in</string>
+    <string name="btn_create_account">Create Account</string>
+    <string name="desc_signup_started">Sign up to get started</string>
+    <string name="hint_full_name">Full Name</string>
+    <string name="hint_mobile_number">Mobile Number</string>
+    <string name="title_similar_templates">Similar Templates</string>
+    <string name="content_desc_search">Search</string>
+    <string name="content_desc_like">Like</string>
+    <string name="content_desc_favorite">Favorite</string>
+    <string name="content_desc_share">Share</string>
+    <string name="content_desc_edit">Edit</string>
+    <string name="content_desc_save">Save</string>
+    <string name="content_desc_play_video">Play Video</string>
+    <string name="unknown_user">Unknown User</string>
+    <string name="no_email">No Email</string>
+    <string name="unknown_time">Unknown Time</string>
+    <string name="title_forgot_password">Forgot Password</string>
+    <string name="desc_forgot_password">Enter your registered email</string>
+    <string name="btn_send_reset_link">Send Reset Link</string>
+    <string name="msg_email_not_registered">Email not registered</string>
+    <string name="title_verify_email">Verify Your Email</string>
+    <string name="desc_verify_email">We’ve sent a verification link to your email address. Please verify to continue.</string>
+    <string name="btn_i_have_verified">I Have Verified</string>
+    <string name="btn_resend_email">Resend Email</string>
+    <string name="msg_email_not_verified">Email not verified yet</string>
+
+    <!-- Support Dialog -->
+    <string name="dialog_support_title">Contact Support</string>
+    <string name="dialog_call_support">Call Support</string>
+    <string name="dialog_email_support">Email Support</string>
+
+    <!-- Misc -->
+    <string name="select_language">Select Language</string>
+    <string name="lang_english">English</string>
+    <string name="lang_hindi">Hindi (हिंदी)</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="title_reset_password">Reset Password</string>
+    <string name="msg_reset_password">Send password reset link to your email?</string>
+    <string name="title_clear_cache">Clear Cache</string>
+    <string name="msg_clear_cache">Clear temporary files?</string>
+    <string name="msg_cleared">Cleared: %1$s</string>
+    <string name="msg_notif_enabled">Notifications Enabled</string>
+    <string name="msg_notif_disabled">Notifications Disabled</string>
+    <string name="msg_reset_link_sent">Reset link sent to email</string>
+    <string name="title_edit_profile">Edit Profile</string>
+    <string name="desc_update_info">Update your personal information</string>
+    <string name="link_remove_img">Remove Profile Image</string>
+    <string name="hint_your_name">Your Name</string>
+    <string name="hint_your_email">Email</string>
+    <string name="hint_your_mobile">Contact Number</string>
+    <string name="hint_designation">Designation</string>
+    <string name="hint_dob">Date of Birth (dd / mm / yyyy)</string>
+    <string name="label_gender">Gender</string>
+    <string name="gender_male">Male</string>
+    <string name="gender_female">Female</string>
+    <string name="gender_other">Other</string>
+    <string name="hint_phone_number">Phone Number</string>
+    <string name="hint_select_state">Select State</string>
+    <string name="hint_select_city">Select City</string>
+    <string name="btn_save_changes">Save Changes</string>
+
+    <!-- Subscription Screen -->
+    <string name="status_checking">Checking subscription...</string>
+    <string name="status_subscribed">Subscribed</string>
+    <string name="status_not_subscribed">Not Subscribed</string>
+    <string name="status_rejected_retry">Rejected - Try Again</string>
+    <string name="status_pending">Request Pending</string>
+    <string name="label_choose_plan">Choose Plan</string>
+    <string name="label_scan_qr">Scan QR to Pay</string>
+    <string name="label_upi_id">UPI ID: %1$s</string>
+    <string name="upi_id_value">RMPlus@upi</string>
+    <string name="label_amount">Amount: %1$s</string>
+    <string name="btn_upload_proof">Upload Payment Proof</string>
+    <string name="btn_submit_request">Submit Request</string>
+    <string name="msg_request_sent">Request Sent</string>
+    <string name="msg_upload_proof">Upload proof</string>
+    <string name="title_submit_request">Submit Request</string>
+    <string name="desc_fill_details">Fill in the details below</string>
+    <string name="hint_title">Title</string>
+    <string name="hint_description">Description</string>
+    <string name="btn_attach_proof">Attach Proof</string>
+    <string name="btn_submit">Submit</string>
+    <string name="msg_uploading_wait">Image uploading... Please wait</string>
+    <string name="err_enter_title">Enter title</string>
+    <string name="err_enter_description">Enter description</string>
+    <string name="notif_new_request">New Request</string>
+    <string name="title_adv_request">Advertisement Request</string>
+    <string name="desc_fill_adv_details">Fill details to publish your advertisement</string>
+    <string name="hint_adv_link">Advertisement Website / Link</string>
+    <string name="label_upload_adv_template">Upload Advertisement Template</string>
+    <string name="btn_upload_template">Upload Template</string>
+    <string name="label_scan_and_pay">Scan And Pay</string>
+    <string name="btn_upload_payment_proof">Upload Payment Proof</string>
+    <string name="btn_submit_adv_request">Submit Advertisement Request</string>
+    <string name="msg_adv_request_sent">Advertisement Request Sent</string>
+    <string name="hint_tap_to_recrop">Tap image to re-crop</string>
+    <string name="cat_issue">Issue</string>
+    <string name="cat_order">Order</string>
+    <string name="cat_custom_template">Custom Template</string>
+    <string name="cat_other">Other</string>
+    <string name="msg_invalid_img_format">Only JPG, JPEG, or PNG allowed</string>
+    <string name="msg_profile_updated">Profile Updated</string>
+    <string name="msg_profile_updated_desc">Your profile updated successfully</string>
+    <string name="msg_sub_request_sent">Subscription Request</string>
+    <string name="msg_sub_request_sent_desc">Your subscription request has been sent</string>
+    <string name="msg_confirm_save_profile">Do you want to update profile?</string>
+    <string name="msg_confirm_remove_img">Do you really want to remove the profile image permanently?</string>
+    <string name="msg_img_deleted_server">Image deleted from server</string>
+    <string name="msg_upload_failed">Upload Failed</string>
+    <string name="msg_img_uploaded">Image Uploaded</string>
+    <string name="msg_login_again">Please login again</string>
+    <string name="title_share_using">Share Using</string>
+    <string name="msg_delete_confirm">This cannot be undone. Are you sure?</string>
+    <string name="share_msg_body">%1$s - Grow your business digitally! \n\nDownload Link: https://play.google.com/store/apps/details?id=%2$s</string>
+    <string name="user_not_logged_in">User not logged in</string>
+    <string name="support_email_subject">RM Plus Support</string>
+    <string name="plan_1_month">1 Month</string>
+    <string name="plan_3_month">3 Month</string>
+    <string name="plan_6_month">6 Month</string>
+    <string name="plan_1_year">1 Year</string>
+    <string-array name="india_states">
+        <item>Andhra Pradesh</item>
+        <item>Arunachal Pradesh</item>
+        <item>Assam</item>
+        <item>Bihar</item>
+        <item>Chhattisgarh</item>
+        <item>Goa</item>
+        <item>Gujarat</item>
+        <item>Haryana</item>
+        <item>Himachal Pradesh</item>
+        <item>Jharkhand</item>
+        <item>Karnataka</item>
+        <item>Kerala</item>
+        <item>Madhya Pradesh</item>
+        <item>Maharashtra</item>
+        <item>Manipur</item>
+        <item>Meghalaya</item>
+        <item>Mizoram</item>
+        <item>Nagaland</item>
+        <item>Odisha</item>
+        <item>Punjab</item>
+        <item>Rajasthan</item>
+        <item>Sikkim</item>
+        <item>Tamil Nadu</item>
+        <item>Telangana</item>
+        <item>Tripura</item>
+        <item>Uttar Pradesh</item>
+        <item>Uttarakhand</item>
+        <item>West Bengal</item>
+        <item>Andaman and Nicobar Islands</item>
+        <item>Chandigarh</item>
+        <item>Dadra and Nagar Haveli and Daman and Diu</item>
+        <item>Delhi</item>
+        <item>Jammu and Kashmir</item>
+        <item>Ladakh</item>
+        <item>Lakshadweep</item>
+        <item>Puducherry</item>
+    </string-array>
+
+    <string-array name="cities_andhra_pradesh">
+        <item>Amaravati</item>
+        <item>Visakhapatnam</item>
+        <item>Vijayawada</item>
+        <item>Tirupati</item>
+        <item>Guntur</item>
+        <item>Nellore</item>
+        <item>Kurnool</item>
+    </string-array>
+    <string-array name="cities_arunachal_pradesh">
+        <item>Itanagar</item>
+        <item>Naharlagun</item>
+        <item>Pasighat</item>
+        <item>Tawang</item>
+    </string-array>
+    <string-array name="cities_assam">
+        <item>Dispur</item>
+        <item>Guwahati</item>
+        <item>Silchar</item>
+        <item>Dibrugarh</item>
+        <item>Jorhat</item>
+        <item>Nagaon</item>
+    </string-array>
+    <string-array name="cities_bihar">
+        <item>Patna</item>
+        <item>Gaya</item>
+        <item>Bhagalpur</item>
+        <item>Muzaffarpur</item>
+        <item>Purnia</item>
+    </string-array>
+    <string-array name="cities_chhattisgarh">
+        <item>Raipur</item>
+        <item>Bhilai</item>
+        <item>Bilaspur</item>
+        <item>Korba</item>
+        <item>Durg</item>
+        <item>Raigarh</item>
+        <item>Ambikapur</item>
+        <item>Jagdalpur</item>
+        <item>Dhamtari</item>
+        <item>Mahasamund</item>
+    </string-array>
+    <string-array name="cities_goa">
+        <item>Panaji</item>
+        <item>Vasco da Gama</item>
+        <item>Margao</item>
+        <item>Mapusa</item>
+    </string-array>
+    <string-array name="cities_gujarat">
+        <item>Ahmedabad</item>
+        <item>Surat</item>
+        <item>Vadodara</item>
+        <item>Rajkot</item>
+        <item>Bhavnagar</item>
+        <item>Gandhinagar</item>
+        <item>Jamnagar</item>
+    </string-array>
+    <string-array name="cities_haryana">
+        <item>Gurugram</item>
+        <item>Faridabad</item>
+        <item>Panipat</item>
+        <item>Ambala</item>
+        <item>Karnal</item>
+        <item>Rohtak</item>
+        <item>Hisar</item>
+    </string-array>
+    <string-array name="cities_himachal_pradesh">
+        <item>Shimla</item>
+        <item>Dharamshala</item>
+        <item>Solan</item>
+        <item>Mandi</item>
+        <item>Kullu</item>
+        <item>Manali</item>
+    </string-array>
+    <string-array name="cities_jharkhand">
+        <item>Ranchi</item>
+        <item>Jamshedpur</item>
+        <item>Dhanbad</item>
+        <item>Bokaro Steel City</item>
+        <item>Deoghar</item>
+        <item>Hazaribagh</item>
+    </string-array>
+    <string-array name="cities_karnataka">
+        <item>Bengaluru</item>
+        <item>Mysuru</item>
+        <item>Hubballi-Dharwad</item>
+        <item>Mangaluru</item>
+        <item>Belagavi</item>
+        <item>Kalaburagi</item>
+    </string-array>
+    <string-array name="cities_kerala">
+        <item>Thiruvananthapuram</item>
+        <item>Kochi</item>
+        <item>Kozhikode</item>
+        <item>Thrissur</item>
+        <item>Kollam</item>
+        <item>Kannur</item>
+    </string-array>
+    <string-array name="cities_mp">
+        <item>Indore</item>
+        <item>Bhopal</item>
+        <item>Jabalpur</item>
+        <item>Gwalior</item>
+        <item>Ujjain</item>
+        <item>Sagar</item>
+        <item>Ratlam</item>
+    </string-array>
+    <string-array name="cities_maharashtra">
+        <item>Mumbai</item>
+        <item>Pune</item>
+        <item>Nagpur</item>
+        <item>Thane</item>
+        <item>Nashik</item>
+        <item>Aurangabad</item>
+        <item>Solapur</item>
+        <item>Amravati</item>
+    </string-array>
+    <string-array name="cities_manipur">
+        <item>Imphal</item>
+        <item>Thoubal</item>
+        <item>Bishnupur</item>
+        <item>Churachandpur</item>
+    </string-array>
+    <string-array name="cities_meghalaya">
+        <item>Shillong</item>
+        <item>Tura</item>
+        <item>Jowai</item>
+    </string-array>
+    <string-array name="cities_mizoram">
+        <item>Aizawl</item>
+        <item>Lunglei</item>
+        <item>Saiha</item>
+        <item>Champhai</item>
+    </string-array>
+    <string-array name="cities_nagaland">
+        <item>Kohima</item>
+        <item>Dimapur</item>
+        <item>Mokokchung</item>
+        <item>Tuensang</item>
+    </string-array>
+    <string-array name="cities_odisha">
+        <item>Bhubaneswar</item>
+        <item>Cuttack</item>
+        <item>Rourkela</item>
+        <item>Berhampur</item>
+        <item>Sambalpur</item>
+        <item>Puri</item>
+    </string-array>
+    <string-array name="cities_punjab">
+        <item>Ludhiana</item>
+        <item>Amritsar</item>
+        <item>Jalandhar</item>
+        <item>Patiala</item>
+        <item>Bathinda</item>
+        <item>Mohali</item>
+    </string-array>
+    <string-array name="cities_rajasthan">
+        <item>Jaipur</item>
+        <item>Jodhpur</item>
+        <item>Kota</item>
+        <item>Bikaner</item>
+        <item>Ajmer</item>
+        <item>Udaipur</item>
+        <item>Bhilwara</item>
+    </string-array>
+    <string-array name="cities_sikkim">
+        <item>Gangtok</item>
+        <item>Namchi</item>
+        <item>Gyalshing</item>
+        <item>Mangan</item>
+    </string-array>
+    <string-array name="cities_tamil_nadu">
+        <item>Chennai</item>
+        <item>Coimbatore</item>
+        <item>Madurai</item>
+        <item>Tiruchirappalli</item>
+        <item>Salem</item>
+        <item>Erode</item>
+        <item>Vellore</item>
+    </string-array>
+    <string-array name="cities_telangana">
+        <item>Hyderabad</item>
+        <item>Warangal</item>
+        <item>Nizamabad</item>
+        <item>Khammam</item>
+        <item>Karimnagar</item>
+        <item>Ramagundam</item>
+    </string-array>
+    <string-array name="cities_tripura">
+        <item>Agartala</item>
+        <item>Udaipur</item>
+        <item>Dharmanagar</item>
+        <item>Kailasahar</item>
+    </string-array>
+    <string-array name="cities_up">
+        <item>Lucknow</item>
+        <item>Kanpur</item>
+        <item>Ghaziabad</item>
+        <item>Agra</item>
+        <item>Varanasi</item>
+        <item>Meerut</item>
+        <item>Prayagraj</item>
+        <item>Noida</item>
+        <item>Bareilly</item>
+        <item>Aligarh</item>
+    </string-array>
+    <string-array name="cities_uttarakhand">
+        <item>Dehradun</item>
+        <item>Haridwar</item>
+        <item>Roorkee</item>
+        <item>Haldwani</item>
+        <item>Rishikesh</item>
+        <item>Kashipur</item>
+    </string-array>
+    <string-array name="cities_west_bengal">
+        <item>Kolkata</item>
+        <item>Howrah</item>
+        <item>Asansol</item>
+        <item>Siliguri</item>
+        <item>Durgapur</item>
+        <item>Bardhaman</item>
+    </string-array>
+    <string-array name="cities_delhi">
+        <item>New Delhi</item>
+        <item>North Delhi</item>
+        <item>South Delhi</item>
+        <item>East Delhi</item>
+        <item>West Delhi</item>
+    </string-array>
+    <string-array name="cities_jammu_kashmir">
+        <item>Srinagar</item>
+        <item>Jammu</item>
+        <item>Anantnag</item>
+        <item>Baramulla</item>
+        <item>Udhampur</item>
+    </string-array>
+    <string-array name="cities_ladakh">
+        <item>Leh</item>
+        <item>Kargil</item>
+    </string-array>
+    <string-array name="cities_chandigarh">
+        <item>Chandigarh</item>
+    </string-array>
+    <string-array name="cities_puducherry">
+        <item>Puducherry</item>
+        <item>Karaikal</item>
+        <item>Yanam</item>
+        <item>Mahe</item>
+    </string-array>
+    <string-array name="cities_andaman">
+        <item>Port Blair</item>
+        <item>Diglipur</item>
+    </string-array>
+    <string-array name="cities_dadra">
+        <item>Silvassa</item>
+        <item>Daman</item>
+        <item>Diu</item>
+    </string-array>
+    <string-array name="cities_lakshadweep">
+        <item>Kavaratti</item>
+        <item>Agatti</item>
+        <item>Minicoy</item>
+    </string-array>
 </resources>

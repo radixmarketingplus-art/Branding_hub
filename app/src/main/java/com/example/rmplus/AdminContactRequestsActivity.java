@@ -33,9 +33,9 @@ public class AdminContactRequestsActivity extends AppCompatActivity {
                 tabLayout,
                 viewPager,
                 (tab, position) -> {
-                    if (position == 0) tab.setText("Pending");
-                    else if (position == 1) tab.setText("Accepted");
-                    else tab.setText("Rejected");
+                    if (position == 0) tab.setText(R.string.tab_pending);
+                    else if (position == 1) tab.setText(R.string.tab_accepted);
+                    else tab.setText(R.string.tab_rejected);
                 }
         ).attach();
 

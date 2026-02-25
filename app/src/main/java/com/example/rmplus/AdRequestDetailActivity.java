@@ -86,23 +86,29 @@ public class AdRequestDetailActivity extends AppCompatActivity {
 
                                 if (r == null) return;
 
-                                txtTitle.setText("Ad Link : " + r.adLink);
-                                txtDesc.setText("Advertisement Request");
-                                txtStatus.setText("Status : " + r.status);
+                                txtTitle.setText(getString(R.string.label_ad_link, r.adLink));
+                                txtDesc.setText(R.string.label_ad_request_desc);
+                                
+                                String displayStatus = r.status;
+                                if ("pending".equalsIgnoreCase(r.status)) displayStatus = getString(R.string.tab_pending);
+                                else if ("accepted".equalsIgnoreCase(r.status)) displayStatus = getString(R.string.tab_accepted);
+                                else if ("rejected".equalsIgnoreCase(r.status)) displayStatus = getString(R.string.tab_rejected);
+                                
+                                txtStatus.setText(getString(R.string.label_status, displayStatus));
 
-                                String time =
+                                String timeStr =
                                         new SimpleDateFormat(
                                                 "dd MMM yyyy, hh:mm a",
                                                 Locale.getDefault())
                                                 .format(new Date(r.time));
 
-                                txtTime.setText("Time : " + time);
+                                txtTime.setText(getString(R.string.label_time, timeStr));
 
                                 // USER INFO (Admin only)
                                 if (isAdmin) {
-                                    txtUserName.setText("Name : " + r.userName);
-                                    txtEmail.setText("Email : " + r.email);
-                                    txtMobile.setText("Mobile : " + r.mobile);
+                                    txtUserName.setText(getString(R.string.label_name, r.userName));
+                                    txtEmail.setText(getString(R.string.label_email, r.email));
+                                    txtMobile.setText(getString(R.string.label_mobile, r.mobile));
                                 } else {
                                     txtUserName.setVisibility(View.GONE);
                                     txtEmail.setVisibility(View.GONE);
@@ -150,8 +156,13 @@ public class AdRequestDetailActivity extends AppCompatActivity {
                                     btnReject.setVisibility(View.VISIBLE);
                                     expiryPickerContainer.setVisibility(View.VISIBLE);
 
-                                    // Setup Spinner
-                                    String[] durations = {"Select Duration", "7 Days", "1 Month", "1 Year"};
+                                    // Setup Spinner with localized text (expiry logic uses position index, not text)
+                                    String[] durations = {
+                                            getString(R.string.dur_select),
+                                            getString(R.string.dur_7_days),
+                                            getString(R.string.dur_1_month),
+                                            getString(R.string.dur_1_year)
+                                    };
                                     android.widget.ArrayAdapter<String> adapter = new android.widget.ArrayAdapter<>(
                                             AdRequestDetailActivity.this,
                                             android.R.layout.simple_spinner_item,
@@ -164,7 +175,8 @@ public class AdRequestDetailActivity extends AppCompatActivity {
                                 btnApprove.setOnClickListener(v -> {
                                     int pos = spinnerDuration.getSelectedItemPosition();
                                     if (pos == 0) {
-                                        Toast.makeText(AdRequestDetailActivity.this, "Please select duration first", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(AdRequestDetailActivity.this,
+                                            R.string.msg_select_duration_first, Toast.LENGTH_SHORT).show();
                                         return;
                                     }
 
@@ -258,12 +270,12 @@ public class AdRequestDetailActivity extends AppCompatActivity {
         NotificationHelper.send(
                 this,
                 r.uid,
-                "Advertisement " + s,
+                "Advertisement Status: " + s,
                 r.adLink
         );
 
         Toast.makeText(this,
-                "Updated",
+                R.string.msg_updated,
                 Toast.LENGTH_SHORT).show();
 
         finish();

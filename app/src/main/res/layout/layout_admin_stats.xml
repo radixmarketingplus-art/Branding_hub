@@ -20,7 +20,7 @@
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             android:id="@+id/txtLikeLabel"
-            android:text="❤ Like"
+            android:text="@string/label_likes"
             android:textColor="@android:color/white"
             android:textSize="16sp"
             android:layout_alignParentStart="true"
@@ -54,7 +54,7 @@
         <TextView
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
-            android:text="★ Favorite"
+            android:text="@string/label_favorites"
             android:textColor="@android:color/white"
             android:textSize="16sp"
             android:layout_alignParentStart="true"
@@ -88,7 +88,7 @@
         <TextView
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
-            android:text="✎ Edits"
+            android:text="@string/label_edits"
             android:textColor="@android:color/white"
             android:textSize="16sp"
             android:layout_alignParentStart="true"
@@ -121,7 +121,7 @@
         <TextView
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
-            android:text="⬇ Saved"
+            android:text="@string/label_saves"
             android:textColor="@android:color/white"
             android:textSize="16sp"
             android:layout_alignParentStart="true"

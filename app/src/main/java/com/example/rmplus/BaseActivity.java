@@ -9,6 +9,8 @@ import android.view.View;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.*;
 
@@ -32,24 +34,36 @@ public class BaseActivity extends AppCompatActivity {
         // 👉 Only execute if header exists in layout
         if (txtGreeting != null) {
             if (uid != null) {
-                FirebaseDatabase.getInstance()
-                        .getReference("users")
-                        .child(uid)
-                        .child("name")
-                        .addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot snapshot) {
-                                String name = snapshot.getValue(String.class);
-                                txtGreeting.setText(
-                                        name != null ? "Hi, " + name : "Hi, User"
-                                );
-                            }
+                        FirebaseDatabase.getInstance()
+                                .getReference("users")
+                                .child(uid)
+                                .addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot snapshot) {
+                                        // 1. Set Greeting Name
+                                        String name = snapshot.child("name").getValue(String.class);
+                                        String displayName = (name != null && !name.isEmpty()) ? name : getString(R.string.default_user);
+                                        txtGreeting.setText(getString(R.string.greeting_format, displayName));
 
-                            @Override
-                            public void onCancelled(DatabaseError error) {
-                                txtGreeting.setText("Hi, User");
-                            }
-                        });
+                                        // 2. Set Profile Image
+                                        String profileUrl = snapshot.child("profileImage").getValue(String.class);
+                                        if (profileUrl != null && !profileUrl.isEmpty()) {
+                                            Glide.with(BaseActivity.this)
+                                                    .load(profileUrl)
+                                                    .placeholder(R.drawable.ic_profile)
+                                                    .error(R.drawable.ic_profile)
+                                                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                                                    .into(btnProfile);
+                                        } else {
+                                            btnProfile.setImageResource(R.drawable.ic_profile);
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(DatabaseError error) {
+                                        txtGreeting.setText(getString(R.string.greeting_format, getString(R.string.default_user)));
+                                    }
+                                });
             }
 
             // HEADER BUTTONS
@@ -140,5 +154,38 @@ public class BaseActivity extends AppCompatActivity {
 
             return true;
         });
+    }
+
+    public String getLocalizedSectionName(String key) {
+        if (key == null) return "";
+        if (key.equalsIgnoreCase("Select Section")) return getString(R.string.section_select);
+        if (key.equalsIgnoreCase("Advertisement")) return getString(R.string.section_advertisement);
+        if (key.equalsIgnoreCase("Festival Cards")) return getString(R.string.section_festival_cards);
+        if (key.equalsIgnoreCase("Latest Update")) return getString(R.string.section_latest_update);
+        if (key.equalsIgnoreCase("Business Special")) return getString(R.string.section_business_special);
+        if (key.equalsIgnoreCase("Reel Maker")) return getString(R.string.section_reel_maker);
+        if (key.equalsIgnoreCase("Business Frame")) return getString(R.string.section_business_frame);
+        if (key.equalsIgnoreCase("Motivation")) return getString(R.string.section_motivation);
+        if (key.equalsIgnoreCase("Greetings")) return getString(R.string.section_greetings);
+        if (key.equalsIgnoreCase("Business Ethics")) return getString(R.string.section_business_ethics);
+        if (key.equalsIgnoreCase("Frame")) return getString(R.string.section_frame);
+        return key;
+    }
+
+    public String getLocalizedRequestType(String type) {
+        if (type == null) return "";
+        if (type.equalsIgnoreCase("Issue")) return getString(R.string.cat_issue);
+        if (type.equalsIgnoreCase("Order")) return getString(R.string.cat_order);
+        if (type.equalsIgnoreCase("Custom Template")) return getString(R.string.cat_custom_template);
+        if (type.equalsIgnoreCase("Other")) return getString(R.string.cat_other);
+        return type;
+    }
+
+    public String getLocalizedStatus(String status) {
+        if (status == null) return "";
+        if (status.equalsIgnoreCase("pending")) return getString(R.string.tab_pending);
+        if (status.equalsIgnoreCase("accepted")) return getString(R.string.tab_accepted);
+        if (status.equalsIgnoreCase("rejected")) return getString(R.string.tab_rejected);
+        return status;
     }
 }

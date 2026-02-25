@@ -23,6 +23,12 @@
             android:name=".AdRequestDetailActivity"
             android:exported="false" />
         <activity
+            android:name=".UserDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".UserListActivity"
+            android:exported="false" />
+        <activity
             android:name=".AdminAdvertisementRequestsActivity"
             android:exported="false" />
         <activity
@@ -113,9 +119,7 @@
         <activity
             android:name=".WebPageActivity"
             android:exported="false" />
-        <activity
-            android:name=".AppReferenceActivity"
-            android:exported="false" />
+
         <activity
             android:name=".SettingsActivity"
             android:exported="false" />

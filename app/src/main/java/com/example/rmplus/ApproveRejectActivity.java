@@ -86,20 +86,29 @@ public class ApproveRejectActivity extends AppCompatActivity {
                     public void onDataChange(DataSnapshot s){
 
                         userRequestedPlan = s.child("plan").getValue(String.class);
-                        planTxt.setText("Plan Requested: " + userRequestedPlan);
+                        planTxt.setText(getString(R.string.label_plan_requested, userRequestedPlan));
 
                         String status = s.child("status").getValue(String.class);
                         
-                        // Setup Spinner
-                        String[] plans = {"Silver Plan (1 Month)", "Gold Plan (6 Month)", "Diamond Plan (1 Year)", "Custom (7 Days)"};
+                        // ✅ Canonical English keys — always saved to Firebase (locale-independent)
+                        String[] plansEn = {"Silver", "Gold", "Diamond", "Custom"};
+
+                        // Localized display names — shown in spinner UI
+                        String[] plans = {
+                                getString(R.string.plan_silver),
+                                getString(R.string.plan_gold),
+                                getString(R.string.plan_diamond),
+                                getString(R.string.plan_custom)
+                        };
                         ArrayAdapter<String> adapter = new ArrayAdapter<>(ApproveRejectActivity.this, android.R.layout.simple_spinner_item, plans);
                         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                         spinnerPlan.setAdapter(adapter);
 
-                        // Auto-select based on user request
+                        // Auto-select based on user request (match against English keys)
                         if (userRequestedPlan != null) {
-                            for (int i = 0; i < plans.length; i++) {
-                                if (plans[i].toLowerCase().contains(userRequestedPlan.toLowerCase())) {
+                            for (int i = 0; i < plansEn.length; i++) {
+                                if (plansEn[i].toLowerCase().contains(userRequestedPlan.toLowerCase())
+                                        || userRequestedPlan.toLowerCase().contains(plansEn[i].toLowerCase())) {
                                     spinnerPlan.setSelection(i);
                                     break;
                                 }
@@ -123,7 +132,8 @@ public class ApproveRejectActivity extends AppCompatActivity {
                                 .getValue(Long.class);
 
                         if(t!=null){
-                            dateTxt.setText("Requested On: " + new Date(t).toString());
+                            String dateStr = new java.text.SimpleDateFormat("dd MMM yyyy, hh:mm a", java.util.Locale.getDefault()).format(new java.util.Date(t));
+        dateTxt.setText(getString(R.string.label_requested_on, dateStr));
                         }
 
                         proofPath = s.child("proofPath")
@@ -157,9 +167,9 @@ public class ApproveRejectActivity extends AppCompatActivity {
         userRef.child("subscriptionExpiry").get().addOnSuccessListener(s -> {
             if (s.exists()) {
                 currentExpiry = (long) s.getValue();
-                String dateStr = new java.text.SimpleDateFormat("dd-MM-yyyy", java.util.Locale.getDefault())
+                String dateStr = new java.text.SimpleDateFormat("dd-MM-yyyy", java.util.Locale.US) // ✅ Locale.US: ASCII digits for display
                         .format(new Date(currentExpiry));
-                txtCurrentExpiry.setText("Subscription Expires: " + dateStr);
+                txtCurrentExpiry.setText(getString(R.string.label_expires_on, dateStr));
                 txtCurrentExpiry.setVisibility(View.VISIBLE);
                 btnUpdateExpiry.setVisibility(View.VISIBLE);
             }
@@ -182,7 +192,7 @@ public class ApproveRejectActivity extends AppCompatActivity {
         userRef.child("subscriptionExpiry").setValue(newExpiry).addOnSuccessListener(aVoid -> {
             currentExpiry = newExpiry;
             loadExpiryFromUser();
-            Toast.makeText(this, "Expiry Updated", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.msg_expiry_updated, Toast.LENGTH_SHORT).show();
         });
     }
 
@@ -224,13 +234,17 @@ public class ApproveRejectActivity extends AppCompatActivity {
 
     void approve(){
 
-        String grantedPlan = spinnerPlan.getSelectedItem().toString();
+        // ✅ Use English canonical plan keys — locale-independent
+        String[] plansEn = {"Silver", "Gold", "Diamond", "Custom"};
+        String grantedPlan = plansEn[spinnerPlan.getSelectedItemPosition()];
+
         long now = System.currentTimeMillis();
         long expiry = now + (7L * 24 * 60 * 60 * 1000); // Default 7 days
 
-        if (grantedPlan.contains("1 Month")) expiry = now + (30L * 24 * 60 * 60 * 1000);
-        else if (grantedPlan.contains("6 Month")) expiry = now + (180L * 24 * 60 * 60 * 1000);
-        else if (grantedPlan.contains("1 Year")) expiry = now + (365L * 24 * 60 * 60 * 1000);
+        // ✅ Compare against English canonical keys (not localized strings)
+        if ("Silver".equals(grantedPlan))       expiry = now + (30L  * 24 * 60 * 60 * 1000);
+        else if ("Gold".equals(grantedPlan))    expiry = now + (180L * 24 * 60 * 60 * 1000);
+        else if ("Diamond".equals(grantedPlan)) expiry = now + (365L * 24 * 60 * 60 * 1000);
 
         requestRef.child("status").setValue("approved");
         requestRef.child("plan").setValue(grantedPlan);
@@ -243,14 +257,14 @@ public class ApproveRejectActivity extends AppCompatActivity {
         userRef.child("subscriptionStartDate").setValue(now);
 
         Toast.makeText(this,
-                "Approved",
+                R.string.msg_approved,
                 Toast.LENGTH_SHORT).show();
 
         NotificationHelper.send(
                 ApproveRejectActivity.this,
                 uid,
                 "Subscription Approved",
-                "Your subscription has been approved");
+                "Your plan has been approved!");
 
         finish();
     }
@@ -269,14 +283,14 @@ public class ApproveRejectActivity extends AppCompatActivity {
                 .setValue("rejected");
 
         Toast.makeText(this,
-                "Rejected",
+                R.string.msg_rejected,
                 Toast.LENGTH_SHORT).show();
 
         NotificationHelper.send(
                 ApproveRejectActivity.this,
                 uid,
                 "Subscription Rejected",
-                "Your subscription has been rejected");
+                "Your plan request was rejected.");
 
         finish();
     }
@@ -287,7 +301,7 @@ public class ApproveRejectActivity extends AppCompatActivity {
 
         if (proofPath == null || proofPath.isEmpty()) {
             Toast.makeText(this,
-                    "No image to download",
+                    R.string.msg_no_image,
                     Toast.LENGTH_SHORT).show();
             return;
         }
@@ -330,7 +344,7 @@ public class ApproveRejectActivity extends AppCompatActivity {
                 runOnUiThread(() ->
                         Toast.makeText(
                                 this,
-                                "Saved in Gallery",
+                                R.string.msg_saved_to_gallery,
                                 Toast.LENGTH_LONG
                         ).show());
 
@@ -339,7 +353,7 @@ public class ApproveRejectActivity extends AppCompatActivity {
                 runOnUiThread(() ->
                         Toast.makeText(
                                 this,
-                                "Save Failed",
+                                R.string.msg_save_failed,
                                 Toast.LENGTH_SHORT
                         ).show());
             }

@@ -54,16 +54,6 @@ public class NotificationActivity extends AppCompatActivity {
 
         loadNotifications();
 
-//        newTab.setOnClickListener(v -> {
-//            mode = "new";
-//            loadNotifications();
-//        });
-//
-//        readTab.setOnClickListener(v -> {
-//            mode = "read";
-//            loadNotifications();
-//        });
-
         newTab.setOnClickListener(v -> {
             mode = "new";
             updateTabUI();
@@ -80,10 +70,12 @@ public class NotificationActivity extends AppCompatActivity {
         notiList.setOnItemClickListener((a,v,pos,id)->{
 
             if(mode.equals("new")){
-                String key = keyList.get(pos);
-                ref.child(key)
-                        .child("read")
-                        .setValue(true);
+                if (pos < keyList.size()) {
+                    String key = keyList.get(pos);
+                    ref.child(key)
+                            .child("read")
+                            .setValue(true);
+                }
             }
 
         });
@@ -106,7 +98,7 @@ public class NotificationActivity extends AppCompatActivity {
             txtRead.setTypeface(null, android.graphics.Typeface.NORMAL);
             txtRead.setTextColor(inactiveColor);
 
-            moveUnderline(newTab);   // 🔥 HERE
+            moveUnderline(newTab);
 
         } else {
 
@@ -116,7 +108,7 @@ public class NotificationActivity extends AppCompatActivity {
             txtNew.setTypeface(null, android.graphics.Typeface.NORMAL);
             txtNew.setTextColor(inactiveColor);
 
-            moveUnderline(readTab);  // 🔥 HERE
+            moveUnderline(readTab);
         }
     }
 
@@ -159,7 +151,7 @@ public class NotificationActivity extends AppCompatActivity {
 
                     if(!read) hasUnread = true;
 
-                    // FORMAT TIME
+                    // FORMAT TIME — Locale.getDefault() OK here (display only)
                     String date =
                             new SimpleDateFormat(
                                     "dd MMM, hh:mm a",
@@ -167,26 +159,20 @@ public class NotificationActivity extends AppCompatActivity {
                                     .format(new Date(time));
 
                     if(mode.equals("new") && !read){
-
                         list.add(new String[]{
-                                title,
-                                message,
+                                getLocalized(title),
+                                getLocalized(message),
                                 date
                         });
-
-
                         keyList.add(d.getKey());
                     }
 
                     if(mode.equals("read") && read){
-
                         list.add(new String[]{
-                                title,
-                                message,
+                                getLocalized(title),
+                                getLocalized(message),
                                 date
                         });
-
-
                         keyList.add(d.getKey());
                     }
                 }
@@ -194,10 +180,11 @@ public class NotificationActivity extends AppCompatActivity {
                 redDot.setVisibility(
                         hasUnread ? View.VISIBLE : View.GONE);
 
+                // ✅ Localized empty-state strings
                 if (list.size() == 0) {
                     list.add(new String[]{
-                            "No Notifications",
-                            "You don’t have any notifications yet",
+                            getString(R.string.msg_no_notifications),
+                            getString(R.string.msg_no_notifications_desc),
                             ""
                     });
                 }
@@ -213,6 +200,10 @@ public class NotificationActivity extends AppCompatActivity {
             @Override
             public void onCancelled(DatabaseError error) {}
         });
+    }
+
+    private String getLocalized(String text) {
+        return NotificationHelper.getLocalized(this, text);
     }
 
     private void moveUnderline(View tab) {

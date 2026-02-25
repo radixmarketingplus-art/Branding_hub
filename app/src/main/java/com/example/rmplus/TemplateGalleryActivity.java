@@ -38,8 +38,8 @@ public class TemplateGalleryActivity extends BaseActivity {
     String currentSubCategory = "";
 
     ArrayList<String> categories = new ArrayList<>();
-
-    String currentCategory = "All";
+    String ALL_KEY = "All";
+    String currentCategory = ALL_KEY;
 
     @Override
     protected void onCreate(Bundle b) {
@@ -92,7 +92,13 @@ public class TemplateGalleryActivity extends BaseActivity {
         recycler.setAdapter(adapter);
 
         loadDynamicCategories();
-        loadCategory("All");
+
+        String catIntent = getIntent().getStringExtra("category");
+        if (catIntent != null && !catIntent.isEmpty()) {
+            currentCategory = catIntent;
+        }
+        
+        loadCategory(currentCategory);
     }
 
     void loadDynamicCategories() {
@@ -101,13 +107,27 @@ public class TemplateGalleryActivity extends BaseActivity {
                     @Override
                     public void onDataChange(com.google.firebase.database.DataSnapshot snapshot) {
                         categories.clear();
-                        categories.add("All");
+                        categories.add(ALL_KEY);
                         for (com.google.firebase.database.DataSnapshot d : snapshot.getChildren()) {
-                            if (d.getKey() != null && !d.getKey().equals("Trending Now") && !d.getKey().equals("Advertisement") && !d.getKey().equals("Frame")) {
-                                categories.add(d.getKey());
+                            String key = d.getKey();
+                            if (key != null) {
+                                // Normally skip these
+                                if (key.equals("Trending Now") || key.equals("Advertisement") || key.equals("Frame")) {
+                                    // But if we specifically came for one of these, add it!
+                                    if (key.equalsIgnoreCase(currentCategory)) {
+                                        categories.add(key);
+                                    }
+                                    continue;
+                                }
+                                categories.add(key);
                             }
                         }
                         createFilterButtons();
+
+                        // 🎯 Scroll to the passed category if any
+                        if (!currentCategory.equals(ALL_KEY)) {
+                            findChipAndClick(currentCategory);
+                        }
                     }
 
                     @Override
@@ -122,7 +142,9 @@ public class TemplateGalleryActivity extends BaseActivity {
         for (String c : categories) {
 
             TextView chip = new TextView(this);
-            chip.setText(c);
+            String displayTitle = c.equals(ALL_KEY) ? getString(R.string.filter_all) : getLocalizedSectionName(c);
+            chip.setText(displayTitle);
+            chip.setTag(c); // Store original key in tag
             chip.setTextSize(14);
             chip.setPadding(36, 16, 36, 16);
             chip.setBackgroundResource(R.drawable.bg_filter_chip);
@@ -158,10 +180,14 @@ public class TemplateGalleryActivity extends BaseActivity {
     void showSubFilters() {
         subFilterScroll.setVisibility(View.VISIBLE);
         subFilterContainer.removeAllViews();
-        String[] subs = {"All", "Political", "NGO", "Business"};
-        for (String s : subs) {
+        String[] subs = {ALL_KEY, "Political", "NGO", "Business"};
+        int[] subRes = {R.string.filter_all, R.string.cat_political, R.string.cat_ngo, R.string.cat_business};
+        
+        for (int i = 0; i < subs.length; i++) {
+            String s = subs[i];
             TextView chip = new TextView(this);
-            chip.setText(s);
+            chip.setText(getString(subRes[i]));
+            chip.setTag(s); // Store original key in tag
             chip.setPadding(30, 10, 30, 10);
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-2, -2);
             lp.setMargins(8, 0, 8, 0);
@@ -169,8 +195,8 @@ public class TemplateGalleryActivity extends BaseActivity {
             chip.setBackgroundResource(R.drawable.bg_filter_chip);
             chip.setOnClickListener(v -> {
                 currentSubCategory = s;
-                for (int i = 0; i < subFilterContainer.getChildCount(); i++) {
-                    subFilterContainer.getChildAt(i).setBackgroundResource(R.drawable.bg_filter_chip);
+                for (int j = 0; j < subFilterContainer.getChildCount(); j++) {
+                    subFilterContainer.getChildAt(j).setBackgroundResource(R.drawable.bg_filter_chip);
                 }
                 chip.setBackgroundResource(R.drawable.bg_filter_chip_selected);
                 loadBusinessSubCategory(s);
@@ -184,7 +210,7 @@ public class TemplateGalleryActivity extends BaseActivity {
     void loadBusinessSubCategory(String sub) {
         DatabaseReference rootRef = com.google.firebase.database.FirebaseDatabase.getInstance().getReference("templates").child("Business Frame");
 
-        if ("All".equalsIgnoreCase(sub)) {
+        if (ALL_KEY.equalsIgnoreCase(sub)) {
             rootRef.addListenerForSingleValueEvent(new com.google.firebase.database.ValueEventListener() {
                 @Override
                 public void onDataChange(com.google.firebase.database.DataSnapshot snapshot) {
@@ -261,8 +287,10 @@ public class TemplateGalleryActivity extends BaseActivity {
 
             TextView chip =
                     (TextView) filterContainer.getChildAt(i);
+            
+            String chipKey = (String) chip.getTag();
 
-            if (chip.getText().toString().equals(currentCategory)) {
+            if (chipKey != null && chipKey.equals(currentCategory)) {
                 chip.setTypeface(null, android.graphics.Typeface.BOLD);
                 chip.setTextColor(getColorFromAttr(
                         com.google.android.material.R.attr.colorOnSurface
@@ -285,22 +313,44 @@ public class TemplateGalleryActivity extends BaseActivity {
         currentCategory = key;
         DatabaseReference templatesRef = com.google.firebase.database.FirebaseDatabase.getInstance().getReference("templates");
 
-        if (key.equals("All")) {
+        if (key.equals(ALL_KEY)) {
             templatesRef.addListenerForSingleValueEvent(new com.google.firebase.database.ValueEventListener() {
                 @Override
                 public void onDataChange(com.google.firebase.database.DataSnapshot snapshot) {
                     ArrayList<TemplateModel> result = new ArrayList<>();
                     for (com.google.firebase.database.DataSnapshot categorySnapshot : snapshot.getChildren()) {
                         String cat = categorySnapshot.getKey();
-                        for (com.google.firebase.database.DataSnapshot itemSnapshot : categorySnapshot.getChildren()) {
-                            String path = null;
-                            if (itemSnapshot.hasChild("imagePath")) {
-                                path = itemSnapshot.child("imagePath").getValue(String.class);
-                            } else if (itemSnapshot.hasChild("url")) {
-                                path = itemSnapshot.child("url").getValue(String.class);
+
+                        // 🚫 EXCLUDE Advertisement and Frame from 'All'
+                        if (cat == null || cat.equals("Advertisement") || cat.equals("Frame") || cat.equals("Trending Now")) {
+                            continue;
+                        }
+
+                        // Check if it's a nested node (like 'Business Frame')
+                        boolean isNested = categorySnapshot.getChildrenCount() > 0 && 
+                                           categorySnapshot.getChildren().iterator().next().hasChildren() &&
+                                           !categorySnapshot.getChildren().iterator().next().hasChild("url") &&
+                                           !categorySnapshot.getChildren().iterator().next().hasChild("imagePath");
+
+                        if (isNested) {
+                            for (com.google.firebase.database.DataSnapshot subSnapshot : categorySnapshot.getChildren()) {
+                                for (com.google.firebase.database.DataSnapshot itemSnapshot : subSnapshot.getChildren()) {
+                                    String path = itemSnapshot.hasChild("imagePath") ? 
+                                            itemSnapshot.child("imagePath").getValue(String.class) : 
+                                            itemSnapshot.child("url").getValue(String.class);
+                                    if (path != null) {
+                                        result.add(new TemplateModel(itemSnapshot.getKey(), path, cat + "/" + subSnapshot.getKey()));
+                                    }
+                                }
                             }
-                            if (path != null && !cat.equals("Frame")) {
-                                result.add(new TemplateModel(itemSnapshot.getKey(), path, cat));
+                        } else {
+                            for (com.google.firebase.database.DataSnapshot itemSnapshot : categorySnapshot.getChildren()) {
+                                String path = itemSnapshot.hasChild("imagePath") ? 
+                                        itemSnapshot.child("imagePath").getValue(String.class) : 
+                                        itemSnapshot.child("url").getValue(String.class);
+                                if (path != null) {
+                                    result.add(new TemplateModel(itemSnapshot.getKey(), path, cat));
+                                }
                             }
                         }
                     }
@@ -332,6 +382,20 @@ public class TemplateGalleryActivity extends BaseActivity {
                 @Override
                 public void onCancelled(com.google.firebase.database.DatabaseError error) {}
             });
+        }
+    }
+
+    private void findChipAndClick(String target) {
+        for (int i = 0; i < filterContainer.getChildCount(); i++) {
+            TextView chip = (TextView) filterContainer.getChildAt(i);
+            String chipKey = (String) chip.getTag();
+            if (chipKey != null && chipKey.equalsIgnoreCase(target)) {
+                chip.performClick();
+                // Smooth scroll to this chip
+                int finalI = i;
+                tabScroll.post(() -> tabScroll.smoothScrollTo(filterContainer.getChildAt(finalI).getLeft() - 50, 0));
+                break;
+            }
         }
     }
 

@@ -30,7 +30,7 @@
                 android:src="@android:drawable/ic_menu_search"
                 android:background="@drawable/bg_icon_button"
                 android:tint="?attr/colorOnSurface"
-                android:contentDescription="Search"/>
+                android:contentDescription="@string/content_desc_search"/>
 
             <ImageButton
                 android:id="@+id/btnLike"
@@ -39,7 +39,7 @@
                 android:src="@android:drawable/btn_star_big_off"
                 android:background="@drawable/bg_icon_button"
                 android:tint="?attr/colorOnSurface"
-                android:contentDescription="Like"/>
+                android:contentDescription="@string/content_desc_like"/>
 
             <ImageButton
                 android:id="@+id/btnFav"
@@ -48,7 +48,7 @@
                 android:src="@android:drawable/btn_star"
                 android:background="@drawable/bg_icon_button"
                 android:tint="?attr/colorOnSurface"
-                android:contentDescription="Favorite"/>
+                android:contentDescription="@string/content_desc_favorite"/>
 
             <ImageButton
                 android:id="@+id/btnShare"
@@ -57,7 +57,7 @@
                 android:src="@android:drawable/ic_menu_share"
                 android:background="@drawable/bg_icon_button"
                 android:tint="?attr/colorOnSurface"
-                android:contentDescription="Share"/>
+                android:contentDescription="@string/content_desc_share"/>
 
             <ImageButton
                 android:id="@+id/btnEdit"
@@ -66,7 +66,7 @@
                 android:src="@android:drawable/ic_menu_edit"
                 android:background="@drawable/bg_icon_button"
                 android:tint="?attr/colorOnSurface"
-                android:contentDescription="Edit"/>
+                android:contentDescription="@string/content_desc_edit"/>
 
             <ImageButton
                 android:id="@+id/btnSave"
@@ -75,7 +75,7 @@
                 android:src="@android:drawable/ic_menu_save"
                 android:background="@drawable/bg_icon_button"
                 android:tint="?attr/colorOnSurface"
-                android:contentDescription="Save"/>
+                android:contentDescription="@string/content_desc_save"/>
         </LinearLayout>
 
         <!-- ================= PREVIEW CARD ================= -->
@@ -116,14 +116,14 @@
                 android:src="@android:drawable/ic_media_play"
                 android:alpha="0.8"
                 android:visibility="gone"
-                android:contentDescription="Play Video"/>
+                android:contentDescription="@string/content_desc_play_video"/>
         </FrameLayout>
 
         <!-- ================= SIMILAR TEMPLATES ================= -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Similar Templates"
+            android:text="@string/title_similar_templates"
             android:textStyle="bold"
             android:textSize="16sp"
             android:textColor="?attr/colorOnBackground"

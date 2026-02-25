@@ -24,7 +24,7 @@ import java.io.File;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
-public class AdminTemplateDetailActivity extends AppCompatActivity {
+public class AdminTemplateDetailActivity extends BaseActivity {
 
     ImageView imgPreview;
     TextView txtCategory;
@@ -73,11 +73,11 @@ public class AdminTemplateDetailActivity extends AppCompatActivity {
         findViewById(R.id.btnDeleteIcon).setOnClickListener(v -> confirmDelete());
         findViewById(R.id.btnEditIcon).setOnClickListener(v -> {
             if (category == null || realTemplateId == null) {
-                android.widget.Toast.makeText(this, "Still fetching template info...", android.widget.Toast.LENGTH_SHORT).show();
+                android.widget.Toast.makeText(this, R.string.msg_fetching_info, android.widget.Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            android.widget.Toast.makeText(this, "Preparing for edit...", android.widget.Toast.LENGTH_SHORT).show();
+            android.widget.Toast.makeText(this, R.string.msg_preparing_edit, android.widget.Toast.LENGTH_SHORT).show();
             
             // Fetch the very latest data snapshot for this template
             FirebaseDatabase.getInstance().getReference("templates")
@@ -187,17 +187,17 @@ public class AdminTemplateDetailActivity extends AppCompatActivity {
                 if (found) {
                     category = foundCat;
                     realTemplateId = foundId;
-                    txtCategory.setText(category);
+                    txtCategory.setText(getLocalizedCategory(category));
                     
                     // 📅 LOAD DATES & LINKS FROM DB SNAPSHOT
                     if (finalTemplateSnap.hasChild("expiryDate")) {
                         Object exp = finalTemplateSnap.child("expiryDate").getValue();
                         currentExpiry = (exp instanceof Long) ? (Long) exp : ((Integer) exp).longValue();
-                        String dateStr = new java.text.SimpleDateFormat("dd-MM-yyyy", java.util.Locale.getDefault())
+                        String dateStr = new java.text.SimpleDateFormat("dd-MM-yyyy", java.util.Locale.US) // ✅ ASCII digits always
                                 .format(new java.util.Date(currentExpiry));
-                        txtExpiryStatus.setText("Expires on: " + dateStr);
+                        txtExpiryStatus.setText(getString(R.string.label_expires, dateStr));
                     } else {
-                        txtExpiryStatus.setText("No expiry set");
+                        txtExpiryStatus.setText(R.string.msg_no_expiry);
                     }
 
                     if (finalTemplateSnap.hasChild("link")) {
@@ -213,7 +213,7 @@ public class AdminTemplateDetailActivity extends AppCompatActivity {
                         loadStats();
                     }
                 } else {
-                    txtCategory.setText("External Content");
+                    txtCategory.setText(R.string.label_external_content);
                     realTemplateId = templateKey; // Fallback to Base64
                     loadStats();
                 }
@@ -270,13 +270,14 @@ public class AdminTemplateDetailActivity extends AppCompatActivity {
     }
 
     void openStats(String tab) {
-        if (category == null || category.equalsIgnoreCase("Unknown Category")) {
-            android.widget.Toast.makeText(this, "Finding category, please wait...", android.widget.Toast.LENGTH_SHORT).show();
+        if (category == null || category.equalsIgnoreCase(getString(R.string.label_unknown_cat))) {
+            android.widget.Toast.makeText(this, R.string.msg_fetching_info, android.widget.Toast.LENGTH_SHORT).show();
             return;
         }
         Intent i = new Intent(this, StatsDetailActivity.class);
         i.putExtra("path", templatePath);
-        i.putExtra("category", category); // Pass the true category
+        i.putExtra("id", realTemplateId); // ✅ Pass the true template ID
+        i.putExtra("category", category); 
         i.putExtra("defaultTab", tab);
         startActivity(i);
     }
@@ -320,20 +321,20 @@ public class AdminTemplateDetailActivity extends AppCompatActivity {
 
     private void confirmDelete() {
         new androidx.appcompat.app.AlertDialog.Builder(this)
-                .setTitle("Delete Template")
-                .setMessage("This will permanently remove the template from VPS, Firebase, and Local Storage. Continue?")
-                .setPositiveButton("Delete", (d, w) -> startDeletionProcess())
-                .setNegativeButton("Cancel", null)
+                .setTitle(R.string.title_delete_template)
+                .setMessage(R.string.msg_confirm_delete)
+                .setPositiveButton(R.string.btn_delete, (d, w) -> startDeletionProcess())
+                .setNegativeButton(android.R.string.cancel, null)
                 .show();
     }
 
     private void startDeletionProcess() {
         if (category == null || realTemplateId == null) {
-            android.widget.Toast.makeText(this, "Cannot delete: Category not identified", android.widget.Toast.LENGTH_SHORT).show();
+            android.widget.Toast.makeText(this, R.string.msg_cannot_delete, android.widget.Toast.LENGTH_SHORT).show();
             return;
         }
 
-        android.widget.Toast.makeText(this, "Cleaning all nodes...", android.widget.Toast.LENGTH_SHORT).show();
+        android.widget.Toast.makeText(this, R.string.msg_cleaning_nodes, android.widget.Toast.LENGTH_SHORT).show();
 
         // 1. Remove from Local SharedPreferences
         removeFromLocal();
@@ -381,7 +382,7 @@ public class AdminTemplateDetailActivity extends AppCompatActivity {
                 // 🔥 SECOND: NOW that we have read the users, delete the stats node itself
                 activityRef.removeValue().addOnCompleteListener(task -> {
                     if (tid.equals(realTemplateId)) {
-                        android.widget.Toast.makeText(AdminTemplateDetailActivity.this, "Template Deleted Everywhere", android.widget.Toast.LENGTH_SHORT).show();
+                        android.widget.Toast.makeText(AdminTemplateDetailActivity.this, R.string.msg_deleted_everywhere, android.widget.Toast.LENGTH_SHORT).show();
                         finish();
                     }
                 });
@@ -442,10 +443,10 @@ public class AdminTemplateDetailActivity extends AppCompatActivity {
                 int code = conn.getResponseCode();
                 runOnUiThread(() -> {
                     if (code == 200) {
-                        android.widget.Toast.makeText(this, "Template Deleted Successfully", android.widget.Toast.LENGTH_SHORT).show();
+                        android.widget.Toast.makeText(this, R.string.msg_deleted_success, android.widget.Toast.LENGTH_SHORT).show();
                         finish();
                     } else {
-                        android.widget.Toast.makeText(this, "VPS Deletion failed: " + code, android.widget.Toast.LENGTH_SHORT).show();
+                        android.widget.Toast.makeText(this, getString(R.string.msg_vps_delete_failed, code), android.widget.Toast.LENGTH_SHORT).show();
                     }
                 });
 
@@ -453,5 +454,24 @@ public class AdminTemplateDetailActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }).start();
+    }
+
+    private String getLocalizedSubCatName(String key) {
+        if (key == null) return "";
+        if (key.equalsIgnoreCase("Political")) return getString(R.string.cat_political);
+        if (key.equalsIgnoreCase("NGO")) return getString(R.string.cat_ngo);
+        if (key.equalsIgnoreCase("Business")) return getString(R.string.cat_business);
+        return key;
+    }
+
+    private String getLocalizedCategory(String key) {
+        if (key == null) return "";
+        if (key.contains("/")) {
+            String[] parts = key.split("/");
+            if (parts.length > 1) {
+                return getLocalizedSectionName(parts[0]) + " / " + getLocalizedSubCatName(parts[1]);
+            }
+        }
+        return getLocalizedSectionName(key);
     }
 }

@@ -16,7 +16,7 @@
             android:id="@+id/txtTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Templates"
+            android:text="@string/nav_template"
             android:textSize="22sp"
             android:textStyle="bold"
             android:textColor="?android:textColorPrimary"

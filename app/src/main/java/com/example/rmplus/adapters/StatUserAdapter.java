@@ -46,10 +46,10 @@ public class StatUserAdapter
 
         // Safety
         holder.txtName.setText(
-                item.name == null ? "Unknown User" : item.name);
+                item.name == null ? holder.itemView.getContext().getString(R.string.unknown_user) : item.name);
 
         holder.txtEmail.setText(
-                item.email == null ? "No email" : item.email);
+                item.email == null ? holder.itemView.getContext().getString(R.string.no_email) : item.email);
 
         // Time formatting
         if (item.time > 0) {
@@ -60,7 +60,7 @@ public class StatUserAdapter
 
             holder.txtTime.setText(formattedTime);
         } else {
-            holder.txtTime.setText("Unknown time");
+            holder.txtTime.setText(holder.itemView.getContext().getString(R.string.unknown_time));
         }
     }
 

@@ -32,7 +32,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="BrandingHub"
+                android:text="@string/app_name"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:textColor="?attr/colorOnSurface"/>
@@ -77,36 +77,100 @@
                 android:layout_height="match_parent"
                 android:visibility="gone"/>
 
-            <TextView
-                android:id="@+id/txtEdit"
+            <!-- Wrapper for items that can be scaled. Delete button is kept separate so it doesn't scale -->
+            <FrameLayout
+                android:id="@+id/wrapText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Edit Text"
-                android:textSize="22sp"
-                android:textColor="?attr/colorOnSurface"
-                android:padding="8dp"
-                android:visibility="gone"/>
+                android:visibility="gone">
+                <TextView
+                    android:id="@+id/txtEdit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ph_edit_text"
+                    android:textSize="22sp"
+                    android:textColor="?attr/colorOnSurface"
+                    android:paddingTop="12dp"
+                    android:paddingEnd="12dp"
+                    android:paddingStart="4dp"
+                    android:paddingBottom="4dp" />
+                <ImageView
+                    android:id="@+id/btnDeleteText"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_gravity="top|end"
+                    android:padding="6dp"
+                    android:background="@drawable/shape_circle"
+                    android:backgroundTint="?attr/colorError"
+                    android:src="@drawable/ic_delete"
+                    app:tint="?attr/colorOnError" />
+            </FrameLayout>
 
-            <ImageView
-                android:id="@+id/imgLogo"
-                android:layout_width="120dp"
-                android:layout_height="120dp"
-                android:scaleType="centerCrop"
-                android:background="@null"
-                android:visibility="gone"/>
+            <FrameLayout
+                android:id="@+id/wrapLogo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone">
+                <!-- Inner container that actually scales -->
+                <FrameLayout 
+                    android:id="@+id/scaleLogo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp">
+                    <ImageView
+                        android:id="@+id/imgLogo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:minWidth="100dp"
+                        android:minHeight="100dp"
+                        android:adjustViewBounds="true"
+                        android:scaleType="fitCenter"
+                        android:background="@null"/>
+                    <!-- Move delete icon inside so it moves with the scale -->
+                    <ImageView
+                        android:id="@+id/btnDeleteLogo"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:layout_gravity="top|end"
+                        android:padding="6dp"
+                        android:background="@drawable/shape_circle"
+                        android:backgroundTint="?attr/colorError"
+                        android:src="@drawable/ic_delete"
+                        app:tint="?attr/colorOnError" />
+                </FrameLayout>
+            </FrameLayout>
 
-            <!-- Floating delete (safe zone) -->
-            <ImageView
-                android:id="@+id/imgDelete"
-                android:layout_width="72dp"
-                android:layout_height="72dp"
-                android:layout_gravity="top|center_horizontal"
-                android:layout_marginTop="16dp"
-                android:src="@drawable/ic_delete"
-                android:background="@null"
-                android:padding="12dp"
-                android:elevation="16dp"
-                android:visibility="gone"/>
+            <FrameLayout
+                android:id="@+id/wrapGallery"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone">
+                <FrameLayout
+                    android:id="@+id/scaleGallery"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp">
+                    <ImageView
+                        android:id="@+id/imgGallery"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:minWidth="120dp"
+                        android:minHeight="120dp"
+                        android:adjustViewBounds="true"
+                        android:scaleType="fitCenter"
+                        android:background="@null"/>
+                    <ImageView
+                        android:id="@+id/btnDeleteGallery"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:layout_gravity="top|end"
+                        android:padding="6dp"
+                        android:background="@drawable/shape_circle"
+                        android:backgroundTint="?attr/colorError"
+                        android:src="@drawable/ic_delete"
+                        app:tint="?attr/colorOnError" />
+                </FrameLayout>
+            </FrameLayout>
         </FrameLayout>
 
         <!-- ================= TEXT CONTROLS ================= -->
@@ -116,6 +180,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:padding="12dp"
+            android:gravity="center"
             android:background="?attr/colorSurface"
             android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@id/editorBar"
@@ -124,7 +189,7 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnColor"
-                android:text="Color"
+                android:text="@string/btn_color"
                 android:textAllCaps="false"
                 app:backgroundTint="@null"
                 android:background="@drawable/bg_primary_btn"
@@ -136,34 +201,39 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:max="80"/>
+                android:layout_marginStart="16dp"
+                android:max="100"/>
         </LinearLayout>
 
-        <!-- ================= LOGO CONTROLS ================= -->
+        <!-- ================= IMAGE CONTROLS (Logo/Gallery) ================= -->
         <LinearLayout
-            android:id="@+id/logoControls"
+            android:id="@+id/imageControls"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:padding="12dp"
+            android:gravity="center"
             android:background="?attr/colorSurface"
             android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@id/editorBar"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
-
+            
             <TextView
-                android:text="Logo Size"
+                android:text="@string/label_size"
+                android:textStyle="bold"
                 android:textColor="?attr/colorOnSurface"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
 
             <SeekBar
-                android:id="@+id/seekLogoSize"
+                android:id="@+id/seekImageSize"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:max="300"/>
+                android:layout_marginStart="16dp"
+                android:progress="40"
+                android:max="100"/>
         </LinearLayout>
 
         <!-- ================= FRAME CONTROLS ================= -->
@@ -205,36 +275,79 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
-            <ImageButton
+            <LinearLayout
                 android:id="@+id/btnText"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="match_parent"
-                android:background="?attr/selectableItemBackground"
-                android:src="@drawable/ic_edit"
-                app:tint="?attr/colorOnSurface"/>
+                android:orientation="vertical"
+                android:gravity="center"
+                android:background="?attr/selectableItemBackground">
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_edit"
+                    app:tint="?attr/colorOnSurface"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/btn_text"
+                    android:maxLines="1"
+                    android:textStyle="bold"
+                    android:layout_marginTop="4dp"
+                    android:textColor="?attr/colorOnSurface"/>
+            </LinearLayout>
 
-            <com.google.android.material.button.MaterialButton
+            <LinearLayout
                 android:id="@+id/btnLogo"
-                android:text="Logo"
-                android:textAllCaps="false"
-                android:textColor="?attr/colorOnSurface"
-                app:backgroundTint="@null"
-                android:background="?attr/selectableItemBackground"
                 android:layout_width="0dp"
-                android:textStyle="bold"
                 android:layout_weight="1"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:background="?attr/selectableItemBackground">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/btn_logo"
+                    android:maxLines="1"
+                    android:textStyle="bold"
+                    android:textColor="?attr/colorOnSurface"/>
+            </LinearLayout>
 
+            <LinearLayout
+                android:id="@+id/btnGallery"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:background="?attr/selectableItemBackground">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/btn_gallery"
+                    android:maxLines="1"
+                    android:textStyle="bold"
+                    android:textColor="?attr/colorOnSurface"/>
+            </LinearLayout>
 
-            <ImageButton
+            <LinearLayout
                 android:id="@+id/btnFrame"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="match_parent"
-                android:background="?attr/selectableItemBackground"
-                android:src="@drawable/ic_add"
-                app:tint="?attr/colorOnSurface"/>
+                android:orientation="vertical"
+                android:gravity="center"
+                android:background="?attr/selectableItemBackground">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/btn_add_frame"
+                    android:maxLines="1"
+                    android:textStyle="bold"
+                    android:textColor="?attr/colorOnSurface"/>
+            </LinearLayout>
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

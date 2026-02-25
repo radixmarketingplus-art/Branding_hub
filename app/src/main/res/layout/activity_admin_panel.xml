@@ -29,7 +29,7 @@
             android:id="@+id/adminTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Admin Panel"
+            android:text="@string/title_admin_panel"
             android:textSize="24sp"
             android:textStyle="bold"
             android:textColor="?android:textColorPrimary"/>
@@ -38,7 +38,7 @@
             android:id="@+id/adminSubtitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Manage application content and users"
+            android:text="@string/desc_admin_panel"
             android:textSize="14sp"
             android:textColor="?android:textColorSecondary"
             android:layout_marginTop="4dp"
@@ -62,7 +62,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Upload Templates"
+                    android:text="@string/title_upload_templates"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     android:textColor="?android:textColorPrimary"/>
@@ -70,7 +70,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Add images to home page sections"
+                    android:text="@string/desc_upload_templates"
                     android:textSize="13sp"
                     android:textColor="?android:textColorSecondary"
                     android:layout_marginTop="4dp"
@@ -81,7 +81,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="44dp"
                     android:layout_gravity="end"
-                    android:text="Open"
+                    android:text="@string/btn_open"
                     android:textAllCaps="false"
                     app:cornerRadius="22dp"
                     app:backgroundTint="#4A6CF7"/>
@@ -106,7 +106,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Subscription Requests"
+                    android:text="@string/title_subscription_requests"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     android:textColor="?android:textColorPrimary"/>
@@ -114,7 +114,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Approve or reject subscription plans"
+                    android:text="@string/desc_subscription_requests"
                     android:textSize="13sp"
                     android:textColor="?android:textColorSecondary"
                     android:layout_marginTop="4dp"
@@ -125,7 +125,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="44dp"
                     android:layout_gravity="end"
-                    android:text="View"
+                    android:text="@string/btn_view"
                     android:textAllCaps="false"
                     app:cornerRadius="22dp"
                     style="@style/Widget.Material3.Button.TonalButton"/>
@@ -150,7 +150,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Advertisment Request"
+                    android:text="@string/title_adv_requests"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     android:textColor="?android:textColorPrimary"/>
@@ -158,7 +158,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Check Advertisment Requests sent by users"
+                    android:text="@string/desc_adv_requests"
                     android:textSize="13sp"
                     android:textColor="?android:textColorSecondary"
                     android:layout_marginTop="4dp"
@@ -169,7 +169,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="44dp"
                     android:layout_gravity="end"
-                    android:text="Check"
+                    android:text="@string/btn_check"
                     android:textAllCaps="false"
                     app:cornerRadius="22dp"
                     app:backgroundTint="#4A6CF7"/>
@@ -177,6 +177,51 @@
         </com.google.android.material.card.MaterialCardView>
 
         <!-- ================= CONTACT REQUESTS ================= -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="18dp"
+            app:cardElevation="3dp"
+            app:cardBackgroundColor="?attr/colorSurface">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/title_contact_requests"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="?android:textColorPrimary"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/desc_contact_requests"
+                    android:textSize="13sp"
+                    android:textColor="?android:textColorSecondary"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="12dp"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/contactRequestsBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="44dp"
+                    android:layout_gravity="end"
+                    android:text="@string/btn_open"
+                    android:textAllCaps="false"
+                    app:cornerRadius="22dp"
+
+                    style="@style/Widget.Material3.Button.TonalButton"/>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- ================= USER INFORMATION ================= -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -193,7 +238,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Contact Requests"
+                    android:text="@string/title_user_info"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     android:textColor="?android:textColorPrimary"/>
@@ -201,22 +246,21 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="View messages sent by users"
+                    android:text="@string/desc_user_info"
                     android:textSize="13sp"
                     android:textColor="?android:textColorSecondary"
                     android:layout_marginTop="4dp"
                     android:layout_marginBottom="12dp"/>
 
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/contactRequestsBtn"
+                    android:id="@+id/userInfoBtn"
                     android:layout_width="wrap_content"
                     android:layout_height="44dp"
                     android:layout_gravity="end"
-                    android:text="Open"
+                    android:text="@string/btn_view"
                     android:textAllCaps="false"
                     app:cornerRadius="22dp"
-
-                    style="@style/Widget.Material3.Button.TonalButton"/>
+                    app:backgroundTint="#4A6CF7"/>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 

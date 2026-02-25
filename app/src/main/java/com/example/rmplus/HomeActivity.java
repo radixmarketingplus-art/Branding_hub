@@ -130,9 +130,13 @@ public class HomeActivity extends BaseActivity {
         trendingRunnable = () -> autoScrollTrending();
         trendingHandler.postDelayed(trendingRunnable, 2500);
 
-        btnAll.setVisibility(View.GONE);
-        btnAll.setOnClickListener(v ->
-                filterFestivalByDate("CLEAR"));
+        btnAll.setVisibility(View.VISIBLE); // Show it permanently as a gallery link
+        btnAll.setOnClickListener(v -> {
+            Intent intent = new Intent(HomeActivity.this, TemplateGalleryActivity.class);
+            intent.putExtra("category", "Festival Cards");
+            startActivity(intent);
+        });
+
 
 //        rvTrending.addOnScrollListener(new RecyclerView.OnScrollListener() {
 //            @Override
@@ -316,15 +320,8 @@ public class HomeActivity extends BaseActivity {
 
     void filterFestivalByDate(String date) {
 
-//        if ("CLEAR".equals(date)) {
-//            loadFestivalCards();
-//            btnAll.setVisibility(View.GONE);
-//            return;
-//        }
-
         if ("CLEAR".equals(date)) {
-
-            loadFestivalCardsLive(); // Changed to live load
+            loadFestivalCardsLive(); 
             btnAll.setVisibility(View.GONE);
 
             RecyclerView rvDates = findViewById(R.id.rvFestivalDates);
@@ -351,23 +348,28 @@ public class HomeActivity extends BaseActivity {
                         }
 
                         ArrayList<TemplateModel> filtered = new ArrayList<>();
-                        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+                        // Standardize to "d-M-yyyy" to handle non-padded dates from Upload (1-2-2026) 
+                        // and padded dates from Filter (01-02-2026)
+                        SimpleDateFormat sdf = new SimpleDateFormat("d-M-yyyy", Locale.US); // ✅ Locale.US: avoid Hindi Devanagari digits
 
                         try {
-                            Date selected = sdf.parse(date);
+                            Date selectedDateObj = sdf.parse(date);
                             for (TemplateModel item : all) {
-                                // Or, if the date is part of the template ID, it could be parsed.
-                                // Since the instruction doesn't define `TemplateModel`'s fields, I'll make a safe assumption.
-                                // The instruction is about *loading* data, not re-implementing complex filtering.
-                                // So, I'll make a temporary change to ensure compilation, but flag this for review.
-
-                                // To make it compile and reflect the change, I'll temporarily remove the date comparison
-                                // and just add all items to filtered, as the `TemplateModel` doesn't have a `date` field.
-                                // This is a temporary workaround for the instruction's scope.
-                                // A proper solution would involve adding a `date` field to `TemplateModel`.
-                                filtered.add(item); // TEMPORARY: Needs proper date field in TemplateModel for filtering
+                                if (item.date != null) {
+                                    try {
+                                        Date itemDateObj = sdf.parse(item.date);
+                                        if (selectedDateObj.equals(itemDateObj)) {
+                                            filtered.add(item);
+                                        }
+                                    } catch (Exception e) {
+                                        // fallback
+                                        if (item.date.equals(date)) filtered.add(item);
+                                    }
+                                }
                             }
-                        } catch (Exception e) { /* Handle parsing error */ }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
 
                         rvFestivalCards.setAdapter(new TemplateGridAdapter(filtered, t -> {
                             Intent i = new Intent(HomeActivity.this, TemplatePreviewActivity.class);
@@ -380,7 +382,7 @@ public class HomeActivity extends BaseActivity {
 
                     @Override
                     public void onCancelled(DatabaseError error) {
-                        // Handle error
+                        toast("Error filtering: " + error.getMessage());
                     }
                 });
     }
@@ -421,12 +423,19 @@ public class HomeActivity extends BaseActivity {
                             // Inflate section layout
                             View sectionView = getLayoutInflater().inflate(R.layout.item_home_section, container, false);
                             TextView txtTitle = sectionView.findViewById(R.id.txtSectionTitle);
+                            TextView btnSectionSeeAll = sectionView.findViewById(R.id.btnSectionSeeAll);
                             RecyclerView rvItems = sectionView.findViewById(R.id.rvSectionItems);
                             LinearLayout filterContainer = sectionView.findViewById(R.id.filterContainer);
                             View scrollFilters = sectionView.findViewById(R.id.scrollFilters);
 
-                            txtTitle.setText(key);
+                            txtTitle.setText(getLocalizedSectionName(key));
                             rvItems.setLayoutManager(new LinearLayoutManager(HomeActivity.this, RecyclerView.HORIZONTAL, false));
+
+                            btnSectionSeeAll.setOnClickListener(v -> {
+                                Intent intent = new Intent(HomeActivity.this, TemplateGalleryActivity.class);
+                                intent.putExtra("category", key);
+                                startActivity(intent);
+                            });
 
                             if (key.equalsIgnoreCase("Business Frame")) {
                                 scrollFilters.setVisibility(View.VISIBLE);
@@ -439,7 +448,14 @@ public class HomeActivity extends BaseActivity {
                                 for (int i = 0; i < subcats.size(); i++) {
                                     String sub = subcats.get(i);
                                     TextView chip = new TextView(HomeActivity.this);
-                                    chip.setText(sub);
+                                    
+                                    String displaySub = sub;
+                                    if (sub.equalsIgnoreCase("All")) displaySub = getString(R.string.filter_all);
+                                    else if (sub.equalsIgnoreCase("Political")) displaySub = getString(R.string.cat_political);
+                                    else if (sub.equalsIgnoreCase("NGO")) displaySub = getString(R.string.cat_ngo);
+                                    else if (sub.equalsIgnoreCase("Business")) displaySub = getString(R.string.cat_business);
+                                    
+                                    chip.setText(displaySub);
                                     chip.setPadding(30, 10, 30, 10);
                                     android.widget.LinearLayout.LayoutParams params = new android.widget.LinearLayout.LayoutParams(
                                             android.widget.LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -577,8 +593,9 @@ public class HomeActivity extends BaseActivity {
                         ArrayList<TemplateModel> list = new ArrayList<>();
                         for (DataSnapshot d : snapshot.getChildren()) {
                             String url = d.hasChild("imagePath") ? d.child("imagePath").getValue(String.class) : d.child("url").getValue(String.class);
+                            String date = d.child("date").getValue(String.class);
                             if (url != null) {
-                                list.add(new TemplateModel(d.getKey(), url, "Festival Cards"));
+                                list.add(new TemplateModel(d.getKey(), url, "Festival Cards", date));
                             }
                         }
                         rvFestivalCards.setAdapter(new TemplateGridAdapter(list, t -> {
@@ -618,6 +635,9 @@ public class HomeActivity extends BaseActivity {
         ArrayList<Calendar> list =
                 new ArrayList<>();
 
+        // 🌟 Add null at the start for the "All" filter chip
+        list.add(null);
+
         Calendar cal =
                 Calendar.getInstance();
 
@@ -651,5 +671,9 @@ public class HomeActivity extends BaseActivity {
 
         if (trendingHandler != null)
             trendingHandler.removeCallbacks(trendingRunnable);
+    }
+
+    void toast(String msg) {
+        android.widget.Toast.makeText(this, msg, android.widget.Toast.LENGTH_SHORT).show();
     }
 }

@@ -18,7 +18,7 @@ import com.google.firebase.auth.FirebaseAuth;
 
 public class SettingsActivity extends AppCompatActivity {
 
-    View changePasswordBtn, clearCacheBtn, privacyBtn, termsBtn;
+    View changePasswordBtn, clearCacheBtn, privacyBtn, termsBtn, supportBtn;
     Switch notificationSwitch;
     TextView versionTxt;
 
@@ -36,12 +36,13 @@ public class SettingsActivity extends AppCompatActivity {
         clearCacheBtn = findViewById(R.id.clearCacheBtn);
         privacyBtn = findViewById(R.id.privacyBtn);
         termsBtn = findViewById(R.id.termsBtn);
+        supportBtn = findViewById(R.id.supportBtn);
         notificationSwitch = findViewById(R.id.notificationSwitch);
         versionTxt = findViewById(R.id.versionTxt);
 
         auth = FirebaseAuth.getInstance();
 
-        versionTxt.setText("Version 1.0");
+        versionTxt.setText(getString(R.string.version_text, "1.0"));
 
 //        Temporary cache test
 //        try {
@@ -85,7 +86,7 @@ public class SettingsActivity extends AppCompatActivity {
                                 .subscribeToTopic("all");
 
                         Toast.makeText(this,
-                                "Notifications Enabled",
+                                R.string.msg_notif_enabled,
                                 Toast.LENGTH_SHORT).show();
 
                     } else {
@@ -94,7 +95,7 @@ public class SettingsActivity extends AppCompatActivity {
                                 .unsubscribeFromTopic("all");
 
                         Toast.makeText(this,
-                                "Notifications Disabled",
+                                R.string.msg_notif_disabled,
                                 Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -107,18 +108,18 @@ public class SettingsActivity extends AppCompatActivity {
             if (auth.getCurrentUser() == null) return;
 
             new AlertDialog.Builder(this)
-                    .setTitle("Reset Password")
-                    .setMessage("Send password reset link to your email?")
-                    .setPositiveButton("Yes", (d, w) -> {
+                    .setTitle(R.string.title_reset_password)
+                    .setMessage(R.string.msg_reset_password)
+                    .setPositiveButton(R.string.yes, (d, w) -> {
 
                         auth.sendPasswordResetEmail(
                                 auth.getCurrentUser().getEmail());
 
                         Toast.makeText(this,
-                                "Reset link sent to email",
+                                R.string.msg_reset_link_sent,
                                 Toast.LENGTH_LONG).show();
                     })
-                    .setNegativeButton("No", null)
+                    .setNegativeButton(R.string.no, null)
                     .show();
         });
 
@@ -129,33 +130,34 @@ public class SettingsActivity extends AppCompatActivity {
             long before = getTotalCacheSize();
 
             new AlertDialog.Builder(this)
-                    .setTitle("Clear Cache")
-                    .setMessage("Clear temporary files?")
-                    .setPositiveButton("Yes", (d, w) -> {
+                    .setTitle(R.string.title_clear_cache)
+                    .setMessage(R.string.msg_clear_cache)
+                    .setPositiveButton(R.string.yes, (d, w) -> {
 
                         deleteCache();
 
                         long after = getTotalCacheSize();
 
                         Toast.makeText(this,
-                                "Cleared: " +
-                                        formatSize(before - after),
+                                getString(R.string.msg_cleared, formatSize(before - after)),
                                 Toast.LENGTH_LONG).show();
                     })
-                    .setNegativeButton("No", null)
+                    .setNegativeButton(R.string.no, null)
                     .show();
         });
 
 
         // ================= PRIVACY =================
 
-        privacyBtn.setOnClickListener(v ->
-                openWeb("https://example.com/privacy"));
+        // privacyBtn.setOnClickListener(v ->
+        //         openWeb("https://example.com/privacy"));
 
-        // ================= TERMS =================
+        // termsBtn.setOnClickListener(v ->
+        //         openWeb("https://example.com/terms"));
 
-        termsBtn.setOnClickListener(v ->
-                openWeb("https://example.com/terms"));
+        // ================= SUPPORT =================
+
+        supportBtn.setOnClickListener(v -> showContactSupportDialog());
     }
 
     // ================= CACHE DELETE =================
@@ -239,5 +241,28 @@ public class SettingsActivity extends AppCompatActivity {
         startActivity(new Intent(
                 Intent.ACTION_VIEW,
                 Uri.parse(url)));
+    }
+    void showContactSupportDialog() {
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_contact_support, null);
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .create();
+
+        dialogView.findViewById(R.id.btnCallSupport).setOnClickListener(v -> {
+            dialog.dismiss();
+            Intent callIntent = new Intent(Intent.ACTION_DIAL);
+            callIntent.setData(Uri.parse("tel:+917089927270"));
+            startActivity(callIntent);
+        });
+
+        dialogView.findViewById(R.id.btnEmailSupport).setOnClickListener(v -> {
+            dialog.dismiss();
+            Intent email = new Intent(Intent.ACTION_SENDTO);
+            email.setData(Uri.parse("mailto:prikhush332@gmail.com"));
+            email.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.support_email_subject));
+            startActivity(email);
+        });
+
+        dialog.show();
     }
 }

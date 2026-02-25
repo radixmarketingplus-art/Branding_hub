@@ -61,7 +61,7 @@ public class FestivalDateAdapter
 
         // 🔥 CLEAR FILTER CHIP
         if (c == null) {
-            h.day.setText("All");
+            h.day.setText(h.itemView.getContext().getString(R.string.filter_all));
             h.month.setText("");
             h.itemView.setBackgroundResource(R.drawable.bg_date_normal);
 
@@ -111,7 +111,7 @@ public class FestivalDateAdapter
             notifyItemChanged(selectedPosition);
 
             SimpleDateFormat sdf =
-                    new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+                    new SimpleDateFormat("dd-MM-yyyy", Locale.US); // ✅ Locale.US: avoid Devanagari numerals in Hindi
 
             if (listener != null) {
                 listener.onDateSelected(sdf.format(c.getTime()));

@@ -37,7 +37,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Verify Your Email"
+                    android:text="@string/title_verify_email"
                     android:textSize="22sp"
                     android:textStyle="bold"
                     android:textColor="?attr/colorOnSurface"
@@ -48,7 +48,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="We’ve sent a verification link to your email address. Please verify to continue."
+                    android:text="@string/desc_verify_email"
                     android:textSize="14sp"
                     android:textColor="?attr/colorOnSurfaceVariant"
                     android:gravity="center"
@@ -60,7 +60,7 @@
                     android:id="@+id/checkBtn"
                     android:layout_width="match_parent"
                     android:layout_height="52dp"
-                    android:text="I Have Verified"
+                    android:text="@string/btn_i_have_verified"
                     android:textAllCaps="false"
                     android:textSize="15sp"
                     android:background="@drawable/bg_primary_button"/>
@@ -70,7 +70,7 @@
                     android:id="@+id/resendBtn"
                     android:layout_width="match_parent"
                     android:layout_height="52dp"
-                    android:text="Resend Email"
+                    android:text="@string/btn_resend_email"
                     android:textAllCaps="false"
                     android:textSize="15sp"
                     android:layout_marginTop="12dp"

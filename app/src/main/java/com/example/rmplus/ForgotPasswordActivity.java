@@ -27,14 +27,14 @@ public class ForgotPasswordActivity extends AppCompatActivity {
 
             // ✅ NEW: Check empty field FIRST
             if(em.isEmpty()){
-                email.setError("Enter email");
+                email.setError(getString(R.string.hint_enter_email));
                 return;
             }
 
             // Existing validation
 
             if(!Patterns.EMAIL_ADDRESS.matcher(em).matches()){
-                email.setError("Invalid Email");
+                email.setError(getString(R.string.err_invalid_email));
                 return;
             }
 
@@ -42,12 +42,12 @@ public class ForgotPasswordActivity extends AppCompatActivity {
                     .sendPasswordResetEmail(em)
                     .addOnSuccessListener(unused ->
                             Toast.makeText(this,
-                                    "Reset link sent",
+                                    R.string.msg_reset_link_sent,
                                     Toast.LENGTH_LONG).show()
                     )
                     .addOnFailureListener(e ->
                             Toast.makeText(this,
-                                    "Email not registered",
+                                    R.string.msg_email_not_registered,
                                     Toast.LENGTH_LONG).show()
                     );
         });

@@ -23,26 +23,10 @@ public class ExpiryCleanupHelper {
             public void onDataChange(DataSnapshot snapshot) {
                 for (DataSnapshot sectionSnapshot : snapshot.getChildren()) {
                     String category = sectionSnapshot.getKey();
-                    for (DataSnapshot templateSnapshot : sectionSnapshot.getChildren()) {
-                        
-                        long expiry = 0;
-                        String url = null;
-                        
-                        if (templateSnapshot.hasChild("expiryDate")) {
-                            expiry = (long) templateSnapshot.child("expiryDate").getValue();
-                        }
-                        
-                        if (templateSnapshot.hasChild("url")) {
-                            url = (String) templateSnapshot.child("url").getValue();
-                        } else if (templateSnapshot.hasChild("imagePath")) {
-                            url = (String) templateSnapshot.child("imagePath").getValue();
-                        }
+                    if (category == null) continue;
 
-                        if (expiry > 0 && now > expiry && url != null) {
-                            // 🔥 EXPIRED!
-                            performNuclearDelete(context, category, templateSnapshot.getKey(), url);
-                        }
-                    }
+                    // recursive check for items or sub-categories
+                    checkNode(context, sectionSnapshot, category, now);
                 }
             }
 
@@ -51,17 +35,45 @@ public class ExpiryCleanupHelper {
         });
     }
 
-    private static void performNuclearDelete(Context context, String category, String key, String url) {
-        // 1. Remove from Firebase templates node
-        FirebaseDatabase.getInstance().getReference("templates")
-                .child(category).child(key).removeValue();
+    private static void checkNode(Context context, DataSnapshot node, String path, long now) {
+        for (DataSnapshot child : node.getChildren()) {
+            if (child.hasChild("expiryDate")) {
+                // It's a template item
+                long expiry = 0;
+                Object val = child.child("expiryDate").getValue();
+                if (val instanceof Long) expiry = (Long) val;
+                else if (val instanceof Integer) expiry = ((Integer) val).longValue();
 
-        // 2. Remove stats/activity
+                String url = null;
+                if (child.hasChild("url")) {
+                    url = child.child("url").getValue(String.class);
+                } else if (child.hasChild("imagePath")) {
+                    url = child.child("imagePath").getValue(String.class);
+                }
+
+                if (expiry > 0 && now > expiry && url != null) {
+                    performNuclearDelete(context, path, child.getKey(), url);
+                }
+            } else if (child.getChildrenCount() > 0) {
+                // It's likely a sub-category (like 'Political' inside 'Business Frame')
+                checkNode(context, child, path + "/" + child.getKey(), now);
+            }
+        }
+    }
+
+    private static void performNuclearDelete(Context context, String path, String key, String url) {
+        // 1. Remove from Firebase
+        FirebaseDatabase.getInstance().getReference("templates")
+                .child(path).child(key).removeValue();
+
+        // 2. Remove stats
         FirebaseDatabase.getInstance().getReference("template_activity")
                 .child(key).removeValue();
 
-        // 3. Remove from local SharedPreferences
-        removeFromLocal(context, category, url);
+        // 3. Remove from SharedPreferences
+        // category for SP is the first part of the path (e.g., "Business Frame")
+        String rootCategory = path.contains("/") ? path.split("/")[0] : path;
+        removeFromLocal(context, rootCategory, url);
 
         // 4. Delete from VPS
         deleteFromVPS(url);
@@ -78,14 +90,14 @@ public class ExpiryCleanupHelper {
             Type t = new TypeToken<ArrayList<FestivalCardItem>>(){}.getType();
             ArrayList<FestivalCardItem> list = gson.fromJson(json, t);
             if (list != null) {
-                list.removeIf(item -> item.imagePath.equals(url));
+                list.removeIf(item -> item.imagePath != null && item.imagePath.equals(url));
                 editor.putString(category, gson.toJson(list));
             }
         } else if ("Advertisement".equalsIgnoreCase(category)) {
             Type t = new TypeToken<ArrayList<AdvertisementItem>>(){}.getType();
             ArrayList<AdvertisementItem> list = gson.fromJson(json, t);
             if (list != null) {
-                list.removeIf(item -> item.imagePath.equals(url));
+                list.removeIf(item -> item.imagePath != null && item.imagePath.equals(url));
                 editor.putString(category, gson.toJson(list));
             }
         } else {

@@ -31,7 +31,13 @@ public class StatsDetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_stats_detail);
 
         String rawPath = getIntent().getStringExtra("path");
-        templateKey = encodeKey(rawPath);
+        String passedId = getIntent().getStringExtra("id");
+        
+        if (passedId != null && !passedId.isEmpty()) {
+            templateKey = passedId;
+        } else {
+            templateKey = encodeKey(rawPath);
+        }
         String defaultTab = getIntent().getStringExtra("defaultTab");
 
         recycler = findViewById(R.id.recycler);

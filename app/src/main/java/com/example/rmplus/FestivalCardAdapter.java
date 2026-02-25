@@ -88,9 +88,9 @@ public class FestivalCardAdapter
     String format(String d) {
         try {
             SimpleDateFormat in =
-                    new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+                    new SimpleDateFormat("dd-MM-yyyy", Locale.US); // ✅ parse stored ASCII dates reliably
             SimpleDateFormat out =
-                    new SimpleDateFormat("d MMM", Locale.getDefault());
+                    new SimpleDateFormat("d MMM", Locale.getDefault()); // display in user language
             return out.format(in.parse(d));
         } catch (Exception e) {
             return d;

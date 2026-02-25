@@ -216,7 +216,7 @@ public class TemplatePreviewActivity extends AppCompatActivity {
         btnEdit.setOnClickListener(v -> {
 
             if (isVideo) {
-                toast("Video editing is not supported yet.");
+                toast(getString(R.string.msg_video_edit_not_supported));
                 return;
             }
 
@@ -253,10 +253,10 @@ public class TemplatePreviewActivity extends AppCompatActivity {
         // SAVE
         btnSave.setOnClickListener(v ->
                 new AlertDialog.Builder(this)
-                        .setTitle("Save Template")
-                        .setMessage("Do you really want to save?")
-                        .setPositiveButton("Yes", (d, w) -> saveImage())
-                        .setNegativeButton("No", null)
+                        .setTitle(R.string.title_save_template)
+                        .setMessage(R.string.msg_save_confirm)
+                        .setPositiveButton(R.string.yes, (d, w) -> saveImage())
+                        .setNegativeButton(R.string.no, null)
                         .show());
     }
 
@@ -420,11 +420,11 @@ public class TemplatePreviewActivity extends AppCompatActivity {
 
     void shareImage() {
         if (isVideo()) {
-            toast("Sharing video link...");
+            toast(getString(R.string.msg_sharing_video_link));
             Intent s = new Intent(Intent.ACTION_SEND);
             s.setType("text/plain");
-            s.putExtra(Intent.EXTRA_TEXT, "Check out this Reel: " + path);
-            startActivity(Intent.createChooser(s, "Share Video"));
+            s.putExtra(Intent.EXTRA_TEXT, getString(R.string.share_msg_body, getString(R.string.app_name), getPackageName()) + "\n\n" + path);
+            startActivity(Intent.createChooser(s, getString(R.string.title_share_video)));
             return;
         }
 
@@ -446,7 +446,7 @@ public class TemplatePreviewActivity extends AppCompatActivity {
                     s.setType("image/*");
                     s.putExtra(Intent.EXTRA_STREAM, uri);
                     s.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                    startActivity(Intent.createChooser(s, "Share"));
+                    startActivity(Intent.createChooser(s, getString(R.string.content_desc_share)));
                 });
             } catch (Exception e) { e.printStackTrace(); }
         }).start();
@@ -456,7 +456,7 @@ public class TemplatePreviewActivity extends AppCompatActivity {
 
     void saveImage() {
         if (isVideo()) {
-            toast("Video download not supported yet");
+            toast(getString(R.string.msg_video_download_not_supported));
             return;
         }
 
@@ -471,7 +471,7 @@ public class TemplatePreviewActivity extends AppCompatActivity {
 
                 runOnUiThread(() -> {
                     if (saved != null) {
-                        toast("Saved to Gallery");
+                        toast(getString(R.string.msg_saved_to_gallery));
                         rootRef.child("template_activity").child(templateId).child("saves").child(uid).setValue(true);
                         rootRef.child("user_activity").child(uid).child("saves").child(templateId).setValue(path);
                     }

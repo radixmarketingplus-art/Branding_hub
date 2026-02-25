@@ -29,7 +29,7 @@
                 android:id="@+id/statusTxt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Checking subscription..."
+                android:text="@string/status_checking"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 android:textColor="?attr/colorOnSurface"
@@ -65,7 +65,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Choose Plan"
+                    android:text="@string/label_choose_plan"
                     android:textStyle="bold"
                     android:textSize="15sp"
                     android:textColor="?attr/colorOnSurface"
@@ -90,10 +90,32 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Scan QR to Pay"
+                    android:text="@string/label_scan_qr"
                     android:textSize="15sp"
                     android:textStyle="bold"
                     android:textColor="?attr/colorOnSurface"
+                    android:layout_marginBottom="12dp"/>
+
+                <TextView
+                    android:id="@+id/upiIdTxt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/upi_id_value"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="?attr/colorPrimary"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginBottom="4dp"/>
+
+                <TextView
+                    android:id="@+id/amountTxt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Amount: ₹0"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="?attr/colorOnSurface"
+                    android:layout_gravity="center_horizontal"
                     android:layout_marginBottom="12dp"/>
 
                 <ImageView
@@ -111,7 +133,7 @@
                 android:id="@+id/uploadBtn"
                 android:layout_width="match_parent"
                 android:layout_height="52dp"
-                android:text="Upload Payment Proof"
+                android:text="@string/btn_upload_proof"
                 android:textAllCaps="false"
                 android:layout_marginBottom="12dp"
                 android:background="@drawable/bg_primary_button"/>
@@ -131,10 +153,19 @@
                 android:id="@+id/submitBtn"
                 android:layout_width="match_parent"
                 android:layout_height="54dp"
-                android:text="Submit Request"
+                android:text="@string/btn_submit_request"
                 android:textAllCaps="false"
                 android:background="@drawable/bg_secondary_button"
                 style="@style/Widget.Material3.Button.TonalButton"/>
+
+            <!-- PROGRESS (shown during upload+submit) -->
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="12dp"
+                android:visibility="gone"/>
 
         </LinearLayout>
 

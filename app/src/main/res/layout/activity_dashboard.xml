@@ -34,12 +34,13 @@
                 android:textStyle="bold"
                 android:textColor="?attr/colorOnSurface"/>
 
-            <ImageView
+            <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/profileBtn"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:src="@android:drawable/ic_menu_myplaces"
-                android:tint="?attr/colorOnSurface"/>
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_profile"
+                app:shapeAppearanceOverlay="@style/CircleAppearance" />
         </LinearLayout>
 
         <!-- ================= SEARCH ================= -->

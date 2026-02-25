@@ -29,19 +29,35 @@ public class CheckUploadsFragment extends Fragment {
     TemplateGridAdapter adapter;
     ArrayList<TemplateModel> allTemplates = new ArrayList<>();
 
-    String[] categories = {
-            "All",
-            "Advertisement",   // ✅ NEW
-            "Festival Cards",
-            "Latest Update",
-            "Business Special",
-            "Reel Maker",
-            "Business Frame",
-            "Motivation",
-            "Greetings",
-            "Business Ethics",
-            "Frame"
-    };
+    String getLocalizedName(String key) {
+        if (key == null) return "";
+        if (key.contains("/")) {
+            String[] parts = key.split("/");
+            if (parts.length > 1) {
+                return getLocalizedName(parts[0]) + " / " + getLocalizedSubCatName(parts[1]);
+            }
+        }
+        if (key.equalsIgnoreCase("All")) return getString(R.string.filter_all);
+        if (key.equalsIgnoreCase("Advertisement")) return getString(R.string.section_advertisement);
+        if (key.equalsIgnoreCase("Festival Cards")) return getString(R.string.section_festival_cards);
+        if (key.equalsIgnoreCase("Latest Update")) return getString(R.string.section_latest_update);
+        if (key.equalsIgnoreCase("Business Special")) return getString(R.string.section_business_special);
+        if (key.equalsIgnoreCase("Reel Maker")) return getString(R.string.section_reel_maker);
+        if (key.equalsIgnoreCase("Business Frame")) return getString(R.string.section_business_frame);
+        if (key.equalsIgnoreCase("Motivation")) return getString(R.string.section_motivation);
+        if (key.equalsIgnoreCase("Greetings")) return getString(R.string.section_greetings);
+        if (key.equalsIgnoreCase("Business Ethics")) return getString(R.string.section_business_ethics);
+        if (key.equalsIgnoreCase("Frame")) return getString(R.string.section_frame);
+        return key;
+    }
+
+    String getLocalizedSubCatName(String key) {
+        if (key == null) return "";
+        if (key.equalsIgnoreCase("Political")) return getString(R.string.cat_political);
+        if (key.equalsIgnoreCase("NGO")) return getString(R.string.cat_ngo);
+        if (key.equalsIgnoreCase("Business")) return getString(R.string.cat_business);
+        return key;
+    }
 
     String currentCategory = "All";
 
@@ -84,10 +100,24 @@ public class CheckUploadsFragment extends Fragment {
 
         filterContainer.removeAllViews();
 
+        String[] categories = {
+                "All",
+                "Advertisement",
+                "Festival Cards",
+                "Latest Update",
+                "Business Special",
+                "Reel Maker",
+                "Business Frame",
+                "Motivation",
+                "Greetings",
+                "Business Ethics",
+                "Frame"
+        };
+        
         for (String c : categories) {
-
             TextView chip = new TextView(requireContext());
-            chip.setText(c);
+            chip.setText(getLocalizedName(c));
+            chip.setTag(c);
             chip.setTextSize(14);
             chip.setPadding(36, 16, 36, 16);
             chip.setBackgroundResource(R.drawable.bg_filter_chip);
@@ -107,9 +137,9 @@ public class CheckUploadsFragment extends Fragment {
             chip.setLayoutParams(lp);
 
             chip.setOnClickListener(v -> {
-                currentCategory = c;
+                currentCategory = (String) v.getTag();
                 updateTabUI();
-                loadCategory(c);
+                loadCategory(currentCategory);
             });
 
             filterContainer.addView(chip);
@@ -122,10 +152,8 @@ public class CheckUploadsFragment extends Fragment {
 
         for (int i = 0; i < filterContainer.getChildCount(); i++) {
 
-            TextView chip =
-                    (TextView) filterContainer.getChildAt(i);
-
-            if (chip.getText().toString().equals(currentCategory)) {
+            TextView chip = (TextView) filterContainer.getChildAt(i);
+            if (chip.getTag().toString().equals(currentCategory)) {
                 chip.setTypeface(null, android.graphics.Typeface.BOLD);
                 chip.setTextColor(
                         getColorFromAttr(

@@ -67,12 +67,12 @@ public class LoginActivity extends AppCompatActivity {
         // ✅ Mode switching
         emailModeBtn.setOnClickListener(v -> {
             loginWithPhone = false;
-            email.setHint("Enter Email");
+            email.setHint(R.string.hint_enter_email);
         });
 
         phoneModeBtn.setOnClickListener(v -> {
             loginWithPhone = true;
-            email.setHint("Enter Phone Number");
+            email.setHint(R.string.hint_enter_phone);
         });
 
 
@@ -103,7 +103,7 @@ public class LoginActivity extends AppCompatActivity {
             // ❗ EMPTY INPUT CHECK
             if (input.isEmpty() || ps.isEmpty()) {
                 Toast.makeText(this,
-                        "Enter email/phone and password",
+                        R.string.msg_enter_creds,
                         Toast.LENGTH_SHORT).show();
                 setLoading(false);
                 return;
@@ -126,7 +126,7 @@ public class LoginActivity extends AppCompatActivity {
 
             if (!isInternetAvailable()) {
                 Toast.makeText(this,
-                        "No internet connection",
+                        R.string.msg_no_internet,
                         Toast.LENGTH_SHORT).show();
                 setLoading(false);
                 return;
@@ -149,7 +149,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 // 📱 PHONE LOGIN
                 if (!input.matches("^[6-9][0-9]{9}$")) {
-                    email.setError("Invalid Phone Number");
+                    email.setError(getString(R.string.err_invalid_phone));
                     setLoading(false);
                     return;
                 }
@@ -167,7 +167,7 @@ public class LoginActivity extends AppCompatActivity {
 
                                         if (!snapshot.exists()) {
                                             Toast.makeText(LoginActivity.this,
-                                                    "Phone not registered",
+                                                    R.string.msg_phone_not_registered,
                                                     Toast.LENGTH_SHORT).show();
 
                                             setLoading(false);
@@ -196,7 +196,7 @@ public class LoginActivity extends AppCompatActivity {
                                         }
 
                                         Toast.makeText(LoginActivity.this,
-                                                "Email not found for this phone",
+                                                R.string.msg_email_not_found_phone,
                                                 Toast.LENGTH_SHORT).show();
 
                                         setLoading(false);
@@ -214,7 +214,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 // 📧 EMAIL LOGIN
                 if (!Patterns.EMAIL_ADDRESS.matcher(input).matches()) {
-                    email.setError("Invalid Email");
+                    email.setError(getString(R.string.err_invalid_email));
                     setLoading(false);
                     return;
                 }
@@ -260,7 +260,7 @@ public class LoginActivity extends AppCompatActivity {
                     if (auth.getCurrentUser() == null) {
                         setLoading(false);
                         Toast.makeText(this,
-                                "Authentication error",
+                                R.string.msg_auth_error,
                                 Toast.LENGTH_SHORT).show();
                         return;
                     }
@@ -339,7 +339,7 @@ public class LoginActivity extends AppCompatActivity {
                                                                     .apply();
 
                                                             Toast.makeText(LoginActivity.this,
-                                                                    "Login Success",
+                                                                    R.string.msg_login_success,
                                                                     Toast.LENGTH_SHORT).show();
 
 // ===== OPEN HOME =====
@@ -354,7 +354,7 @@ public class LoginActivity extends AppCompatActivity {
                                                         public void onCancelled(DatabaseError error) {
 
                                                             Toast.makeText(LoginActivity.this,
-                                                                    "Network error",
+                                                                    R.string.msg_network_error,
                                                                     Toast.LENGTH_SHORT).show();
 
                                                             setLoading(false);
@@ -382,7 +382,7 @@ public class LoginActivity extends AppCompatActivity {
                 }).addOnFailureListener(e -> {
 
                     Toast.makeText(this,
-                            "Wrong Credentials",
+                            R.string.msg_wrong_credentials,
                             Toast.LENGTH_SHORT).show();
 
                     setLoading(false);
@@ -429,7 +429,7 @@ public class LoginActivity extends AppCompatActivity {
         registerBtn.setEnabled(!loading);
 
         // Optional text change
-        loginBtn.setText(loading ? "Please wait..." : "Login");
+        loginBtn.setText(loading ? getString(R.string.btn_please_wait) : getString(R.string.btn_login));
     }
 
     @Override

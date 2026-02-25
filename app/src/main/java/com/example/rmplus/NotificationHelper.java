@@ -46,7 +46,11 @@ public class NotificationHelper {
         ref.child("read").setValue(false);
         ref.child("time").setValue(System.currentTimeMillis());
 
-        showPhoneNotification(context,title,message);
+        // ✅ Localize BEFORE showing tray/phone notification
+        String localizedTitle = getLocalized(context, title);
+        String localizedMessage = getLocalized(context, message);
+
+        showPhoneNotification(context, localizedTitle, localizedMessage);
     }
 
     private static void showPhoneNotification(Context context,
@@ -64,7 +68,7 @@ public class NotificationHelper {
             NotificationChannel channel =
                     new NotificationChannel(
                             CHANNEL_ID,
-                            "RM Plus Notifications",
+                            context.getString(R.string.app_name) + " " + context.getString(R.string.btn_notifications),
                             NotificationManager.IMPORTANCE_HIGH
                     );
 
@@ -74,6 +78,7 @@ public class NotificationHelper {
         Intent intent =
                 new Intent(context,
                         NotificationActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
         PendingIntent pendingIntent =
                 PendingIntent.getActivity(
@@ -100,5 +105,48 @@ public class NotificationHelper {
                 (int) System.currentTimeMillis(),
                 builder.build()
         );
+    }
+
+    public static String getLocalized(android.content.Context context, String text) {
+        if (text == null || text.isEmpty()) return "";
+
+        // Subscription
+        if (text.equalsIgnoreCase("Subscription Approved")) return context.getString(R.string.title_sub_approved);
+        if (text.equalsIgnoreCase("Your plan has been approved!")) return context.getString(R.string.desc_sub_approved);
+        if (text.equalsIgnoreCase("Subscription Rejected")) return context.getString(R.string.title_sub_rejected);
+        if (text.equalsIgnoreCase("Your plan request was rejected.")) return context.getString(R.string.desc_sub_rejected);
+        if (text.equalsIgnoreCase("Subscription Request Sent")) return context.getString(R.string.msg_sub_request_sent);
+        if (text.equalsIgnoreCase("Your subscription request has been sent for review.")) return context.getString(R.string.msg_sub_request_sent_desc);
+
+        // Profile
+        if (text.equalsIgnoreCase("Profile Updated")) return context.getString(R.string.msg_profile_updated);
+        if (text.equalsIgnoreCase("Your profile information has been successfully updated.") || 
+            text.equalsIgnoreCase("Your profile updated successfully")) 
+            return context.getString(R.string.msg_profile_updated_desc);
+
+        // Support Request
+        if (text.equalsIgnoreCase("New Support Request")) return context.getString(R.string.notif_new_request);
+
+        // Advertisement
+        if (text.startsWith("Advertisement Status: ")) {
+            String s = text.replace("Advertisement Status: ", "").trim();
+            String localizedS = s;
+            if (s.equalsIgnoreCase("pending")) localizedS = context.getString(R.string.tab_pending);
+            else if (s.equalsIgnoreCase("accepted")) localizedS = context.getString(R.string.tab_accepted);
+            else if (s.equalsIgnoreCase("rejected")) localizedS = context.getString(R.string.tab_rejected);
+            return context.getString(R.string.msg_adv_notif_title, localizedS);
+        }
+
+        // Customer Request
+        if (text.startsWith("Request Status: ")) {
+            String s = text.replace("Request Status: ", "").trim();
+            String localizedS = s;
+            if (s.equalsIgnoreCase("pending")) localizedS = context.getString(R.string.tab_pending);
+            else if (s.equalsIgnoreCase("accepted")) localizedS = context.getString(R.string.tab_accepted);
+            else if (s.equalsIgnoreCase("rejected")) localizedS = context.getString(R.string.tab_rejected);
+            return context.getString(R.string.msg_request_status_format, localizedS);
+        }
+
+        return text;
     }
 }

@@ -33,7 +33,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Select Section"
+                    android:text="@string/section_select"
                     android:textStyle="bold"
                     android:textSize="16sp"
                     android:textColor="?android:textColorPrimary"/>
@@ -59,7 +59,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Select Sub-Category"
+                        android:text="@string/label_select_sub_cat"
                         android:textSize="14sp"
                         android:textColor="?android:textColorPrimary"
                         android:layout_marginBottom="8dp"/>
@@ -77,7 +77,7 @@
                     android:id="@+id/editAdLink"
                     android:layout_width="match_parent"
                     android:layout_height="52dp"
-                    android:hint="Enter advertisement link"
+                    android:hint="@string/msg_enter_ad_link"
                     android:inputType="textUri"
                     android:visibility="gone"
                     android:background="@drawable/bg_input"
@@ -98,7 +98,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Festival Date"
+                        android:text="@string/label_festival_date"
                         android:textSize="14sp"
                         android:textColor="?android:textColorPrimary"
                         android:layout_marginBottom="8dp"/>
@@ -107,7 +107,7 @@
                         android:id="@+id/btnPickDate"
                         android:layout_width="match_parent"
                         android:layout_height="48dp"
-                        android:text="Pick Date"
+                        android:text="@string/btn_pick_date"
                         android:textAllCaps="false"
                         app:cornerRadius="14dp"
                         app:backgroundTint="#4A6CF7"
@@ -125,7 +125,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Expiry Date (Default 7 Days)"
+                        android:text="@string/label_expiry_date_desc"
                         android:textSize="14sp"
                         android:textColor="?android:textColorPrimary"
                         android:layout_marginBottom="8dp"/>
@@ -134,7 +134,7 @@
                         android:id="@+id/btnPickExpiry"
                         android:layout_width="match_parent"
                         android:layout_height="48dp"
-                        android:text="Set Expiry Date"
+                        android:text="@string/btn_set_expiry"
                         android:textAllCaps="false"
                         app:cornerRadius="14dp"
                         app:backgroundTint="#F44336"
@@ -162,7 +162,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Upload Template Image/Video"
+                    android:text="@string/label_upload_media"
                     android:textStyle="bold"
                     android:textSize="16sp"
                     android:textColor="?android:textColorPrimary"/>
@@ -170,7 +170,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Select a category first to enable selection"
+                    android:text="@string/msg_select_cat_first"
                     android:textSize="13sp"
                     android:textColor="?android:textColorSecondary"
                     android:layout_marginTop="4dp"
@@ -190,7 +190,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="48dp"
                     android:layout_gravity="end"
-                    android:text="Select Item"
+                    android:text="@string/btn_select_item"
                     android:textAllCaps="false"
                     android:enabled="false"
                     app:cornerRadius="14dp"
@@ -207,7 +207,7 @@
             android:layout_height="48dp"
             android:layout_marginTop="10dp"
             android:layout_gravity="end"
-            android:text="Save &amp; Continue"
+            android:text="@string/btn_save_continue"
             android:textAllCaps="false"
             app:cornerRadius="14dp"
             app:backgroundTint="#4A6CF7"

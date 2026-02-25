@@ -9,7 +9,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
-public class UploadManagerActivity extends AppCompatActivity {
+public class UploadManagerActivity extends BaseActivity {
 
     LinearLayout tabUpload, tabCheck;
     TextView txtUpload, txtCheck;

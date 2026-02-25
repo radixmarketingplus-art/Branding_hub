@@ -7,6 +7,10 @@
 
     <style name="Theme.RMPlus" parent="Base.Theme.RMPlus" />
 
+    <style name="ShapeAppearanceOverlay.App.CornerSize50Percent" parent="">
+        <item name="cornerSize">50%</item>
+    </style>
+
     <style name="Theme.App" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">@color/primary</item>
         <item name="colorSurface">@color/surface_light</item>

@@ -20,7 +20,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="Hi, User"
+        android:text="@string/greeting_format"
         android:textSize="18sp"
         android:textStyle="bold"
         android:textColor="?attr/colorOnSurface" />
@@ -66,13 +66,13 @@
     </FrameLayout>
 
     <!-- PROFILE -->
-    <ImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/btnProfile"
         android:layout_width="36dp"
         android:layout_height="36dp"
-        android:padding="6dp"
+        android:scaleType="centerCrop"
         android:src="@drawable/ic_profile"
         android:background="?attr/selectableItemBackgroundBorderless"
-        app:tint="?attr/colorOnSurface" />
+        app:shapeAppearanceOverlay="@style/CircleAppearance" />
 
 </LinearLayout>

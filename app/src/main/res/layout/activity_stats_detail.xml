@@ -26,7 +26,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="Like"
+                android:text="@string/tab_likes"
                 android:textStyle="bold"
                 android:textColor="?attr/colorOnSurface"/>
 
@@ -36,7 +36,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="Favorite"
+                android:text="@string/tab_favorite"
                 android:textColor="?attr/colorOnSurfaceVariant"/>
 
             <TextView
@@ -45,7 +45,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="Edits"
+                android:text="@string/tab_edits"
                 android:textColor="?attr/colorOnSurfaceVariant"/>
 
             <TextView
@@ -54,7 +54,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="Saved"
+                android:text="@string/tab_saved"
                 android:textColor="?attr/colorOnSurfaceVariant"/>
         </LinearLayout>
 

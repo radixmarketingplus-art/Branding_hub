@@ -16,14 +16,14 @@
 
         <!-- HEADER -->
         <TextView
-            android:text="Advertisement Request"
+            android:text="@string/title_adv_request"
             android:textSize="22sp"
             android:textStyle="bold"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
         <TextView
-            android:text="Fill details to publish your advertisement"
+            android:text="@string/desc_fill_adv_details"
             android:textSize="14sp"
             android:layout_marginBottom="24dp"
             android:layout_width="match_parent"
@@ -32,7 +32,7 @@
         <!-- WEBSITE LINK -->
         <EditText
             android:id="@+id/etLink"
-            android:hint="Advertisement Website / Link"
+            android:hint="@string/hint_adv_link"
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:background="@drawable/bg_glass_input"
@@ -41,7 +41,7 @@
 
         <!-- TEMPLATE IMAGE -->
         <TextView
-            android:text="Upload Advertisement Template"
+            android:text="@string/label_upload_adv_template"
             android:textStyle="bold"
             android:layout_marginBottom="6dp"
             android:layout_width="wrap_content"
@@ -52,19 +52,34 @@
             android:layout_width="match_parent"
             android:layout_height="180dp"
             android:background="@drawable/bg_image_preview"
+            android:scaleType="centerCrop"
+            android:clickable="true"
+            android:focusable="true"
             android:visibility="gone"
+            android:layout_marginBottom="4dp"/>
+
+        <TextView
+            android:id="@+id/tvReCropHint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/hint_tap_to_recrop"
+            android:textSize="12sp"
+            android:textStyle="italic"
+            android:alpha="0.6"
+            android:visibility="gone"
+            android:layout_gravity="center_horizontal"
             android:layout_marginBottom="8dp"/>
 
         <Button
             android:id="@+id/btnUploadTemplate"
-            android:text="Upload Template"
+            android:text="@string/btn_upload_template"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:background="@drawable/bg_secondary_button"/>
 
         <!-- SCANNER IMAGE -->
         <TextView
-            android:text="Scan And Pay"
+            android:text="@string/label_scan_and_pay"
             android:textStyle="bold"
             android:layout_marginTop="20dp"
             android:layout_marginBottom="6dp"
@@ -88,7 +103,7 @@
 
         <Button
             android:id="@+id/btnUploadProof"
-            android:text="Upload Payment Proof"
+            android:text="@string/btn_upload_payment_proof"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:background="@drawable/bg_secondary_button"/>
@@ -96,11 +111,20 @@
         <!-- SUBMIT -->
         <Button
             android:id="@+id/btnSubmitAd"
-            android:text="Submit Advertisement Request"
+            android:text="@string/btn_submit_adv_request"
             android:layout_width="match_parent"
             android:layout_height="54dp"
             android:layout_marginTop="24dp"
             android:background="@drawable/bg_primary_button"/>
+
+        <!-- PROGRESS (shown during upload+submit) -->
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="12dp"
+            android:visibility="gone"/>
 
     </LinearLayout>
 

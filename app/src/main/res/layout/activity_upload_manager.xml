@@ -16,7 +16,7 @@
 
         <!-- TITLE -->
         <TextView
-            android:text="Uploads"
+            android:text="@string/title_uploads"
             android:textSize="22sp"
             android:textStyle="bold"
             android:textColor="?attr/colorOnBackground"
@@ -43,7 +43,7 @@
 
                 <TextView
                     android:id="@+id/txtUpload"
-                    android:text="Upload Templates"
+                    android:text="@string/tab_upload_templates"
                     android:textSize="14sp"
                     android:textStyle="bold"
                     android:textColor="?attr/colorOnPrimary"
@@ -60,7 +60,7 @@
 
                 <TextView
                     android:id="@+id/txtCheck"
-                    android:text="Check Uploads"
+                    android:text="@string/tab_check_uploads"
                     android:textSize="14sp"
                     android:textColor="?attr/colorOnSurface"
                     android:layout_width="wrap_content"

@@ -20,7 +20,7 @@
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
             android:paddingBottom="8dp"
-            android:text="Requests"
+            android:text="@string/title_contact_requests"
             android:textSize="20sp"
             android:textStyle="bold"
             android:textColor="?attr/colorOnBackground"/>

@@ -60,22 +60,22 @@ public class RegisterActivity extends AppCompatActivity {
             String ps = password.getText().toString().trim();
 
             if (!nm.matches("[a-zA-Z ]+")) {
-                name.setError("Only letters allowed");
+                name.setError(getString(R.string.err_only_letters));
                 return;
             }
 
             if (!Patterns.EMAIL_ADDRESS.matcher(em).matches()) {
-                email.setError("Invalid Email");
+                email.setError(getString(R.string.err_invalid_email));
                 return;
             }
 
             if (!mb.matches("^[6-9][0-9]{9}$")) {
-                mobile.setError("Invalid Mobile Number");
+                mobile.setError(getString(R.string.err_invalid_mobile));
                 return;
             }
 
             if (!ps.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=]).{6,}$")) {
-                password.setError("Weak Password");
+                password.setError(getString(R.string.err_weak_password));
                 return;
             }
 

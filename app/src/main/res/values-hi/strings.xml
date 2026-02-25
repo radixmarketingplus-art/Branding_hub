@@ -1,0 +1,693 @@
+<resources>
+    <string name="app_name">RM Plus</string>
+    <string name="splash_tagline">अपने व्यवसाय को डिजिटल रूप से बढ़ाएं</string>
+    <string name="desc_app_logo">ऐप लोगो</string>
+    <string name="hello_blank_fragment">नमस्ते रिक्त फ्रैगमेंट</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">होम</string>
+    <string name="nav_template">टेम्पलेट</string>
+    <string name="nav_contact">संपर्क</string>
+    <string name="nav_my_design">मेरा डिज़ाइन</string>
+    <string name="nav_profile">प्रोफ़ाइल</string>
+    <string name="nav_upload">अपलोड</string>
+    <string name="nav_admin">एडमिन</string>
+    <string name="greeting_format">नमस्ते, %1$s</string>
+    <string name="default_user">यूज़र</string>
+    <string name="tab_pending">लंबित</string>
+    <string name="tab_accepted">स्वीकृत</string>
+    <string name="tab_rejected">अस्वीकृत</string>
+    <string name="label_plan_requested">अनुरोधित प्लान: %1$s</string>
+    <string name="label_requested_on">अनुरोध की तिथि: %1$s</string>
+    <string name="label_payment_proof">भुगतान का प्रमाण</string>
+    <string name="btn_download_proof">प्रमाण डाउनलोड करें</string>
+    <string name="label_grant_plan">प्लान प्रदान करें (वैधता निर्धारित करता है)</string>
+    <string name="label_expires_on">समाप्ति तिथि: %1$s</string>
+    <string name="btn_update_expiry">वैधता अपडेट करें</string>
+    <string name="plan_silver">सिल्वर प्लान (1 महीना)</string>
+    <string name="plan_gold">गोल्ड प्लान (6 महीने)</string>
+    <string name="plan_diamond">डायमंड प्लान (1 साल)</string>
+    <string name="plan_custom">कस्टम (7 दिन)</string>
+    <string name="msg_select_duration_first">कृपया पहले अवधि चुनें</string>
+    <string name="dur_select">अवधि चुनें</string>
+    <string name="dur_7_days">7 दिन</string>
+    <string name="dur_1_month">1 महीना</string>
+    <string name="dur_1_year">1 साल</string>
+    <string name="tab_new">नया</string>
+    <string name="tab_read">पढ़ा गया</string>
+    <string name="msg_no_notifications">कोई सूचना नहीं</string>
+    <string name="msg_no_notifications_desc">अभी तक कोई सूचना नहीं है</string>
+    <string name="msg_expiry_updated">वैधता अपडेट हो गई</string>
+    <string name="msg_approved">स्वीकृत</string>
+    <string name="msg_rejected">अस्वीकृत</string>
+    <string name="title_sub_approved">सब्सक्रिप्शन स्वीकृत</string>
+    <string name="desc_sub_approved">आपका सब्सक्रिप्शन स्वीकृत हो गया है</string>
+    <string name="title_sub_rejected">सब्सक्रिप्शन अस्वीकृत</string>
+    <string name="desc_sub_rejected">आपका सब्सक्रिप्शन अस्वीकृत कर दिया गया है</string>
+    <string name="msg_no_image">डाउनलोड करने के लिए कोई इमेज नहीं है</string>
+    <string name="msg_save_failed">सेव विफल रहा</string>
+    <string name="msg_status_checking">सब्सक्रिप्शन की जांच की जा रही है...</string>
+    <string name="title_request_details">अनुरोध का विवरण</string>
+    <string name="label_type">प्रकार : %1$s</string>
+    <string name="label_description">विवरण : %1$s</string>
+    <string name="label_status">स्थिति : %1$s</string>
+    <string name="label_time">समय : %1$s</string>
+    <string name="btn_approve">स्वीकार करें</string>
+    <string name="btn_reject">अस्वीकार करें</string>
+    <string name="btn_open_chat">चैट खोलें</string>
+    <string name="hint_type_message">संदेश टाइप करें</string>
+    <string name="msg_chat_error">चैट नहीं खोला जा सकता</string>
+    <string name="msg_updated">अपडेट हो गया</string>
+    <string name="msg_request_status_format">अनुरोध %1$s</string>
+    <string name="title_support_center">सपोर्ट सेंटर</string>
+    <string name="desc_support_center">अपने अनुरोधों को प्रबंधित करें या व्यवस्थापक से संपर्क करें</string>
+    <string name="btn_contact_admin">एडमिन से संपर्क करें</string>
+    <string name="btn_my_requests">मेरे अनुरोध</string>
+    <string name="btn_request_adv">विज्ञापन के लिए अनुरोध करें</string>
+    <string name="label_contact_prefix">संपर्क : %1$s</string>
+    <string name="label_ad_prefix">विज्ञापन : %1$s</string>
+    <string name="msg_advertisement">विज्ञापन</string>
+    <string name="label_ad_link">विज्ञापन लिंक : %1$s</string>
+    <string name="label_ad_request_desc">विज्ञापन अनुरोध</string>
+    <string name="msg_adv_notif_title">विज्ञापन %1$s</string>
+    <string name="msg_plan_format">प्लान : %1$s</string>
+    <string name="title_my_designs">मेरे डिज़ाइन</string>
+    <string name="title_my_likes">मेरी पसंद</string>
+    <string name="title_my_favorite">मेरे पसंदीदा</string>
+    <string name="title_my_edits">मेरे एडिट्स</string>
+    <string name="title_my_saved">मेरे सेव किए गए डिज़ाइन</string>
+    <string name="tab_likes">पसंद</string>
+    <string name="tab_favorite">पसंदीदा</string>
+    <string name="tab_edits">एडिट्स</string>
+    <string name="tab_saved">सेव किए गए</string>
+    <string name="filter_all">सभी</string>
+    <string name="cat_political">राजनैतिक</string>
+    <string name="cat_ngo">एनजीओ</string>
+    <string name="cat_business">बिज़नेस</string>
+    <string name="title_sponsored_ads">प्रायोजित विज्ञापन</string>
+    <string name="title_festival_calendar">त्योहार कैलेंडर</string>
+    <string name="btn_see_all">सभी देखें</string>
+    <string name="title_admin_panel">एडमिन पैनल</string>
+    <string name="desc_admin_panel">एप्लिकेशन कंटेंट और यूज़र्स को मैनेज करें</string>
+    <string name="title_upload_templates">टेम्पलेट्स अपलोड करें</string>
+    <string name="desc_upload_templates">होम पेज सेक्शन में इमेजेज जोड़ें</string>
+    <string name="title_subscription_requests">सब्सक्रिप्शन रिक्वेस्ट्स</string>
+    <string name="desc_subscription_requests">सब्सक्रिप्शन प्लान्स को अप्रूव या रिजेक्ट करें</string>
+    <string name="title_adv_requests">विज्ञापन रिक्वेस्ट्स</string>
+    <string name="desc_adv_requests">यूज़र्स द्वारा भेजी गई विज्ञापन रिक्वेस्ट्स चेक करें</string>
+    <string name="title_contact_requests">कॉन्टैक्ट रिक्वेस्ट्स</string>
+    <string name="desc_contact_requests">यूज़र्स द्वारा भेजे गए मैसेज देखें</string>
+    <string name="title_user_info">यूज़र इंफॉर्मेशन</string>
+    <string name="desc_user_info">यूज़र्स का विवरण देखें और मैनेज करें</string>
+    <string name="title_user_details">यूज़र विवरण</string>
+    <string name="label_user_id">यूज़र ID: %1$s</string>
+    <string name="msg_no_users">कोई यूज़र नहीं मिला</string>
+    <string name="label_city">शहर</string>
+    <string name="label_role">रोल (user/admin)</string>
+    <string name="btn_open">खोलें</string>
+    <string name="btn_view">देखें</string>
+    <string name="btn_check">चेक करें</string>
+    <string name="nav_search">सर्च</string>
+    <string name="search_hint">टेम्पलेट्स सर्च करें...</string>
+    <string name="hint_search_users">नाम, ईमेल, फ़ोन या UID सर्च करें...</string>
+    <string name="msg_no_templates">कोई टेम्पलेट नहीं मिला 😕</string>
+    <string name="msg_video_edit_not_supported">वीडियो एडिटिंग अभी सपोर्टेड नहीं है।</string>
+    <string name="title_save_template">टेम्पलेट सेव करें</string>
+    <string name="msg_save_confirm">क्या आप वाकई सेव करना चाहते हैं?</string>
+    <string name="msg_sharing_video_link">वीडियो लिंक शेयर किया जा रहा है...</string>
+    <string name="title_share_video">वीडियो शेयर करें</string>
+    <string name="msg_video_download_not_supported">वीडियो डाउनलोड अभी सपोर्टेड नहीं है</string>
+    <string name="msg_saved_to_gallery">गैलरी में सेव हो गया</string>
+    <string name="hint_enter_email">ईमेल डालें</string>
+    <string name="hint_enter_phone">मोबाइल नंबर डालें</string>
+    <string name="err_invalid_phone">गलत मोबाइल नंबर</string>
+    <string name="err_invalid_email">गलत ईमेल</string>
+    <string name="msg_enter_creds">ईमेल/फोन और पासवर्ड डालें</string>
+    <string name="msg_no_internet">इंटरनेट कनेक्शन नहीं है</string>
+    <string name="msg_phone_not_registered">फोन नंबर रजिस्टर्ड नहीं है</string>
+    <string name="msg_email_not_found_phone">इस फोन के लिए ईमेल नहीं मिला</string>
+    <string name="msg_auth_error">ऑथेंटिकेशन एरर</string>
+    <string name="msg_network_error">नेटवर्क एरर</string>
+    <string name="msg_login_success">लॉगिन सफल</string>
+    <string name="msg_wrong_credentials">गलत विवरण</string>
+    <string name="btn_please_wait">कृपया प्रतीक्षा करें...</string>
+    <string name="btn_login">लॉगिन</string>
+    <string name="err_only_letters">केवल अक्षर मान्य हैं</string>
+    <string name="err_invalid_mobile">गलत मोबाइल नंबर</string>
+    <string name="err_weak_password">कमजोर पासवर्ड</string>
+    <string name="title_uploads">अपलोड</string>
+    <string name="tab_upload_templates">टेम्पलेट्स अपलोड करें</string>
+    <string name="tab_check_uploads">अपलोड चेक करें</string>
+    <string name="section_select">सेक्शन चुनें</string>
+    <string name="section_advertisement">विज्ञापन</string>
+    <string name="section_festival_cards">त्योहार कार्ड</string>
+    <string name="section_latest_update">लेटेस्ट अपडेट</string>
+    <string name="section_business_special">बिज़नेस स्पेशल</string>
+    <string name="section_reel_maker">रील मेकर</string>
+    <string name="section_business_frame">बिज़नेस फ्रेम</string>
+    <string name="section_motivation">मोटिवेशन</string>
+    <string name="section_greetings">शुभकामनाएं</string>
+    <string name="section_business_ethics">बिज़नेस नैतिकता</string>
+    <string name="section_frame">फ्रेम</string>
+    <string name="btn_pick_date">तारीख चुनें</string>
+    <string name="btn_set_expiry">एक्सपायरी डेट सेट करें</string>
+    <string name="label_selected">चुना गया: %1$s</string>
+    <string name="label_expires">एक्सपायरी: %1$s</string>
+    <string name="btn_update_template">टेम्पलेट अपडेट करें</string>
+    <string name="title_confirm_upload">अपलोड की पुष्टि करें</string>
+    <string name="msg_confirm_upload_format">इमेज को \"%1$s\" सेक्शन में सेव करें? </string>
+    <string name="msg_please_select_img">कृपया इमेज चुनें</string>
+    <string name="msg_invalid_section">कृपया एक मान्य सेक्शन चुनें</string>
+    <string name="msg_enter_ad_link">विज्ञापन लिंक दर्ज करें</string>
+    <string name="msg_select_fest_date">कृपया त्योहार की तारीख चुनें</string>
+    <string name="msg_only_png_frames">फ्रेम के लिए केवल PNG मान्य है</string>
+    <string name="msg_frame_square">फ्रेम पूरी तरह से चौकोर (1:1 अनुपात) होना चाहिए</string>
+    <string name="title_crop_image">इमेज क्रॉप करें</string>
+    <string name="msg_select_valid_video">कृपया एक मान्य वीडियो चुनें</string>
+    <string name="msg_select_valid_img">कृपया एक मान्य इमेज (JPG, PNG) चुनें</string>
+    <string name="msg_format_supported">सपोर्टेड फॉर्मेट: JPG, JPEG, PNG</string>
+    <string name="msg_upload_success">अपलोड सफल</string>
+    <string name="msg_reselect_section">कृपया नए सेक्शन के लिए इमेज फिर से चुनें</string>
+    <string name="msg_image_selected">इमेज चुनी गई</string>
+    <string name="msg_template_loaded">टेम्पलेट डेटा सही ढंग से लोड हुआ</string>
+    <string name="desc_manage_home_content">मुख्य पेज के कंटेंट को मैनेज करें</string>
+    <string name="msg_crop_success">इमेज क्रॉप और सिलेक्ट की गई</string>
+    <string name="msg_video_selected">वीडियो सिलेक्ट की गई</string>
+    <string name="msg_file_size_limit">फ़ाइल का आकार %1$s से कम होना चाहिए</string>
+    <string name="label_likes">❤ लाइक</string>
+    <string name="label_favorites">★ पसंदीदा</string>
+    <string name="label_edits">✎ एडिट्स</string>
+    <string name="label_saves">⬇ सेव किया गया</string>
+    <string name="desc_search">सर्च</string>
+    <string name="desc_edit">एडिट</string>
+    <string name="desc_delete">हटाएं</string>
+    <string name="desc_template_preview">टेम्पलेट पूर्वावलोकन</string>
+    <string name="msg_expiry_loading">एक्सपायरी: लोड हो रहा है...</string>
+    <string name="btn_open_ad">विज्ञापन खोलें</string>
+    <string name="msg_fetching_info">अभी भी टेम्पलेट जानकारी प्राप्त की जा रही है...</string>
+    <string name="msg_preparing_edit">एडिट के लिए तैयार किया जा रहा है...</string>
+    <string name="msg_no_expiry">कोई एक्सपायरी सेट नहीं है</string>
+    <string name="label_external_content">बाहरी कंटेंट</string>
+    <string name="label_unknown_cat">अज्ञात कैटेगरी</string>
+    <string name="msg_finding_cat">कैटेगरी खोजी जा रही है, कृपया प्रतीक्षा करें...</string>
+    <string name="title_delete_template">टेम्पलेट हटाएं</string>
+    <string name="msg_confirm_delete">इससे टेम्पलेट VPS, Firebase और लोकल स्टोरेज से स्थायी रूप से हट जाएगा। जारी रखें?</string>
+    <string name="btn_delete">हटाएं</string>
+    <string name="msg_cannot_delete">हटा नहीं सकते: कैटेगरी की पहचान नहीं हुई</string>
+    <string name="msg_cleaning_nodes">सभी नोड्स सफ़ाई की जा रही है...</string>
+    <string name="msg_deleted_everywhere">टेम्पलेट हर जगह से हटा दिया गया</string>
+    <string name="msg_deleted_success">टेम्पलेट सफलतापूर्वक हटा दिया गया</string>
+    <string name="msg_vps_delete_failed">VPS हटाना विफल रहा: %1$d</string>
+    <string name="label_select_sub_cat">सब-कैटेगरी चुनें</string>
+    <string name="label_festival_date">त्योहार की तारीख</string>
+    <string name="label_expiry_date_desc">एक्सपायरी डेट (डिफ़ॉल्ट 7 दिन)</string>
+    <string name="label_upload_media">टेम्पलेट इमेज/वीडियो अपलोड करें</string>
+    <string name="msg_select_cat_first">चयन सक्षम करने के लिए पहले एक कैटेगरी चुनें</string>
+    <string name="btn_select_item">आइटम चुनें</string>
+    <string name="btn_save_continue">सेव करें और जारी रखें</string>
+    <string name="ph_edit_text">टेक्स्ट एडिट करें</string>
+    <string name="btn_color">रंग</string>
+    <string name="btn_text">टेक्स्ट</string>
+    <string name="btn_logo">लोगो</string>
+    <string name="btn_gallery">गैलरी</string>
+    <string name="btn_add_frame">फ्रेम जोड़ें</string>
+    <string name="label_size">आकार</string>
+    <string name="btn_apply">लागू करें</string>
+    <string name="btn_yes">हाँ</string>
+    <string name="btn_no">नहीं</string>
+    <string name="msg_no_frames_found">%1$s के लिए कोई फ्रेम नहीं मिला</string>
+    <string name="msg_frame_list_empty">फ्रेम सूची खाली है</string>
+    <string name="desc_edited_template">संपादित टेम्पलेट</string>
+
+    <!-- Headers -->
+    <string name="header_account">खाता</string>
+    <string name="header_preferences">पसंद</string>
+
+    <!-- Profile Screen -->
+    <string name="my_profile">मेरी प्रोफ़ाइल</string>
+    <string name="label_name">नाम : %1$s</string>
+    <string name="label_email">ईमेल : %1$s</string>
+    <string name="label_mobile">मोबाइल : %1$s</string>
+    <string name="btn_edit_profile">प्रोफ़ाइल संपादित करें</string>
+    <string name="menu_subscription">प्रीमियम सदस्यता</string>
+    <string name="menu_language">भाषा</string>
+    <string name="menu_mode">मोड (प्रकाश/अंधेरा)</string>
+    <string name="menu_settings">सेटिंग्स</string>
+    <string name="menu_rate">ऐप को रेट करें</string>
+    <string name="menu_support">सहायता के लिए संपर्क करें</string>
+    <string name="menu_logout">लॉग आउट</string>
+    <string name="menu_delete_account">खाता हटाएँ</string>
+    <string name="header_app">ऐप</string>
+    <string name="header_account_mgmt">खाता प्रबंधन</string>
+    <string name="menu_share">ऐप साझा करें</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">सेटिंग्स</string>
+    <string name="btn_change_password">पासवर्ड बदलें</string>
+    <string name="btn_notifications">सूचनाएं</string>
+    <string name="btn_clear_cache">कैश साफ़ करें</string>
+    <string name="btn_privacy">गोपनीयता नीति</string>
+    <string name="btn_terms">नियम और शर्तें</string>
+    <string name="version_label">वर्जन</string>
+    <string name="desc_reset_email">ईमेल के जरिए रिसेट करें</string>
+    <string name="desc_notifications">ऐप सूचनाएं चालू करें</string>
+    <string name="desc_clear_cache">अस्थायी फ़ाइलें हटाएँ</string>
+    <string name="version_text">वर्जन %1$s</string>
+
+    <!-- Auth Screens -->
+    <string name="btn_register">रजिस्टर</string>
+    <string name="link_forgot_password">पासवर्ड भूल गए?</string>
+    <string name="hint_email">ईमेल पता</string>
+    <string name="hint_password">पासवर्ड</string>
+    <string name="msg_no_account">खाता नहीं है? रजिस्टर करें</string>
+    <string name="msg_already_account">पहले से खाता है? लॉगिन करें</string>
+    <string name="title_welcome_back">वापसी पर आपका स्वागत है</string>
+    <string name="desc_signin_continue">जारी रखने के लिए साइन इन करें</string>
+    <string name="label_email_tab">ईमेल</string>
+    <string name="label_phone_tab">फ़ोन</string>
+    <string name="btn_signin">साइन इन करें</string>
+    <string name="btn_create_account">खाता बनाएँ</string>
+    <string name="desc_signup_started">शुरू करने के लिए रजिस्टर करें</string>
+    <string name="hint_full_name">पूरा नाम</string>
+    <string name="hint_mobile_number">मोबाइल नंबर</string>
+    <string name="title_similar_templates">मिलते-जुलते टेम्पलेट्स</string>
+    <string name="content_desc_search">सर्च</string>
+    <string name="content_desc_like">पसंद</string>
+    <string name="content_desc_favorite">पसंदीदा</string>
+    <string name="content_desc_share">साझा करें</string>
+    <string name="content_desc_edit">एडिट</string>
+    <string name="content_desc_save">सेव</string>
+    <string name="content_desc_play_video">वीडियो चलाएं</string>
+    <string name="unknown_user">अज्ञात यूज़र</string>
+    <string name="no_email">कोई ईमेल नहीं</string>
+    <string name="unknown_time">अज्ञात समय</string>
+    <string name="title_forgot_password">पासवर्ड भूल गए</string>
+    <string name="desc_forgot_password">अपना रजिस्टर्ड ईमेल डालें</string>
+    <string name="btn_send_reset_link">रिसेट लिंक भेजें</string>
+    <string name="msg_email_not_registered">ईमेल रजिस्टर्ड नहीं है</string>
+    <string name="title_verify_email">अपना ईमेल सत्यापित करें</string>
+    <string name="desc_verify_email">हमने आपके ईमेल पते पर एक सत्यापन लिंक भेजा है। कृपया जारी रखने के लिए सत्यापित करें।</string>
+    <string name="btn_i_have_verified">मैंने सत्यापित कर लिया है</string>
+    <string name="btn_resend_email">ईमेल दोबारा भेजें</string>
+    <string name="msg_email_not_verified">ईमेल अभी तक सत्यापित नहीं हुआ है</string>
+
+    <!-- Support Dialog -->
+    <string name="dialog_support_title">सहायता के लिए संपर्क करें</string>
+    <string name="dialog_call_support">कॉल सपोर्ट</string>
+    <string name="dialog_email_support">ईमेल सपोर्ट</string>
+
+    <!-- Misc -->
+    <string name="select_language">भाषा चुनें</string>
+    <string name="lang_english">English (अंग्रेज़ी)</string>
+    <string name="lang_hindi">Hindi (हिंदी)</string>
+    <string name="yes">हाँ</string>
+    <string name="no">नहीं</string>
+    <string name="ok">ठीक है</string>
+    <string name="cancel">रद्द करें</string>
+    <string name="title_reset_password">पासवर्ड रिसेट करें</string>
+    <string name="msg_reset_password">क्या आपकी ईमेल पर पासवर्ड रिसेट लिंक भेजें?</string>
+    <string name="title_clear_cache">कैश साफ़ करें</string>
+    <string name="msg_clear_cache">क्या अस्थायी फ़ाइलें साफ़ करें?</string>
+    <string name="msg_cleared">साफ़ किया गया: %1$s</string>
+    <string name="msg_notif_enabled">सूचनाएं चालू कर दी गई हैं</string>
+    <string name="msg_notif_disabled">सूचनाएं बंद कर दी गई हैं</string>
+    <string name="title_edit_profile">प्रोफ़ाइल एडिट करें</string>
+    <string name="desc_update_info">अपनी व्यक्तिगत जानकारी अपडेट करें</string>
+    <string name="link_remove_img">प्रोफ़ाइल फोटो हटाएँ</string>
+    <string name="hint_your_name">आपका नाम</string>
+    <string name="hint_your_email">ईमेल</string>
+    <string name="hint_your_mobile">मोबाइल</string>
+    <string name="hint_designation">पद (Designation)</string>
+    <string name="hint_dob">जन्म तिथि (दिन / महीना / साल)</string>
+    <string name="label_gender">लिंग (Gender)</string>
+    <string name="gender_male">पुरुष</string>
+    <string name="gender_female">महिला</string>
+    <string name="gender_other">अन्य</string>
+    <string name="hint_phone_number">फ़ोन नंबर</string>
+    <string name="hint_select_state">राज्य चुनें</string>
+    <string name="hint_select_city">शहर चुनें</string>
+    <string name="btn_save_changes">बदलाव सेव करें</string>
+
+    <!-- Subscription Screen -->
+    <string name="status_checking">सब्सक्रिप्शन की जांच हो रही है...</string>
+    <string name="status_subscribed">सब्सक्राइब किया हुआ</string>
+    <string name="status_not_subscribed">सब्सक्राइब नहीं है</string>
+    <string name="status_rejected_retry">अस्वीकृत - फिर से प्रयास करें</string>
+    <string name="status_pending">अनुरोध लंबित है</string>
+    <string name="label_choose_plan">प्लान चुनें</string>
+    <string name="label_scan_qr">पेमेंट के लिए QR स्कैन करें</string>
+    <string name="label_upi_id">UPI ID: %1$s</string>
+    <string name="upi_id_value">RMPlus@upi</string>
+    <string name="label_amount">राशि: %1$s</string>
+    <string name="btn_upload_proof">पेमेंट का प्रमाण अपलोड करें</string>
+    <string name="btn_submit_request">अनुरोध भेजें</string>
+    <string name="msg_request_sent">अनुरोध भेज दिया गया है</string>
+    <string name="msg_upload_proof">कृपया प्रमाण अपलोड करें</string>
+    <string name="title_submit_request">अनुरोध भेजें</string>
+    <string name="desc_fill_details">नीचे विवरण भरें</string>
+    <string name="hint_title">शीर्षक</string>
+    <string name="hint_description">विवरण</string>
+    <string name="btn_attach_proof">प्रमाण संलग्न करें</string>
+    <string name="btn_submit">जमा करें</string>
+    <string name="msg_uploading_wait">इमेज अपलोड हो रही है... कृपया प्रतीक्षा करें</string>
+    <string name="err_enter_title">शीर्षक दर्ज करें</string>
+    <string name="err_enter_description">विवरण दर्ज करें</string>
+    <string name="notif_new_request">नया अनुरोध</string>
+    <string name="title_adv_request">विज्ञापन अनुरोध</string>
+    <string name="desc_fill_adv_details">अपना विज्ञापन प्रकाशित करने के लिए विवरण भरें</string>
+    <string name="hint_adv_link">विज्ञापन वेबसाइट / लिंक</string>
+    <string name="label_upload_adv_template">विज्ञापन टेम्पलेट अपलोड करें</string>
+    <string name="btn_upload_template">टेम्पलेट अपलोड करें</string>
+    <string name="label_scan_and_pay">स्कैन करें और भुगतान करें</string>
+    <string name="btn_upload_payment_proof">भुगतान प्रमाण अपलोड करें</string>
+    <string name="btn_submit_adv_request">विज्ञापन अनुरोध जमा करें</string>
+    <string name="msg_adv_request_sent">विज्ञापन अनुरोध भेज दिया गया है</string>
+    <string name="hint_tap_to_recrop">इमेज पर टैप करें और दोबारा क्रॉप करें</string>
+    <string name="cat_issue">समस्या (Issue)</string>
+    <string name="cat_order">ऑर्डर (Order)</string>
+    <string name="cat_custom_template">कस्टम टेम्पलेट</string>
+    <string name="cat_other">अन्य</string>
+    <string name="msg_invalid_img_format">केवल JPG, JPEG, या PNG अनुमति है</string>
+    <string name="msg_profile_updated">प्रोफ़ाइल अपडेट हो गई</string>
+    <string name="msg_profile_updated_desc">आपकी प्रोफ़ाइल सफलतापूर्वक अपडेट कर दी गई है</string>
+    <string name="msg_sub_request_sent">सब्सक्रिप्शन अनुरोध</string>
+    <string name="msg_sub_request_sent_desc">आपका सब्सक्रिप्शन अनुरोध भेज दिया गया है</string>
+    <string name="msg_confirm_save_profile">क्या आप प्रोफ़ाइल अपडेट करना चाहते हैं?</string>
+    <string name="msg_confirm_remove_img">क्या आप वाकई प्रोफ़ाइल फोटो को स्थायी रूप से हटाना चाहते हैं?</string>
+    <string name="msg_img_deleted_server">सर्वर से फोटो हटा दी गई है</string>
+    <string name="msg_upload_failed">अपलोड विफल रहा</string>
+    <string name="msg_img_uploaded">फोटो अपलोड हो गई</string>
+    <string name="msg_reset_link_sent">रिसेट लिंक ईमेल पर भेज दिया गया है</string>
+    <string name="msg_login_again">कृपया फिर से लॉगिन करें</string>
+    <string name="title_share_using">इसके जरिए साझा करें</string>
+    <string name="msg_delete_confirm">इसे वापस नहीं लिया जा सकता। क्या आप वाकई हटाना चाहते हैं?</string>
+    <string name="share_msg_body">%1$s - अपने व्यवसाय को डिजिटल रूप से बढ़ाएं! \n\nडाउनलोड लिंक: https://play.google.com/store/apps/details?id=%2$s</string>
+    <string name="user_not_logged_in">यूज़र लॉग इन नहीं है</string>
+    <string name="support_email_subject">आरएम प्लस सपोर्ट</string>
+    <string name="plan_1_month">1 महीना</string>
+    <string name="plan_3_month">3 महीना</string>
+    <string name="plan_6_month">6 महीना</string>
+    <string name="plan_1_year">1 साल</string>
+    <string-array name="india_states">
+        <item>आंध्र प्रदेश</item>
+        <item>अरुणाचल प्रदेश</item>
+        <item>असम</item>
+        <item>बिहार</item>
+        <item>छत्तीसगढ़</item>
+        <item>गोवा</item>
+        <item>गुजरात</item>
+        <item>हरियाणा</item>
+        <item>हिमाचल प्रदेश</item>
+        <item>झारखंड</item>
+        <item>कर्नाटक</item>
+        <item>केरल</item>
+        <item>मध्य प्रदेश</item>
+        <item>महाराष्ट्र</item>
+        <item>मणिपुर</item>
+        <item>मेघालय</item>
+        <item>मिजोरम</item>
+        <item>नागालैंड</item>
+        <item>ओडिशा</item>
+        <item>पंजाब</item>
+        <item>राजस्थान</item>
+        <item>सिक्किम</item>
+        <item>तमिलनाडु</item>
+        <item>तेलंगाना</item>
+        <item>त्रिपुरा</item>
+        <item>उत्तर प्रदेश</item>
+        <item>उत्तराखंड</item>
+        <item>पश्चिम बंगाल</item>
+        <item>अंडमान और निकोबार द्वीप समूह</item>
+        <item>चंडीगढ़</item>
+        <item>दादरा और नगर हवेली और दमन और दीव</item>
+        <item>दिल्ली</item>
+        <item>जम्मू और कश्मीर</item>
+        <item>लद्दाख</item>
+        <item>लक्षद्वीप</item>
+        <item>पुडुचेरी</item>
+    </string-array>
+
+    <string-array name="cities_andhra_pradesh">
+        <item>अमरावती</item>
+        <item>विशाखापत्तनम</item>
+        <item>विजयवाड़ा</item>
+        <item>तिरुपति</item>
+        <item>गुंटूर</item>
+        <item>नेल्लोर</item>
+        <item>कर्नूल</item>
+    </string-array>
+    <string-array name="cities_arunachal_pradesh">
+        <item>ईटानगर</item>
+        <item>नहरलगुन</item>
+        <item>पासीघाट</item>
+        <item>तवांग</item>
+    </string-array>
+    <string-array name="cities_assam">
+        <item>दिसपुर</item>
+        <item>गुवाहाटी</item>
+        <item>सिलचर</item>
+        <item>डिब्रूगढ़</item>
+        <item>जोरहाट</item>
+        <item>नगांव</item>
+    </string-array>
+    <string-array name="cities_bihar">
+        <item>पटना</item>
+        <item>गया</item>
+        <item>भागलपुर</item>
+        <item>मुजफ्फरपुर</item>
+        <item>पूर्णिया</item>
+    </string-array>
+    <string-array name="cities_chhattisgarh">
+        <item>रायपुर</item>
+        <item>भिलाई</item>
+        <item>बिलासपुर</item>
+        <item>कोरबा</item>
+        <item>दुर्ग</item>
+        <item>रायगढ़</item>
+        <item>अंबिकापुर</item>
+        <item>जगदलपुर</item>
+        <item>धमतरी</item>
+        <item>महासमुंद</item>
+    </string-array>
+    <string-array name="cities_goa">
+        <item>पणजी</item>
+        <item>वास्को डी गामा</item>
+        <item>मडगाँव</item>
+        <item>मापुसा</item>
+    </string-array>
+    <string-array name="cities_gujarat">
+        <item>अहमदाबाद</item>
+        <item>सूरत</item>
+        <item>वड़ोदरा</item>
+        <item>राजकोट</item>
+        <item>भावनगर</item>
+        <item>गांधीनगर</item>
+        <item>जामनगर</item>
+    </string-array>
+    <string-array name="cities_haryana">
+        <item>गुरुग्राम</item>
+        <item>फरीदाबाद</item>
+        <item>पानीपत</item>
+        <item>अंबाला</item>
+        <item>करनाल</item>
+        <item>रोहतक</item>
+        <item>हिसार</item>
+    </string-array>
+    <string-array name="cities_himachal_pradesh">
+        <item>शिमला</item>
+        <item>धर्मशाला</item>
+        <item>सोलन</item>
+        <item>मंडी</item>
+        <item>कुल्लू</item>
+        <item>मनाली</item>
+    </string-array>
+    <string-array name="cities_jharkhand">
+        <item>रांची</item>
+        <item>जमशेदपुर</item>
+        <item>धनबाद</item>
+        <item>बोकारो स्टील सिटी</item>
+        <item>देवघर</item>
+        <item>हजारीबाग</item>
+    </string-array>
+    <string-array name="cities_karnataka">
+        <item>बेंगलुरु</item>
+        <item>मैसूरु</item>
+        <item>हुबली-धारवाड़</item>
+        <item>मंगलुरु</item>
+        <item>बेलगावी</item>
+        <item>कालबुर्गी</item>
+    </string-array>
+    <string-array name="cities_kerala">
+        <item>तिरुवनंतपुरम</item>
+        <item>कोच्चि</item>
+        <item>कोझिकोड</item>
+        <item>त्रिशूर</item>
+        <item>कोल्लम</item>
+        <item>कन्नूर</item>
+    </string-array>
+    <string-array name="cities_mp">
+        <item>इंदौर</item>
+        <item>भोपाल</item>
+        <item>जबलपुर</item>
+        <item>ग्वालयिर</item>
+        <item>उज्जैन</item>
+        <item>सागर</item>
+        <item>रतलाम</item>
+    </string-array>
+    <string-array name="cities_maharashtra">
+        <item>मुंबई</item>
+        <item>पुणे</item>
+        <item>नागपुर</item>
+        <item>ठाणे</item>
+        <item>नासिक</item>
+        <item>औरंगाबाद</item>
+        <item>सोलापुर</item>
+        <item>अमरावती</item>
+    </string-array>
+    <string-array name="cities_manipur">
+        <item>इम्फाल</item>
+        <item>थौबल</item>
+        <item>बिष्णुपुर</item>
+        <item>चुराचांदपुर</item>
+    </string-array>
+    <string-array name="cities_meghalaya">
+        <item>शिलांग</item>
+        <item>तुरा</item>
+        <item>जोवाई</item>
+    </string-array>
+    <string-array name="cities_mizoram">
+        <item>आइजोल</item>
+        <item>लुंगलेई</item>
+        <item>सइहा</item>
+        <item>चम्फाई</item>
+    </string-array>
+    <string-array name="cities_nagaland">
+        <item>कोहिमा</item>
+        <item>दीमापुर</item>
+        <item>मोकोकचुंग</item>
+        <item>तुएनसांग</item>
+    </string-array>
+    <string-array name="cities_odisha">
+        <item>भुवनेश्वर</item>
+        <item>कटक</item>
+        <item>राउरकेला</item>
+        <item>ब्रह्मपुर</item>
+        <item>संबलपुर</item>
+        <item>पुरी</item>
+    </string-array>
+    <string-array name="cities_punjab">
+        <item>लुधियाना</item>
+        <item>अमृतसर</item>
+        <item>जालंधर</item>
+        <item>पटियाला</item>
+        <item>भटिंडा</item>
+        <item>मोहाली</item>
+    </string-array>
+    <string-array name="cities_rajasthan">
+        <item>जयपुर</item>
+        <item>जोधपुर</item>
+        <item>कोटा</item>
+        <item>बीकानेर</item>
+        <item>अजमेर</item>
+        <item>उदयपुर</item>
+        <item>भीलवाड़ा</item>
+    </string-array>
+    <string-array name="cities_sikkim">
+        <item>गंगटोक</item>
+        <item>नामची</item>
+        <item>ग्यालशिंग</item>
+        <item>मंगन</item>
+    </string-array>
+    <string-array name="cities_tamil_nadu">
+        <item>चेन्नई</item>
+        <item>कोयंबटूर</item>
+        <item>मदुरै</item>
+        <item>तिरुचिरापल्ली</item>
+        <item>सेलम</item>
+        <item>इरोड</item>
+        <item>वेल्लोर</item>
+    </string-array>
+    <string-array name="cities_telangana">
+        <item>हैदराबाद</item>
+        <item>वारंगल</item>
+        <item>निजामाबाद</item>
+        <item>खम्मम</item>
+        <item>करीमनगर</item>
+        <item>रामगुंडम</item>
+    </string-array>
+    <string-array name="cities_tripura">
+        <item>अगरतला</item>
+        <item>उदयपुर</item>
+        <item>धर्मनगर</item>
+        <item>कैलाशहर</item>
+    </string-array>
+    <string-array name="cities_up">
+        <item>लखनऊ</item>
+        <item>कानपुर</item>
+        <item>गाजियाबाद</item>
+        <item>आगरा</item>
+        <item>वाराणसी</item>
+        <item>मेरठ</item>
+        <item>प्रयागराज</item>
+        <item>नोएडा</item>
+        <item>बरेली</item>
+        <item>अलीगढ़</item>
+    </string-array>
+    <string-array name="cities_uttarakhand">
+        <item>देहरादून</item>
+        <item>हरिद्वार</item>
+        <item>रुड़की</item>
+        <item>हल्द्वानी</item>
+        <item>ऋषिकेश</item>
+        <item>काशीपुर</item>
+    </string-array>
+    <string-array name="cities_west_bengal">
+        <item>कोलकाता</item>
+        <item>हावड़ा</item>
+        <item>आसनसोल</item>
+        <item>सिलीगुड़ी</item>
+        <item>दुर्गापुर</item>
+        <item>बर्धमान</item>
+    </string-array>
+    <string-array name="cities_delhi">
+        <item>नई दिल्ली</item>
+        <item>उत्तर दिल्ली</item>
+        <item>दक्षिण दिल्ली</item>
+        <item>पूर्व दिल्ली</item>
+        <item>पश्चिम दिल्ली</item>
+    </string-array>
+    <string-array name="cities_jammu_kashmir">
+        <item>श्रीनगर</item>
+        <item>जम्मू</item>
+        <item>अनंतनाग</item>
+        <item>बारामूला</item>
+        <item>उधमपुर</item>
+    </string-array>
+    <string-array name="cities_ladakh">
+        <item>लेह</item>
+        <item>कारगिल</item>
+    </string-array>
+    <string-array name="cities_chandigarh">
+        <item>चंडीगढ़</item>
+    </string-array>
+    <string-array name="cities_puducherry">
+        <item>पुडुचेरी</item>
+        <item>कौराईकल</item>
+        <item>यानम</item>
+        <item>माहे</item>
+    </string-array>
+    <string-array name="cities_andaman">
+        <item>पोर्ट ब्लेयर</item>
+        <item>डिगलीपुर</item>
+    </string-array>
+    <string-array name="cities_dadra">
+        <item>सिलवासा</item>
+        <item>दमन</item>
+        <item>दीव</item>
+    </string-array>
+    <string-array name="cities_lakshadweep">
+        <item>कवरत्ती</item>
+        <item>अगत्ती</item>
+        <item>मिनिकॉय</item>
+    </string-array>
+</resources>

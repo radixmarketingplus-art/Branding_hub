@@ -13,7 +13,8 @@ public class AdminPanelActivity extends BaseActivity {
     Button uploadTemplatesBtn,
             subscriptionRequestsBtn,
             advertisementRequestBtn,
-            contactRequestsBtn;
+            contactRequestsBtn,
+            userInfoBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +32,7 @@ public class AdminPanelActivity extends BaseActivity {
         subscriptionRequestsBtn = findViewById(R.id.subscriptionRequestsBtn);
         advertisementRequestBtn = findViewById(R.id.advertisementRequestBtn);
         contactRequestsBtn = findViewById(R.id.contactRequestsBtn);
+        userInfoBtn = findViewById(R.id.userInfoBtn);
 
         ViewCompat.setOnApplyWindowInsetsListener(bottomNav, (view, insets) -> {
 
@@ -60,5 +62,9 @@ public class AdminPanelActivity extends BaseActivity {
         contactRequestsBtn.setOnClickListener(v ->
                 startActivity(new Intent(this,
                         AdminContactRequestsActivity.class)));
+
+        userInfoBtn.setOnClickListener(v ->
+                startActivity(new Intent(this,
+                        UserListActivity.class)));
     }
 }

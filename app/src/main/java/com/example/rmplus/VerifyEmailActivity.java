@@ -67,7 +67,7 @@ public class VerifyEmailActivity extends AppCompatActivity {
 
             }else{
                 Toast.makeText(this,
-                        "Email not verified yet",
+                        R.string.msg_email_not_verified,
                         Toast.LENGTH_SHORT).show();
             }
         });

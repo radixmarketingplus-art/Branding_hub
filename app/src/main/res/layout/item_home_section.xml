@@ -5,13 +5,29 @@
     android:orientation="vertical"
     android:layout_marginTop="24dp">
 
-    <TextView
-        android:id="@+id/txtSectionTitle"
-        style="@style/sectionTitle"
-        android:textColor="?android:textColorPrimary"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Section Title" />
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/txtSectionTitle"
+            style="@style/sectionTitle"
+            android:textColor="?android:textColorPrimary"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Section Title" />
+
+        <TextView
+            android:id="@+id/btnSectionSeeAll"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_see_all"
+            android:textColor="?android:colorAccent"
+            android:textStyle="bold" />
+    </LinearLayout>
 
     <!-- SUB-CATEGORY FILTERS (Hidden by default) -->
     <HorizontalScrollView

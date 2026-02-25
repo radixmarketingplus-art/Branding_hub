@@ -26,7 +26,7 @@
             android:src="@android:drawable/ic_menu_search"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:tint="?attr/colorOnSurface"
-            android:contentDescription="Search" />
+            android:contentDescription="@string/desc_search" />
 
         <ImageButton
             android:id="@+id/btnEditIcon"
@@ -36,7 +36,7 @@
             android:src="@android:drawable/ic_menu_edit"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:tint="?attr/colorOnSurface"
-            android:contentDescription="Edit" />
+            android:contentDescription="@string/desc_edit" />
 
         <ImageButton
             android:id="@+id/btnDeleteIcon"
@@ -46,7 +46,7 @@
             android:src="@android:drawable/ic_menu_delete"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:tint="?attr/colorError"
-            android:contentDescription="Delete" />
+            android:contentDescription="@string/desc_delete" />
     </LinearLayout>
 
     <!-- CONTENT WRAPPER -->
@@ -65,7 +65,7 @@
             android:layout_height="260dp"
             android:scaleType="fitCenter"
             android:background="?attr/colorSurfaceVariant"
-            android:contentDescription="Template Preview" />
+            android:contentDescription="@string/desc_template_preview" />
 
         <!-- CATEGORY TEXT -->
         <TextView
@@ -84,7 +84,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="Expiry: loading..."
+            android:text="@string/msg_expiry_loading"
             android:textSize="14sp"
             android:textColor="?attr/colorOnSurfaceVariant" />
 
@@ -92,7 +92,7 @@
             android:id="@+id/btnOpenAd"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:text="Open Advertisement"
+            android:text="@string/btn_open_ad"
             android:visibility="gone"
             android:layout_marginTop="12dp"
             app:cornerRadius="14dp"

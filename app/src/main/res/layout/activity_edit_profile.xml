@@ -18,7 +18,7 @@
 
         <!-- ================= HEADER ================= -->
         <TextView
-            android:text="Edit Profile"
+            android:text="@string/title_edit_profile"
             android:textSize="22sp"
             android:textStyle="bold"
             android:textColor="?attr/colorOnBackground"
@@ -26,13 +26,63 @@
             android:layout_height="wrap_content"/>
 
         <TextView
-            android:text="Update your personal information"
+            android:text="@string/desc_update_info"
             android:textSize="14sp"
             android:textColor="?attr/colorOnSurfaceVariant"
             android:layout_marginTop="4dp"
-            android:layout_marginBottom="20dp"
+            android:layout_marginBottom="24dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:layout_marginBottom="24dp">
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal">
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/profileImg"
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
+                    android:padding="2dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_profile"
+                    app:shapeAppearanceOverlay="@style/CircleAppearance"
+                    app:strokeColor="#DDDDDD"
+                    app:strokeWidth="1dp"
+                    xmlns:app="http://schemas.android.com/apk/res-auto"/>
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/btnUploadImg"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_gravity="bottom|end"
+                    android:src="@android:drawable/ic_menu_camera"
+                    app:fabCustomSize="32dp"
+                    app:maxImageSize="18dp"
+                    app:tint="@android:color/white"
+                    android:backgroundTint="#4A6CF7"
+                    xmlns:app="http://schemas.android.com/apk/res-auto"/>
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/btnRemoveImg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/link_remove_img"
+                android:textColor="#FF5252"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:layout_marginTop="8dp"
+                android:padding="8dp"
+                android:visibility="gone"/>
+        </LinearLayout>
 
         <!-- ================= BASIC INFO CARD ================= -->
         <LinearLayout
@@ -45,7 +95,7 @@
 
             <EditText
                 android:id="@+id/name"
-                android:hint="Your Name"
+                android:hint="@string/hint_your_name"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:background="@drawable/bg_input_2"
@@ -56,7 +106,7 @@
 
             <EditText
                 android:id="@+id/designation"
-                android:hint="Designation"
+                android:hint="@string/hint_designation"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:background="@drawable/bg_input_2"
@@ -67,13 +117,17 @@
 
             <EditText
                 android:id="@+id/dob"
-                android:hint="Date of Birth (yyyy / mm / dd)"
+                android:hint="@string/hint_dob"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:background="@drawable/bg_input_2"
                 android:textColor="?attr/colorOnSurface"
                 android:textColorHint="?attr/colorOnSurfaceVariant"
-                android:paddingHorizontal="14dp"/>
+                android:paddingHorizontal="14dp"
+                android:drawableEnd="@drawable/ic_calendar"
+                android:drawablePadding="10dp"
+                android:focusable="false"
+                android:clickable="true"/>
         </LinearLayout>
 
         <!-- ================= GENDER CARD ================= -->
@@ -86,7 +140,7 @@
             android:layout_marginBottom="16dp">
 
             <TextView
-                android:text="Gender"
+                android:text="@string/label_gender"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 android:textColor="?attr/colorOnSurface"
@@ -104,21 +158,21 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/male"
-                    android:text="Male"
+                    android:text="@string/gender_male"
                     android:textColor="?attr/colorOnSurface"/>
 
                 <RadioButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/female"
-                    android:text="Female"
+                    android:text="@string/gender_female"
                     android:textColor="?attr/colorOnSurface"/>
 
                 <RadioButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/other"
-                    android:text="Other"
+                    android:text="@string/gender_other"
                     android:textColor="?attr/colorOnSurface"/>
             </RadioGroup>
         </LinearLayout>
@@ -134,7 +188,7 @@
 
             <EditText
                 android:id="@+id/email"
-                android:hint="Email"
+                android:hint="@string/hint_email"
                 android:enabled="false"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
@@ -143,58 +197,48 @@
                 android:paddingHorizontal="14dp"
                 android:layout_marginBottom="12dp"/>
 
-            <EditText
-                android:id="@+id/mobile"
-                android:hint="Phone Number"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:background="@drawable/bg_input_2"
-                android:textColor="?attr/colorOnSurface"
-                android:textColorHint="?attr/colorOnSurfaceVariant"
-                android:paddingHorizontal="14dp"
-                android:layout_marginBottom="12dp"/>
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="12dp">
 
-            <EditText
-                android:id="@+id/city"
-                android:hint="City"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:background="@drawable/bg_input_2"
-                android:textColor="?attr/colorOnSurface"
-                android:textColorHint="?attr/colorOnSurfaceVariant"
-                android:paddingHorizontal="14dp"
-                android:layout_marginBottom="12dp"/>
+                <Spinner
+                    android:id="@+id/countryCodePicker"
+                    android:layout_width="100dp"
+                    android:layout_height="48dp"
+                    android:background="@drawable/bg_country_code"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="32dp"
+                    android:layout_marginEnd="8dp"/>
 
-            <EditText
-                android:id="@+id/state"
-                android:hint="State"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:background="@drawable/bg_input_2"
-                android:textColor="?attr/colorOnSurface"
-                android:textColorHint="?attr/colorOnSurfaceVariant"
-                android:paddingHorizontal="14dp"
-                android:layout_marginBottom="12dp"/>
+                <EditText
+                    android:id="@+id/mobile"
+                    android:hint="@string/hint_phone_number"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_input_2"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textColorHint="?attr/colorOnSurfaceVariant"
+                    android:paddingHorizontal="14dp"
+                    android:inputType="phone"/>
+            </LinearLayout>
 
-            <EditText
-                android:id="@+id/pincode"
-                android:hint="Pincode"
+            <Spinner
+                android:id="@+id/stateSpinner"
                 android:layout_width="match_parent"
+                android:hint="@string/hint_select_state"
                 android:layout_height="48dp"
-                android:background="@drawable/bg_input_2"
-                android:textColor="?attr/colorOnSurface"
-                android:textColorHint="?attr/colorOnSurfaceVariant"
-                android:paddingHorizontal="14dp"
-                android:layout_marginBottom="12dp"/>
+                android:background="@drawable/bg_spinner_state"
+                android:layout_marginBottom="12dp"
+                android:paddingHorizontal="14dp"/>
 
-            <EditText
-                android:id="@+id/landmark"
-                android:hint="Landmark"
+            <Spinner
+                android:id="@+id/citySpinner"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
-                android:background="@drawable/bg_input_2"
-                android:textColor="?attr/colorOnSurface"
-                android:textColorHint="?attr/colorOnSurfaceVariant"
+                android:background="@drawable/bg_spinner_state"
                 android:paddingHorizontal="14dp"/>
         </LinearLayout>
 
@@ -203,7 +247,7 @@
             android:id="@+id/saveBtn"
             android:layout_width="match_parent"
             android:layout_height="54dp"
-            android:text="Save Changes"
+            android:text="@string/btn_save_changes"
             android:textAllCaps="false"
             android:textSize="16sp"
             android:textColor="@android:color/white"

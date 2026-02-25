@@ -3,7 +3,7 @@
 
     <item
         android:id="@+id/home"
-        android:title="Home"
+        android:title="@string/nav_home"
         android:icon="@drawable/ic_home"/>
 
 <!--    <item-->
@@ -13,23 +13,23 @@
 
     <item
         android:id="@+id/template"
-        android:title="Template"
+        android:title="@string/nav_template"
         android:icon="@drawable/ic_template"/>
 
     <item
         android:id="@+id/upload"
-        android:title="Upload"
+        android:title="@string/nav_upload"
         android:icon="@android:drawable/ic_input_add"/>
 
 
     <item
         android:id="@+id/admin"
-        android:title="Admin"
+        android:title="@string/nav_admin"
         android:icon="@drawable/ic_admin"/>
 
     <item
         android:id="@+id/myDesign"
-        android:title="My Design"
+        android:title="@string/nav_my_design"
         android:icon="@drawable/ic_my_designs"/>
 
 

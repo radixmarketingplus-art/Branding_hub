@@ -44,11 +44,15 @@ public class CommonRequestAdapter
 
         // 🔥 SHOW TYPE
         if(r.requestType.equals("contact"))
-            h.title.setText("Contact : " + r.title);
+            h.title.setText(context.getString(R.string.label_contact_prefix, r.title));
         else
-            h.title.setText("Ad : " + r.title);
+            h.title.setText(context.getString(R.string.label_ad_prefix, r.title));
 
-        h.status.setText(r.status);
+        String displayStatus = r.status;
+        if ("pending".equalsIgnoreCase(r.status)) displayStatus = context.getString(R.string.tab_pending);
+        else if ("accepted".equalsIgnoreCase(r.status)) displayStatus = context.getString(R.string.tab_accepted);
+        else if ("rejected".equalsIgnoreCase(r.status)) displayStatus = context.getString(R.string.tab_rejected);
+        h.status.setText(displayStatus);
 
         h.itemView.setOnClickListener(v -> {
 

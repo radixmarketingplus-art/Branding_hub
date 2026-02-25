@@ -55,6 +55,17 @@ public class UploadTemplatesActivity extends BaseActivity {
 
 
     ArrayList<String> sections = new ArrayList<>();
+    ArrayList<String> sectionKeys = new ArrayList<>();
+    ArrayList<String> subSectionKeys = new ArrayList<>();
+
+
+    String getLocalizedSubCatName(String key) {
+        if (key == null) return "";
+        if (key.equalsIgnoreCase("Political")) return getString(R.string.cat_political);
+        if (key.equalsIgnoreCase("NGO")) return getString(R.string.cat_ngo);
+        if (key.equalsIgnoreCase("Business")) return getString(R.string.cat_business);
+        return key;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,9 +109,10 @@ public class UploadTemplatesActivity extends BaseActivity {
         spinnerSection.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String selected = parent.getItemAtPosition(position).toString();
+                // 🛡️ Get the real Firebase key instead of the localized display name
+                String sectionKey = sectionKeys.get(position);
 
-                if (selected.equalsIgnoreCase("Select Section")) {
+                if (sectionKey.equalsIgnoreCase("Select Section")) {
                     btnSelectImage.setEnabled(false);
                     btnSelectImage.setAlpha(0.5f);
                 } else {
@@ -108,26 +120,34 @@ public class UploadTemplatesActivity extends BaseActivity {
                     btnSelectImage.setAlpha(1.0f);
                 }
 
-                if (selected.equalsIgnoreCase("Festival Cards")) {
+                if (sectionKey.equalsIgnoreCase("Festival Cards")) {
                     dateContainer.setVisibility(View.VISIBLE);
                     editAdLink.setVisibility(View.GONE);
 
-                } else if (selected.equalsIgnoreCase("Advertisement")) {
+                } else if (sectionKey.equalsIgnoreCase("Advertisement")) {
                     editAdLink.setVisibility(View.VISIBLE);
                     dateContainer.setVisibility(View.GONE);
                     subSectionContainer.setVisibility(View.GONE);
-                } else if (selected.equalsIgnoreCase("Business Frame")) {
+                } else if (sectionKey.equalsIgnoreCase("Business Frame")) {
                     subSectionContainer.setVisibility(View.VISIBLE);
                     dateContainer.setVisibility(View.GONE);
                     editAdLink.setVisibility(View.GONE);
-                    String[] subs = {"Political", "NGO", "Business"};
-                    spinnerSubSection.setAdapter(new ArrayAdapter<>(UploadTemplatesActivity.this, android.R.layout.simple_spinner_dropdown_item, subs));
+                    
+                    subSectionKeys.clear();
+                    subSectionKeys.add("Political");
+                    subSectionKeys.add("NGO");
+                    subSectionKeys.add("Business");
+
+                    ArrayList<String> subDisplays = new ArrayList<>();
+                    for (String k : subSectionKeys) subDisplays.add(getLocalizedSubCatName(k));
+
+                    spinnerSubSection.setAdapter(new ArrayAdapter<>(UploadTemplatesActivity.this, android.R.layout.simple_spinner_dropdown_item, subDisplays));
                 } else {
                     dateContainer.setVisibility(View.GONE);
                     editAdLink.setVisibility(View.GONE);
                     subSectionContainer.setVisibility(View.GONE);
                     selectedDate = "";
-                    btnPickDate.setText("Pick Date");
+                    btnPickDate.setText(R.string.btn_pick_date);
                 }
             }
 
@@ -137,10 +157,13 @@ public class UploadTemplatesActivity extends BaseActivity {
 
         // Select Image (Dynamically switch between Image and Video)
         btnSelectImage.setOnClickListener(v1 -> {
-            String section = spinnerSection.getSelectedItem().toString();
+            int pos = spinnerSection.getSelectedItemPosition();
+            if (pos < 0 || pos >= sectionKeys.size()) return;
+            String sectionKey = sectionKeys.get(pos);
+
             Intent i = new Intent(Intent.ACTION_PICK);
             
-            if (section.equalsIgnoreCase("Reel Maker")) {
+            if (sectionKey.equalsIgnoreCase("Reel Maker")) {
                 i.setType("video/*");
             } else {
                 i.setType("image/*");
@@ -151,9 +174,12 @@ public class UploadTemplatesActivity extends BaseActivity {
 
         // Preview Image
         previewImage.setOnClickListener(v -> {
-            String section = spinnerSection.getSelectedItem().toString();
+            int pos = spinnerSection.getSelectedItemPosition();
+            if (pos < 0 || pos >= sectionKeys.size()) return;
+            String sectionKey = sectionKeys.get(pos);
+
             if (selectedImageUri != null) {
-                if (section.equalsIgnoreCase("Reel Maker")) {
+                if (sectionKey.equalsIgnoreCase("Reel Maker")) {
                     Intent i = new Intent(
                             UploadTemplatesActivity.this,
                             ImagePreviewActivity.class
@@ -176,7 +202,7 @@ public class UploadTemplatesActivity extends BaseActivity {
                     (view, year, month, day) -> {
                         month++;
                         selectedDate = day + "-" + month + "-" + year;
-                        btnPickDate.setText("Selected: " + selectedDate);
+                        btnPickDate.setText(getString(R.string.label_selected, selectedDate));
                     },
                     cal.get(Calendar.YEAR),
                     cal.get(Calendar.MONTH),
@@ -191,62 +217,67 @@ public class UploadTemplatesActivity extends BaseActivity {
                 Calendar selected = Calendar.getInstance();
                 selected.set(year, month, day, 23, 59, 59);
                 expiryTime = selected.getTimeInMillis();
-                btnPickExpiry.setText("Expires on: " + day + "-" + (month + 1) + "-" + year);
+                btnPickExpiry.setText(getString(R.string.label_expires, day + "-" + (month + 1) + "-" + year));
             }, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH)).show();
         });
 
         // Save image
         btnSave.setOnClickListener(v -> {
-
+ 
             if (selectedImageUri == null) {
-                Toast.makeText(this, "Please select image", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.msg_please_select_img, Toast.LENGTH_SHORT).show();
                 return;
             }
-
-            String section = spinnerSection.getSelectedItem().toString();
-
-            if (section.equals("Select Section")) {
-                Toast.makeText(this, "Please select a valid section", Toast.LENGTH_SHORT).show();
+ 
+            int pos = spinnerSection.getSelectedItemPosition();
+            if (pos < 0 || pos >= sectionKeys.size()) {
+                toast(R.string.msg_invalid_section);
                 return;
             }
-
-            if (section.equalsIgnoreCase("Festival Cards") && selectedDate.isEmpty()) {
-                Toast.makeText(this, "Please select festival date", Toast.LENGTH_SHORT).show();
+            String sectionKey = sectionKeys.get(pos);
+ 
+            if (sectionKey.equalsIgnoreCase("Select Section")) {
+                Toast.makeText(this, R.string.msg_invalid_section, Toast.LENGTH_SHORT).show();
+                return;
+            }
+ 
+            if (sectionKey.equalsIgnoreCase("Festival Cards") && selectedDate.isEmpty()) {
+                Toast.makeText(this, R.string.msg_select_fest_date, Toast.LENGTH_SHORT).show();
                 return;
             }
 
             // ---------- TYPE & SIZE VALIDATION ----------
             String mimeType = getContentResolver().getType(selectedImageUri);
             
-            if (section.equalsIgnoreCase("Reel Maker")) {
+            if (sectionKey.equalsIgnoreCase("Reel Maker")) {
                 // Video Validation
                 if (mimeType == null || !mimeType.startsWith("video/")) {
-                    Toast.makeText(this, "Please select a valid video (MP4, MKV, etc.)", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, R.string.msg_select_valid_video, Toast.LENGTH_SHORT).show();
                     return;
                 }
                 if (!mimeType.contains("mp4") && !mimeType.contains("webm") && !mimeType.contains("quicktime") && !mimeType.contains("x-matroska")) {
-                    Toast.makeText(this, "Supported video formats: MP4, WEBM, MOV, MKV", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, R.string.msg_format_supported, Toast.LENGTH_SHORT).show();
                     return;
                 }
             } else {
                 // Image Validation
                 if (mimeType == null || !mimeType.startsWith("image/")) {
-                    Toast.makeText(this, "Please select a valid image (JPG, PNG)", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, R.string.msg_select_valid_img, Toast.LENGTH_SHORT).show();
                     return;
                 }
-                if (!mimeType.contains("jpeg") && !mimeType.contains("jpg") && !mimeType.contains("png")) {
-                    Toast.makeText(this, "Supported image formats: JPG, JPEG, PNG", Toast.LENGTH_SHORT).show();
+                if (mimeType.contains("jpeg") && !mimeType.contains("jpg") && !mimeType.contains("png")) {
+                    Toast.makeText(this, R.string.msg_format_supported, Toast.LENGTH_SHORT).show();
                     return;
                 }
             }
-
-            if (section.equalsIgnoreCase("Advertisement")) {
+ 
+            if (sectionKey.equalsIgnoreCase("Advertisement")) {
 
                 String link = editAdLink.getText().toString().trim();
 
                 if (link.isEmpty()) {
                     Toast.makeText(this,
-                            "Enter advertisement link",
+                            R.string.msg_enter_ad_link,
                             Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -254,10 +285,10 @@ public class UploadTemplatesActivity extends BaseActivity {
 
 
             new AlertDialog.Builder(this)
-                    .setTitle("Confirm Upload")
-                    .setMessage("Save image to \"" + section + "\" section?")
-                    .setPositiveButton("OK", (d, w) -> saveImage(section))
-                    .setNegativeButton("Cancel", null)
+                    .setTitle(R.string.title_confirm_upload)
+                    .setMessage(getString(R.string.msg_confirm_upload_format, getLocalizedSectionName(sectionKey)))
+                    .setPositiveButton(android.R.string.ok, (d, w) -> saveImage(sectionKey))
+                    .setNegativeButton(android.R.string.cancel, null)
                     .show();
         });
     }
@@ -270,14 +301,17 @@ public class UploadTemplatesActivity extends BaseActivity {
             Uri sourceUri = data.getData();
             if (sourceUri != null) {
                 originalImageUri = sourceUri;
-                String section = spinnerSection.getSelectedItem().toString();
-                if (section.equalsIgnoreCase("Reel Maker")) {
+                int pos = spinnerSection.getSelectedItemPosition();
+                String sectionKey = (pos >= 0 && pos < sectionKeys.size()) ? sectionKeys.get(pos) : "";
+
+                if (sectionKey.equalsIgnoreCase("Reel Maker")) {
                     selectedImageUri = sourceUri;
                     previewImage.setVisibility(View.VISIBLE);
                     previewImage.setImageURI(selectedImageUri);
-                    Toast.makeText(this, "Video Selected", Toast.LENGTH_SHORT).show();
+                    toast(R.string.msg_video_selected);
                 } else {
-                    startCrop(sourceUri);
+                    // Re-crop!
+                    startCrop(originalImageUri != null ? originalImageUri : selectedImageUri);
                 }
             }
         } else if (resultCode == RESULT_OK && requestCode == UCrop.REQUEST_CROP) {
@@ -286,20 +320,22 @@ public class UploadTemplatesActivity extends BaseActivity {
                 selectedImageUri = resultUri;
                 previewImage.setVisibility(View.VISIBLE);
                 previewImage.setImageURI(selectedImageUri);
-                Toast.makeText(this, "Image Cropped & Selected", Toast.LENGTH_SHORT).show();
+                toast(R.string.msg_crop_success);
             }
         } else if (resultCode == UCrop.RESULT_ERROR) {
             final Throwable cropError = UCrop.getError(data);
-            if (cropError != null) Toast.makeText(this, "Crop Error: " + cropError.getMessage(), Toast.LENGTH_SHORT).show();
+            if (cropError != null) toast("Crop Error: " + cropError.getMessage());
         }
     }
 
     private void startCrop(@NonNull Uri uri) {
-        String section = spinnerSection.getSelectedItem().toString();
+        int pos = spinnerSection.getSelectedItemPosition();
+        String sectionKey = (pos >= 0 && pos < sectionKeys.size()) ? sectionKeys.get(pos) : "";
+
         String destinationFileName = "cropped_" + System.currentTimeMillis() + ".jpg";
         UCrop uCrop = UCrop.of(uri, Uri.fromFile(new File(getCacheDir(), destinationFileName)));
-
-        if (section.equalsIgnoreCase("Advertisement")) {
+ 
+        if (sectionKey.equalsIgnoreCase("Advertisement")) {
             uCrop.withAspectRatio(16, 9);
         } else {
             uCrop.withAspectRatio(1, 1);
@@ -310,7 +346,7 @@ public class UploadTemplatesActivity extends BaseActivity {
         options.setHideBottomControls(false);
 
         // Custom Styling to fix visibility and add space from screen edges
-        options.setToolbarTitle("Crop Your Image");
+        options.setToolbarTitle(getString(R.string.title_crop_image));
         options.setToolbarColor(Color.parseColor("#1B1B1B")); 
         options.setStatusBarColor(Color.parseColor("#1B1B1B"));
         options.setToolbarWidgetColor(Color.WHITE); // Make "Done" and "Cancel" buttons bright white
@@ -344,7 +380,8 @@ public class UploadTemplatesActivity extends BaseActivity {
                     Gson gson = new Gson();
                     com.google.firebase.database.DatabaseReference dbRef;
                     if (section.equalsIgnoreCase("Business Frame")) {
-                        String sub = spinnerSubSection.getSelectedItem().toString();
+                        int subPos = spinnerSubSection.getSelectedItemPosition();
+                        String sub = (subPos >= 0 && subPos < subSectionKeys.size()) ? subSectionKeys.get(subPos) : "Business";
                         dbRef = com.google.firebase.database.FirebaseDatabase.getInstance()
                                 .getReference("templates")
                                 .child(section)
@@ -375,7 +412,7 @@ public class UploadTemplatesActivity extends BaseActivity {
                         list.add(0, adItem);
                         sp.edit().putString("Advertisement", gson.toJson(list)).apply();
 
-                        Toast.makeText(UploadTemplatesActivity.this, "Advertisement uploaded to Database", Toast.LENGTH_SHORT).show();
+                        toast(R.string.msg_upload_success);
                         finish();
                         return;
                     }
@@ -396,7 +433,7 @@ public class UploadTemplatesActivity extends BaseActivity {
                         list.add(0, festItem);
                         sp.edit().putString(section, gson.toJson(list)).apply();
 
-                        Toast.makeText(UploadTemplatesActivity.this, "Festival card uploaded to Database", Toast.LENGTH_SHORT).show();
+                        toast(R.string.msg_upload_success);
                         finish();
                         return;
                     }
@@ -408,7 +445,7 @@ public class UploadTemplatesActivity extends BaseActivity {
                     normalItem.put("url", imageUrl);
                     normalItem.put("timestamp", System.currentTimeMillis());
                     normalItem.put("expiryDate", expiryTime);
-                    if (section.equalsIgnoreCase("Reel Maker")) normalItem.put("type", "video");
+                    if (section.equalsIgnoreCase("Reel Maker")) normalItem.put("type", "video"); // ✅ canonical key
 
                     // 1. Firebase
                     dbRef.child(templateId).setValue(normalItem);
@@ -420,7 +457,7 @@ public class UploadTemplatesActivity extends BaseActivity {
                     if (!images.contains(imageUrl)) images.add(0, imageUrl);
                     sp.edit().putString(section, gson.toJson(images)).apply();
 
-                    Toast.makeText(UploadTemplatesActivity.this, "Template uploaded to " + section, Toast.LENGTH_SHORT).show();
+                    toast(R.string.msg_upload_success);
                     setResult(RESULT_OK);
                     finish();
                 });
@@ -456,21 +493,22 @@ public class UploadTemplatesActivity extends BaseActivity {
                     cursor.close();
                 }
 
+                int pos = spinnerSection.getSelectedItemPosition();
+                String sectionKey = (pos >= 0 && pos < sectionKeys.size()) ? sectionKeys.get(pos) : "";
+
                 if (size > 5 * 1024 * 1024) {
-                    String section = spinnerSection.getSelectedItem().toString();
-                    int limit = section.equalsIgnoreCase("Reel Maker") ? 30 * 1024 * 1024 : 5 * 1024 * 1024;
-                    String limitText = section.equalsIgnoreCase("Reel Maker") ? "30 MB" : "5 MB";
+                    int limit = sectionKey.equalsIgnoreCase("Reel Maker") ? 30 * 1024 * 1024 : 5 * 1024 * 1024;
+                    String limitText = sectionKey.equalsIgnoreCase("Reel Maker") ? "30 MB" : "5 MB";
                     
                     if (size > limit) {
-                        callback.onError("File size must be ≤ " + limitText);
+                        callback.onError(getString(R.string.msg_file_size_limit, limitText));
                         return;
                     }
                 }
 
-                String section = spinnerSection.getSelectedItem().toString();
                 String boundary = "----RMPLUS" + System.currentTimeMillis();
                 String mimeType = getContentResolver().getType(imageUri);
-                if (mimeType == null) mimeType = section.equalsIgnoreCase("Reel Maker") ? "video/mp4" : "image/jpeg";
+                if (mimeType == null) mimeType = sectionKey.equalsIgnoreCase("Reel Maker") ? "video/mp4" : "image/jpeg";
 
                 java.net.URL url =
                         new java.net.URL("http://187.77.184.84/upload.php");
@@ -565,10 +603,16 @@ public class UploadTemplatesActivity extends BaseActivity {
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot snapshot) {
-                        ArrayList<String> sections = new ArrayList<>();
-                        sections.add("Select Section");
+                        sections.clear();
+                        sectionKeys.clear();
+
+                        sections.add(getString(R.string.section_select));
+                        sectionKeys.add("Select Section");
+
                         for (DataSnapshot d : snapshot.getChildren()) {
-                            sections.add(d.getKey());
+                            String key = d.getKey();
+                            sectionKeys.add(key);
+                            sections.add(getLocalizedSectionName(key));
                         }
                         ArrayAdapter<String> adapter = new ArrayAdapter<>(UploadTemplatesActivity.this, android.R.layout.simple_spinner_dropdown_item, sections);
                         spinnerSection.setAdapter(adapter);
@@ -576,6 +620,14 @@ public class UploadTemplatesActivity extends BaseActivity {
                     @Override
                     public void onCancelled(DatabaseError error) {}
                 });
+    }
+
+    void toast(int resId) {
+        Toast.makeText(this, resId, Toast.LENGTH_SHORT).show();
+    }
+
+    void toast(String msg) {
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 
     interface UploadCallback {

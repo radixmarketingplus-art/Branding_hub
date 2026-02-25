@@ -3,11 +3,15 @@ package com.example.rmplus;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.*;
 
@@ -24,6 +28,29 @@ public class DashboardActivity extends AppCompatActivity {
 
         bottomNav = findViewById(R.id.bottomNav);
         badgeTextView = findViewById(R.id.badgeText);
+        ImageView profileBtn = findViewById(R.id.profileBtn);
+
+        profileBtn.setOnClickListener(v -> startActivity(new Intent(this, ProfileActivity.class)));
+
+        String uid = FirebaseAuth.getInstance().getUid();
+        if (uid != null) {
+            FirebaseDatabase.getInstance().getReference("users").child(uid).child("profileImage")
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot snapshot) {
+                            String url = snapshot.getValue(String.class);
+                            if (url != null && !url.isEmpty()) {
+                                Glide.with(DashboardActivity.this)
+                                        .load(url)
+                                        .placeholder(R.drawable.ic_profile)
+                                        .error(R.drawable.ic_profile)
+                                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                                        .into(profileBtn);
+                            }
+                        }
+                        @Override public void onCancelled(DatabaseError error) {}
+                    });
+        }
 
         // -----------------------------
         // LOAD MENU BASED ON ROLE

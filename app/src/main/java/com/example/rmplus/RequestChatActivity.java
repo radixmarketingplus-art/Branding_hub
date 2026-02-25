@@ -43,7 +43,7 @@ public class RequestChatActivity extends AppCompatActivity {
 
         if (requestId == null) {
             Toast.makeText(this,
-                    "Chat cannot open",
+                    R.string.msg_chat_error,
                     Toast.LENGTH_SHORT).show();
             finish();
             return;
@@ -203,7 +203,7 @@ public class RequestChatActivity extends AppCompatActivity {
             if (url == null || url.isEmpty()) {
                 runOnUiThread(() ->
                         Toast.makeText(this,
-                                "Upload failed",
+                                R.string.msg_upload_failed,
                                 Toast.LENGTH_SHORT).show());
                 return;
             }

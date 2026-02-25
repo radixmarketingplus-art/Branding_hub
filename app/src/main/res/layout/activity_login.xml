@@ -74,7 +74,7 @@
                 <TextView
                     android:layout_height="wrap_content"
                     android:layout_width="wrap_content"
-                    android:text="Welcome Back"
+                    android:text="@string/title_welcome_back"
                     android:textSize="26sp"
                     android:textStyle="bold"
                     android:textColor="?attr/colorOnBackground"
@@ -83,7 +83,7 @@
                 <TextView
                     android:layout_height="wrap_content"
                     android:layout_width="wrap_content"
-                    android:text="Sign in to continue"
+                    android:text="@string/desc_signin_continue"
                     android:textSize="14sp"
                     android:textColor="?attr/colorOnSurfaceVariant"
                     android:layout_gravity="center_horizontal"
@@ -107,7 +107,7 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:text="Email"
+                        android:text="@string/label_email_tab"
                         android:textAllCaps="false"/>
 
                     <com.google.android.material.button.MaterialButton
@@ -116,7 +116,7 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:text="Phone"
+                        android:text="@string/label_phone_tab"
                         android:textAllCaps="false"/>
 
                 </com.google.android.material.button.MaterialButtonToggleGroup>
@@ -128,7 +128,7 @@
                     android:id="@+id/email"
                     android:layout_width="match_parent"
                     android:layout_height="54dp"
-                    android:hint="Enter Email"
+                    android:hint="@string/hint_enter_email"
                     android:inputType="textEmailAddress"
                     android:textColor="?attr/colorOnSurface"
                     android:textColorHint="?attr/colorOnSurfaceVariant"
@@ -148,7 +148,7 @@
                         android:id="@+id/password"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:hint="Password"
+                        android:hint="@string/hint_password"
                         android:inputType="textPassword"
                         android:textColor="?attr/colorOnSurface"
                         android:textColorHint="?attr/colorOnSurfaceVariant"
@@ -173,7 +173,7 @@
                     android:layout_height="wrap_content"
                     android:layout_width="wrap_content"
                     android:id="@+id/forgotPassword"
-                    android:text="Forgot your password?"
+                    android:text="@string/link_forgot_password"
                     android:textColor="?attr/colorPrimary"
                     android:textSize="14sp"
                     android:layout_gravity="end"
@@ -186,7 +186,7 @@
                     android:id="@+id/loginBtn"
                     android:layout_width="match_parent"
                     android:layout_height="54dp"
-                    android:text="Sign in"
+                    android:text="@string/btn_signin"
                     android:textStyle="bold"
                     android:textSize="16sp"
                     android:textColor="@android:color/white"
@@ -201,7 +201,7 @@
                     android:layout_height="wrap_content"
                     android:layout_width="wrap_content"
                     android:id="@+id/registerText"
-                    android:text="Create Account"
+                    android:text="@string/btn_create_account"
                     android:textColor="?attr/colorPrimary"
                     android:textSize="14sp"
                     android:layout_gravity="center_horizontal"

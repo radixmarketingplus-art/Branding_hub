@@ -23,7 +23,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Submit Request"
+            android:text="@string/title_submit_request"
             android:textSize="22sp"
             android:textStyle="bold"
             android:textColor="?attr/colorOnSurface"
@@ -32,7 +32,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Fill in the details below"
+            android:text="@string/desc_fill_details"
             android:textSize="14sp"
             android:textColor="?attr/colorOnSurfaceVariant"
             android:layout_marginBottom="24dp"/>
@@ -58,7 +58,7 @@
             <!-- Title -->
             <EditText
                 android:id="@+id/etTitle"
-                android:hint="Title"
+                android:hint="@string/hint_title"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:background="@drawable/bg_glass_input"
@@ -70,7 +70,7 @@
             <!-- Description -->
             <EditText
                 android:id="@+id/etDesc"
-                android:hint="Description"
+                android:hint="@string/hint_description"
                 android:minLines="3"
                 android:gravity="top"
                 android:layout_width="match_parent"
@@ -96,7 +96,7 @@
                 android:id="@+id/btnAttach"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:text="Attach Proof"
+                android:text="@string/btn_attach_proof"
                 android:textAllCaps="false"
                 android:background="@drawable/bg_secondary_button"
                 android:layout_marginBottom="8dp"/>
@@ -108,10 +108,19 @@
             android:id="@+id/btnSubmit"
             android:layout_width="match_parent"
             android:layout_height="54dp"
-            android:text="Submit"
+            android:text="@string/btn_submit"
             android:textAllCaps="false"
             android:textSize="16sp"
             android:background="@drawable/bg_primary_button"/>
+
+        <!-- PROGRESS (shown during upload+submit) -->
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="12dp"
+            android:visibility="gone"/>
 
     </LinearLayout>
 

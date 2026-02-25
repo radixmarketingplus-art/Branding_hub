@@ -22,13 +22,16 @@
             android:layout_margin="16dp"
             android:background="@drawable/bg_surface_card">
 
-            <ImageView
+            <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/profileImage"
                 android:layout_width="110dp"
                 android:layout_height="110dp"
-                android:src="@mipmap/ic_launcher"
+                android:src="@drawable/ic_profile"
                 android:scaleType="centerCrop"
-                android:padding="6dp" />
+                app:shapeAppearanceOverlay="@style/CircleAppearance"
+                app:strokeColor="#DDDDDD"
+                app:strokeWidth="1dp"
+                android:padding="2dp" />
 
             <TextView
                 android:id="@+id/nameTxt"
@@ -61,7 +64,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Account"
+            android:text="@string/header_account"
             android:paddingStart="20dp"
             android:paddingTop="10dp"
             android:textSize="13sp"
@@ -90,7 +93,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Edit Profile"
+                android:text="@string/btn_edit_profile"
                 android:layout_marginStart="20dp"
                 style="@style/SettingsText"/>
         </LinearLayout>
@@ -118,7 +121,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Subscription"
+                android:text="@string/menu_subscription"
                 android:layout_marginStart="20dp"
                 style="@style/SettingsText"/>
         </LinearLayout>
@@ -128,7 +131,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Preferences"
+            android:text="@string/header_preferences"
             android:paddingStart="20dp"
             android:paddingTop="16dp"
             android:textSize="13sp"
@@ -157,7 +160,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Language"
+                android:text="@string/menu_language"
                 android:layout_marginStart="20dp"
                 style="@style/SettingsText"/>
         </LinearLayout>
@@ -184,7 +187,7 @@
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Dark Mode"
+                android:text="@string/menu_mode"
                 android:layout_weight="1"
                 android:layout_marginStart="20dp"
                 style="@style/SettingsText"/>
@@ -200,7 +203,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="App"
+            android:text="@string/header_app"
             android:paddingStart="20dp"
             android:paddingTop="16dp"
             android:textSize="13sp"
@@ -229,36 +232,65 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Settings"
+                android:text="@string/menu_settings"
                 android:layout_marginStart="20dp"
                 style="@style/SettingsText"/>
         </LinearLayout>
-
-        <!-- App Reference -->
-        <LinearLayout
-            android:id="@+id/appRefBtn"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:paddingHorizontal="20dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:foreground="?attr/selectableItemBackground"
-            >
-
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@android:drawable/ic_menu_info_details"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="App Reference"
-                android:layout_marginStart="20dp"
-                android:textSize="16sp"/>
-        </LinearLayout>
+ 
+ 
+         <!-- Rate App -->
+         <LinearLayout
+             android:id="@+id/rateBtn"
+             android:layout_width="match_parent"
+             android:layout_height="56dp"
+             android:orientation="horizontal"
+             android:gravity="center_vertical"
+             android:paddingHorizontal="20dp"
+             android:clickable="true"
+             android:focusable="true"
+             android:foreground="?attr/selectableItemBackground"
+             >
+ 
+             <ImageView
+                 android:layout_width="24dp"
+                 android:layout_height="24dp"
+                 android:src="@android:drawable/btn_star_big_on"
+                 style="@style/SettingsIcon"/>
+ 
+             <TextView
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:text="@string/menu_rate"
+                 android:layout_marginStart="20dp"
+                 style="@style/SettingsText"/>
+         </LinearLayout>
+ 
+         <!-- Contact Support -->
+         <LinearLayout
+             android:id="@+id/supportBtn"
+             android:layout_width="match_parent"
+             android:layout_height="56dp"
+             android:orientation="horizontal"
+             android:gravity="center_vertical"
+             android:paddingHorizontal="20dp"
+             android:clickable="true"
+             android:focusable="true"
+             android:foreground="?attr/selectableItemBackground"
+             >
+ 
+             <ImageView
+                 android:layout_width="24dp"
+                 android:layout_height="24dp"
+                 android:src="@android:drawable/ic_dialog_email"
+                 style="@style/SettingsIcon"/>
+ 
+             <TextView
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:text="@string/menu_support"
+                 android:layout_marginStart="20dp"
+                 style="@style/SettingsText"/>
+         </LinearLayout>
 
 
         <!-- Share -->
@@ -283,22 +315,20 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Share App"
+                android:text="@string/menu_share"
                 android:layout_marginStart="20dp"
                 style="@style/SettingsText"/>
         </LinearLayout>
 
-        <!-- ================= DANGER ZONE ================= -->
+        <!-- ================= ACCOUNT MANAGEMENT ================= -->
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Danger Zone"
-            android:textColor="#FF5252"
-            android:textStyle="bold"
-            android:paddingStart="20dp"
-            android:paddingTop="20dp"
-            android:textSize="13sp"/>
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:text="@string/header_account_mgmt"
+             android:paddingStart="20dp"
+             android:paddingTop="20dp"
+             style="@style/SettingsHeader"/>
 
         <!-- LOGOUT -->
         <LinearLayout
@@ -322,7 +352,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Logout"
+                android:text="@string/menu_logout"
                 android:layout_marginStart="20dp"
                 style="@style/SettingsText"/>
         </LinearLayout>
@@ -349,7 +379,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Delete Account"
+                android:text="@string/menu_delete_account"
                 android:textColor="#FF5252"
                 android:textStyle="bold"
                 android:layout_marginStart="20dp"

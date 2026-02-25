@@ -21,7 +21,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Settings"
+            android:text="@string/settings_title"
             android:textSize="28sp"
             android:textStyle="bold"
             android:textColor="?attr/colorOnBackground"
@@ -59,14 +59,14 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Change Password"
+                    android:text="@string/btn_change_password"
                     android:textSize="16sp"
                     android:textColor="?attr/colorOnBackground"/>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Reset via email"
+                    android:text="@string/desc_reset_email"
                     android:textSize="13sp"
                     android:textColor="?attr/colorOnSurfaceVariant"/>
             </LinearLayout>
@@ -97,14 +97,14 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Notifications"
+                    android:text="@string/btn_notifications"
                     android:textSize="16sp"
                     android:textColor="?attr/colorOnBackground"/>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Enable app notifications"
+                    android:text="@string/desc_notifications"
                     android:textSize="13sp"
                     android:textColor="?attr/colorOnSurfaceVariant"/>
             </LinearLayout>
@@ -145,14 +145,14 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Clear Cache"
+                    android:text="@string/btn_clear_cache"
                     android:textSize="16sp"
                     android:textColor="?attr/colorOnBackground"/>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Remove temporary files"
+                    android:text="@string/desc_clear_cache"
                     android:textSize="13sp"
                     android:textColor="?attr/colorOnSurfaceVariant"/>
             </LinearLayout>
@@ -180,7 +180,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Privacy Policy"
+                android:text="@string/btn_privacy"
                 android:textSize="16sp"
                 android:textColor="?attr/colorOnBackground"
                 android:layout_marginStart="20dp"/>
@@ -208,11 +208,38 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Terms And Conditions"
+                android:text="@string/btn_terms"
                 android:textSize="16sp"
                 android:textColor="?attr/colorOnBackground"
                 android:layout_marginStart="20dp"/>
         </LinearLayout>
+ 
+         <!-- ===== SUPPORT ===== -->
+ 
+         <LinearLayout
+             android:id="@+id/supportBtn"
+             android:layout_width="match_parent"
+             android:layout_height="64dp"
+             android:orientation="horizontal"
+             android:gravity="center_vertical"
+             android:paddingHorizontal="20dp"
+             android:clickable="true"
+             android:focusable="true"
+             android:foreground="?attr/selectableItemBackground">
+ 
+             <ImageView
+                 android:layout_width="24dp"
+                 android:layout_height="24dp"
+                 android:src="@android:drawable/ic_dialog_email"/>
+ 
+             <TextView
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:text="@string/menu_support"
+                 android:textSize="16sp"
+                 android:textColor="?attr/colorOnBackground"
+                 android:layout_marginStart="20dp"/>
+         </LinearLayout>
 
 
         <!-- ===== VERSION ===== -->

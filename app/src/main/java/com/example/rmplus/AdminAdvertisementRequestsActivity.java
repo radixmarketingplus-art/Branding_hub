@@ -19,9 +19,9 @@ public class AdminAdvertisementRequestsActivity
         pager.setAdapter(new AdminAdRequestPagerAdapter(this, true));
 
         new TabLayoutMediator(tab,pager,(t,p)->{
-            if(p==0)t.setText("Pending");
-            if(p==1)t.setText("Accepted");
-            if(p==2)t.setText("Rejected");
+            if(p==0)t.setText(R.string.tab_pending);
+            if(p==1)t.setText(R.string.tab_accepted);
+            if(p==2)t.setText(R.string.tab_rejected);
         }).attach();
     }
 }

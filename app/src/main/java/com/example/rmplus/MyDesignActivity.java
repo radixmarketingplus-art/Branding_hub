@@ -150,10 +150,10 @@ public class MyDesignActivity extends BaseActivity {
 
     void setTitle() {
         switch (currentType) {
-            case "likes": txtTitle.setText("My Likes"); break;
-            case "favorites": txtTitle.setText("My Favorite"); break;
-            case "edits": txtTitle.setText("My Edits"); break;
-            case "saves": txtTitle.setText("My Saved Designs"); break;
+            case "likes": txtTitle.setText(R.string.title_my_likes); break;
+            case "favorites": txtTitle.setText(R.string.title_my_favorite); break;
+            case "edits": txtTitle.setText(R.string.title_my_edits); break;
+            case "saves": txtTitle.setText(R.string.title_my_saved); break;
         }
     }
 

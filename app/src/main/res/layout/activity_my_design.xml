@@ -20,7 +20,7 @@
             android:paddingEnd="16dp"
             android:paddingTop="12dp"
             android:paddingBottom="8dp"
-            android:text="My Designs"
+            android:text="@string/title_my_designs"
             android:textSize="20sp"
             android:textStyle="bold"
             android:textColor="?attr/colorOnBackground"/>
@@ -38,7 +38,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="Likes"
+                android:text="@string/tab_likes"
                 android:textStyle="bold"
                 android:textSize="14sp"
                 android:textColor="#4A6CF7"/>
@@ -49,7 +49,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="Favorite"
+                android:text="@string/tab_favorite"
                 android:textStyle="bold"
                 android:textSize="14sp"
                 android:textColor="?attr/colorOnSurface"/>
@@ -60,7 +60,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="Edits"
+                android:text="@string/tab_edits"
                 android:textStyle="bold"
                 android:textSize="14sp"
                 android:textColor="?attr/colorOnSurface"/>
@@ -71,7 +71,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="Saved"
+                android:text="@string/tab_saved"
                 android:textStyle="bold"
                 android:textSize="14sp"
                 android:textColor="?attr/colorOnSurface"/>

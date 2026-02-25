@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.widget.*;
 
@@ -22,6 +23,8 @@ import androidx.annotation.NonNull;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
+import com.yalantis.ucrop.UCrop;
+import java.io.File;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -33,18 +36,21 @@ import yuku.ambilwarna.AmbilWarnaDialog;
 
 public class ManageTemplatesActivity extends AppCompatActivity {
 
-    ImageView imgTemplate, imgFrame, imgLogo;
+    FrameLayout wrapText, wrapLogo, wrapGallery;
+    ImageView imgTemplate, imgFrame, imgLogo, imgGallery;
+    ImageView btnDeleteText, btnDeleteLogo, btnDeleteGallery;
     TextView txtEdit;
-    ImageButton btnText, btnFrame, btnSave;
-    Button btnLogo, btnColor;
+    ImageButton btnSave;
+    Button btnColor;
+    LinearLayout btnText, btnLogo, btnFrame, btnGallery;
     ViewPager2 vpFrames;
     ArrayList<String> slidingFrames = new ArrayList<>();
-    LinearLayout textControls, logoControls;
-    SeekBar seekTextSize, seekLogoSize;
-    ImageView imgDelete;
+    LinearLayout textControls, imageControls;
 
     static final int PICK_LOGO = 101;
-    float dX, dY;
+    static final int PICK_GALLERY = 102;
+    SeekBar seekTextSize, seekImageSize;
+    View scaleLogo, scaleGallery; // New containers for scaling content only
 
     // 🔥 NEW
     String originalPath;
@@ -55,32 +61,41 @@ public class ManageTemplatesActivity extends AppCompatActivity {
     RecyclerView rvFrames;
     SeekBar seekFrameSize;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manage_templates);
 
         // ==== Bind ====
+        wrapText = findViewById(R.id.wrapText);
+        wrapLogo = findViewById(R.id.wrapLogo);
+        wrapGallery = findViewById(R.id.wrapGallery);
+
+        btnDeleteText = findViewById(R.id.btnDeleteText);
+        btnDeleteLogo = findViewById(R.id.btnDeleteLogo);
+        btnDeleteGallery = findViewById(R.id.btnDeleteGallery);
+
         imgTemplate = findViewById(R.id.imgTemplate);
         imgFrame = findViewById(R.id.imgFrame);
         imgLogo = findViewById(R.id.imgLogo);
+        imgGallery = findViewById(R.id.imgGallery);
         txtEdit = findViewById(R.id.txtEdit);
-        imgDelete = findViewById(R.id.imgDelete);
         btnText = findViewById(R.id.btnText);
         btnLogo = findViewById(R.id.btnLogo);
+        btnGallery = findViewById(R.id.btnGallery);
         btnFrame = findViewById(R.id.btnFrame);
         btnSave = findViewById(R.id.btnSave);
         btnColor = findViewById(R.id.btnColor);
         textControls = findViewById(R.id.textControls);
-        logoControls = findViewById(R.id.logoControls);
-        seekTextSize = findViewById(R.id.seekTextSize);
-        seekLogoSize = findViewById(R.id.seekLogoSize);
+        imageControls = findViewById(R.id.imageControls);
         frameControls = findViewById(R.id.frameControls);
         rvFrames = findViewById(R.id.rvFrames);
         seekFrameSize = findViewById(R.id.seekFrameSize);
         vpFrames = findViewById(R.id.vpFrames);
-
+        seekTextSize = findViewById(R.id.seekTextSize);
+        seekImageSize = findViewById(R.id.seekImageSize);
+        scaleLogo = findViewById(R.id.scaleLogo);
+        scaleGallery = findViewById(R.id.scaleGallery);
 
         uid = FirebaseAuth.getInstance().getUid();
         rootRef = FirebaseDatabase.getInstance().getReference();
@@ -96,34 +111,126 @@ public class ManageTemplatesActivity extends AppCompatActivity {
         imgLogo.setClipToOutline(true);
         imgLogo.setBackgroundResource(R.drawable.shape_circle);
 
-        // ==== Drag ====
-        enableDrag(txtEdit);
-        enableDrag(imgLogo);
-        enableDrag(imgFrame);
+        // ==== Drag & Selection Logic ====
+        enableDrag(wrapText, null);
+        enableDrag(wrapLogo, scaleLogo);
+        enableDrag(wrapGallery, scaleGallery);
+
+        // Add Tap-to-select behavior
+        wrapText.setOnClickListener(v -> {
+            textControls.setVisibility(View.VISIBLE);
+            imageControls.setVisibility(View.GONE);
+            frameControls.setVisibility(View.GONE);
+        });
+
+        wrapLogo.setOnClickListener(v -> {
+            imageControls.setVisibility(View.VISIBLE);
+            textControls.setVisibility(View.GONE);
+            frameControls.setVisibility(View.GONE);
+            // Sync SeekBar to current scale
+            float currentScale = scaleLogo.getScaleX();
+            int progress = (int) ((currentScale - 0.2f) * 50f);
+            seekImageSize.setProgress(Math.max(0, Math.min(100, progress)));
+        });
+
+        wrapGallery.setOnClickListener(v -> {
+            imageControls.setVisibility(View.VISIBLE);
+            textControls.setVisibility(View.GONE);
+            frameControls.setVisibility(View.GONE);
+            // Sync SeekBar to current scale
+            float currentScale = scaleGallery.getScaleX();
+            int progress = (int) ((currentScale - 0.2f) * 50f);
+            seekImageSize.setProgress(Math.max(0, Math.min(100, progress)));
+        });
+
+        btnDeleteText.setOnClickListener(v -> {
+            wrapText.setVisibility(View.GONE);
+            txtEdit.setText(R.string.ph_edit_text);
+            textControls.setVisibility(View.GONE);
+        });
+        btnDeleteLogo.setOnClickListener(v -> {
+            wrapLogo.setVisibility(View.GONE);
+            imgLogo.setImageDrawable(null);
+            imageControls.setVisibility(View.GONE);
+        });
+        btnDeleteGallery.setOnClickListener(v -> {
+            wrapGallery.setVisibility(View.GONE);
+            imgGallery.setImageDrawable(null);
+        });
 
         // ==== TEXT ====
         btnText.setOnClickListener(v -> {
-            txtEdit.setText("Edit Text");
-            txtEdit.setX(100);
-            txtEdit.setY(100);
-            txtEdit.setVisibility(View.VISIBLE);
+            txtEdit.setText(R.string.ph_edit_text);
+            wrapText.setX(100);
+            wrapText.setY(100);
+            wrapText.setVisibility(View.VISIBLE);
 
             textControls.setVisibility(View.VISIBLE);
-            logoControls.setVisibility(View.GONE);
+            imageControls.setVisibility(View.GONE);
 
             showTextEditor();
         });
 
         // ==== LOGO ====
         btnLogo.setOnClickListener(v -> {
-            imgLogo.setX(100);
-            imgLogo.setY(100);
-            imgLogo.setVisibility(View.VISIBLE);
-
-            logoControls.setVisibility(View.VISIBLE);
             textControls.setVisibility(View.GONE);
-
             pickLogoFromGallery();
+        });
+
+        // ==== GALLERY ====
+        btnGallery.setOnClickListener(v -> {
+            textControls.setVisibility(View.GONE);
+            Intent i = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            startActivityForResult(i, PICK_GALLERY);
+        });
+
+        // ==== SEEKBARS ====
+        seekTextSize.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (fromUser) {
+                    float newSize = 20 + (progress * 3); // 20px to ~320px
+                    txtEdit.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, newSize);
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
+        });
+
+        seekImageSize.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (fromUser) {
+                    float scale = 0.2f + (progress / 50f); // 0.2x to ~2.2x
+                    if (wrapLogo.getVisibility() == View.VISIBLE && imageControls.getVisibility() == View.VISIBLE) {
+                        scaleLogo.setScaleX(scale);
+                        scaleLogo.setScaleY(scale);
+                        // Fix delete icon position & size by inverting the scale
+                        btnDeleteLogo.setScaleX(1.0f / scale);
+                        btnDeleteLogo.setScaleY(1.0f / scale);
+                    } else if (wrapGallery.getVisibility() == View.VISIBLE
+                            && imageControls.getVisibility() == View.VISIBLE) {
+                        scaleGallery.setScaleX(scale);
+                        scaleGallery.setScaleY(scale);
+                        btnDeleteGallery.setScaleX(1.0f / scale);
+                        btnDeleteGallery.setScaleY(1.0f / scale);
+                    }
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
         });
 
         // ==== FRAME ====
@@ -133,7 +240,7 @@ public class ManageTemplatesActivity extends AppCompatActivity {
             rvFrames.setVisibility(View.GONE);
             seekFrameSize.setVisibility(View.GONE);
             textControls.setVisibility(View.GONE);
-            logoControls.setVisibility(View.GONE);
+            imageControls.setVisibility(View.GONE);
         });
 
         // ==== COLOR ====
@@ -153,80 +260,48 @@ public class ManageTemplatesActivity extends AppCompatActivity {
                         public void onCancel(AmbilWarnaDialog dialog) {
                             // nothing
                         }
-                    }
-            ).show();
+                    }).show();
 
         });
 
-        // ==== TEXT SIZE ====
-        seekTextSize.setOnSeekBarChangeListener(
-                new SeekBar.OnSeekBarChangeListener() {
-                    @Override
-                    public void onProgressChanged(SeekBar s, int p, boolean f) {
-                        if (p < 10) p = 10;
-                        txtEdit.setTextSize(p);
-                    }
-                    public void onStartTrackingTouch(SeekBar s) {}
-                    public void onStopTrackingTouch(SeekBar s) {}
-                });
-
-        // ==== LOGO SIZE ====
-        seekLogoSize.setOnSeekBarChangeListener(
-                new SeekBar.OnSeekBarChangeListener() {
-                    @Override
-                    public void onProgressChanged(SeekBar s, int p, boolean f) {
-                        if (p < 50) p = 50;
-                        imgLogo.getLayoutParams().width = p;
-                        imgLogo.getLayoutParams().height = p;
-                        imgLogo.requestLayout();
-                    }
-                    public void onStartTrackingTouch(SeekBar s) {}
-                    public void onStopTrackingTouch(SeekBar s) {}
-                });
-
-
+        // Text size & Logo size seekbars removed
 
         // ==== SAVE ====
-        btnSave.setOnClickListener(v ->
-                new AlertDialog.Builder(this)
-                        .setTitle("Save Edited Template")
-                        .setMessage("Do you really want to save?")
-                        .setPositiveButton("Yes",
-                                (d, w) -> saveFinalImage())
-                        .setNegativeButton("No", null)
-                        .show()
-        );
+        btnSave.setOnClickListener(v -> new AlertDialog.Builder(this)
+                .setTitle(R.string.title_save_template)
+                .setMessage(R.string.msg_save_confirm)
+                .setPositiveButton(R.string.btn_yes,
+                        (d, w) -> saveFinalImage())
+                .setNegativeButton(R.string.btn_no, null)
+                .show());
 
         String frameKey = getIntent().getStringExtra("frames_key");
 
-// 🔥 FALLBACK LOGIC (VERY IMPORTANT)
+        // 🔥 FALLBACK LOGIC (VERY IMPORTANT)
         if (frameKey == null) {
             frameKey = "Business Frame";
         }
 
-        SharedPreferences sp =
-                getSharedPreferences("HOME_DATA", MODE_PRIVATE);
+        SharedPreferences sp = getSharedPreferences("HOME_DATA", MODE_PRIVATE);
 
-// 🔥 SAME CATEGORY LIST USED AS FRAMES
+        // 🔥 SAME CATEGORY LIST USED AS FRAMES
         String json = sp.getString(frameKey, null);
 
         if (json == null) {
             Toast.makeText(this,
-                    "No frames found for " + frameKey,
+                    getString(R.string.msg_no_frames_found, frameKey),
                     Toast.LENGTH_SHORT).show();
             return;
         }
 
-        java.lang.reflect.Type type =
-                new com.google.gson.reflect.TypeToken<
-                        java.util.ArrayList<String>>() {}.getType();
+        java.lang.reflect.Type type = new com.google.gson.reflect.TypeToken<java.util.ArrayList<String>>() {
+        }.getType();
 
-        java.util.ArrayList<String> frames =
-                new com.google.gson.Gson().fromJson(json, type);
+        java.util.ArrayList<String> frames = new com.google.gson.Gson().fromJson(json, type);
 
         if (frames == null || frames.isEmpty()) {
             Toast.makeText(this,
-                    "Frame list empty",
+                    R.string.msg_frame_list_empty,
                     Toast.LENGTH_SHORT).show();
             return;
         }
@@ -235,9 +310,7 @@ public class ManageTemplatesActivity extends AppCompatActivity {
                 new androidx.recyclerview.widget.LinearLayoutManager(
                         this,
                         androidx.recyclerview.widget.RecyclerView.HORIZONTAL,
-                        false
-                )
-        );
+                        false));
 
         rvFrames.setAdapter(
                 new FrameAdapter(frames, path -> {
@@ -246,23 +319,20 @@ public class ManageTemplatesActivity extends AppCompatActivity {
 
                     // 🔥 FIX FRAME SIZE = SQUARE OVERLAY (1080x1080 aspect)
                     // We match parent but ensure parent canvas is square in layout
-                    FrameLayout.LayoutParams params =
-                            new FrameLayout.LayoutParams(
-                                    FrameLayout.LayoutParams.MATCH_PARENT,
-                                    FrameLayout.LayoutParams.MATCH_PARENT
-                            );
+                    FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+                            FrameLayout.LayoutParams.MATCH_PARENT,
+                            FrameLayout.LayoutParams.MATCH_PARENT);
                     imgFrame.setLayoutParams(params);
 
                     imgFrame.setScaleType(ImageView.ScaleType.FIT_XY);
                     imgFrame.setVisibility(View.VISIBLE);
-                    
+
                     // Frames are now fixed overlays, no dragging
-                    imgFrame.setOnTouchListener(null); 
+                    imgFrame.setOnTouchListener(null);
 
                     rvFrames.setVisibility(View.GONE);
                     seekFrameSize.setVisibility(View.GONE);
-                })
-        );
+                }));
     }
 
     // ================= TEXT EDIT =================
@@ -270,9 +340,9 @@ public class ManageTemplatesActivity extends AppCompatActivity {
         AlertDialog.Builder b = new AlertDialog.Builder(this);
         EditText input = new EditText(this);
         input.setText(txtEdit.getText());
-        b.setTitle("Edit Text");
+        b.setTitle(R.string.ph_edit_text);
         b.setView(input);
-        b.setPositiveButton("Apply",
+        b.setPositiveButton(R.string.btn_apply,
                 (d, w) -> txtEdit.setText(input.getText()));
         b.show();
     }
@@ -288,12 +358,65 @@ public class ManageTemplatesActivity extends AppCompatActivity {
     protected void onActivityResult(int rc, int res, Intent data) {
         super.onActivityResult(rc, res, data);
         if (rc == PICK_LOGO && res == RESULT_OK && data != null) {
-            imgLogo.setImageURI(data.getData());
+            startCrop(data.getData(), UCrop.REQUEST_CROP);
+        }
+        if (rc == PICK_GALLERY && res == RESULT_OK && data != null) {
+            startCrop(data.getData(), UCrop.REQUEST_CROP + 1);
+        }
+
+        if (rc == UCrop.REQUEST_CROP && res == RESULT_OK) {
+            Uri resultUri = UCrop.getOutput(data);
+            if (resultUri != null) {
+                imgLogo.setImageURI(null);
+                imgLogo.setImageURI(resultUri);
+                wrapLogo.setVisibility(View.VISIBLE);
+                wrapLogo.setX(100);
+                wrapLogo.setY(100);
+
+                scaleLogo.setScaleX(0.8f);
+                scaleLogo.setScaleY(0.8f);
+                btnDeleteLogo.setScaleX(1.0f / 0.8f);
+                btnDeleteLogo.setScaleY(1.0f / 0.8f);
+                seekImageSize.setProgress(30);
+
+                imageControls.setVisibility(View.VISIBLE);
+                textControls.setVisibility(View.GONE);
+                wrapLogo.requestLayout();
+            }
+        }
+
+        if (rc == UCrop.REQUEST_CROP + 1 && res == RESULT_OK) {
+            Uri resultUri = UCrop.getOutput(data);
+            if (resultUri != null) {
+                imgGallery.setImageURI(null);
+                imgGallery.setImageURI(resultUri);
+                wrapGallery.setVisibility(View.VISIBLE);
+                wrapGallery.setX(150);
+                wrapGallery.setY(150);
+
+                scaleGallery.setScaleX(0.8f);
+                scaleGallery.setScaleY(0.8f);
+                btnDeleteGallery.setScaleX(1.0f / 0.8f);
+                btnDeleteGallery.setScaleY(1.0f / 0.8f);
+                seekImageSize.setProgress(30);
+
+                imageControls.setVisibility(View.VISIBLE);
+                textControls.setVisibility(View.GONE);
+                wrapGallery.requestLayout();
+            }
         }
     }
 
+    private void startCrop(Uri uri, int requestCode) {
+        String destinationFileName = "RMPlus_Crop_" + System.currentTimeMillis() + ".jpg";
+        UCrop uCrop = UCrop.of(uri, Uri.fromFile(new File(getCacheDir(), destinationFileName)));
+        uCrop.withOptions(new UCrop.Options()); // Default free-style crop
+        uCrop.start(this, requestCode);
+    }
+
     private void loadImageSmart(String path, ImageView imageView) {
-        if (path == null || path.isEmpty()) return;
+        if (path == null || path.isEmpty())
+            return;
 
         // 🌐 LOAD FROM VPS URL OR LOCAL FILE (Glide handles both)
         Glide.with(this)
@@ -304,12 +427,12 @@ public class ManageTemplatesActivity extends AppCompatActivity {
                 .into(imageView);
     }
 
-    // ================= DRAG =================
-    void enableDrag(View v) {
+    // ================= DRAG & SCALE =================
+    void enableDrag(View wrapperView, View innerScaledView) {
 
         GestureDetector detector = null;
 
-        if (v == txtEdit) {
+        if (wrapperView == wrapText) {
             detector = new GestureDetector(this,
                     new GestureDetector.SimpleOnGestureListener() {
                         public boolean onDoubleTap(MotionEvent e) {
@@ -319,91 +442,120 @@ public class ManageTemplatesActivity extends AppCompatActivity {
                     });
         }
 
+        ScaleGestureDetector scaleDetector = new ScaleGestureDetector(this,
+                new ScaleGestureDetector.SimpleOnScaleGestureListener() {
+
+                    @Override
+                    public boolean onScale(ScaleGestureDetector detector) {
+                        float scaleFactor = detector.getScaleFactor();
+                        if (wrapperView == wrapText) {
+                            float currentSize = txtEdit.getTextSize();
+                            float newSize = currentSize * scaleFactor;
+                            if (newSize < 20)
+                                newSize = 20;
+                            if (newSize > 500)
+                                newSize = 500;
+                            txtEdit.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, newSize);
+                        } else if (innerScaledView != null) {
+                            innerScaledView.setPivotX(detector.getFocusX());
+                            innerScaledView.setPivotY(detector.getFocusY());
+                            float nX = innerScaledView.getScaleX() * scaleFactor;
+                            float nY = innerScaledView.getScaleY() * scaleFactor;
+                            if (nX < 0.1f)
+                                nX = 0.1f;
+                            if (nY < 0.1f)
+                                nY = 0.1f;
+                            innerScaledView.setScaleX(nX);
+                            innerScaledView.setScaleY(nY);
+
+                            // Apply inverse scale to delete buttons to keep them fixed size and attached
+                            if (innerScaledView == scaleLogo) {
+                                btnDeleteLogo.setScaleX(1.0f / nX);
+                                btnDeleteLogo.setScaleY(1.0f / nY);
+                            } else if (innerScaledView == scaleGallery) {
+                                btnDeleteGallery.setScaleX(1.0f / nX);
+                                btnDeleteGallery.setScaleY(1.0f / nY);
+                            }
+                        }
+                        return true;
+                    }
+                });
+
         GestureDetector finalDetector = detector;
 
-        v.setOnTouchListener((view, e) -> {
+        wrapperView.setOnTouchListener(new View.OnTouchListener() {
+            float dX, dY;
 
-            if (finalDetector != null)
-                finalDetector.onTouchEvent(e);
+            @Override
+            public boolean onTouch(View view, MotionEvent e) {
 
-            switch (e.getAction()) {
+                boolean handled = scaleDetector.onTouchEvent(e);
 
-                case MotionEvent.ACTION_DOWN:
-                    dX = view.getX() - e.getRawX();
-                    dY = view.getY() - e.getRawY();
-                    imgDelete.setVisibility(View.VISIBLE);
+                if (finalDetector != null)
+                    finalDetector.onTouchEvent(e);
+
+                if (scaleDetector.isInProgress()) {
                     return true;
+                }
 
-                case MotionEvent.ACTION_MOVE:
-                    view.setX(e.getRawX() + dX);
-                    view.setY(e.getRawY() + dY);
-                    return true;
+                switch (e.getActionMasked()) {
 
-                case MotionEvent.ACTION_UP:
-                    imgDelete.setVisibility(View.GONE);
+                    case MotionEvent.ACTION_DOWN:
+                        dX = view.getX() - e.getRawX();
+                        dY = view.getY() - e.getRawY();
+                        handled = true;
+                        break;
 
-                    if (isOverDelete(view)) {
-
-                        if (view == txtEdit) {
-                            txtEdit.setVisibility(View.GONE);
-
-                            // 🔥 HIDE TEXT CONTROLS
-                            textControls.setVisibility(View.GONE);
+                    case MotionEvent.ACTION_MOVE:
+                        if (e.getPointerCount() == 1) {
+                            view.setX(e.getRawX() + dX);
+                            view.setY(e.getRawY() + dY);
                         }
+                        handled = true;
+                        break;
 
-                        if (view == imgLogo) {
-                            imgLogo.setVisibility(View.GONE);
-
-                            // 🔥 HIDE LOGO CONTROLS
-                            logoControls.setVisibility(View.GONE);
-                        }
-
-                        if (view == imgFrame) {
-                            imgFrame.setVisibility(View.GONE);
-                            frameControls.setVisibility(View.GONE);
-                            rvFrames.setVisibility(View.VISIBLE);
-                            seekFrameSize.setVisibility(View.GONE);
-                        }
-                    }
-                    return true;
+                    case MotionEvent.ACTION_UP:
+                    case MotionEvent.ACTION_CANCEL:
+                        handled = true;
+                        break;
+                }
+                return handled;
             }
-            return false;
         });
-    }
-
-    boolean isOverDelete(View v) {
-        int[] a = new int[2];
-        int[] b = new int[2];
-        v.getLocationOnScreen(a);
-        imgDelete.getLocationOnScreen(b);
-
-        int cx = a[0] + v.getWidth()/2;
-        int cy = a[1] + v.getHeight()/2;
-
-        return cx>b[0] && cx<b[0]+imgDelete.getWidth()
-                && cy>b[1] && cy<b[1]+imgDelete.getHeight();
     }
 
     // ================= SAVE IMAGE =================
     void saveFinalImage() {
+        // Hide delete buttons before saving
+        btnDeleteText.setVisibility(View.GONE);
+        if (btnDeleteLogo != null)
+            btnDeleteLogo.setVisibility(View.GONE);
+        if (btnDeleteGallery != null)
+            btnDeleteGallery.setVisibility(View.GONE);
 
         View canvas = findViewById(R.id.canvas);
         canvas.setDrawingCacheEnabled(true);
         Bitmap bitmap = Bitmap.createBitmap(canvas.getDrawingCache());
         canvas.setDrawingCacheEnabled(false);
 
-        String savedPath =
-                MediaStore.Images.Media.insertImage(
-                        getContentResolver(),
-                        bitmap,
-                        "RMPlus_Edit_" + System.currentTimeMillis(),
-                        "Edited Template"
-                );
+        // Restore delete buttons
+        if (wrapText.getVisibility() == View.VISIBLE)
+            btnDeleteText.setVisibility(View.VISIBLE);
+        if (wrapLogo.getVisibility() == View.VISIBLE)
+            btnDeleteLogo.setVisibility(View.VISIBLE);
+        if (wrapGallery.getVisibility() == View.VISIBLE)
+            btnDeleteGallery.setVisibility(View.VISIBLE);
+
+        String savedPath = MediaStore.Images.Media.insertImage(
+                getContentResolver(),
+                bitmap,
+                "RMPlus_Edit_" + System.currentTimeMillis(),
+                getString(R.string.desc_edited_template));
 
         if (savedPath != null) {
 
             Toast.makeText(this,
-                    "Saved to Gallery",
+                    R.string.msg_saved_to_gallery,
                     Toast.LENGTH_SHORT).show();
 
             String safeId = makeSafeKey(originalPath);
@@ -423,19 +575,19 @@ public class ManageTemplatesActivity extends AppCompatActivity {
     }
 
     void resetControlsIfNothingSelected() {
-        if (txtEdit.getVisibility() != View.VISIBLE) {
+        if (wrapText.getVisibility() != View.VISIBLE) {
             textControls.setVisibility(View.GONE);
         }
 
-        if (imgLogo.getVisibility() != View.VISIBLE) {
-            logoControls.setVisibility(View.GONE);
+        if (wrapLogo.getVisibility() != View.VISIBLE && wrapGallery.getVisibility() != View.VISIBLE) {
+            imageControls.setVisibility(View.GONE);
         }
     }
-    private String makeSafeKey(String value){
+
+    private String makeSafeKey(String value) {
         return android.util.Base64.encodeToString(
                 value.getBytes(),
-                android.util.Base64.NO_WRAP
-        );
+                android.util.Base64.NO_WRAP);
     }
 
     private void loadSlidingFrames() {
@@ -445,43 +597,53 @@ public class ManageTemplatesActivity extends AppCompatActivity {
                     public void onDataChange(DataSnapshot snapshot) {
                         slidingFrames.clear();
                         for (DataSnapshot d : snapshot.getChildren()) {
-                            String f = d.hasChild("url") ? d.child("url").getValue(String.class) : d.child("imagePath").getValue(String.class);
-                            if (f != null) slidingFrames.add(f);
+                            String f = d.hasChild("url") ? d.child("url").getValue(String.class)
+                                    : d.child("imagePath").getValue(String.class);
+                            if (f != null)
+                                slidingFrames.add(f);
                         }
 
                         if (!slidingFrames.isEmpty()) {
                             vpFrames.setAdapter(new FrameOverlayAdapter(slidingFrames));
-                            
+
                             // Check for passed frame from intent
                             String passedFrame = getIntent().getStringExtra("selected_frame");
                             int startIndex = (Integer.MAX_VALUE / 2);
                             startIndex = startIndex - (startIndex % (slidingFrames.size() + 1));
-                            
+
                             if (passedFrame != null) {
-                                for(int i=0; i<slidingFrames.size(); i++) {
-                                    if(slidingFrames.get(i).equals(passedFrame)) {
+                                for (int i = 0; i < slidingFrames.size(); i++) {
+                                    if (slidingFrames.get(i).equals(passedFrame)) {
                                         startIndex += (i + 1);
                                         vpFrames.setVisibility(View.VISIBLE);
                                         break;
                                     }
                                 }
                             }
-                            
+
                             vpFrames.setCurrentItem(startIndex, false);
                         }
                     }
-                    @Override public void onCancelled(DatabaseError error) {}
+
+                    @Override
+                    public void onCancelled(DatabaseError error) {
+                    }
                 });
     }
 
     class FrameOverlayAdapter extends RecyclerView.Adapter<FrameOverlayAdapter.VH> {
         ArrayList<String> frames;
-        FrameOverlayAdapter(ArrayList<String> frames) { this.frames = frames; }
 
-        @NonNull @Override
+        FrameOverlayAdapter(ArrayList<String> frames) {
+            this.frames = frames;
+        }
+
+        @NonNull
+        @Override
         public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             ImageView imageView = new ImageView(parent.getContext());
-            imageView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            imageView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT));
             imageView.setScaleType(ImageView.ScaleType.FIT_XY);
             return new VH(imageView);
         }
@@ -498,11 +660,18 @@ public class ManageTemplatesActivity extends AppCompatActivity {
             }
         }
 
-        @Override public int getItemCount() { return frames.size() > 0 ? Integer.MAX_VALUE : 0; }
+        @Override
+        public int getItemCount() {
+            return frames.size() > 0 ? Integer.MAX_VALUE : 0;
+        }
 
         class VH extends RecyclerView.ViewHolder {
             ImageView img;
-            VH(View v) { super(v); img = (ImageView) v; }
+
+            VH(View v) {
+                super(v);
+                img = (ImageView) v;
+            }
         }
     }
 

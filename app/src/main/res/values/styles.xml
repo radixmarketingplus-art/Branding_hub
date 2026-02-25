@@ -83,4 +83,9 @@
 <!--        <item name="android:textStyle">bold</item>-->
 <!--    </style>-->
 
+    <style name="CircleAppearance">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
 </resources>

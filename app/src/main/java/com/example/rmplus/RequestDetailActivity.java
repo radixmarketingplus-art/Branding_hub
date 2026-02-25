@@ -67,9 +67,9 @@ public class RequestDetailActivity extends AppCompatActivity {
                                 r = s.getValue(CustomerRequest.class);
 
                                 txtTitle.setText(r.title);
-                                txtType.setText("Type : " + r.type);
-                                txtDesc.setText("Description : " + r.description);
-                                txtStatus.setText("Status : " + r.status);
+                                txtType.setText(getString(R.string.label_type, r.type));
+                                txtDesc.setText(getString(R.string.label_description, r.description));
+                                txtStatus.setText(getString(R.string.label_status, r.status));
 
                                 String time =
                                         new SimpleDateFormat(
@@ -77,12 +77,12 @@ public class RequestDetailActivity extends AppCompatActivity {
                                                 Locale.getDefault())
                                                 .format(new Date(r.time));
 
-                                txtTime.setText("Time : " + time);
+                                txtTime.setText(getString(R.string.label_time, time));
 
                                 if (isAdmin) {
-                                    txtUserName.setText("Name : " + r.userName);
-                                    txtEmail.setText("Email : " + r.email);
-                                    txtMobile.setText("Mobile : " + r.mobile);
+                                    txtUserName.setText(getString(R.string.label_name, r.userName));
+                                    txtEmail.setText(getString(R.string.label_email, r.email));
+                                    txtMobile.setText(getString(R.string.label_mobile, r.mobile));
                                 } else {
                                     txtUserName.setVisibility(View.GONE);
                                     txtEmail.setVisibility(View.GONE);
@@ -175,12 +175,12 @@ public class RequestDetailActivity extends AppCompatActivity {
         NotificationHelper.send(
                 this,
                 r.uid,
-                "Request " + s,
+                "Request Status: " + s,
                 r.title
         );
 
         Toast.makeText(this,
-                "Updated",
+                R.string.msg_updated,
                 Toast.LENGTH_SHORT).show();
 
         finish();
