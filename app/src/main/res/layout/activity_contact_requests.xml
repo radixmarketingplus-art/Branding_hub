@@ -25,12 +25,12 @@
             app:tabMode="fixed"
             app:tabGravity="fill"
 
-            app:tabIndicatorColor="#4A6CF7"
+            app:tabIndicatorColor="@color/primary"
             app:tabIndicatorHeight="3dp"
             app:tabIndicatorFullWidth="true"
 
             app:tabTextColor="?attr/colorOnSurface"
-            app:tabSelectedTextColor="#4A6CF7"
+            app:tabSelectedTextColor="@color/primary"
 
             app:tabRippleColor="@null"
 

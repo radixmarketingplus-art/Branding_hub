@@ -1,127 +1,214 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<androidx.core.widget.NestedScrollView
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
-    android:background="?attr/colorSurface"
-    android:fitsSystemWindows="true"
-    android:clipToPadding="false"
-    android:paddingBottom="16dp">
+    android:background="@color/screen_bg"
+    android:fitsSystemWindows="true">
 
-    <LinearLayout
-        android:orientation="vertical"
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp"
-        android:paddingTop="24dp"
-        android:paddingBottom="32dp">
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:overScrollMode="never">
 
-        <!-- ================= HEADER ================= -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/title_submit_request"
-            android:textSize="22sp"
-            android:textStyle="bold"
-            android:textColor="?attr/colorOnSurface"
-            android:layout_marginBottom="4dp"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/desc_fill_details"
-            android:textSize="14sp"
-            android:textColor="?attr/colorOnSurfaceVariant"
-            android:layout_marginBottom="24dp"/>
-
-        <!-- ================= FORM CARD ================= -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:background="@drawable/bg_surface_card"
-            android:padding="16dp"
-            android:layout_marginBottom="24dp">
+            android:paddingHorizontal="24dp"
+            android:paddingTop="32dp"
+            android:paddingBottom="40dp">
 
-            <!-- Type Spinner -->
-            <Spinner
-                android:id="@+id/spType"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:background="@drawable/bg_glass_input"
-                android:paddingHorizontal="12dp"
-                android:layout_marginBottom="14dp"/>
-
-            <!-- Title -->
-            <EditText
-                android:id="@+id/etTitle"
-                android:hint="@string/hint_title"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:background="@drawable/bg_glass_input"
-                android:textColor="?attr/colorOnSurface"
-                android:textColorHint="?attr/colorOnSurfaceVariant"
-                android:paddingHorizontal="14dp"
-                android:layout_marginBottom="14dp"/>
-
-            <!-- Description -->
-            <EditText
-                android:id="@+id/etDesc"
-                android:hint="@string/hint_description"
-                android:minLines="3"
-                android:gravity="top"
+            <!-- HEADER -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bg_surface_card"
-                android:textColor="?attr/colorOnSurface"
-                android:textColorHint="?attr/colorOnSurfaceVariant"
-                android:padding="14dp"
-                android:layout_marginBottom="16dp"/>
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="0dp"
+                android:paddingTop="0dp"
+                android:paddingBottom="4dp">
 
-            <!-- Image Preview -->
-            <ImageView
-                android:id="@+id/imgPreview"
-                android:layout_width="match_parent"
-                android:layout_height="180dp"
-                android:scaleType="centerCrop"
-                android:background="@drawable/bg_image_preview"
-                android:layout_marginBottom="16dp"
-                android:visibility="gone"/>
+                <ImageButton
+                    android:id="@+id/btnBack"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:src="@drawable/ic_back"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    app:tint="?attr/colorOnSurface"
+                    android:contentDescription="Back" />
 
-            <!-- Attach Button -->
-            <Button
-                android:id="@+id/btnAttach"
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/title_submit_request"
+                        android:textSize="24sp"
+                        android:fontFamily="sans-serif-black"
+                        android:textColor="?attr/colorOnSurface"
+                        android:letterSpacing="-0.01" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/desc_fill_details"
+                        android:textSize="12sp"
+                        android:fontFamily="sans-serif-medium"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:layout_marginTop="2dp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <View android:layout_width="match_parent" android:layout_height="24dp" />
+
+            <!-- FORM CARD -->
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:text="@string/btn_attach_proof"
-                android:textAllCaps="false"
-                android:background="@drawable/bg_secondary_button"
-                android:layout_marginBottom="8dp"/>
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="#0D000000"
+                app:cardBackgroundColor="@color/surface_light">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Select Category"
+                        android:textSize="12sp"
+                        android:fontFamily="sans-serif-black"
+                        android:textColor="?attr/colorPrimary"
+                        android:textAllCaps="true"
+                        android:letterSpacing="0.1"
+                        android:layout_marginBottom="8dp" />
+
+                    <Spinner
+                        android:id="@+id/spType"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:background="@drawable/bg_input_2"
+                        android:paddingHorizontal="16dp"
+                        android:layout_marginBottom="20dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Request Title"
+                        android:textSize="12sp"
+                        android:fontFamily="sans-serif-black"
+                        android:textColor="?attr/colorPrimary"
+                        android:textAllCaps="true"
+                        android:letterSpacing="0.1"
+                        android:layout_marginBottom="8dp" />
+
+                    <EditText
+                        android:id="@+id/etTitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:hint="@string/hint_title"
+                        android:fontFamily="sans-serif-medium"
+                        android:textSize="14sp"
+                        android:textColor="?attr/colorOnSurface"
+                        android:textColorHint="?attr/colorOnSurfaceVariant"
+                        android:background="@drawable/bg_input_2"
+                        android:paddingHorizontal="16dp"
+                        android:layout_marginBottom="20dp"
+                        android:singleLine="true" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Description"
+                        android:textSize="12sp"
+                        android:fontFamily="sans-serif-black"
+                        android:textColor="?attr/colorPrimary"
+                        android:textAllCaps="true"
+                        android:letterSpacing="0.1"
+                        android:layout_marginBottom="8dp" />
+
+                    <EditText
+                        android:id="@+id/etDesc"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/hint_description"
+                        android:fontFamily="sans-serif-medium"
+                        android:textSize="14sp"
+                        android:textColor="?attr/colorOnSurface"
+                        android:textColorHint="?attr/colorOnSurfaceVariant"
+                        android:background="@drawable/bg_input_2"
+                        android:padding="16dp"
+                        android:minLines="4"
+                        android:gravity="top"
+                        android:layout_marginBottom="20dp" />
+
+                    <!-- Image Preview Area -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/imgPreviewCard"
+                        android:layout_width="match_parent"
+                        android:layout_height="180dp"
+                        android:layout_marginBottom="16dp"
+                        android:visibility="gone"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="0dp"
+                        app:strokeWidth="1dp"
+                        app:strokeColor="#1A000000">
+                        <ImageView
+                            android:id="@+id/imgPreview"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scaleType="centerCrop" />
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnAttach"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:text="@string/btn_attach_proof"
+                        android:fontFamily="sans-serif-bold"
+                        android:textAllCaps="false"
+                        app:cornerRadius="12dp"
+                        style="@style/Widget.Material3.Button.TonalButton"
+                        android:layout_marginBottom="8dp"
+                        app:icon="@android:drawable/ic_menu_gallery"
+                        app:iconGravity="textStart" />
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSubmit"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:text="@string/btn_submit"
+                android:fontFamily="sans-serif-black"
+                android:textSize="16sp"
+                app:cornerRadius="16dp"
+                app:backgroundTint="?attr/colorPrimary"
+                android:layout_marginBottom="16dp" />
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:visibility="gone" />
 
         </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
-        <!-- ================= SUBMIT ================= -->
-        <Button
-            android:id="@+id/btnSubmit"
-            android:layout_width="match_parent"
-            android:layout_height="54dp"
-            android:text="@string/btn_submit"
-            android:textAllCaps="false"
-            android:textSize="16sp"
-            android:background="@drawable/bg_primary_button"/>
-
-        <!-- PROGRESS (shown during upload+submit) -->
-        <ProgressBar
-            android:id="@+id/progressBar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="12dp"
-            android:visibility="gone"/>
-
-    </LinearLayout>
-
-</androidx.core.widget.NestedScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

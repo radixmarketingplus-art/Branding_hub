@@ -87,7 +87,7 @@
                 android:id="@+id/txtStatus"
                 android:textStyle="bold"
                 android:textSize="14sp"
-                android:textColor="#4A6CF7"
+                android:textColor="@color/primary"
                 android:layout_marginTop="8dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>

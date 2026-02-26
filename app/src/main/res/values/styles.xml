@@ -1,19 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <style name="sectionTitle">
-        <!-- REQUIRED -->
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <!-- MARGIN -->
         <item name="android:layout_marginTop">14dp</item>
         <item name="android:layout_marginBottom">6dp</item>
-
-        <item name="android:textSize">16sp</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:fontFamily">sans-serif-black</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
         <item name="android:letterSpacing">0.05</item>
     </style>
+
+
 
     <style name="horizontalRecycler">
         <item name="android:layout_width">match_parent</item>
@@ -53,39 +51,6 @@
         <item name="cornerSizeBottomRight">0dp</item>
     </style>
 
-    <style name="SectionTitle">
-        <item name="android:textSize">18sp</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:textColor">?colorOnSurface</item>
-        <item name="android:layout_marginTop">28dp</item>
-    </style>
 
-    <style name="BottomNavText">
-        <item name="android:textSize">10sp</item>
-        <item name="android:textColor">?android:textColorSecondary</item>
-    </style>
-
-    <style name="SettingsIcon">
-        <item name="android:tint">?attr/colorOnSurface</item>
-    </style>
-
-    <style name="SettingsText">
-        <item name="android:textSize">16sp</item>
-        <item name="android:textColor">?attr/colorOnSurface</item>
-    </style>
-
-    <style name="SettingsHeader">
-        <item name="android:textSize">13sp</item>
-        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
-    </style>
-
-<!--    <style name="BottomNavText" parent="TextAppearance.MaterialComponents.Caption">-->
-<!--        <item name="android:textStyle">bold</item>-->
-<!--    </style>-->
-
-    <style name="CircleAppearance">
-        <item name="cornerFamily">rounded</item>
-        <item name="cornerSize">50%</item>
-    </style>
 
 </resources>

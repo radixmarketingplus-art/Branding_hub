@@ -3,11 +3,11 @@
 
     <!-- Selected -->
     <item
-        android:color="?android:textColorPrimary"
+        android:color="?attr/colorOnPrimary"
         android:state_checked="true"/>
 
     <!-- Unselected -->
     <item
-        android:color="?android:textColorSecondary"/>
+        android:color="?attr/colorOnSurfaceVariant"/>
 
 </selector>

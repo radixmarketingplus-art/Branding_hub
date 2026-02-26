@@ -133,7 +133,7 @@
                         android:text="@string/btn_pick_date"
                         android:textAllCaps="false"
                         app:cornerRadius="14dp"
-                        app:backgroundTint="#4A6CF7"
+                        app:backgroundTint="@color/primary"
                         android:textColor="?attr/colorOnPrimary"/>
                 </LinearLayout>
 
@@ -216,7 +216,7 @@
                     android:textAllCaps="false"
                     android:enabled="false"
                     app:cornerRadius="14dp"
-                    app:backgroundTint="#4A6CF7"
+                    app:backgroundTint="@color/primary"
                     android:textColor="?attr/colorOnPrimary"/>
 
             </LinearLayout>
@@ -232,7 +232,7 @@
             android:text="@string/btn_save_continue"
             android:textAllCaps="false"
             app:cornerRadius="14dp"
-            app:backgroundTint="#4A6CF7"
+            app:backgroundTint="@color/primary"
             android:textColor="?attr/colorOnPrimary"/>
 
     </LinearLayout>

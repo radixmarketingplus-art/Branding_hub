@@ -23,10 +23,10 @@ public class CreateRequestActivity extends AppCompatActivity {
     ImageView imgPreview;
     ProgressBar progressBar;
 
-    Uri selectedUri;            // kept locally — uploaded only on submit
+    Uri selectedUri; // kept locally — uploaded only on submit
 
     // English keys stored in Firebase regardless of locale
-    private final String[] typesEn = {"Issue", "Order", "Custom Template", "Other"};
+    private final String[] typesEn = { "Issue", "Order", "Custom Template", "Other" };
 
     DatabaseReference usersRef, requestRef;
 
@@ -37,12 +37,12 @@ public class CreateRequestActivity extends AppCompatActivity {
         super.onCreate(b);
         setContentView(R.layout.activity_create_request);
 
-        spType      = findViewById(R.id.spType);
-        etTitle     = findViewById(R.id.etTitle);
-        etDesc      = findViewById(R.id.etDesc);
-        btnAttach   = findViewById(R.id.btnAttach);
-        btnSubmit   = findViewById(R.id.btnSubmit);
-        imgPreview  = findViewById(R.id.imgPreview);
+        spType = findViewById(R.id.spType);
+        etTitle = findViewById(R.id.etTitle);
+        etDesc = findViewById(R.id.etDesc);
+        btnAttach = findViewById(R.id.btnAttach);
+        btnSubmit = findViewById(R.id.btnSubmit);
+        imgPreview = findViewById(R.id.imgPreview);
         progressBar = findViewById(R.id.progressBar);
 
         String[] arr = {
@@ -79,13 +79,14 @@ public class CreateRequestActivity extends AppCompatActivity {
                 result -> {
                     if (result.getResultCode() == RESULT_OK && result.getData() != null) {
                         Uri uri = result.getData().getData();
-                        if (uri == null) return;
+                        if (uri == null)
+                            return;
 
                         String mimeType = getContentResolver().getType(uri);
                         if (mimeType == null ||
                                 (!mimeType.equals("image/jpeg") &&
-                                 !mimeType.equals("image/jpg") &&
-                                 !mimeType.equals("image/png"))) {
+                                        !mimeType.equals("image/jpg") &&
+                                        !mimeType.equals("image/png"))) {
                             Toast.makeText(this, R.string.msg_invalid_img_format, Toast.LENGTH_SHORT).show();
                             return;
                         }
@@ -94,11 +95,12 @@ public class CreateRequestActivity extends AppCompatActivity {
                         imgPreview.setImageURI(selectedUri);
                         imgPreview.setVisibility(ImageView.VISIBLE);
                     }
-                }
-        );
+                });
 
         btnAttach.setOnClickListener(v -> pickImage());
         btnSubmit.setOnClickListener(v -> saveRequest());
+
+        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
     }
 
     // -----------------------
@@ -106,7 +108,7 @@ public class CreateRequestActivity extends AppCompatActivity {
     void pickImage() {
         Intent i = new Intent(Intent.ACTION_GET_CONTENT);
         i.setType("image/*");
-        i.putExtra(Intent.EXTRA_MIME_TYPES, new String[]{"image/jpeg", "image/jpg", "image/png"});
+        i.putExtra(Intent.EXTRA_MIME_TYPES, new String[] { "image/jpeg", "image/jpg", "image/png" });
         imagePickerLauncher.launch(i);
     }
 
@@ -159,23 +161,23 @@ public class CreateRequestActivity extends AppCompatActivity {
                     @Override
                     public void onDataChange(DataSnapshot s) {
 
-                        String name   = s.child("name").getValue(String.class);
-                        String email  = s.child("email").getValue(String.class);
+                        String name = s.child("name").getValue(String.class);
+                        String email = s.child("email").getValue(String.class);
                         String mobile = s.child("mobile").getValue(String.class);
 
                         String id = requestRef.push().getKey();
 
                         CustomerRequest r = new CustomerRequest();
-                        r.requestId     = id;
-                        r.uid           = FirebaseAuth.getInstance().getUid();
-                        r.userName      = name;
-                        r.email         = email;
-                        r.mobile        = mobile;
-                        r.type          = typesEn[spType.getSelectedItemPosition()];
-                        r.title         = etTitle.getText().toString();
-                        r.description   = etDesc.getText().toString();
-                        r.status        = "pending";
-                        r.time          = System.currentTimeMillis();
+                        r.requestId = id;
+                        r.uid = FirebaseAuth.getInstance().getUid();
+                        r.userName = name;
+                        r.email = email;
+                        r.mobile = mobile;
+                        r.type = typesEn[spType.getSelectedItemPosition()];
+                        r.title = etTitle.getText().toString();
+                        r.description = etDesc.getText().toString();
+                        r.status = "pending";
+                        r.time = System.currentTimeMillis();
                         r.attachmentUrl = attachmentUrl;
 
                         requestRef.child(id).setValue(r)
@@ -231,6 +233,7 @@ public class CreateRequestActivity extends AppCompatActivity {
 
     interface UploadCallback {
         void onSuccess(String url);
+
         void onError(String message);
     }
 
@@ -240,15 +243,13 @@ public class CreateRequestActivity extends AppCompatActivity {
                 String boundary = "----RMPLUS" + System.currentTimeMillis();
 
                 java.net.URL url = new java.net.URL("http://187.77.184.84/upload.php");
-                java.net.HttpURLConnection conn =
-                        (java.net.HttpURLConnection) url.openConnection();
+                java.net.HttpURLConnection conn = (java.net.HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("POST");
                 conn.setDoOutput(true);
                 conn.setRequestProperty("Content-Type",
                         "multipart/form-data; boundary=" + boundary);
 
-                java.io.DataOutputStream out =
-                        new java.io.DataOutputStream(conn.getOutputStream());
+                java.io.DataOutputStream out = new java.io.DataOutputStream(conn.getOutputStream());
 
                 out.writeBytes("--" + boundary + "\r\n");
                 out.writeBytes(
@@ -258,7 +259,8 @@ public class CreateRequestActivity extends AppCompatActivity {
                 InputStream input = getContentResolver().openInputStream(uri);
                 byte[] buffer = new byte[4096];
                 int len;
-                while ((len = input.read(buffer)) != -1) out.write(buffer, 0, len);
+                while ((len = input.read(buffer)) != -1)
+                    out.write(buffer, 0, len);
                 input.close();
 
                 out.writeBytes("\r\n--" + boundary + "--\r\n");
@@ -271,7 +273,8 @@ public class CreateRequestActivity extends AppCompatActivity {
                             new java.io.InputStreamReader(conn.getInputStream()));
                     StringBuilder res = new StringBuilder();
                     String line;
-                    while ((line = reader.readLine()) != null) res.append(line);
+                    while ((line = reader.readLine()) != null)
+                        res.append(line);
                     reader.close();
 
                     org.json.JSONObject json = new org.json.JSONObject(res.toString());

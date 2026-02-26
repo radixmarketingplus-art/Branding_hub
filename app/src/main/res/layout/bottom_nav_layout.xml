@@ -2,33 +2,20 @@
 <com.google.android.material.bottomnavigation.BottomNavigationView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-
     android:id="@+id/bottomNav"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-
+    android:layout_height="66dp"
     android:layout_gravity="bottom"
-    android:background="?android:colorBackground"
-
-    android:minHeight="50dp"
-    android:paddingTop="0dp"
-    android:paddingBottom="0dp"
-
+    android:background="?attr/colorSurface"
+    android:elevation="16dp"
     android:fitsSystemWindows="false"
-
-    app:itemIconSize="20dp"
-    app:itemPaddingTop="2dp"
-    app:itemPaddingBottom="0dp"
-
-    app:labelVisibilityMode="labeled"
+    android:clipToPadding="false"
+    android:clipChildren="false"
+    app:itemIconSize="22dp"
+    app:labelVisibilityMode="unlabeled"
     app:itemHorizontalTranslationEnabled="false"
-
     app:itemIconTint="@color/bottom_nav_selector"
     app:itemTextColor="@color/bottom_nav_selector"
-
-    app:itemTextAppearanceActive="@style/BottomNavText"
-    app:itemTextAppearanceInactive="@style/BottomNavText"
-
+    app:itemActiveIndicatorStyle="@style/App.Custom.Indicator"
     app:itemRippleColor="@android:color/transparent"
-
     app:menu="@menu/bottom_menu_user" />

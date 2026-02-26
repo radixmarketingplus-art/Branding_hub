@@ -25,7 +25,7 @@ public class NotificationActivity extends AppCompatActivity {
     ArrayList<String> keyList = new ArrayList<>();
 
     DatabaseReference ref;
-    String mode = "new";   // new or read
+    String mode = "new"; // new or read
     TextView txtNew, txtRead;
 
     @Override
@@ -41,9 +41,8 @@ public class NotificationActivity extends AppCompatActivity {
         txtRead = findViewById(R.id.txtRead);
         tabUnderline = findViewById(R.id.tabUnderline);
 
-
         // SAFETY CHECK
-        if(FirebaseAuth.getInstance().getCurrentUser()==null){
+        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
             finish();
             return;
         }
@@ -53,6 +52,8 @@ public class NotificationActivity extends AppCompatActivity {
                 .child(FirebaseAuth.getInstance().getUid());
 
         loadNotifications();
+
+        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
 
         newTab.setOnClickListener(v -> {
             mode = "new";
@@ -66,10 +67,9 @@ public class NotificationActivity extends AppCompatActivity {
             loadNotifications();
         });
 
+        notiList.setOnItemClickListener((a, v, pos, id) -> {
 
-        notiList.setOnItemClickListener((a,v,pos,id)->{
-
-            if(mode.equals("new")){
+            if (mode.equals("new")) {
                 if (pos < keyList.size()) {
                     String key = keyList.get(pos);
                     ref.child(key)
@@ -112,10 +112,9 @@ public class NotificationActivity extends AppCompatActivity {
         }
     }
 
-
     // --------------------------------------
 
-    void loadNotifications(){
+    void loadNotifications() {
 
         ref.addValueEventListener(new ValueEventListener() {
             @Override
@@ -126,40 +125,40 @@ public class NotificationActivity extends AppCompatActivity {
 
                 boolean hasUnread = false;
 
-                for(DataSnapshot d : s.getChildren()){
+                for (DataSnapshot d : s.getChildren()) {
 
-                    String title =
-                            d.child("title")
-                                    .getValue(String.class);
+                    String title = d.child("title")
+                            .getValue(String.class);
 
-                    String message =
-                            d.child("message")
-                                    .getValue(String.class);
+                    String message = d.child("message")
+                            .getValue(String.class);
 
-                    Boolean read =
-                            d.child("read")
-                                    .getValue(Boolean.class);
+                    Boolean read = d.child("read")
+                            .getValue(Boolean.class);
 
-                    Long time =
-                            d.child("time")
-                                    .getValue(Long.class);
+                    Long time = d.child("time")
+                            .getValue(Long.class);
 
-                    if(title==null) title="";
-                    if(message==null) message="";
-                    if(read==null) read=false;
-                    if(time==null) time=0L;
+                    if (title == null)
+                        title = "";
+                    if (message == null)
+                        message = "";
+                    if (read == null)
+                        read = false;
+                    if (time == null)
+                        time = 0L;
 
-                    if(!read) hasUnread = true;
+                    if (!read)
+                        hasUnread = true;
 
                     // FORMAT TIME — Locale.getDefault() OK here (display only)
-                    String date =
-                            new SimpleDateFormat(
-                                    "dd MMM, hh:mm a",
-                                    Locale.getDefault())
-                                    .format(new Date(time));
+                    String date = new SimpleDateFormat(
+                            "dd MMM, hh:mm a",
+                            Locale.getDefault())
+                            .format(new Date(time));
 
-                    if(mode.equals("new") && !read){
-                        list.add(new String[]{
+                    if (mode.equals("new") && !read) {
+                        list.add(new String[] {
                                 getLocalized(title),
                                 getLocalized(message),
                                 date
@@ -167,8 +166,8 @@ public class NotificationActivity extends AppCompatActivity {
                         keyList.add(d.getKey());
                     }
 
-                    if(mode.equals("read") && read){
-                        list.add(new String[]{
+                    if (mode.equals("read") && read) {
+                        list.add(new String[] {
                                 getLocalized(title),
                                 getLocalized(message),
                                 date
@@ -182,7 +181,7 @@ public class NotificationActivity extends AppCompatActivity {
 
                 // ✅ Localized empty-state strings
                 if (list.size() == 0) {
-                    list.add(new String[]{
+                    list.add(new String[] {
                             getString(R.string.msg_no_notifications),
                             getString(R.string.msg_no_notifications_desc),
                             ""
@@ -192,13 +191,12 @@ public class NotificationActivity extends AppCompatActivity {
                 notiList.setAdapter(
                         new NotificationAdapter(
                                 NotificationActivity.this,
-                                list
-                        )
-                );
+                                list));
             }
 
             @Override
-            public void onCancelled(DatabaseError error) {}
+            public void onCancelled(DatabaseError error) {
+            }
         });
     }
 
@@ -212,8 +210,7 @@ public class NotificationActivity extends AppCompatActivity {
             int tabWidth = tab.getWidth();
             int tabLeft = tab.getLeft();
 
-            LinearLayout.LayoutParams params =
-                    (LinearLayout.LayoutParams) tabUnderline.getLayoutParams();
+            LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) tabUnderline.getLayoutParams();
 
             params.width = tabWidth;
             params.leftMargin = tabLeft;

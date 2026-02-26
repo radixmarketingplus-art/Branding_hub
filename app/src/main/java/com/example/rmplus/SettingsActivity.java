@@ -11,15 +11,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.io.File;
 import java.io.FileOutputStream;
 import com.google.firebase.messaging.FirebaseMessaging;
-
-
+import androidx.appcompat.widget.SwitchCompat;
 
 import com.google.firebase.auth.FirebaseAuth;
 
 public class SettingsActivity extends AppCompatActivity {
 
     View changePasswordBtn, clearCacheBtn, privacyBtn, termsBtn, supportBtn;
-    Switch notificationSwitch;
+    SwitchCompat notificationSwitch;
     TextView versionTxt;
 
     FirebaseAuth auth;
@@ -42,25 +41,31 @@ public class SettingsActivity extends AppCompatActivity {
 
         auth = FirebaseAuth.getInstance();
 
-        versionTxt.setText(getString(R.string.version_text, "1.0"));
+        try {
+            android.content.pm.PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            versionTxt.setText("Version " + pInfo.versionName);
+        } catch (android.content.pm.PackageManager.NameNotFoundException e) {
+            versionTxt.setText("Version 1.0");
+        }
 
-//        Temporary cache test
-//        try {
-//            File test = new File(getCacheDir(), "test.tmp");
-//            FileOutputStream fos = new FileOutputStream(test);
-//            fos.write(new byte[10 * 1024 * 1024]); // 10 MB
-//            fos.close();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
+        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
 
+        // LISTENERS
+        // Temporary cache test
+        // try {
+        // File test = new File(getCacheDir(), "test.tmp");
+        // FileOutputStream fos = new FileOutputStream(test);
+        // fos.write(new byte[10 * 1024 * 1024]); // 10 MB
+        // fos.close();
+        // } catch (Exception e) {
+        // e.printStackTrace();
+        // }
 
         // ================= NOTIFICATION PREF =================
 
         prefs = getSharedPreferences("app_settings", MODE_PRIVATE);
 
-        boolean notifEnabled =
-                prefs.getBoolean("notifications", true);
+        boolean notifEnabled = prefs.getBoolean("notifications", true);
 
         notificationSwitch.setChecked(notifEnabled);
         // Apply subscription on app start
@@ -71,7 +76,6 @@ public class SettingsActivity extends AppCompatActivity {
             FirebaseMessaging.getInstance()
                     .unsubscribeFromTopic("all");
         }
-
 
         notificationSwitch.setOnCheckedChangeListener(
                 (buttonView, isChecked) -> {
@@ -100,12 +104,12 @@ public class SettingsActivity extends AppCompatActivity {
                     }
                 });
 
-
         // ================= CHANGE PASSWORD =================
 
         changePasswordBtn.setOnClickListener(v -> {
 
-            if (auth.getCurrentUser() == null) return;
+            if (auth.getCurrentUser() == null)
+                return;
 
             new AlertDialog.Builder(this)
                     .setTitle(R.string.title_reset_password)
@@ -146,14 +150,13 @@ public class SettingsActivity extends AppCompatActivity {
                     .show();
         });
 
-
         // ================= PRIVACY =================
 
         // privacyBtn.setOnClickListener(v ->
-        //         openWeb("https://example.com/privacy"));
+        // openWeb("https://example.com/privacy"));
 
         // termsBtn.setOnClickListener(v ->
-        //         openWeb("https://example.com/terms"));
+        // openWeb("https://example.com/terms"));
 
         // ================= SUPPORT =================
 
@@ -167,19 +170,20 @@ public class SettingsActivity extends AppCompatActivity {
             deleteDir(getCacheDir());
 
             File ext = getExternalCacheDir();
-            if (ext != null) deleteDir(ext);
+            if (ext != null)
+                deleteDir(ext);
 
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-
     boolean deleteDir(File dir) {
         if (dir != null && dir.isDirectory()) {
             String[] children = dir.list();
             for (String child : children) {
-                if (!deleteDir(new File(dir, child))) return false;
+                if (!deleteDir(new File(dir, child)))
+                    return false;
             }
             return dir.delete();
         } else if (dir != null && dir.isFile()) {
@@ -202,7 +206,6 @@ public class SettingsActivity extends AppCompatActivity {
         return size;
     }
 
-
     long getCacheSize(File dir) {
         long size = 0;
 
@@ -219,21 +222,18 @@ public class SettingsActivity extends AppCompatActivity {
         return size;
     }
 
-
     String formatSize(long size) {
-        if (size <= 0) return "0 B";
+        if (size <= 0)
+            return "0 B";
 
-        final String[] units =
-                {"B", "KB", "MB", "GB"};
+        final String[] units = { "B", "KB", "MB", "GB" };
 
-        int digitGroups =
-                (int) (Math.log10(size) / Math.log10(1024));
+        int digitGroups = (int) (Math.log10(size) / Math.log10(1024));
 
         return String.format("%.2f %s",
                 size / Math.pow(1024, digitGroups),
                 units[digitGroups]);
     }
-
 
     // ================= OPEN WEB =================
 
@@ -242,6 +242,7 @@ public class SettingsActivity extends AppCompatActivity {
                 Intent.ACTION_VIEW,
                 Uri.parse(url)));
     }
+
     void showContactSupportDialog() {
         View dialogView = getLayoutInflater().inflate(R.layout.dialog_contact_support, null);
         AlertDialog dialog = new AlertDialog.Builder(this)

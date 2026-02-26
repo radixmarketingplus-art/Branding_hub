@@ -1,174 +1,224 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/colorSurface"
+    android:background="@color/screen_bg"
     android:fitsSystemWindows="true">
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true"
-        android:clipToPadding="false"
-        android:paddingBottom="16dp">
+        android:overScrollMode="never">
 
         <LinearLayout
             android:id="@+id/rootContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp"
-            android:paddingTop="24dp"
-            android:paddingBottom="24dp">
+            android:paddingHorizontal="24dp"
+            android:paddingTop="32dp"
+            android:paddingBottom="40dp">
 
-            <!-- ================= STATUS ================= -->
-            <TextView
-                android:id="@+id/statusTxt"
-                android:layout_width="wrap_content"
+            <!-- HEADER / STATUS -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/status_checking"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:textColor="?attr/colorOnSurface"
-                android:layout_marginBottom="6dp"/>
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="0dp"
+                android:paddingTop="0dp"
+                android:paddingBottom="4dp">
+
+                <ImageButton
+                    android:id="@+id/btnBack"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:src="@drawable/ic_back"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    app:tint="?attr/colorOnSurface"
+                    android:contentDescription="Back" />
+
+                <TextView
+                    android:id="@+id/statusTxt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/status_checking"
+                    android:textSize="24sp"
+                    android:fontFamily="sans-serif-black"
+                    android:textColor="?attr/colorOnSurface"
+                    android:layout_marginStart="8dp"
+                    android:letterSpacing="-0.01" />
+
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/planTxt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=""
-                android:textSize="14sp"
+                android:textSize="15sp"
+                android:fontFamily="sans-serif-medium"
                 android:textColor="?attr/colorOnSurfaceVariant"
-                android:layout_marginBottom="4dp"/>
+                android:layout_marginTop="4dp" />
 
             <TextView
                 android:id="@+id/expiryTxt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=""
                 android:textSize="13sp"
-                android:textColor="?attr/colorOnSurfaceVariant"
-                android:layout_marginBottom="20dp"/>
+                android:fontFamily="sans-serif-bold"
+                android:textColor="?attr/colorPrimary"
+                android:layout_marginTop="2dp"
+                android:layout_marginBottom="32dp" />
 
-            <!-- ================= PLAN SELECTION ================= -->
-            <LinearLayout
+            <!-- PLAN CHOOSER -->
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:background="@drawable/bg_surface_card"
-                android:padding="16dp"
-                android:layout_marginBottom="20dp">
+                app:cardCornerRadius="24dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="#0D000000"
+                app:cardBackgroundColor="@color/surface_light"
+                android:layout_marginBottom="16dp">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/label_choose_plan"
-                    android:textStyle="bold"
-                    android:textSize="15sp"
-                    android:textColor="?attr/colorOnSurface"
-                    android:layout_marginBottom="8dp"/>
-
-                <Spinner
-                    android:id="@+id/planSpinner"
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="52dp"
-                    android:background="@drawable/bg_glass_input"/>
-            </LinearLayout>
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
 
-            <!-- ================= QR PAYMENT ================= -->
-            <LinearLayout
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/label_choose_plan"
+                        android:textSize="12sp"
+                        android:fontFamily="sans-serif-black"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:textAllCaps="true"
+                        android:letterSpacing="0.1"
+                        android:layout_marginBottom="12dp" />
+
+                    <Spinner
+                        android:id="@+id/planSpinner"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:background="@drawable/bg_spinner_state" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- QR PAYMENT -->
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp"
-                android:background="@drawable/bg_surface_card"
-                android:layout_marginBottom="20dp">
+                app:cardCornerRadius="24dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="#0D000000"
+                app:cardBackgroundColor="@color/surface_light"
+                android:layout_marginBottom="24dp">
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/label_scan_qr"
-                    android:textSize="15sp"
-                    android:textStyle="bold"
-                    android:textColor="?attr/colorOnSurface"
-                    android:layout_marginBottom="12dp"/>
+                    android:orientation="vertical"
+                    android:padding="24dp"
+                    android:gravity="center">
 
-                <TextView
-                    android:id="@+id/upiIdTxt"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/upi_id_value"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="?attr/colorPrimary"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginBottom="4dp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/label_scan_qr"
+                        android:textSize="16sp"
+                        android:fontFamily="sans-serif-black"
+                        android:textColor="?attr/colorOnSurface"
+                        android:layout_marginBottom="16dp" />
 
-                <TextView
-                    android:id="@+id/amountTxt"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Amount: ₹0"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:textColor="?attr/colorOnSurface"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginBottom="12dp"/>
+                    <TextView
+                        android:id="@+id/upiIdTxt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/upi_id_value"
+                        android:textSize="18sp"
+                        android:fontFamily="sans-serif-bold"
+                        android:textColor="?attr/colorPrimary"
+                        android:layout_marginBottom="4dp" />
 
-                <ImageView
-                    android:id="@+id/qrImage"
-                    android:layout_width="200dp"
-                    android:layout_height="200dp"
-                    android:layout_gravity="center_horizontal"
-                    android:scaleType="fitCenter"
-                    android:background="@drawable/bg_surface_card"
-                    android:src="@drawable/qr_1month"/>
-            </LinearLayout>
+                    <TextView
+                        android:id="@+id/amountTxt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Amount: ₹0"
+                        android:textSize="22sp"
+                        android:fontFamily="sans-serif-black"
+                        android:textColor="?attr/colorOnSurface"
+                        android:layout_marginBottom="24dp" />
 
-            <!-- ================= UPLOAD ================= -->
-            <Button
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="8dp"
+                        app:strokeWidth="4dp"
+                        app:strokeColor="@color/white">
+                        <ImageView
+                            android:id="@+id/qrImage"
+                            android:layout_width="200dp"
+                            android:layout_height="200dp"
+                            android:scaleType="fitCenter"
+                            android:src="@drawable/qr_1month" />
+                    </com.google.android.material.card.MaterialCardView>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- ACTIONS -->
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/uploadBtn"
                 android:layout_width="match_parent"
-                android:layout_height="52dp"
+                android:layout_height="56dp"
                 android:text="@string/btn_upload_proof"
                 android:textAllCaps="false"
-                android:layout_marginBottom="12dp"
-                android:background="@drawable/bg_primary_button"/>
+                android:fontFamily="sans-serif-black"
+                android:textSize="16sp"
+                app:icon="@android:drawable/ic_menu_upload"
+                app:cornerRadius="16dp"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_marginBottom="16dp" />
 
             <ImageView
                 android:id="@+id/proofPreview"
-                android:layout_width="200dp"
-                android:layout_height="200dp"
-                android:layout_gravity="center_horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="260dp"
                 android:layout_marginBottom="24dp"
                 android:scaleType="centerCrop"
-                android:background="@drawable/bg_image_preview"
-                android:visibility="gone"/>
+                android:visibility="gone"
+                android:background="#1A000000" />
 
-            <!-- ================= SUBMIT ================= -->
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/submitBtn"
                 android:layout_width="match_parent"
-                android:layout_height="54dp"
+                android:layout_height="56dp"
                 android:text="@string/btn_submit_request"
                 android:textAllCaps="false"
-                android:background="@drawable/bg_secondary_button"
-                style="@style/Widget.Material3.Button.TonalButton"/>
+                android:fontFamily="sans-serif-black"
+                android:textSize="16sp"
+                android:textColor="@color/white"
+                app:cornerRadius="16dp"
+                app:backgroundTint="?attr/colorPrimary"
+                app:elevation="4dp" />
 
-            <!-- PROGRESS (shown during upload+submit) -->
             <ProgressBar
                 android:id="@+id/progressBar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="12dp"
-                android:visibility="gone"/>
+                android:layout_marginTop="20dp"
+                android:visibility="gone"
+                android:indeterminateTint="?attr/colorPrimary" />
 
         </LinearLayout>
-
     </androidx.core.widget.NestedScrollView>
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
+

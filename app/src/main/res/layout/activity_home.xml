@@ -2,10 +2,11 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    android:background="?android:colorBackground">
+    android:background="@color/screen_bg">
 
     <!-- ROOT -->
     <LinearLayout
@@ -19,7 +20,10 @@
             layout="@layout/header_main"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"/>
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"/>
 
         <!-- MAIN SCROLL -->
         <androidx.core.widget.NestedScrollView
@@ -34,8 +38,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingHorizontal="16dp"
-                android:paddingBottom="80dp">
+                android:paddingTop="8dp"
+                android:paddingBottom="100dp">
 
                 <!-- TRENDING -->
                 <LinearLayout
@@ -43,13 +47,14 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:layout_marginTop="8dp">
+                    android:paddingHorizontal="24dp">
 
                     <TextView
                         android:text="@string/title_sponsored_ads"
-                        android:textSize="18sp"
-                        android:textStyle="bold"
-                        android:textColor="?android:textColorPrimary"
+                        android:textSize="22sp"
+                        android:fontFamily="sans-serif-black"
+                        android:textColor="?attr/colorOnSurface"
+                        android:letterSpacing="-0.01"
                         android:layout_width="0dp"
                         android:layout_weight="1"
                         android:layout_height="wrap_content"/>
@@ -58,20 +63,39 @@
                         android:id="@+id/btnAdsSeeAll"
                         android:text="@string/btn_see_all"
                         android:visibility="gone"
-                        android:textColor="?android:colorAccent"
-                        android:textStyle="bold"
+                        android:textColor="?attr/colorPrimary"
+                        android:textSize="14sp"
+                        android:fontFamily="sans-serif-black"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:padding="8dp"
                         android:layout_height="wrap_content"
                         android:layout_width="wrap_content"/>
                 </LinearLayout>
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvTrending"
+                <FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="220dp"
-                    android:layout_marginTop="12dp"
-                    android:clipToPadding="false"
-                    android:paddingStart="12dp"
-                    android:paddingEnd="12dp"/>
+                    android:layout_marginTop="16dp">
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvTrending"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:clipToPadding="false"
+                        android:paddingHorizontal="20dp"
+                        android:overScrollMode="never" />
+
+                    <LinearLayout
+                        android:id="@+id/skTrending"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="20dp"
+                        android:visibility="visible">
+                        <View android:layout_width="300dp" android:layout_height="match_parent" android:background="@drawable/bg_skeleton" android:layout_marginEnd="12dp"/>
+                        <View android:layout_width="300dp" android:layout_height="match_parent" android:background="@drawable/bg_skeleton" />
+                    </LinearLayout>
+                </FrameLayout>
 
                 <!-- FESTIVAL -->
                 <LinearLayout
@@ -79,7 +103,8 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:layout_marginTop="28dp">
+                    android:layout_marginTop="32dp"
+                    android:paddingHorizontal="24dp">
 
                     <TextView
                         android:id="@+id/txtFestivalTitle"
@@ -87,15 +112,19 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="@string/title_festival_calendar"
-                        android:textSize="18sp"
-                        android:textStyle="bold"
-                        android:textColor="?android:textColorPrimary"/>
+                        android:textSize="22sp"
+                        android:fontFamily="sans-serif-black"
+                        android:textColor="?attr/colorOnSurface"
+                        android:letterSpacing="-0.01" />
 
                     <TextView
                         android:id="@+id/btnAll"
                         android:text="@string/btn_see_all"
-                        android:textStyle="bold"
-                        android:textColor="?android:colorAccent"
+                        android:fontFamily="sans-serif-black"
+                        android:textSize="14sp"
+                        android:textColor="?attr/colorPrimary"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:padding="8dp"
                         android:layout_height="wrap_content"
                         android:layout_width="wrap_content"/>
                 </LinearLayout>
@@ -104,23 +133,47 @@
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvFestivalDates"
                     android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:layout_marginTop="12dp"
-                    android:clipToPadding="false"/>
+                    android:layout_height="wrap_content"
+                    android:minHeight="56dp"
+                    android:layout_marginTop="16dp"
+                    android:clipToPadding="false"
+                    android:paddingHorizontal="20dp"
+                    android:overScrollMode="never"/>
 
                 <!-- FESTIVAL CARDS -->
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvFestivalCards"
+                <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="170dp"
-                    android:layout_marginTop="12dp"
-                    android:clipToPadding="false"/>
+                    android:layout_height="180dp"
+                    android:layout_marginTop="16dp">
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvFestivalCards"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:clipToPadding="false"
+                        android:paddingHorizontal="16dp"
+                        android:overScrollMode="never"/>
+
+                    <LinearLayout
+                        android:id="@+id/skFestival"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="16dp"
+                        android:visibility="visible">
+                        <View android:layout_width="140dp" android:layout_height="match_parent" android:background="@drawable/bg_skeleton" android:layout_marginEnd="12dp"/>
+                        <View android:layout_width="140dp" android:layout_height="match_parent" android:background="@drawable/bg_skeleton" android:layout_marginEnd="12dp"/>
+                        <View android:layout_width="140dp" android:layout_height="match_parent" android:background="@drawable/bg_skeleton" />
+                    </LinearLayout>
+                </FrameLayout>
 
                 <!-- DYNAMIC SECTIONS CONTAINER -->
                 <LinearLayout
                     android:id="@+id/dynamicSectionContainer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:paddingHorizontal="20dp"
+                    android:layout_marginTop="16dp"
                     android:orientation="vertical"/>
 
             </LinearLayout>

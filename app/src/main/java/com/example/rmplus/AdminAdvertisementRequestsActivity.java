@@ -12,16 +12,20 @@ public class AdminAdvertisementRequestsActivity
         super.onCreate(b);
         setContentView(R.layout.activity_admin_advertisement_requests);
 
+        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
+
         TabLayout tab = findViewById(R.id.tabLayout);
         ViewPager2 pager = findViewById(R.id.viewPager);
 
-//        pager.setAdapter(new AdRequestPagerAdapter(this,true));
         pager.setAdapter(new AdminAdRequestPagerAdapter(this, true));
 
-        new TabLayoutMediator(tab,pager,(t,p)->{
-            if(p==0)t.setText(R.string.tab_pending);
-            if(p==1)t.setText(R.string.tab_accepted);
-            if(p==2)t.setText(R.string.tab_rejected);
+        new TabLayoutMediator(tab, pager, (t, p) -> {
+            if (p == 0)
+                t.setText(R.string.tab_pending);
+            if (p == 1)
+                t.setText(R.string.tab_accepted);
+            if (p == 2)
+                t.setText(R.string.tab_rejected);
         }).attach();
     }
 }

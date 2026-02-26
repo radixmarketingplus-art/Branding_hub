@@ -10,61 +10,56 @@ import androidx.core.view.ViewCompat;
 
 public class AdminPanelActivity extends BaseActivity {
 
-    Button uploadTemplatesBtn,
-            subscriptionRequestsBtn,
-            advertisementRequestBtn,
-            contactRequestsBtn,
-            userInfoBtn;
+        Button uploadTemplatesBtn,
+                        subscriptionRequestsBtn,
+                        advertisementRequestBtn,
+                        contactRequestsBtn,
+                        userInfoBtn;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_admin_panel);
+        @Override
+        protected void onCreate(Bundle savedInstanceState) {
+                super.onCreate(savedInstanceState);
+                setContentView(R.layout.activity_admin_panel);
 
-        SharedPreferences sp =
-                getSharedPreferences("APP_DATA", MODE_PRIVATE);
+                SharedPreferences sp = getSharedPreferences("APP_DATA", MODE_PRIVATE);
 
-        String role = sp.getString("role", "user");
+                String role = sp.getString("role", "user");
 
-        setupBase(role, R.id.admin);
+                setupBase(role, R.id.admin);
 
-        uploadTemplatesBtn = findViewById(R.id.uploadTemplatesBtn);
-        subscriptionRequestsBtn = findViewById(R.id.subscriptionRequestsBtn);
-        advertisementRequestBtn = findViewById(R.id.advertisementRequestBtn);
-        contactRequestsBtn = findViewById(R.id.contactRequestsBtn);
-        userInfoBtn = findViewById(R.id.userInfoBtn);
+                uploadTemplatesBtn = findViewById(R.id.uploadTemplatesBtn);
+                subscriptionRequestsBtn = findViewById(R.id.subscriptionRequestsBtn);
+                advertisementRequestBtn = findViewById(R.id.advertisementRequestBtn);
+                contactRequestsBtn = findViewById(R.id.contactRequestsBtn);
+                userInfoBtn = findViewById(R.id.userInfoBtn);
 
-        ViewCompat.setOnApplyWindowInsetsListener(bottomNav, (view, insets) -> {
+                findViewById(R.id.btnBack).setOnClickListener(v -> finish());
 
-            // ❌ bottom inset consume mat karo
-            view.setPadding(
-                    view.getPaddingLeft(),
-                    view.getPaddingTop(),
-                    view.getPaddingRight(),
-                    0
-            );
+                ViewCompat.setOnApplyWindowInsetsListener(bottomNav, (view, insets) -> {
 
-            return insets;
-        });
+                        // ❌ bottom inset consume mat karo
+                        view.setPadding(
+                                        view.getPaddingLeft(),
+                                        view.getPaddingTop(),
+                                        view.getPaddingRight(),
+                                        0);
 
-        uploadTemplatesBtn.setOnClickListener(v ->
-                startActivity(new Intent(this,
-                        UploadManagerActivity.class)));
+                        return insets;
+                });
 
-        subscriptionRequestsBtn.setOnClickListener(v ->
-                startActivity(new Intent(this,
-                        SubscriptionRequestsActivity.class)));
+                uploadTemplatesBtn.setOnClickListener(v -> startActivity(new Intent(this,
+                                UploadManagerActivity.class)));
 
-        advertisementRequestBtn.setOnClickListener(v ->
-                startActivity(new Intent(this,
-                        AdminAdvertisementRequestsActivity.class)));
+                subscriptionRequestsBtn.setOnClickListener(v -> startActivity(new Intent(this,
+                                SubscriptionRequestsActivity.class)));
 
-        contactRequestsBtn.setOnClickListener(v ->
-                startActivity(new Intent(this,
-                        AdminContactRequestsActivity.class)));
+                advertisementRequestBtn.setOnClickListener(v -> startActivity(new Intent(this,
+                                AdminAdvertisementRequestsActivity.class)));
 
-        userInfoBtn.setOnClickListener(v ->
-                startActivity(new Intent(this,
-                        UserListActivity.class)));
-    }
+                contactRequestsBtn.setOnClickListener(v -> startActivity(new Intent(this,
+                                AdminContactRequestsActivity.class)));
+
+                userInfoBtn.setOnClickListener(v -> startActivity(new Intent(this,
+                                UserListActivity.class)));
+        }
 }

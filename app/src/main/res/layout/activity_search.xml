@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/colorSurface"
+    android:background="@color/screen_bg"
     android:fitsSystemWindows="true">
 
     <LinearLayout
@@ -12,95 +12,132 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <!-- ================= TITLE ================= -->
-        <TextView
-            android:id="@+id/txtTitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/nav_search"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="?attr/colorOnSurface"
-            android:paddingHorizontal="16dp"
-            android:paddingVertical="14dp"
-            android:background="?attr/colorSurface"
-            android:elevation="4dp"/>
-
-        <!-- ================= SEARCH BAR ================= -->
+        <!-- HEADER -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="16dp"
-            android:background="?attr/colorSurface">
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="16dp"
+            android:paddingTop="20dp"
+            android:paddingBottom="12dp">
+
+            <ImageButton
+                android:id="@+id/btnBack"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_back"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                app:tint="?attr/colorOnSurface"
+                android:contentDescription="Back" />
+
+            <TextView
+                android:id="@+id/txtTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/nav_search"
+                android:textSize="24sp"
+                android:fontFamily="sans-serif-black"
+                android:textColor="?attr/colorOnSurface"
+                android:layout_marginStart="8dp"
+                android:letterSpacing="-0.01" />
+
+        </LinearLayout>
+
+        <!-- SEARCH BAR CONTAINER -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginBottom="20dp"
+            app:cardCornerRadius="32dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="#0D000000"
+            app:cardBackgroundColor="@color/surface_light">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="52dp"
+                android:layout_height="match_parent"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:paddingHorizontal="12dp"
-                android:background="@drawable/bg_surface_card">
+                android:paddingHorizontal="16dp">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@android:drawable/ic_menu_search"
+                    app:tint="?attr/colorOnSurfaceVariant"
+                    android:layout_marginEnd="12dp" />
 
                 <EditText
                     android:id="@+id/edtSearch"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:hint="@string/search_hint"
                     android:inputType="text"
                     android:background="@null"
                     android:textColor="?attr/colorOnSurface"
                     android:textColorHint="?attr/colorOnSurfaceVariant"
-                    android:paddingVertical="10dp"/>
+                    android:fontFamily="sans-serif-medium"
+                    android:textSize="15sp"
+                    android:imeOptions="actionSearch" />
 
                 <ImageButton
                     android:id="@+id/btnClear"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
                     android:src="@android:drawable/ic_menu_close_clear_cancel"
-                    android:tint="?attr/colorOnSurfaceVariant"
-                    android:background="?attr/selectableItemBackgroundBorderless"/>
+                    app:tint="?attr/colorOnSurfaceVariant"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:visibility="gone" />
 
                 <ImageButton
                     android:id="@+id/btnSearch"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
+                    android:layout_width="42dp"
+                    android:layout_height="42dp"
                     android:src="@android:drawable/ic_menu_search"
-                    android:tint="?attr/colorOnSurface"
-                    android:background="?attr/selectableItemBackgroundBorderless"/>
+                    app:tint="@color/white"
+                    android:background="@drawable/shape_circle"
+                    android:backgroundTint="?attr/colorPrimary"
+                    android:padding="10dp"
+                    android:visibility="gone" />
 
                 <ImageButton
                     android:id="@+id/btnMic"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
+                    android:layout_width="42dp"
+                    android:layout_height="42dp"
                     android:src="@android:drawable/ic_btn_speak_now"
-                    android:tint="?attr/colorPrimary"
-                    android:background="?attr/selectableItemBackgroundBorderless"/>
+                    app:tint="?attr/colorPrimary"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:padding="8dp" />
             </LinearLayout>
-        </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
-        <!-- ================= EMPTY STATE ================= -->
+        <!-- EMPTY STATE -->
         <TextView
             android:id="@+id/txtEmpty"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/msg_no_templates"
+            android:fontFamily="sans-serif-medium"
             android:textColor="?attr/colorOnSurfaceVariant"
             android:gravity="center"
-            android:padding="16dp"
-            android:visibility="gone"/>
+            android:padding="32dp"
+            android:visibility="gone" />
 
-        <!-- ================= SEARCH RESULTS ================= -->
+        <!-- RESULTS -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerSearch"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp"
-            android:paddingBottom="16dp"
-            android:clipToPadding="false"/>
+            android:clipToPadding="false"
+            android:paddingHorizontal="12dp"
+            android:paddingBottom="32dp"
+            android:overScrollMode="never" />
 
     </LinearLayout>
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
+

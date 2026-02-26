@@ -58,9 +58,23 @@ public class RequestChatActivity extends AppCompatActivity {
         btnSend = findViewById(R.id.btnSend);
         btnAttach = findViewById(R.id.btnAttach);
 
+        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
+
+        TextView chatTitle = findViewById(R.id.chatTitle);
+        TextView chatSubtitle = findViewById(R.id.chatSubtitle);
+
+        String title = getIntent().getStringExtra("title");
+        if (title != null)
+            chatTitle.setText(title);
+
+        if (myUid.equals("ADMIN")) {
+            chatSubtitle.setText("Customer Support");
+        } else {
+            chatSubtitle.setText("Agent Support");
+        }
+
         recycler.setLayoutManager(
-                new LinearLayoutManager(this)
-        );
+                new LinearLayoutManager(this));
 
         adapter = new ChatAdapter(list, myUid);
         recycler.setAdapter(adapter);
@@ -72,14 +86,12 @@ public class RequestChatActivity extends AppCompatActivity {
             if (selectedImageUri != null) {
                 Intent i = new Intent(
                         RequestChatActivity.this,
-                        ImagePreviewActivity.class
-                );
+                        ImagePreviewActivity.class);
                 i.putExtra("img", selectedImageUri.toString());
                 startActivity(i);
             }
 
         });
-
 
         btnSend.setOnClickListener(v -> {
 
@@ -105,14 +117,11 @@ public class RequestChatActivity extends AppCompatActivity {
 
             File file = new File(
                     folder,
-                    System.currentTimeMillis() + ".jpg"
-            );
+                    System.currentTimeMillis() + ".jpg");
 
-            InputStream in =
-                    getContentResolver().openInputStream(uri);
+            InputStream in = getContentResolver().openInputStream(uri);
 
-            OutputStream out =
-                    new FileOutputStream(file);
+            OutputStream out = new FileOutputStream(file);
 
             byte[] buf = new byte[1024];
             int len;
@@ -132,7 +141,6 @@ public class RequestChatActivity extends AppCompatActivity {
         }
     }
 
-
     void loadMessages() {
 
         FirebaseDatabase.getInstance()
@@ -146,8 +154,7 @@ public class RequestChatActivity extends AppCompatActivity {
 
                         for (DataSnapshot d : snapshot.getChildren()) {
 
-                            ChatMessage m =
-                                    d.getValue(ChatMessage.class);
+                            ChatMessage m = d.getValue(ChatMessage.class);
 
                             if (m != null &&
                                     m.senderId != null) {
@@ -158,12 +165,12 @@ public class RequestChatActivity extends AppCompatActivity {
 
                         adapter.notifyDataSetChanged();
                         recycler.scrollToPosition(
-                                list.size() - 1
-                        );
+                                list.size() - 1);
                     }
 
                     @Override
-                    public void onCancelled(DatabaseError error) { }
+                    public void onCancelled(DatabaseError error) {
+                    }
                 });
     }
 
@@ -171,7 +178,8 @@ public class RequestChatActivity extends AppCompatActivity {
 
         String txt = etMsg.getText().toString().trim();
 
-        if (txt.isEmpty()) return;
+        if (txt.isEmpty())
+            return;
 
         String id = FirebaseDatabase.getInstance()
                 .getReference("request_chats")
@@ -196,24 +204,23 @@ public class RequestChatActivity extends AppCompatActivity {
 
     void sendImage() {
 
-        if (selectedImageUri == null) return;
+        if (selectedImageUri == null)
+            return;
 
         uploadImageToServer(selectedImageUri, url -> {
 
             if (url == null || url.isEmpty()) {
-                runOnUiThread(() ->
-                        Toast.makeText(this,
-                                R.string.msg_upload_failed,
-                                Toast.LENGTH_SHORT).show());
+                runOnUiThread(() -> Toast.makeText(this,
+                        R.string.msg_upload_failed,
+                        Toast.LENGTH_SHORT).show());
                 return;
             }
 
-
             String id = FirebaseDatabase.getInstance()
-                .getReference("request_chats")
-                .child(requestId)
-                .push()
-                .getKey();
+                    .getReference("request_chats")
+                    .child(requestId)
+                    .push()
+                    .getKey();
 
             ChatMessage m = new ChatMessage();
             m.senderId = myUid;
@@ -235,38 +242,32 @@ public class RequestChatActivity extends AppCompatActivity {
         });
     }
 
-    private void uploadImageToServer(Uri uri, UrlCallback cb){
+    private void uploadImageToServer(Uri uri, UrlCallback cb) {
 
         new Thread(() -> {
             try {
 
                 String boundary = "----RMPLUS" + System.currentTimeMillis();
 
-                java.net.URL url =
-                        new java.net.URL("http://187.77.184.84/upload.php");
+                java.net.URL url = new java.net.URL("http://187.77.184.84/upload.php");
 
-                java.net.HttpURLConnection conn =
-                        (java.net.HttpURLConnection) url.openConnection();
+                java.net.HttpURLConnection conn = (java.net.HttpURLConnection) url.openConnection();
 
                 conn.setRequestMethod("POST");
                 conn.setDoOutput(true);
 
                 conn.setRequestProperty(
                         "Content-Type",
-                        "multipart/form-data; boundary=" + boundary
-                );
+                        "multipart/form-data; boundary=" + boundary);
 
-                java.io.DataOutputStream out =
-                        new java.io.DataOutputStream(conn.getOutputStream());
+                java.io.DataOutputStream out = new java.io.DataOutputStream(conn.getOutputStream());
 
                 out.writeBytes("--" + boundary + "\r\n");
                 out.writeBytes(
-                        "Content-Disposition: form-data; name=\"file\"; filename=\"chat.jpg\"\r\n"
-                );
+                        "Content-Disposition: form-data; name=\"file\"; filename=\"chat.jpg\"\r\n");
                 out.writeBytes("Content-Type: image/jpeg\r\n\r\n");
 
-                InputStream input =
-                        getContentResolver().openInputStream(uri);
+                InputStream input = getContentResolver().openInputStream(uri);
 
                 byte[] buffer = new byte[4096];
                 int len;
@@ -280,25 +281,22 @@ public class RequestChatActivity extends AppCompatActivity {
                 out.flush();
                 out.close();
 
-                java.io.BufferedReader reader =
-                        new java.io.BufferedReader(
-                                new java.io.InputStreamReader(conn.getInputStream())
-                        );
+                java.io.BufferedReader reader = new java.io.BufferedReader(
+                        new java.io.InputStreamReader(conn.getInputStream()));
 
                 StringBuilder res = new StringBuilder();
                 String line;
 
-                while((line=reader.readLine())!=null)
+                while ((line = reader.readLine()) != null)
                     res.append(line);
 
                 reader.close();
 
-                org.json.JSONObject json =
-                        new org.json.JSONObject(res.toString());
+                org.json.JSONObject json = new org.json.JSONObject(res.toString());
 
                 cb.onResult(json.getString("url"));
 
-            } catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
                 cb.onResult(null);
             }
@@ -308,7 +306,6 @@ public class RequestChatActivity extends AppCompatActivity {
     interface UrlCallback {
         void onResult(String url);
     }
-
 
     void pickImage() {
         Intent i = new Intent(Intent.ACTION_GET_CONTENT);
@@ -329,32 +326,31 @@ public class RequestChatActivity extends AppCompatActivity {
         }
     }
 
-
-//    @Override
-//    protected void onActivityResult(int r, int c, Intent d) {
-//        super.onActivityResult(r, c, d);
-//
-//        if (r == 101 && c == RESULT_OK && d != null) {
-//
-//            Uri u = d.getData();
-//
-//            String id = FirebaseDatabase.getInstance()
-//                    .getReference("request_chats")
-//                    .child(requestId)
-//                    .push()
-//                    .getKey();
-//
-//            ChatMessage m = new ChatMessage();
-//            m.senderId = myUid;
-//            m.imageUrl = u.toString();
-//            m.time = System.currentTimeMillis();
-//            m.seen = false;
-//
-//            FirebaseDatabase.getInstance()
-//                    .getReference("request_chats")
-//                    .child(requestId)
-//                    .child(id)
-//                    .setValue(m);
-//        }
-//    }
+    // @Override
+    // protected void onActivityResult(int r, int c, Intent d) {
+    // super.onActivityResult(r, c, d);
+    //
+    // if (r == 101 && c == RESULT_OK && d != null) {
+    //
+    // Uri u = d.getData();
+    //
+    // String id = FirebaseDatabase.getInstance()
+    // .getReference("request_chats")
+    // .child(requestId)
+    // .push()
+    // .getKey();
+    //
+    // ChatMessage m = new ChatMessage();
+    // m.senderId = myUid;
+    // m.imageUrl = u.toString();
+    // m.time = System.currentTimeMillis();
+    // m.seen = false;
+    //
+    // FirebaseDatabase.getInstance()
+    // .getReference("request_chats")
+    // .child(requestId)
+    // .child(id)
+    // .setValue(m);
+    // }
+    // }
 }

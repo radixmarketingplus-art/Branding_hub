@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <!-- Trending Banner Skeleton -->
+    <View
+        android:id="@+id/skTrending"
+        android:layout_width="match_parent"
+        android:layout_height="180dp"
+        android:background="@drawable/bg_skeleton" />
+
+    <!-- Section Header Skeleton -->
+    <View
+        android:layout_width="140dp"
+        android:layout_height="24dp"
+        android:layout_marginTop="32dp"
+        android:background="@drawable/bg_skeleton" />
+
+    <!-- Date Chips Skeleton -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:orientation="horizontal">
+        <View android:layout_width="60dp" android:layout_height="64dp" android:background="@drawable/bg_skeleton" android:layout_marginEnd="12dp"/>
+        <View android:layout_width="60dp" android:layout_height="64dp" android:background="@drawable/bg_skeleton" android:layout_marginEnd="12dp"/>
+        <View android:layout_width="60dp" android:layout_height="64dp" android:background="@drawable/bg_skeleton" android:layout_marginEnd="12dp"/>
+        <View android:layout_width="60dp" android:layout_height="64dp" android:background="@drawable/bg_skeleton" android:layout_marginEnd="12dp"/>
+        <View android:layout_width="60dp" android:layout_height="64dp" android:background="@drawable/bg_skeleton" />
+    </LinearLayout>
+
+    <!-- Content Skeleton -->
+    <View
+        android:id="@+id/skFestival"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/bg_skeleton" />
+
+    <!-- Bottom Section Skeleton -->
+    <View
+        android:layout_width="120dp"
+        android:layout_height="24dp"
+        android:layout_marginTop="32dp"
+        android:background="@drawable/bg_skeleton" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:orientation="horizontal">
+        <View android:layout_width="140dp" android:layout_height="140dp" android:background="@drawable/bg_skeleton" android:layout_marginEnd="12dp"/>
+        <View android:layout_width="140dp" android:layout_height="140dp" android:background="@drawable/bg_skeleton" android:layout_marginEnd="12dp"/>
+        <View android:layout_width="match_parent" android:layout_height="140dp" android:background="@drawable/bg_skeleton" />
+    </LinearLayout>
+
+</LinearLayout>
+

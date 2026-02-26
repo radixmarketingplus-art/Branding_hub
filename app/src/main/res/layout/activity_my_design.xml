@@ -41,7 +41,7 @@
                 android:text="@string/tab_likes"
                 android:textStyle="bold"
                 android:textSize="14sp"
-                android:textColor="#4A6CF7"/>
+                android:textColor="@color/primary"/>
 
             <TextView
                 android:id="@+id/txtFav"
@@ -82,7 +82,7 @@
             android:id="@+id/tabUnderline"
             android:layout_width="0dp"
             android:layout_height="3dp"
-            android:background="#4A6CF7"/>
+            android:background="@color/primary"/>
 
         <!-- ================= GRID ================= -->
         <androidx.recyclerview.widget.RecyclerView

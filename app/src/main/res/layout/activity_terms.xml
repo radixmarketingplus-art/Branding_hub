@@ -1,57 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/colorSurface"
+    android:background="@color/screen_bg"
     android:fitsSystemWindows="true">
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true"
-        android:clipToPadding="false"
-        android:paddingBottom="16dp">
+        android:overScrollMode="never">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp"
-            android:paddingTop="24dp"
-            android:paddingBottom="32dp">
+            android:paddingHorizontal="24dp"
+            android:paddingTop="32dp"
+            android:paddingBottom="40dp">
 
-            <!-- ================= TITLE ================= -->
-            <TextView
-                android:text="Terms And Conditions"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                android:textColor="?attr/colorOnSurface"
-                android:layout_marginBottom="16dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-
-            <!-- ================= CONTENT CARD ================= -->
+            <!-- HEADER -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:background="?attr/colorSurfaceVariant"
-                android:padding="16dp">
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="0dp"
+                android:paddingTop="0dp"
+                android:paddingBottom="24dp">
+
+                <ImageButton
+                    android:id="@+id/btnBack"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:src="@drawable/ic_back"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    app:tint="?attr/colorOnSurface"
+                    android:contentDescription="Back" />
 
                 <TextView
-                    android:text="By using RM Plus, you agree to the following terms:\n\n• You will not misuse the application.\n• No illegal or unauthorized activities are allowed.\n• Subscription fees are non-refundable.\n• Admin reserves the right to suspend or terminate accounts in case of misuse.\n• All content and intellectual property belong to RM Plus.\n\nThese terms may be updated or modified at any time without prior notice."
-                    android:textSize="15sp"
-                    android:textColor="?attr/colorOnSurface"
-                    android:lineSpacingExtra="6dp"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:text="Terms &amp; Conditions"
+                    android:textSize="28sp"
+                    android:fontFamily="sans-serif-black"
+                    android:textColor="?attr/colorOnSurface"
+                    android:layout_marginStart="8dp"
+                    android:letterSpacing="-0.01" />
+
             </LinearLayout>
 
-        </LinearLayout>
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="#0D000000"
+                app:cardBackgroundColor="@color/surface_light">
 
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="24dp"
+                    android:textSize="15sp"
+                    android:fontFamily="sans-serif-medium"
+                    android:lineSpacingExtra="8dp"
+                    android:textColor="?attr/colorOnSurface"
+                    android:text="By using RM Plus, you agree to the following terms:\n\n• You will not misuse the application.\n• No illegal or unauthorized activities are allowed.\n• Subscription fees are non-refundable.\n• Admin reserves the right to suspend or terminate accounts in case of misuse.\n• All content and intellectual property belong to RM Plus.\n\nThese terms may be updated or modified at any time without prior notice." />
+
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

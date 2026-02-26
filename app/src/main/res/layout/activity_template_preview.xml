@@ -5,139 +5,182 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    android:background="?android:attr/colorBackground">
+    android:background="@color/screen_bg">
 
-    <!-- ================= CONTENT ================= -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <!-- ================= TOP ACTION BAR ================= -->
-        <LinearLayout
+        <!-- TOP BAR -->
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:orientation="horizontal"
-            android:gravity="end|center_vertical"
-            android:paddingHorizontal="8dp"
-            android:background="?attr/colorSurface"
-            android:elevation="6dp">
+            android:layout_height="64dp"
+            app:cardCornerRadius="0dp"
+            app:cardElevation="4dp"
+            app:strokeWidth="0dp"
+            app:cardBackgroundColor="?attr/colorSurface">
 
-            <ImageButton
-                android:id="@+id/btnSearch"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:src="@android:drawable/ic_menu_search"
-                android:background="@drawable/bg_icon_button"
-                android:tint="?attr/colorOnSurface"
-                android:contentDescription="@string/content_desc_search"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="12dp">
 
-            <ImageButton
-                android:id="@+id/btnLike"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:src="@android:drawable/btn_star_big_off"
-                android:background="@drawable/bg_icon_button"
-                android:tint="?attr/colorOnSurface"
-                android:contentDescription="@string/content_desc_like"/>
+                <ImageButton
+                    android:id="@+id/btnBack"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:src="@drawable/ic_back"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    app:tint="?attr/colorOnSurface"
+                    android:padding="12dp"
+                    android:visibility="gone" /> <!-- Just in case -->
 
-            <ImageButton
-                android:id="@+id/btnFav"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:src="@android:drawable/btn_star"
-                android:background="@drawable/bg_icon_button"
-                android:tint="?attr/colorOnSurface"
-                android:contentDescription="@string/content_desc_favorite"/>
+                <View android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" />
 
-            <ImageButton
-                android:id="@+id/btnShare"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:src="@android:drawable/ic_menu_share"
-                android:background="@drawable/bg_icon_button"
-                android:tint="?attr/colorOnSurface"
-                android:contentDescription="@string/content_desc_share"/>
+                <ImageButton
+                    android:id="@+id/btnSearch"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:src="@android:drawable/ic_menu_search"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    app:tint="?attr/colorOnSurface"
+                    android:padding="10dp" />
 
-            <ImageButton
-                android:id="@+id/btnEdit"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:src="@android:drawable/ic_menu_edit"
-                android:background="@drawable/bg_icon_button"
-                android:tint="?attr/colorOnSurface"
-                android:contentDescription="@string/content_desc_edit"/>
+                <ImageButton
+                    android:id="@+id/btnLike"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:src="@android:drawable/btn_star_big_off"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    app:tint="?attr/colorOnSurface"
+                    android:padding="10dp" />
 
-            <ImageButton
-                android:id="@+id/btnSave"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:src="@android:drawable/ic_menu_save"
-                android:background="@drawable/bg_icon_button"
-                android:tint="?attr/colorOnSurface"
-                android:contentDescription="@string/content_desc_save"/>
-        </LinearLayout>
+                <ImageButton
+                    android:id="@+id/btnFav"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:src="@android:drawable/btn_star"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    app:tint="?attr/colorOnSurface"
+                    android:padding="10dp" />
 
-        <!-- ================= PREVIEW CARD ================= -->
+                <ImageButton
+                    android:id="@+id/btnShare"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:src="@android:drawable/ic_menu_share"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    app:tint="?attr/colorOnSurface"
+                    android:padding="10dp" />
+
+                <ImageButton
+                    android:id="@+id/btnEdit"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:src="@android:drawable/ic_menu_edit"
+                    android:background="@drawable/shape_circle"
+                    android:backgroundTint="?attr/colorPrimary"
+                    app:tint="@color/white"
+                    android:padding="11dp"
+                    android:layout_marginStart="4dp" />
+
+                <ImageButton
+                    android:id="@+id/btnSave"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:src="@android:drawable/ic_menu_save"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    app:tint="?attr/colorOnSurface"
+                    android:padding="10dp"
+                    android:layout_marginStart="4dp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- PREVIEW AREA -->
         <FrameLayout
             android:id="@+id/previewContainer"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:padding="16dp">
+            android:padding="20dp">
 
-            <ImageView
-                android:id="@+id/imgPreview"
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:scaleType="fitCenter"
-                android:background="@drawable/bg_surface_card"
-                android:padding="12dp"/>
+                app:cardCornerRadius="24dp"
+                app:cardElevation="2dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="#0D000000"
+                app:cardBackgroundColor="@color/surface_light">
 
-            <androidx.viewpager2.widget.ViewPager2
-                android:id="@+id/vpFrames"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="12dp"
-                android:visibility="gone"/>
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
 
-            <VideoView
-                android:id="@+id/vPreview"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:visibility="gone"/>
+                    <ImageView
+                        android:id="@+id/imgPreview"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="fitCenter"
+                        android:padding="16dp" />
 
-            <ImageView
-                android:id="@+id/imgPlayIcon"
-                android:layout_width="64dp"
-                android:layout_height="64dp"
-                android:layout_gravity="center"
-                android:src="@android:drawable/ic_media_play"
-                android:alpha="0.8"
-                android:visibility="gone"
-                android:contentDescription="@string/content_desc_play_video"/>
+                    <androidx.viewpager2.widget.ViewPager2
+                        android:id="@+id/vpFrames"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:visibility="gone" />
+
+                    <VideoView
+                        android:id="@+id/vPreview"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:visibility="gone" />
+
+                    <ImageView
+                        android:id="@+id/imgPlayIcon"
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:layout_gravity="center"
+                        android:src="@android:drawable/ic_media_play"
+                        android:alpha="0.8"
+                        app:tint="@color/white"
+                        android:visibility="gone" />
+                </FrameLayout>
+            </com.google.android.material.card.MaterialCardView>
         </FrameLayout>
 
-        <!-- ================= SIMILAR TEMPLATES ================= -->
-        <TextView
+        <!-- SIMILAR SECTION -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/title_similar_templates"
-            android:textStyle="bold"
-            android:textSize="16sp"
-            android:textColor="?attr/colorOnBackground"
-            android:paddingStart="16dp"
-            android:paddingBottom="8dp"/>
+            android:orientation="vertical"
+            android:paddingTop="12dp">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvSimilar"
-            android:layout_width="match_parent"
-            android:layout_height="240dp"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp"
-            android:paddingBottom="24dp"
-            android:clipToPadding="false"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/title_similar_templates"
+                android:fontFamily="sans-serif-black"
+                android:textSize="20sp"
+                android:textColor="?attr/colorOnSurface"
+                android:paddingHorizontal="24dp"
+                android:layout_marginBottom="12dp"
+                android:letterSpacing="-0.01" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvSimilar"
+                android:layout_width="match_parent"
+                android:layout_height="240dp"
+                android:clipToPadding="false"
+                android:paddingHorizontal="20dp"
+                android:paddingBottom="24dp"
+                android:overScrollMode="never" />
+
+        </LinearLayout>
 
     </LinearLayout>
 

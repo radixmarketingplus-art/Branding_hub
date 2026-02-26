@@ -58,7 +58,7 @@
                     app:fabCustomSize="32dp"
                     app:maxImageSize="18dp"
                     app:tint="@android:color/white"
-                    android:backgroundTint="#4A6CF7"/>
+                    android:backgroundTint="@color/primary"/>
             </FrameLayout>
 
             <TextView
@@ -271,7 +271,7 @@
                 android:layout_height="56dp"
                 android:text="@string/btn_save_changes"
                 app:cornerRadius="12dp"
-                android:backgroundTint="#4A6CF7"/>
+                android:backgroundTint="@color/primary"/>
 
             <View
                 android:layout_width="match_parent"

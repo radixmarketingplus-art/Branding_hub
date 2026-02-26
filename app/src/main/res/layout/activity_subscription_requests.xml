@@ -30,7 +30,7 @@
                 android:text="@string/tab_pending"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:textColor="#4A6CF7"
+                android:textColor="@color/primary"
                 android:clickable="true"
                 android:focusable="true"
                 android:background="@android:color/transparent"/>
@@ -70,7 +70,7 @@
             android:id="@+id/tabUnderline"
             android:layout_width="0dp"
             android:layout_height="3dp"
-            android:background="#4A6CF7"
+            android:background="@color/primary"
             android:layout_marginBottom="12dp"/>
 
         <!-- ================= LIST ================= -->

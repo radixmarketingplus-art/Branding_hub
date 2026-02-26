@@ -1,85 +1,96 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/colorSurface"
+    android:background="@color/screen_bg"
     android:fitsSystemWindows="true">
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true"
-        android:clipToPadding="false"
-        android:paddingBottom="16dp">
+        android:overScrollMode="never">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:gravity="center"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp"
-            android:paddingTop="32dp"
-            android:paddingBottom="32dp">
+            android:padding="24dp">
 
-            <!-- ================= CONTENT CARD ================= -->
-            <LinearLayout
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="24dp"
-                android:backgroundTint="?attr/colorSurfaceVariant"
-                android:background="@drawable/bg_surface_card">
+                app:cardCornerRadius="32dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="#0D000000"
+                app:cardBackgroundColor="@color/surface_light">
 
-                <!-- Title -->
-                <TextView
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/title_verify_email"
-                    android:textSize="22sp"
-                    android:textStyle="bold"
-                    android:textColor="?attr/colorOnSurface"
+                    android:orientation="vertical"
                     android:gravity="center"
-                    android:layout_marginBottom="12dp"/>
+                    android:padding="32dp">
 
-                <!-- Description -->
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/desc_verify_email"
-                    android:textSize="14sp"
-                    android:textColor="?attr/colorOnSurfaceVariant"
-                    android:gravity="center"
-                    android:lineSpacingExtra="4dp"
-                    android:layout_marginBottom="24dp"/>
+                    <ImageView
+                        android:layout_width="96dp"
+                        android:layout_height="96dp"
+                        android:src="@android:drawable/ic_dialog_email"
+                        app:tint="?attr/colorPrimary"
+                        android:layout_marginBottom="28dp"
+                        android:background="@drawable/shape_circle"
+                        android:backgroundTint="#0D000000"
+                        android:padding="24dp" />
 
-                <!-- Primary Action -->
-                <Button
-                    android:id="@+id/checkBtn"
-                    android:layout_width="match_parent"
-                    android:layout_height="52dp"
-                    android:text="@string/btn_i_have_verified"
-                    android:textAllCaps="false"
-                    android:textSize="15sp"
-                    android:background="@drawable/bg_primary_button"/>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/title_verify_email"
+                        android:textSize="26sp"
+                        android:fontFamily="sans-serif-black"
+                        android:textColor="?attr/colorOnSurface"
+                        android:gravity="center"
+                        android:layout_marginBottom="8dp"
+                        android:letterSpacing="-0.01" />
 
-                <!-- Secondary Action -->
-                <Button
-                    android:id="@+id/resendBtn"
-                    android:layout_width="match_parent"
-                    android:layout_height="52dp"
-                    android:text="@string/btn_resend_email"
-                    android:textAllCaps="false"
-                    android:textSize="15sp"
-                    android:layout_marginTop="12dp"
-                    android:background="@drawable/bg_secondary_button"/>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/desc_verify_email"
+                        android:textSize="14sp"
+                        android:fontFamily="sans-serif-medium"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:gravity="center"
+                        android:lineSpacingExtra="4dp"
+                        android:layout_marginBottom="32dp" />
 
-            </LinearLayout>
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/checkBtn"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:text="@string/btn_i_have_verified"
+                        android:fontFamily="sans-serif-black"
+                        app:cornerRadius="16dp"
+                        app:backgroundTint="?attr/colorPrimary"
+                        android:layout_marginBottom="12dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/resendBtn"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:text="@string/btn_resend_email"
+                        android:fontFamily="sans-serif-bold"
+                        app:cornerRadius="16dp"
+                        style="@style/Widget.Material3.Button.TonalButton" />
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
         </LinearLayout>
-
     </androidx.core.widget.NestedScrollView>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

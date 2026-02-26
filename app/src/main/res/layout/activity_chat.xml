@@ -4,78 +4,154 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?android:colorBackground"
+    android:background="@color/screen_bg"
     android:fitsSystemWindows="true">
 
-    <!-- ================= CHAT LIST ================= -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerChat"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="12dp"
-        android:clipToPadding="false"
-        android:overScrollMode="never"
-        android:layout_marginBottom="72dp"/>
+        android:orientation="vertical">
 
-    <!-- ================= IMAGE PREVIEW ================= -->
-    <ImageView
-        android:id="@+id/imgPreview"
-        android:layout_width="match_parent"
-        android:layout_height="140dp"
-        android:scaleType="centerCrop"
-        android:visibility="gone"
-        android:layout_gravity="bottom"
-        android:layout_marginBottom="72dp"
-        android:layout_marginHorizontal="12dp"
-        android:background="@drawable/bg_surface_card"/>
-
-    <!-- ================= STICKY INPUT BAR ================= -->
-    <LinearLayout
-        android:id="@+id/chatInputBar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:padding="10dp"
-        android:background="@drawable/bg_tabs_surface">
-
-        <!-- Attach -->
-        <ImageButton
-            android:id="@+id/btnAttach"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@android:drawable/ic_menu_add"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Attach"
-            app:tint="?attr/colorOnSurface"/>
-
-        <!-- Message Input -->
-        <EditText
-            android:id="@+id/etMsg"
-            android:layout_width="0dp"
+        <!-- HEADER -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="16dp"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp"
+            android:background="?attr/colorSurface"
+            android:elevation="4dp">
+
+            <ImageButton
+                android:id="@+id/btnBack"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_back"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                app:tint="?attr/colorOnSurface"
+                android:contentDescription="Back" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp">
+
+                <TextView
+                    android:id="@+id/chatTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/btn_open_chat"
+                    android:textSize="18sp"
+                    android:fontFamily="sans-serif-black"
+                    android:textColor="?attr/colorOnSurface"
+                    android:maxLines="1"
+                    android:ellipsize="end" />
+
+                <TextView
+                    android:id="@+id/chatSubtitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Support Agent"
+                    android:textSize="12sp"
+                    android:fontFamily="sans-serif-medium"
+                    android:textColor="?attr/colorOnSurfaceVariant" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- CHAT LIST -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerChat"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
             android:layout_weight="1"
-            android:layout_marginHorizontal="8dp"
-            android:hint="@string/hint_type_message"
-            android:textColor="?attr/colorOnSurface"
-            android:textColorHint="?attr/colorOnSurfaceVariant"
-            android:background="@drawable/bg_surface_card"
-            android:paddingHorizontal="14dp"
-            android:paddingVertical="10dp"
-            android:maxLines="4"/>
+            android:clipToPadding="false"
+            android:paddingHorizontal="16dp"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp"
+            android:overScrollMode="never" />
 
+        <!-- PREVIEW BOX -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/imgPreviewCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginBottom="8dp"
+            android:visibility="gone"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="2dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="#1A000000">
 
-        <!-- Send -->
-        <ImageButton
-            android:id="@+id/btnSend"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
-            android:background="@drawable/bg_send_button"
-            android:src="@android:drawable/ic_menu_send"
-            android:contentDescription="Send"
-            app:tint="@android:color/white"/>
+            <ImageView
+                android:id="@+id/imgPreview"
+                android:layout_width="match_parent"
+                android:layout_height="140dp"
+                android:scaleType="centerCrop" />
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- INPUT BAR -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="0dp"
+            app:cardElevation="12dp"
+            app:strokeWidth="0dp">
+
+            <LinearLayout
+                android:id="@+id/chatInputBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="10dp"
+                android:background="?attr/colorSurface">
+
+                <ImageButton
+                    android:id="@+id/btnAttach"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:src="@android:drawable/ic_menu_add"
+                    app:tint="?attr/colorPrimary"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:padding="8dp" />
+
+                <EditText
+                    android:id="@+id/etMsg"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginHorizontal="8dp"
+                    android:hint="@string/hint_type_message"
+                    android:fontFamily="sans-serif-medium"
+                    android:textSize="14sp"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textColorHint="?attr/colorOnSurfaceVariant"
+                    android:background="@drawable/bg_input_2"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="10dp"
+                    android:maxLines="4" />
+
+                <ImageButton
+                    android:id="@+id/btnSend"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="@drawable/shape_circle"
+                    android:backgroundTint="?attr/colorPrimary"
+                    android:src="@android:drawable/ic_menu_send"
+                    app:tint="@color/white"
+                    android:padding="10dp"
+                    app:elevation="4sp" />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
     </LinearLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
+

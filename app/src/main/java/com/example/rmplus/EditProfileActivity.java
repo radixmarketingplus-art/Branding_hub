@@ -34,19 +34,19 @@ import androidx.activity.result.contract.ActivityResultContracts;
 
 public class EditProfileActivity extends AppCompatActivity {
 
-    EditText name,designation,dob,email,mobile;
+    EditText name, designation, dob, email, mobile;
     Spinner stateSpinner, citySpinner;
     RadioGroup genderGroup;
-    RadioButton male,female,other;
+    RadioButton male, female, other;
     Button saveBtn;
     Spinner countryCodePicker;
     ImageView profileImg;
     FloatingActionButton btnUploadImg;
     TextView btnRemoveImg;
     String profileUrl = "";
-    Uri imgUri;               // original picked image
-    Uri croppedUri;           // locally cropped — uploaded only on save
-    String[] countryCodes = {"+91", "+1", "+44", "+971", "+61", "+234", "+92", "+880", "+94"};
+    Uri imgUri; // original picked image
+    Uri croppedUri; // locally cropped — uploaded only on save
+    String[] countryCodes = { "+91", "+1", "+44", "+971", "+61", "+234", "+92", "+880", "+94" };
     String[] indiaStates;
     Map<String, Integer> cityMapRes = new HashMap<>();
     Map<String, String[]> cityMap = new HashMap<>();
@@ -56,8 +56,8 @@ public class EditProfileActivity extends AppCompatActivity {
 
     DatabaseReference userRef;
 
-    String oldName,oldDesignation,oldDob,oldMobile,oldCity,
-            oldState,oldGender;
+    String oldName, oldDesignation, oldDob, oldMobile, oldCity,
+            oldState, oldGender;
 
     private ActivityResultLauncher<Intent> imagePickerLauncher;
     private ActivityResultLauncher<Intent> cropLauncher;
@@ -74,7 +74,7 @@ public class EditProfileActivity extends AppCompatActivity {
         mobile = findViewById(R.id.mobile);
         citySpinner = findViewById(R.id.citySpinner);
         stateSpinner = findViewById(R.id.stateSpinner);
-        
+
         profileImg = findViewById(R.id.profileImg);
         btnUploadImg = findViewById(R.id.btnUploadImg);
         btnRemoveImg = findViewById(R.id.btnRemoveImg);
@@ -90,7 +90,8 @@ public class EditProfileActivity extends AppCompatActivity {
         countryCodePicker.setAdapter(adapter);
 
         indiaStates = getResources().getStringArray(R.array.india_states);
-        ArrayAdapter<String> stateAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, indiaStates);
+        ArrayAdapter<String> stateAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item,
+                indiaStates);
         stateSpinner.setAdapter(stateAdapter);
 
         initializeCityMap();
@@ -100,16 +101,18 @@ public class EditProfileActivity extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> parent, android.view.View view, int position, long id) {
                 updateCitySpinner(indiaStates[position]);
             }
+
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {}
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
         });
 
         saveBtn = findViewById(R.id.saveBtn);
 
         String uid = FirebaseAuth.getInstance().getUid();
 
-        if(uid == null){
-            Toast.makeText(this,R.string.user_not_logged_in,Toast.LENGTH_SHORT).show();
+        if (uid == null) {
+            Toast.makeText(this, R.string.user_not_logged_in, Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
@@ -119,13 +122,14 @@ public class EditProfileActivity extends AppCompatActivity {
                 .child(uid);
 
         loadData();
-        
+
         dob.setOnClickListener(v -> showDatePicker());
         // Also handle the touch on the icon
         dob.setOnTouchListener((v, event) -> {
             final int DRAWABLE_RIGHT = 2;
             if (event.getAction() == android.view.MotionEvent.ACTION_UP) {
-                if (event.getRawX() >= (dob.getRight() - dob.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width() - dob.getPaddingRight())) {
+                if (event.getRawX() >= (dob.getRight() - dob.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width()
+                        - dob.getPaddingRight())) {
                     showDatePicker();
                     return true;
                 }
@@ -134,11 +138,13 @@ public class EditProfileActivity extends AppCompatActivity {
         });
 
         saveBtn.setOnClickListener(v -> confirmSave());
-        
+
         btnUploadImg.setOnClickListener(v -> pickImage());
         btnRemoveImg.setOnClickListener(v -> removeImage());
 
         profileImg.setOnClickListener(v -> showFullImage());
+
+        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
 
         setupActivityResultLaunchers();
     }
@@ -150,8 +156,7 @@ public class EditProfileActivity extends AppCompatActivity {
                     if (result.getResultCode() == RESULT_OK && result.getData() != null) {
                         startCrop(result.getData().getData());
                     }
-                }
-        );
+                });
 
         cropLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -167,14 +172,13 @@ public class EditProfileActivity extends AppCompatActivity {
                             Toast.makeText(this, R.string.msg_img_uploaded, Toast.LENGTH_SHORT).show();
                         }
                     }
-                }
-        );
+                });
     }
 
     private void showFullImage() {
         AppCompatDialog dialog = new AppCompatDialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
         ImageView fullImg = new ImageView(this);
-        
+
         if (!profileUrl.isEmpty()) {
             Glide.with(this)
                     .load(profileUrl)
@@ -188,14 +192,15 @@ public class EditProfileActivity extends AppCompatActivity {
         dialog.setContentView(fullImg);
         dialog.show();
     }
- 
+
     private void pickImage() {
         Intent i = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         imagePickerLauncher.launch(i);
     }
- 
+
     private void removeImage() {
-        if ((profileUrl == null || profileUrl.isEmpty()) && croppedUri == null) return;
+        if ((profileUrl == null || profileUrl.isEmpty()) && croppedUri == null)
+            return;
 
         new AlertDialog.Builder(this)
                 .setTitle(R.string.link_remove_img)
@@ -253,12 +258,12 @@ public class EditProfileActivity extends AppCompatActivity {
             }
         }).start();
     }
- 
+
     @Override
     protected void onActivityResult(int rc, int res, Intent data) {
         super.onActivityResult(rc, res, data);
     }
- 
+
     private void startCrop(Uri uri) {
         String dest = "Profile_" + System.currentTimeMillis() + ".jpg";
         UCrop uCrop = UCrop.of(uri, Uri.fromFile(new File(getCacheDir(), dest)));
@@ -267,11 +272,11 @@ public class EditProfileActivity extends AppCompatActivity {
         options.setCompressionQuality(90);
         uCrop.withOptions(options);
         uCrop.withAspectRatio(1, 1); // Square crop
-        
+
         Intent cropIntent = uCrop.getIntent(this);
         cropLauncher.launch(cropIntent);
     }
- 
+
     private void uploadImageToVPS(Uri uri) {
         uploadImageToVPS(uri, null);
     }
@@ -289,31 +294,34 @@ public class EditProfileActivity extends AppCompatActivity {
                 conn.setRequestMethod("POST");
                 conn.setDoOutput(true);
                 conn.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
-                
+
                 java.io.DataOutputStream out = new java.io.DataOutputStream(conn.getOutputStream());
                 out.writeBytes("--" + boundary + "\r\n");
                 out.writeBytes("Content-Disposition: form-data; name=\"file\"; filename=\"profile.jpg\"\r\n");
                 out.writeBytes("Content-Type: image/jpeg\r\n\r\n");
- 
+
                 InputStream input = getContentResolver().openInputStream(uri);
                 byte[] buffer = new byte[4096];
                 int len;
-                while ((len = input.read(buffer)) != -1) out.write(buffer, 0, len);
+                while ((len = input.read(buffer)) != -1)
+                    out.write(buffer, 0, len);
                 input.close();
- 
+
                 out.writeBytes("\r\n--" + boundary + "--\r\n");
                 out.flush();
                 out.close();
- 
-                java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.InputStreamReader(conn.getInputStream()));
+
+                java.io.BufferedReader reader = new java.io.BufferedReader(
+                        new java.io.InputStreamReader(conn.getInputStream()));
                 StringBuilder res = new StringBuilder();
                 String line;
-                while ((line = reader.readLine()) != null) res.append(line);
+                while ((line = reader.readLine()) != null)
+                    res.append(line);
                 reader.close();
- 
+
                 org.json.JSONObject json = new org.json.JSONObject(res.toString());
                 String uploadedUrl = json.getString("url");
-                
+
                 runOnUiThread(() -> {
                     if (callback != null) {
                         callback.onDone(uploadedUrl);
@@ -323,7 +331,7 @@ public class EditProfileActivity extends AppCompatActivity {
                         Toast.makeText(this, R.string.msg_img_uploaded, Toast.LENGTH_SHORT).show();
                     }
                 });
- 
+
             } catch (Exception e) {
                 e.printStackTrace();
                 runOnUiThread(() -> {
@@ -339,7 +347,8 @@ public class EditProfileActivity extends AppCompatActivity {
     private void showDatePicker() {
         // Set Localized Calendar
         Locale currentLocale = ConfigurationCompat.getLocales(getResources().getConfiguration()).get(0);
-        if (currentLocale == null) currentLocale = Locale.getDefault();
+        if (currentLocale == null)
+            currentLocale = Locale.getDefault();
         Locale.setDefault(currentLocale);
 
         final Calendar c = Calendar.getInstance(currentLocale);
@@ -356,19 +365,19 @@ public class EditProfileActivity extends AppCompatActivity {
 
     // -----------------------------
 
-    void loadData(){
+    void loadData() {
 
         userRef.addListenerForSingleValueEvent(
                 new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot s) {
 
-                        name.setText(getValue(s,"name"));
-                        designation.setText(getValue(s,"designation"));
-                        dob.setText(getValue(s,"dob"));
-                        email.setText(getValue(s,"email"));
-                        
-                        String fullMobile = getValue(s,"mobile");
+                        name.setText(getValue(s, "name"));
+                        designation.setText(getValue(s, "designation"));
+                        dob.setText(getValue(s, "dob"));
+                        email.setText(getValue(s, "email"));
+
+                        String fullMobile = getValue(s, "mobile");
                         if (!fullMobile.isEmpty()) {
                             boolean found = false;
                             for (int i = 0; i < countryCodes.length; i++) {
@@ -387,14 +396,15 @@ public class EditProfileActivity extends AppCompatActivity {
                             countryCodePicker.setSelection(0); // Default to +91
                             mobile.setText("");
                         }
-                        
-                        initialCity = getValue(s,"city");
-                        
-                        String savedState = getValue(s,"state");
+
+                        initialCity = getValue(s, "city");
+
+                        String savedState = getValue(s, "state");
                         if (!savedState.isEmpty()) {
                             // Find state by canonical (English) name comparison or index
                             // To be safe, we check both current and english list
-                            String[] englishStates = getContextForLocale("en").getResources().getStringArray(R.array.india_states);
+                            String[] englishStates = getContextForLocale("en").getResources()
+                                    .getStringArray(R.array.india_states);
                             for (int i = 0; i < englishStates.length; i++) {
                                 if (englishStates[i].equals(savedState)) {
                                     stateSpinner.setSelection(i);
@@ -402,7 +412,7 @@ public class EditProfileActivity extends AppCompatActivity {
                                 }
                             }
                         }
-                        
+
                         profileUrl = getValue(s, "profileImage");
                         if (!profileUrl.isEmpty()) {
                             Glide.with(EditProfileActivity.this)
@@ -416,38 +426,42 @@ public class EditProfileActivity extends AppCompatActivity {
                             btnRemoveImg.setVisibility(View.GONE);
                         }
 
-                        oldName = getValue(s,"name");
-                        oldDesignation = getValue(s,"designation");
-                        oldDob = getValue(s,"dob");
-                        oldMobile = getValue(s,"mobile");
-                        oldCity = getValue(s,"city");
-                        oldState = getValue(s,"state");
-                        oldGender = getValue(s,"gender");
+                        oldName = getValue(s, "name");
+                        oldDesignation = getValue(s, "designation");
+                        oldDob = getValue(s, "dob");
+                        oldMobile = getValue(s, "mobile");
+                        oldCity = getValue(s, "city");
+                        oldState = getValue(s, "state");
+                        oldGender = getValue(s, "gender");
 
-                        if(oldGender.equals("Male")) male.setChecked(true);
-                        else if(oldGender.equals("Female")) female.setChecked(true);
-                        else other.setChecked(true);
+                        if (oldGender.equals("Male"))
+                            male.setChecked(true);
+                        else if (oldGender.equals("Female"))
+                            female.setChecked(true);
+                        else
+                            other.setChecked(true);
                     }
 
                     @Override
-                    public void onCancelled(DatabaseError error) { }
+                    public void onCancelled(DatabaseError error) {
+                    }
                 });
     }
 
-    String getValue(DataSnapshot s,String key){
-        if(s.child(key).exists())
+    String getValue(DataSnapshot s, String key) {
+        if (s.child(key).exists())
             return s.child(key).getValue(String.class);
         return "";
     }
 
     // -----------------------------
 
-    void confirmSave(){
+    void confirmSave() {
 
         new AlertDialog.Builder(this)
                 .setTitle(R.string.btn_save_changes)
                 .setMessage(R.string.msg_confirm_save_profile)
-                .setPositiveButton(R.string.yes,(d,w)->{
+                .setPositiveButton(R.string.yes, (d, w) -> {
                     if (croppedUri != null) {
                         // ✅ Upload to VPS only NOW (on save)
                         saveBtn.setEnabled(false);
@@ -465,13 +479,13 @@ public class EditProfileActivity extends AppCompatActivity {
                         saveProfile();
                     }
                 })
-                .setNegativeButton(R.string.no,null)
+                .setNegativeButton(R.string.no, null)
                 .show();
     }
 
     // -----------------------------
 
-    void saveProfile(){
+    void saveProfile() {
 
         String newName = name.getText().toString();
         String newDesignation = designation.getText().toString();
@@ -480,16 +494,19 @@ public class EditProfileActivity extends AppCompatActivity {
         // For saving to DB, we prefer canonical (English) names to keep data consistent
         String[] englishStates = getContextForLocale("en").getResources().getStringArray(R.array.india_states);
         String newState = englishStates[stateSpinner.getSelectedItemPosition()];
-        
-        // ✅ Always save the canonical English city name (not the translated display name)
+
+        // ✅ Always save the canonical English city name (not the translated display
+        // name)
         int cityPos = citySpinner.getSelectedItemPosition();
         String newCity = (englishCities != null && cityPos >= 0 && cityPos < englishCities.length)
                 ? englishCities[cityPos]
                 : (citySpinner.getSelectedItem() != null ? citySpinner.getSelectedItem().toString() : "");
 
-        String gender="Other";
-        if(male.isChecked()) gender="Male";
-        if(female.isChecked()) gender="Female";
+        String gender = "Other";
+        if (male.isChecked())
+            gender = "Male";
+        if (female.isChecked())
+            gender = "Female";
 
         userRef.child("name").setValue(newName);
         userRef.child("designation").setValue(newDesignation);
@@ -564,7 +581,7 @@ public class EditProfileActivity extends AppCompatActivity {
         if (cityMapRes.containsKey(stateKey)) {
             englishCities = getContextForLocale("en").getResources().getStringArray(cityMapRes.get(stateKey));
         } else {
-            englishCities = new String[]{"Other"};
+            englishCities = new String[] { "Other" };
         }
 
         // Displayed cities = localized (Hindi or English based on current locale)
@@ -572,16 +589,18 @@ public class EditProfileActivity extends AppCompatActivity {
         if (cityMapRes.containsKey(stateKey)) {
             displayCities = getResources().getStringArray(cityMapRes.get(stateKey));
         } else {
-            displayCities = new String[]{getString(R.string.cat_other)};
+            displayCities = new String[] { getString(R.string.cat_other) };
         }
 
         // Sort both arrays together by English name (keeps them in sync)
         // Simple approach: sort English, then reorder display accordingly
-        // Since array-resource order is fixed, just sort each separately — they share same order
+        // Since array-resource order is fixed, just sort each separately — they share
+        // same order
         Arrays.sort(englishCities);
         Arrays.sort(displayCities);
 
-        ArrayAdapter<String> cityAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, displayCities);
+        ArrayAdapter<String> cityAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item,
+                displayCities);
         citySpinner.setAdapter(cityAdapter);
 
         if (!initialCity.isEmpty()) {

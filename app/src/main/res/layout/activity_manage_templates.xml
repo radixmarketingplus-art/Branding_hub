@@ -1,31 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/colorSurface"
+    android:background="@color/screen_bg"
     android:fitsSystemWindows="true">
 
-    <!-- ================= MAIN CONTAINER ================= -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <!-- ================= TOP BAR ================= -->
+        <!-- TOP BAR -->
         <LinearLayout
             android:id="@+id/topBar"
             android:layout_width="0dp"
-            android:layout_height="56dp"
+            android:layout_height="64dp"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:paddingHorizontal="16dp"
+            android:paddingHorizontal="20dp"
             android:background="?attr/colorSurface"
-            android:elevation="6dp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
+
+            <ImageButton
+                android:id="@+id/btnBack"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_back"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                app:tint="?attr/colorOnSurface"
+                android:contentDescription="Back"
+                android:layout_marginEnd="8dp" />
 
             <TextView
                 android:id="@+id/txtTitle"
@@ -33,323 +40,300 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/app_name"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="?attr/colorOnSurface"/>
-
-            <ImageButton
-                android:id="@+id/btnSave"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_save"
-                app:tint="?attr/colorOnSurface"/>
-        </LinearLayout>
-
-        <!-- ================= CANVAS (FIXED 1:1 SQUARE) ================= -->
-        <FrameLayout
-            android:id="@+id/canvas"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:background="?attr/colorSurfaceVariant"
-            app:layout_constraintDimensionRatio="1:1"
-            app:layout_constraintTop_toBottomOf="@id/topBar"
-            app:layout_constraintBottom_toTopOf="@id/editorBar"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
-
-            <ImageView
-                android:id="@+id/imgTemplate"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="fitCenter"/>
-
-            <ImageView
-                android:id="@+id/imgFrame"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="fitXY"
-                android:visibility="gone"/>
-
-            <androidx.viewpager2.widget.ViewPager2
-                android:id="@+id/vpFrames"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:visibility="gone"/>
-
-            <!-- Wrapper for items that can be scaled. Delete button is kept separate so it doesn't scale -->
-            <FrameLayout
-                android:id="@+id/wrapText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="gone">
-                <TextView
-                    android:id="@+id/txtEdit"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/ph_edit_text"
-                    android:textSize="22sp"
-                    android:textColor="?attr/colorOnSurface"
-                    android:paddingTop="12dp"
-                    android:paddingEnd="12dp"
-                    android:paddingStart="4dp"
-                    android:paddingBottom="4dp" />
-                <ImageView
-                    android:id="@+id/btnDeleteText"
-                    android:layout_width="28dp"
-                    android:layout_height="28dp"
-                    android:layout_gravity="top|end"
-                    android:padding="6dp"
-                    android:background="@drawable/shape_circle"
-                    android:backgroundTint="?attr/colorError"
-                    android:src="@drawable/ic_delete"
-                    app:tint="?attr/colorOnError" />
-            </FrameLayout>
-
-            <FrameLayout
-                android:id="@+id/wrapLogo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="gone">
-                <!-- Inner container that actually scales -->
-                <FrameLayout 
-                    android:id="@+id/scaleLogo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="16dp">
-                    <ImageView
-                        android:id="@+id/imgLogo"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:minWidth="100dp"
-                        android:minHeight="100dp"
-                        android:adjustViewBounds="true"
-                        android:scaleType="fitCenter"
-                        android:background="@null"/>
-                    <!-- Move delete icon inside so it moves with the scale -->
-                    <ImageView
-                        android:id="@+id/btnDeleteLogo"
-                        android:layout_width="28dp"
-                        android:layout_height="28dp"
-                        android:layout_gravity="top|end"
-                        android:padding="6dp"
-                        android:background="@drawable/shape_circle"
-                        android:backgroundTint="?attr/colorError"
-                        android:src="@drawable/ic_delete"
-                        app:tint="?attr/colorOnError" />
-                </FrameLayout>
-            </FrameLayout>
-
-            <FrameLayout
-                android:id="@+id/wrapGallery"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="gone">
-                <FrameLayout
-                    android:id="@+id/scaleGallery"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="16dp">
-                    <ImageView
-                        android:id="@+id/imgGallery"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:minWidth="120dp"
-                        android:minHeight="120dp"
-                        android:adjustViewBounds="true"
-                        android:scaleType="fitCenter"
-                        android:background="@null"/>
-                    <ImageView
-                        android:id="@+id/btnDeleteGallery"
-                        android:layout_width="28dp"
-                        android:layout_height="28dp"
-                        android:layout_gravity="top|end"
-                        android:padding="6dp"
-                        android:background="@drawable/shape_circle"
-                        android:backgroundTint="?attr/colorError"
-                        android:src="@drawable/ic_delete"
-                        app:tint="?attr/colorOnError" />
-                </FrameLayout>
-            </FrameLayout>
-        </FrameLayout>
-
-        <!-- ================= TEXT CONTROLS ================= -->
-        <LinearLayout
-            android:id="@+id/textControls"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="12dp"
-            android:gravity="center"
-            android:background="?attr/colorSurface"
-            android:visibility="gone"
-            app:layout_constraintBottom_toTopOf="@id/editorBar"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
+                android:textSize="20sp"
+                android:fontFamily="sans-serif-black"
+                android:textColor="?attr/colorOnSurface"
+                android:letterSpacing="-0.01" />
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnColor"
-                android:text="@string/btn_color"
-                android:textAllCaps="false"
-                app:backgroundTint="@null"
-                android:background="@drawable/bg_primary_btn"
+                android:id="@+id/btnSave"
+                style="@style/Widget.Material3.Button.TonalButton"
                 android:layout_width="wrap_content"
-                android:layout_height="40dp"/>
-
-            <SeekBar
-                android:id="@+id/seekTextSize"
-                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginStart="16dp"
-                android:max="100"/>
+                android:text="Save"
+                android:fontFamily="sans-serif-bold"
+                app:icon="@drawable/ic_save"
+                app:cornerRadius="12dp" />
         </LinearLayout>
 
-        <!-- ================= IMAGE CONTROLS (Logo/Gallery) ================= -->
-        <LinearLayout
-            android:id="@+id/imageControls"
+        <!-- CANVAS AREA -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/canvasContainer"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="12dp"
-            android:gravity="center"
-            android:background="?attr/colorSurface"
-            android:visibility="gone"
-            app:layout_constraintBottom_toTopOf="@id/editorBar"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
-            
-            <TextView
-                android:text="@string/label_size"
-                android:textStyle="bold"
-                android:textColor="?attr/colorOnSurface"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-
-            <SeekBar
-                android:id="@+id/seekImageSize"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginStart="16dp"
-                android:progress="40"
-                android:max="100"/>
-        </LinearLayout>
-
-        <!-- ================= FRAME CONTROLS ================= -->
-        <LinearLayout
-            android:id="@+id/frameControls"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="?attr/colorSurface"
-            android:visibility="gone"
-            app:layout_constraintBottom_toTopOf="@id/editorBar"
+            android:layout_height="0dp"
+            android:layout_margin="16dp"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="4dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="#1A000000"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintTop_toBottomOf="@id/topBar"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
-            <!-- Frame Picker -->
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvFrames"
+            <FrameLayout
+                android:id="@+id/canvas"
                 android:layout_width="match_parent"
-                android:layout_height="90dp"
-                android:padding="8dp"/>
-
-            <!-- Frame Size -->
-            <SeekBar
-                android:id="@+id/seekFrameSize"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:max="300"/>
-        </LinearLayout>
-
-        <!-- ================= EDITOR BAR ================= -->
-        <LinearLayout
-            android:id="@+id/editorBar"
-            android:layout_width="0dp"
-            android:layout_height="72dp"
-            android:orientation="horizontal"
-            android:padding="8dp"
-            android:background="?attr/colorSurface"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
-
-            <LinearLayout
-                android:id="@+id/btnText"
-                android:layout_width="0dp"
-                android:layout_weight="1"
                 android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:gravity="center"
-                android:background="?attr/selectableItemBackground">
+                android:background="?attr/colorSurfaceVariant">
+
                 <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/ic_edit"
-                    app:tint="?attr/colorOnSurface"/>
-                <TextView
+                    android:id="@+id/imgTemplate"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="fitCenter" />
+
+                <ImageView
+                    android:id="@+id/imgFrame"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="fitXY"
+                    android:visibility="gone" />
+
+                <androidx.viewpager2.widget.ViewPager2
+                    android:id="@+id/vpFrames"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:visibility="gone" />
+
+                <FrameLayout
+                    android:id="@+id/wrapText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/btn_text"
-                    android:maxLines="1"
-                    android:textStyle="bold"
-                    android:layout_marginTop="4dp"
-                    android:textColor="?attr/colorOnSurface"/>
+                    android:visibility="gone">
+                    <TextView
+                        android:id="@+id/txtEdit"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/ph_edit_text"
+                        android:textSize="22sp"
+                        android:textColor="?attr/colorOnSurface"
+                        android:paddingTop="12dp"
+                        android:paddingEnd="12dp"
+                        android:paddingStart="4dp"
+                        android:paddingBottom="4dp" />
+                    <ImageView
+                        android:id="@+id/btnDeleteText"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:layout_gravity="top|end"
+                        android:padding="6dp"
+                        android:background="@drawable/shape_circle"
+                        android:backgroundTint="#EF4444"
+                        android:src="@drawable/ic_delete"
+                        app:tint="@android:color/white" />
+                </FrameLayout>
+
+                <FrameLayout
+                    android:id="@+id/wrapLogo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone">
+                    <FrameLayout 
+                        android:id="@+id/scaleLogo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="16dp">
+                        <ImageView
+                            android:id="@+id/imgLogo"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:minWidth="100dp"
+                            android:minHeight="100dp"
+                            android:adjustViewBounds="true"
+                            android:scaleType="fitCenter" />
+                        <ImageView
+                            android:id="@+id/btnDeleteLogo"
+                            android:layout_width="28dp"
+                            android:layout_height="28dp"
+                            android:layout_gravity="top|end"
+                            android:padding="6dp"
+                            android:background="@drawable/shape_circle"
+                            android:backgroundTint="#EF4444"
+                            android:src="@drawable/ic_delete"
+                            app:tint="@android:color/white" />
+                    </FrameLayout>
+                </FrameLayout>
+
+                <FrameLayout
+                    android:id="@+id/wrapGallery"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone">
+                    <FrameLayout
+                        android:id="@+id/scaleGallery"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="16dp">
+                        <ImageView
+                            android:id="@+id/imgGallery"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:minWidth="120dp"
+                            android:minHeight="120dp"
+                            android:adjustViewBounds="true"
+                            android:scaleType="fitCenter" />
+                        <ImageView
+                            android:id="@+id/btnDeleteGallery"
+                            android:layout_width="28dp"
+                            android:layout_height="28dp"
+                            android:layout_gravity="top|end"
+                            android:padding="6dp"
+                            android:background="@drawable/shape_circle"
+                            android:backgroundTint="#EF4444"
+                            android:src="@drawable/ic_delete"
+                            app:tint="@android:color/white" />
+                    </FrameLayout>
+                </FrameLayout>
+            </FrameLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- TOOL CONTROLS -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toTopOf="@id/bottomBar">
+
+            <!-- TEXT CONTROLS -->
+            <LinearLayout
+                android:id="@+id/textControls"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="16dp"
+                android:gravity="center"
+                android:background="?attr/colorSurface"
+                android:visibility="gone">
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnColor"
+                    style="@style/Widget.Material3.Button.TonalButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Color"
+                    app:cornerRadius="12dp" />
+                <SeekBar
+                    android:id="@+id/seekTextSize"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="16dp"
+                    android:max="100"/>
             </LinearLayout>
 
+            <!-- IMAGE CONTROLS -->
             <LinearLayout
-                android:id="@+id/btnLogo"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
+                android:id="@+id/imageControls"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="16dp"
                 android:gravity="center"
-                android:background="?attr/selectableItemBackground">
+                android:background="?attr/colorSurface"
+                android:visibility="gone">
                 <TextView
+                    android:text="Size"
+                    android:fontFamily="sans-serif-bold"
+                    android:textColor="?attr/colorOnSurface"
                     android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <SeekBar
+                    android:id="@+id/seekImageSize"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/btn_logo"
-                    android:maxLines="1"
-                    android:textStyle="bold"
-                    android:textColor="?attr/colorOnSurface"/>
+                    android:layout_weight="1"
+                    android:layout_marginStart="16dp"
+                    android:progress="40"
+                    android:max="100"/>
             </LinearLayout>
 
+            <!-- FRAME CONTROLS -->
             <LinearLayout
-                android:id="@+id/btnGallery"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="match_parent"
+                android:id="@+id/frameControls"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:gravity="center"
-                android:background="?attr/selectableItemBackground">
-                <TextView
-                    android:layout_width="wrap_content"
+                android:paddingBottom="16dp"
+                android:background="?attr/colorSurface"
+                android:visibility="gone">
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvFrames"
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:clipToPadding="false"
+                    android:paddingHorizontal="12dp" />
+                <SeekBar
+                    android:id="@+id/seekFrameSize"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/btn_gallery"
-                    android:maxLines="1"
-                    android:textStyle="bold"
-                    android:textColor="?attr/colorOnSurface"/>
+                    android:layout_marginHorizontal="16dp"
+                    android:max="300" />
             </LinearLayout>
+        </FrameLayout>
+
+        <!-- BOTTOM TOOLBAR -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/bottomBar"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            app:cardCornerRadius="0dp"
+            app:cardElevation="12dp"
+            app:strokeWidth="0dp"
+            app:cardBackgroundColor="?attr/colorSurface"
+            app:layout_constraintBottom_toBottomOf="parent">
 
             <LinearLayout
-                android:id="@+id/btnFrame"
-                android:layout_width="0dp"
-                android:layout_weight="1"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:gravity="center"
-                android:background="?attr/selectableItemBackground">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/btn_add_frame"
-                    android:maxLines="1"
-                    android:textStyle="bold"
-                    android:textColor="?attr/colorOnSurface"/>
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:id="@+id/btnText"
+                    style="@style/EditorToolItemStyle">
+                    <ImageView
+                        android:src="@drawable/ic_edit"
+                        style="@style/EditorToolIconStyle" />
+                    <TextView
+                        android:text="Text"
+                        style="@style/EditorToolTextStyle" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/btnLogo"
+                    style="@style/EditorToolItemStyle">
+                    <ImageView
+                        android:src="@android:drawable/ic_menu_gallery"
+                        style="@style/EditorToolIconStyle" />
+                    <TextView
+                        android:text="Logo"
+                        style="@style/EditorToolTextStyle" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/btnGallery"
+                    style="@style/EditorToolItemStyle">
+                    <ImageView
+                        android:src="@android:drawable/ic_menu_add"
+                        style="@style/EditorToolIconStyle" />
+                    <TextView
+                        android:text="Image"
+                        style="@style/EditorToolTextStyle" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/btnFrame"
+                    style="@style/EditorToolItemStyle">
+                    <ImageView
+                        android:src="@android:drawable/ic_menu_crop"
+                        style="@style/EditorToolIconStyle" />
+                    <TextView
+                        android:text="Frame"
+                        style="@style/EditorToolTextStyle" />
+                </LinearLayout>
+
             </LinearLayout>
-        </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
+

@@ -1,42 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Core Blue Theme Colors -->
+    <color name="bg_gradient_start">#2563EB</color>
+    <color name="bg_gradient_end">#1D4ED8</color>
+    <color name="card_dark">#FFFFFF</color>
+    <color name="card_stroke">#E2E8F0</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <!--    <color name="bg_dark">#0F172A</color>-->
-    <!--    <color name="card_dark">#1E293B</color>-->
-    <!--    <color name="primary">#38BDF8</color>-->
-    <!--    <color name="accent">#22D3EE</color>-->
-    <!--    <color name="text_primary">#FFFFFF</color>-->
-    <!--    <color name="text_secondary">#94A3B8</color>-->
     <color name="red">#EF4444</color>
+    <color name="darker_gray">#64748B</color>
 
-    <!-- Backgrounds -->
-    <color name="bg_dark">#0B1220</color>
-    <color name="bg_gradient_start">#0B1220</color>
-    <color name="bg_gradient_end">#14244D</color>
+    <!-- UI Core Colors -->
+    <color name="primary">#2563EB</color>
+    <color name="primary_soft">#E1EFFE</color>
+    <color name="screen_bg">#F9FAFB</color>
+    
+    <!-- Text Colors -->
+    <color name="text_primary">#111827</color>
+    <color name="text_secondary">#4B5563</color>
 
-    <!-- Cards -->
-    <color name="card_dark">#121A2F</color>
-    <color name="card_stroke">#1E2A4A</color>
-
-    <color name="tab_active">#4A6CF7</color>
-    <color name="tab_inactive">#808080</color>
-
-    <!-- Primary Accent -->
-    <color name="primary">#6C63FF</color>
-    <color name="primary_soft">#1A3D7CFF</color>
-
-    <!-- Text -->
-
-    <color name="screen_bg">#0E0E0E</color>
-    <color name="text_primary">#111111</color>
-    <color name="text_secondary">#777777</color>
-    <color name="button_text">#FFFFFF</color>
-    <color name="link_color">#3B82F6</color>
-    <color name="icon_tint">#000000</color>
-
-    <color name="background_light">#F8F9FD</color>
-    <color name="background_dark">#0E1320</color>
+    <!-- Light Theme -->
+    <color name="background_light">#F9FAFB</color>
     <color name="surface_light">#FFFFFF</color>
-    <color name="surface_dark">#151A2E</color>
+    
+    <!-- Dark Theme (Explicit tokens) -->
+    <color name="background_dark">#020617</color>
+    <color name="surface_dark">#0F172A</color>
+    <color name="text_primary_dark">#F8FAFF</color>
+    <color name="text_secondary_dark">#94A3B8</color>
+
+    <!-- Shared UI Components -->
+    <color name="tab_active">#2563EB</color>
+    <color name="tab_inactive">#9CA3AF</color>
+    <color name="skeleton_color">#E5E7EB</color>
 </resources>

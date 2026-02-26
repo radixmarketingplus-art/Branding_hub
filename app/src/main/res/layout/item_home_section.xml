@@ -25,7 +25,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/btn_see_all"
-            android:textColor="?android:colorAccent"
+            android:textColor="@color/primary"
+            android:textSize="12sp"
+            android:textAllCaps="true"
+            android:letterSpacing="0.05"
             android:textStyle="bold" />
     </LinearLayout>
 
@@ -45,11 +48,27 @@
             android:paddingHorizontal="4dp"/>
     </HorizontalScrollView>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvSectionItems"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="160dp"
-        android:layout_marginTop="8dp"
-        android:clipToPadding="false" />
+        android:layout_marginTop="8dp">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvSectionItems"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false" />
+
+        <LinearLayout
+            android:id="@+id/skSection"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:visibility="visible">
+            <View android:layout_width="120dp" android:layout_height="match_parent" android:background="@drawable/bg_skeleton" android:layout_marginEnd="12dp"/>
+            <View android:layout_width="120dp" android:layout_height="match_parent" android:background="@drawable/bg_skeleton" android:layout_marginEnd="12dp"/>
+            <View android:layout_width="120dp" android:layout_height="match_parent" android:background="@drawable/bg_skeleton" />
+        </LinearLayout>
+    </FrameLayout>
 
 </LinearLayout>

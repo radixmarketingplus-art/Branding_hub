@@ -1,168 +1,266 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/colorSurface"
+    android:background="@color/screen_bg"
     android:fitsSystemWindows="true">
 
-    <!-- ================= MAIN CONTENT ================= -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <!-- ================= HEADER ================= -->
-        <LinearLayout
+        <!-- HEADER -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            app:cardCornerRadius="0dp"
+            app:cardElevation="4dp"
+            app:strokeWidth="0dp"
+            app:cardBackgroundColor="?attr/colorSurface">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingHorizontal="20dp">
+
+                <TextView
+                    android:id="@+id/businessName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="RM PLUS"
+                    android:textSize="20sp"
+                    android:fontFamily="sans-serif-black"
+                    android:textColor="?attr/colorOnSurface"
+                    android:letterSpacing="0.1" />
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/profileBtn"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_profile"
+                    app:shapeAppearanceOverlay="@style/CircleAppearance"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="#0D000000" />
+            </RelativeLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- SEARCH BAR -->
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="56dp"
-            android:paddingHorizontal="16dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:background="?attr/colorSurface"
-            android:elevation="4dp">
-
-            <TextView
-                android:id="@+id/businessName"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="RM PLUS"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:textColor="?attr/colorOnSurface"/>
-
-            <com.google.android.material.imageview.ShapeableImageView
-                android:id="@+id/profileBtn"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/ic_profile"
-                app:shapeAppearanceOverlay="@style/CircleAppearance" />
-        </LinearLayout>
-
-        <!-- ================= SEARCH ================= -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="16dp"
-            android:background="?attr/colorSurface">
+            android:layout_margin="20dp"
+            app:cardCornerRadius="28dp"
+            app:cardElevation="2dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="#0D000000"
+            app:cardBackgroundColor="@color/surface_light">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
+                android:layout_height="match_parent"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:paddingHorizontal="12dp"
-                android:background="?attr/colorSurfaceVariant">
-
-                <EditText
-                    android:id="@+id/searchBox"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:hint="Search"
-                    android:background="@null"
-                    android:textColor="?attr/colorOnSurface"
-                    android:textColorHint="?attr/colorOnSurfaceVariant"/>
+                android:paddingHorizontal="16dp">
 
                 <ImageView
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:src="@android:drawable/ic_btn_speak_now"
-                    android:tint="?attr/colorOnSurfaceVariant"/>
+                    android:src="@android:drawable/ic_menu_search"
+                    app:tint="?attr/colorOnSurfaceVariant" />
+
+                <EditText
+                    android:id="@+id/searchBox"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:hint="Search premium branding..."
+                    android:fontFamily="sans-serif-medium"
+                    android:textSize="14sp"
+                    android:background="@null"
+                    android:paddingHorizontal="12dp"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textColorHint="?attr/colorOnSurfaceVariant" />
             </LinearLayout>
-        </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
-        <!-- ================= CONTENT ================= -->
-        <ScrollView
+        <!-- SCROLLABLE GRID -->
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:clipToPadding="false"
-            android:paddingBottom="16dp">
+            android:layout_height="match_parent"
+            android:overScrollMode="never">
 
-            <!-- BUTTON GRID (2 COLUMN) -->
             <GridLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:columnCount="2"
-                android:padding="16dp"
-                android:useDefaultMargins="true">
+                android:paddingBottom="100dp"
+                android:paddingHorizontal="12dp">
 
-                <Button
-                    android:layout_width="0dp"
-                    android:layout_height="50dp"
-                    android:layout_columnWeight="1"
-                    android:text="Advertisements"/>
+                <!-- Grid items should be cards, but keeping IDs on buttons for compatibility -->
+                <!-- Note: The original used Button in GridLayout. I'll use wrapped MaterialButtons for better styling -->
 
-                <Button
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnAds"
+                    style="@style/Widget.Material3.Button.TonalButton"
                     android:layout_width="0dp"
-                    android:layout_height="50dp"
+                    android:layout_height="120dp"
                     android:layout_columnWeight="1"
-                    android:text="Festival Calendar"/>
+                    android:layout_margin="8dp"
+                    android:text="Advertisements"
+                    android:fontFamily="sans-serif-black"
+                    android:textAllCaps="true"
+                    android:textSize="11sp"
+                    app:cornerRadius="24dp"
+                    app:icon="@android:drawable/ic_menu_gallery"
+                    app:iconGravity="top"
+                    app:iconPadding="8dp" />
 
-                <Button
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnFestival"
+                    style="@style/Widget.Material3.Button.TonalButton"
                     android:layout_width="0dp"
-                    android:layout_height="50dp"
+                    android:layout_height="120dp"
                     android:layout_columnWeight="1"
-                    android:text="Latest Updates"/>
+                    android:layout_margin="8dp"
+                    android:text="Festival Calendar"
+                    android:fontFamily="sans-serif-black"
+                    android:textAllCaps="true"
+                    android:textSize="11sp"
+                    app:cornerRadius="24dp"
+                    app:icon="@android:drawable/ic_menu_myplaces"
+                    app:iconGravity="top"
+                    app:iconPadding="8dp" />
 
-                <Button
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnUpdates"
+                    style="@style/Widget.Material3.Button.TonalButton"
                     android:layout_width="0dp"
-                    android:layout_height="50dp"
+                    android:layout_height="120dp"
                     android:layout_columnWeight="1"
-                    android:text="Business Specials"/>
+                    android:layout_margin="8dp"
+                    android:text="Latest Updates"
+                    android:fontFamily="sans-serif-black"
+                    android:textAllCaps="true"
+                    android:textSize="11sp"
+                    app:cornerRadius="24dp"
+                    app:icon="@android:drawable/ic_popup_reminder"
+                    app:iconGravity="top"
+                    app:iconPadding="8dp" />
 
-                <Button
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSpecials"
+                    style="@style/Widget.Material3.Button.TonalButton"
                     android:layout_width="0dp"
-                    android:layout_height="50dp"
+                    android:layout_height="120dp"
                     android:layout_columnWeight="1"
-                    android:text="Motivation"/>
+                    android:layout_margin="8dp"
+                    android:text="Business Specials"
+                    android:fontFamily="sans-serif-black"
+                    android:textAllCaps="true"
+                    android:textSize="11sp"
+                    app:cornerRadius="24dp"
+                    app:icon="@android:drawable/ic_menu_preferences"
+                    app:iconGravity="top"
+                    app:iconPadding="8dp" />
 
-                <Button
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnMotivation"
+                    style="@style/Widget.Material3.Button.TonalButton"
                     android:layout_width="0dp"
-                    android:layout_height="50dp"
+                    android:layout_height="120dp"
                     android:layout_columnWeight="1"
-                    android:text="Greetings"/>
+                    android:layout_margin="8dp"
+                    android:text="Motivation"
+                    android:fontFamily="sans-serif-black"
+                    android:textAllCaps="true"
+                    android:textSize="11sp"
+                    app:cornerRadius="24dp"
+                    app:icon="@android:drawable/btn_star_big_on"
+                    app:iconGravity="top"
+                    app:iconPadding="8dp" />
 
-                <Button
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnGreetings"
+                    style="@style/Widget.Material3.Button.TonalButton"
                     android:layout_width="0dp"
-                    android:layout_height="50dp"
+                    android:layout_height="120dp"
                     android:layout_columnWeight="1"
-                    android:text="Digital Cards"/>
+                    android:layout_margin="8dp"
+                    android:text="Greetings"
+                    android:fontFamily="sans-serif-black"
+                    android:textAllCaps="true"
+                    android:textSize="11sp"
+                    app:cornerRadius="24dp"
+                    app:icon="@android:drawable/ic_menu_send"
+                    app:iconGravity="top"
+                    app:iconPadding="8dp" />
 
-                <Button
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnDigitalCards"
+                    style="@style/Widget.Material3.Button.TonalButton"
                     android:layout_width="0dp"
-                    android:layout_height="50dp"
+                    android:layout_height="120dp"
                     android:layout_columnWeight="1"
-                    android:text="Reel Maker"/>
+                    android:layout_margin="8dp"
+                    android:text="Digital Cards"
+                    android:fontFamily="sans-serif-black"
+                    android:textAllCaps="true"
+                    android:textSize="11sp"
+                    app:cornerRadius="24dp"
+                    app:icon="@android:drawable/ic_menu_agenda"
+                    app:iconGravity="top"
+                    app:iconPadding="8dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnReelMaker"
+                    style="@style/Widget.Material3.Button.TonalButton"
+                    android:layout_width="0dp"
+                    android:layout_height="120dp"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="8dp"
+                    android:text="Reel Maker"
+                    android:fontFamily="sans-serif-black"
+                    android:textAllCaps="true"
+                    android:textSize="11sp"
+                    app:cornerRadius="24dp"
+                    app:icon="@android:drawable/ic_menu_camera"
+                    app:iconGravity="top"
+                    app:iconPadding="8dp" />
 
             </GridLayout>
-        </ScrollView>
+        </androidx.core.widget.NestedScrollView>
+
     </LinearLayout>
 
-    <!-- ================= BADGE ================= -->
+    <!-- BADGE -->
     <TextView
         android:id="@+id/badgeText"
-        android:layout_width="18dp"
-        android:layout_height="18dp"
-        android:background="?attr/colorError"
-        android:textColor="?attr/colorOnError"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:background="@drawable/bg_badge_red"
+        android:textColor="@color/white"
         android:gravity="center"
-        android:textSize="12sp"
+        android:textSize="11sp"
+        android:fontFamily="sans-serif-black"
         android:visibility="gone"
-        android:layout_gravity="end"
+        android:layout_gravity="bottom|end"
         android:layout_marginEnd="24dp"
-        android:layout_marginBottom="72dp"/>
+        android:layout_marginBottom="72dp" />
 
-    <!-- ================= BOTTOM NAV ================= -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNav"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom"/>
+        android:layout_gravity="bottom"
+        app:backgroundTint="?attr/colorSurface"
+        app:itemIconTint="@color/primary"
+        app:itemTextColor="@color/primary" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

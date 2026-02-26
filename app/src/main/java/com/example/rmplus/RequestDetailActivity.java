@@ -48,6 +48,8 @@ public class RequestDetailActivity extends AppCompatActivity {
         btnReject = findViewById(R.id.btnReject);
         btnChat = findViewById(R.id.btnChat);
 
+        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
+
         requestId = getIntent().getStringExtra("id");
         isAdmin = getIntent().getBooleanExtra("isAdmin", false);
 
@@ -71,11 +73,10 @@ public class RequestDetailActivity extends AppCompatActivity {
                                 txtDesc.setText(getString(R.string.label_description, r.description));
                                 txtStatus.setText(getString(R.string.label_status, r.status));
 
-                                String time =
-                                        new SimpleDateFormat(
-                                                "dd MMM yyyy, hh:mm a",
-                                                Locale.getDefault())
-                                                .format(new Date(r.time));
+                                String time = new SimpleDateFormat(
+                                        "dd MMM yyyy, hh:mm a",
+                                        Locale.getDefault())
+                                        .format(new Date(r.time));
 
                                 txtTime.setText(getString(R.string.label_time, time));
 
@@ -113,23 +114,23 @@ public class RequestDetailActivity extends AppCompatActivity {
                                     btnChat.setVisibility(View.VISIBLE);
                                 }
 
-                                btnApprove.setOnClickListener(v ->
-                                        changeStatus("accepted"));
+                                btnApprove.setOnClickListener(v -> changeStatus("accepted"));
 
-                                btnReject.setOnClickListener(v ->
-                                        changeStatus("rejected"));
+                                btnReject.setOnClickListener(v -> changeStatus("rejected"));
 
                                 btnChat.setOnClickListener(v -> {
                                     Intent i = new Intent(
                                             RequestDetailActivity.this,
                                             RequestChatActivity.class);
                                     i.putExtra("id", requestId);
+                                    i.putExtra("title", r.title);
                                     startActivity(i);
                                 });
                             }
 
                             @Override
-                            public void onCancelled(DatabaseError error) {}
+                            public void onCancelled(DatabaseError error) {
+                            }
                         });
     }
 
@@ -139,27 +140,22 @@ public class RequestDetailActivity extends AppCompatActivity {
             try {
 
                 java.net.URL u = new java.net.URL(url);
-                java.net.HttpURLConnection conn =
-                        (java.net.HttpURLConnection) u.openConnection();
+                java.net.HttpURLConnection conn = (java.net.HttpURLConnection) u.openConnection();
 
                 conn.setDoInput(true);
                 conn.connect();
 
                 java.io.InputStream input = conn.getInputStream();
 
-                android.graphics.Bitmap bitmap =
-                        android.graphics.BitmapFactory.decodeStream(input);
+                android.graphics.Bitmap bitmap = android.graphics.BitmapFactory.decodeStream(input);
 
-                imageView.post(() ->
-                        imageView.setImageBitmap(bitmap));
+                imageView.post(() -> imageView.setImageBitmap(bitmap));
 
             } catch (Exception e) {
                 e.printStackTrace();
 
-                imageView.post(() ->
-                        imageView.setImageResource(
-                                android.R.drawable.ic_menu_report_image
-                        ));
+                imageView.post(() -> imageView.setImageResource(
+                        android.R.drawable.ic_menu_report_image));
             }
         }).start();
     }
@@ -176,8 +172,7 @@ public class RequestDetailActivity extends AppCompatActivity {
                 this,
                 r.uid,
                 "Request Status: " + s,
-                r.title
-        );
+                r.title);
 
         Toast.makeText(this,
                 R.string.msg_updated,

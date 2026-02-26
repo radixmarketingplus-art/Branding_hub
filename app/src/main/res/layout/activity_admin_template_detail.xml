@@ -96,7 +96,7 @@
             android:visibility="gone"
             android:layout_marginTop="12dp"
             app:cornerRadius="14dp"
-            app:backgroundTint="#4A6CF7"
+            app:backgroundTint="@color/primary"
             android:textColor="@android:color/white"/>
 
 

@@ -44,14 +44,14 @@ public class SearchActivity extends AppCompatActivity {
         recycler = findViewById(R.id.recyclerSearch);
         txtEmpty = findViewById(R.id.txtEmpty);
 
+        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
+
         recycler.setLayoutManager(
-                new GridLayoutManager(this, 2)
-        );
+                new GridLayoutManager(this, 2));
 
         adapter = new TemplateGridAdapter(
                 new ArrayList<>(),
-                this::openPreview
-        );
+                this::openPreview);
         recycler.setAdapter(adapter);
 
         loadAllTemplates();
@@ -62,13 +62,15 @@ public class SearchActivity extends AppCompatActivity {
 
         // AUTO SEARCH
         edtSearch.addTextChangedListener(new TextWatcher() {
-            public void beforeTextChanged(CharSequence s, int a, int b, int c) {}
+            public void beforeTextChanged(CharSequence s, int a, int b, int c) {
+            }
 
             public void onTextChanged(CharSequence s, int a, int b, int c) {
                 performSearch();
             }
 
-            public void afterTextChanged(Editable e) {}
+            public void afterTextChanged(Editable e) {
+            }
         });
     }
 
@@ -88,10 +90,11 @@ public class SearchActivity extends AppCompatActivity {
         for (TemplateSearchItem item : allTemplates) {
             if (item.title.contains(q)
                     || item.category.toLowerCase().contains(q)
-                    || (item.keywords != null && item.keywords.contains(q))
-            ) {
-                // Determine ID (extracting from path or using item.title if ID is not available in TemplateSearchItem)
-                // Actually, let's just use the path as the "url" and some generated ID if missing
+                    || (item.keywords != null && item.keywords.contains(q))) {
+                // Determine ID (extracting from path or using item.title if ID is not available
+                // in TemplateSearchItem)
+                // Actually, let's just use the path as the "url" and some generated ID if
+                // missing
                 result.add(new TemplateModel(makeSafeKey(item.path), item.path, item.category));
             }
         }
@@ -99,19 +102,18 @@ public class SearchActivity extends AppCompatActivity {
         adapter.setData(result);
         txtEmpty.setVisibility(result.isEmpty() ? View.VISIBLE : View.GONE);
     }
-    
+
     private String makeSafeKey(String s) {
         return s.replaceAll("[^a-zA-Z0-9]", "");
     }
-
 
     // --------------------------------------
 
     String extractTitle(String path) {
         String name = path.substring(path.lastIndexOf("/") + 1);
-        return name.replace(".jpg","")
-                .replace(".png","")
-                .replace("_"," ")
+        return name.replace(".jpg", "")
+                .replace(".png", "")
+                .replace("_", " ")
                 .toLowerCase();
     }
 
@@ -120,7 +122,6 @@ public class SearchActivity extends AppCompatActivity {
                 category +
                 " poster template design photo image graphic").toLowerCase();
     }
-
 
     // --------------------------------------
 
@@ -151,24 +152,22 @@ public class SearchActivity extends AppCompatActivity {
         voiceLauncher.launch(i);
     }
 
-    ActivityResultLauncher<Intent> voiceLauncher =
-            registerForActivityResult(
-                    new ActivityResultContracts.StartActivityForResult(),
-                    r -> {
-                        if (r.getResultCode() == RESULT_OK &&
-                                r.getData() != null) {
+    ActivityResultLauncher<Intent> voiceLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            r -> {
+                if (r.getResultCode() == RESULT_OK &&
+                        r.getData() != null) {
 
-                            ArrayList<String> res =
-                                    r.getData()
-                                            .getStringArrayListExtra(
-                                                    RecognizerIntent.EXTRA_RESULTS);
+                    ArrayList<String> res = r.getData()
+                            .getStringArrayListExtra(
+                                    RecognizerIntent.EXTRA_RESULTS);
 
-                            if (res != null && !res.isEmpty()) {
-                                edtSearch.setText(res.get(0));
-                                performSearch();
-                            }
-                        }
-                    });
+                    if (res != null && !res.isEmpty()) {
+                        edtSearch.setText(res.get(0));
+                        performSearch();
+                    }
+                }
+            });
 
     // --------------------------------------
 
@@ -180,11 +179,15 @@ public class SearchActivity extends AppCompatActivity {
                     public void onDataChange(DataSnapshot snapshot) {
                         for (DataSnapshot categorySnapshot : snapshot.getChildren()) {
                             String k = categorySnapshot.getKey();
-                            if (k == null || k.equals("Advertisement") || k.equals("Frame")) continue;
+                            if (k == null || k.equals("Advertisement") || k.equals("Frame"))
+                                continue;
 
                             for (DataSnapshot itemSnapshot : categorySnapshot.getChildren()) {
-                                String path = itemSnapshot.hasChild("imagePath") ? itemSnapshot.child("imagePath").getValue(String.class) : itemSnapshot.child("url").getValue(String.class);
-                                if (path == null) continue;
+                                String path = itemSnapshot.hasChild("imagePath")
+                                        ? itemSnapshot.child("imagePath").getValue(String.class)
+                                        : itemSnapshot.child("url").getValue(String.class);
+                                if (path == null)
+                                    continue;
 
                                 String title = extractTitle(path);
                                 String keywords = buildKeywords(title, k);
@@ -203,7 +206,8 @@ public class SearchActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onCancelled(DatabaseError error) {}
+                    public void onCancelled(DatabaseError error) {
+                    }
                 });
     }
 }

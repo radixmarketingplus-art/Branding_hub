@@ -38,12 +38,7 @@ public class UserListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_list);
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
-        toolbar.setNavigationOnClickListener(v -> finish());
+        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
 
         rvUsers = findViewById(R.id.rvUsers);
         loader = findViewById(R.id.loader);
@@ -56,7 +51,8 @@ public class UserListActivity extends AppCompatActivity {
 
         etSearch.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -64,7 +60,8 @@ public class UserListActivity extends AppCompatActivity {
             }
 
             @Override
-            public void afterTextChanged(Editable s) {}
+            public void afterTextChanged(Editable s) {
+            }
         });
 
         loadUsers();
@@ -77,10 +74,14 @@ public class UserListActivity extends AppCompatActivity {
             String query = text.toLowerCase().trim();
             boolean match = false;
 
-            if (item.name != null && item.name.toLowerCase().contains(query)) match = true;
-            if (item.email != null && item.email.toLowerCase().contains(query)) match = true;
-            if (item.mobile != null && item.mobile.contains(query)) match = true;
-            if (item.uid != null && item.uid.toLowerCase().contains(query)) match = true;
+            if (item.name != null && item.name.toLowerCase().contains(query))
+                match = true;
+            if (item.email != null && item.email.toLowerCase().contains(query))
+                match = true;
+            if (item.mobile != null && item.mobile.contains(query))
+                match = true;
+            if (item.uid != null && item.uid.toLowerCase().contains(query))
+                match = true;
 
             if (match) {
                 filteredList.add(item);
