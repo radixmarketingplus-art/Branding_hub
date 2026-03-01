@@ -6,7 +6,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,6 +16,11 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -47,7 +54,6 @@ public class CheckUploadsFragment extends Fragment {
         if (key.equalsIgnoreCase("Motivation")) return getString(R.string.section_motivation);
         if (key.equalsIgnoreCase("Greetings")) return getString(R.string.section_greetings);
         if (key.equalsIgnoreCase("Business Ethics")) return getString(R.string.section_business_ethics);
-        if (key.equalsIgnoreCase("Frame")) return getString(R.string.section_frame);
         return key;
     }
 
@@ -69,22 +75,17 @@ public class CheckUploadsFragment extends Fragment {
     public void onViewCreated(@NonNull View v, @Nullable Bundle b) {
         super.onViewCreated(v, b);
 
-        // ✅ FIXED IDS
         recycler = v.findViewById(R.id.recyclerTemplates);
         filterContainer = v.findViewById(R.id.filterContainer);
         tabScroll = v.findViewById(R.id.tabScroll);
 
-        recycler.setLayoutManager(
-                new GridLayoutManager(requireContext(), 3)
-        );
+        recycler.setLayoutManager(new GridLayoutManager(requireContext(), 3));
 
         adapter = new TemplateGridAdapter(allTemplates, t -> {
-            Intent i = new Intent(
-                    requireContext(),
-                    AdminTemplateDetailActivity.class
-            );
+            Intent i = new Intent(requireContext(), AdminTemplateDetailActivity.class);
+            i.putExtra("id", t.id);
             i.putExtra("path", t.url);
-            i.putExtra("category", currentCategory);
+            i.putExtra("category", t.category);
             startActivity(i);
         });
 
@@ -94,25 +95,9 @@ public class CheckUploadsFragment extends Fragment {
         loadCategory("All");
     }
 
-    // ---------------- TABS (MATCHES TemplateGalleryActivity) ----------------
-
     void createFilterButtons() {
-
         filterContainer.removeAllViews();
-
-        String[] categories = {
-                "All",
-                "Advertisement",
-                "Festival Cards",
-                "Latest Update",
-                "Business Special",
-                "Reel Maker",
-                "Business Frame",
-                "Motivation",
-                "Greetings",
-                "Business Ethics",
-                "Frame"
-        };
+        String[] categories = {"All", "Advertisement", "Festival Cards", "Latest Update", "Business Special", "Reel Maker", "Business Frame", "Motivation", "Greetings", "Business Ethics"};
         
         for (String c : categories) {
             TextView chip = new TextView(requireContext());
@@ -121,18 +106,9 @@ public class CheckUploadsFragment extends Fragment {
             chip.setTextSize(14);
             chip.setPadding(36, 16, 36, 16);
             chip.setBackgroundResource(R.drawable.bg_filter_chip);
-            chip.setTextColor(
-                    getResources().getColor(
-                            android.R.color.darker_gray,
-                            requireContext().getTheme()
-                    )
-            );
+            chip.setTextColor(getResources().getColor(android.R.color.darker_gray, requireContext().getTheme()));
 
-            LinearLayout.LayoutParams lp =
-                    new LinearLayout.LayoutParams(
-                            LinearLayout.LayoutParams.WRAP_CONTENT,
-                            LinearLayout.LayoutParams.WRAP_CONTENT
-                    );
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             lp.setMargins(8, 0, 8, 0);
             chip.setLayoutParams(lp);
 
@@ -144,188 +120,83 @@ public class CheckUploadsFragment extends Fragment {
 
             filterContainer.addView(chip);
         }
-
         updateTabUI();
     }
 
     void updateTabUI() {
-
         for (int i = 0; i < filterContainer.getChildCount(); i++) {
-
             TextView chip = (TextView) filterContainer.getChildAt(i);
             if (chip.getTag().toString().equals(currentCategory)) {
                 chip.setTypeface(null, android.graphics.Typeface.BOLD);
-                chip.setTextColor(
-                        getColorFromAttr(
-                                com.google.android.material.R.attr.colorOnSurface
-                        )
-                );
-                chip.setBackgroundResource(
-                        R.drawable.bg_filter_chip_selected
-                );
+                chip.setTextColor(getColorFromAttr(com.google.android.material.R.attr.colorOnSurface));
+                chip.setBackgroundResource(R.drawable.bg_filter_chip_selected);
             } else {
                 chip.setTypeface(null, android.graphics.Typeface.NORMAL);
-                chip.setTextColor(
-                        getResources().getColor(
-                                android.R.color.darker_gray,
-                                requireContext().getTheme()
-                        )
-                );
-                chip.setBackgroundResource(
-                        R.drawable.bg_filter_chip
-                );
+                chip.setTextColor(getResources().getColor(android.R.color.darker_gray, requireContext().getTheme()));
+                chip.setBackgroundResource(R.drawable.bg_filter_chip);
             }
         }
     }
 
-    // ---------------- DATA (UNCHANGED) ----------------
-
+    // ---------------- DATA (FIREBASE LIVE) ----------------
+    
     void loadCategory(String key) {
-
         currentCategory = key;
-
-        SharedPreferences sp =
-                requireContext().getSharedPreferences(
-                        "HOME_DATA",
-                        requireContext().MODE_PRIVATE
-                );
-
-        Gson gson = new Gson();
-        ArrayList<TemplateModel> result = new ArrayList<>();
-
-        if (key.equals("All")) {
-
-            String[] allKeys = {
-                    "Festival Cards",
-                    "Latest Update",
-                    "Business Special",
-                    "Reel Maker",
-                    "Business Frame",
-                    "Motivation",
-                    "Greetings",
-                    "Business Ethics",
-                    "Frame"
-            };
-
-            for (String k : allKeys) {
-
-                String json = sp.getString(k, null);
-                if (json == null) continue;
-
-                if (k.equals("Festival Cards")) {
-
-                    Type t =
-                            new TypeToken<ArrayList<FestivalCardItem>>(){}.getType();
-
-                    ArrayList<FestivalCardItem> list =
-                            gson.fromJson(json, t);
-
-                    if (list != null) {
-                        for (FestivalCardItem f : list) {
-                            result.add(new TemplateModel(makeSafeKey(f.imagePath), f.imagePath, k));
+        adapter.setData(new ArrayList<>());
+        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference("templates");
+        
+        if (key.equalsIgnoreCase("All")) {
+            dbRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    ArrayList<TemplateModel> result = new ArrayList<>();
+                    for (DataSnapshot catSnap : snapshot.getChildren()) {
+                        String catName = catSnap.getKey();
+                        if (catName == null || catName.equalsIgnoreCase("Frame")) continue;
+                        if (catName.equalsIgnoreCase("Business Frame")) {
+                             for (DataSnapshot sub : catSnap.getChildren()) {
+                                 processSnapshot(sub, catName + "/" + sub.getKey(), result);
+                             }
+                        } else {
+                             processSnapshot(catSnap, catName, result);
                         }
+                    }
+                    adapter.setData(result);
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) { toast(error.getMessage()); }
+            });
+            return;
+        }
+
+        dbRef.child(key).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                ArrayList<TemplateModel> result = new ArrayList<>();
+                if (key.equalsIgnoreCase("Business Frame")) {
+                    for (DataSnapshot sub : snapshot.getChildren()) {
+                        processSnapshot(sub, key + "/" + sub.getKey(), result);
                     }
                 } else {
-
-                    Type t =
-                            new TypeToken<ArrayList<String>>(){}.getType();
-
-                    ArrayList<String> list =
-                            gson.fromJson(json, t);
-
-                    if (list != null) {
-                        for (String s : list) {
-                            result.add(new TemplateModel(makeSafeKey(s), s, k));
-                        }
-                    }
+                    processSnapshot(snapshot, key, result);
                 }
+                adapter.setData(result);
             }
-
-            // reverse(result);
-            adapter.setData(result);
-            return;
-        }
-
-        if (key.equals("Festival Cards")) {
-
-            String json = sp.getString(key, null);
-            if (json == null) {
-                adapter.setData(new ArrayList<>());
-                return;
-            }
-
-            Type t =
-                    new TypeToken<ArrayList<FestivalCardItem>>(){}.getType();
-
-            ArrayList<FestivalCardItem> list =
-                    gson.fromJson(json, t);
-
-            ArrayList<TemplateModel> paths = new ArrayList<>();
-            if (list != null) {
-                for (FestivalCardItem f : list) {
-                    paths.add(new TemplateModel(makeSafeKey(f.imagePath), f.imagePath, key));
-                }
-            }
- 
-            // reverse(paths);
-            adapter.setData(paths);
-            return;
-        }
-
-        String json = sp.getString(key, null);
-        if (json == null) {
-            adapter.setData(new ArrayList<>());
-            return;
-        }
-
-        // ==================================================
-        // 📢 ADVERTISEMENT SECTION (OBJECT LIST)
-        // ==================================================
-
-        if (key.equals("Advertisement")) {
-
-            Type t =
-                    new TypeToken<ArrayList<AdvertisementItem>>(){}.getType();
-
-            ArrayList<AdvertisementItem> list =
-                    gson.fromJson(json, t);
-
-            ArrayList<TemplateModel> paths = new ArrayList<>();
- 
-            if (list != null) {
-                for (AdvertisementItem ad : list) {
-                    paths.add(new TemplateModel(makeSafeKey(ad.imagePath), ad.imagePath, key));
-                }
-            }
- 
-            // reverse(paths);
-            adapter.setData(paths);
-            return;
-        }
-
-        // ==================================================
-        // 🧩 NORMAL SECTIONS (STRING LIST)
-        // ==================================================
-
-        Type type =
-                new TypeToken<ArrayList<String>>(){}.getType();
-
-        ArrayList<String> images =
-                gson.fromJson(json, type);
- 
-        ArrayList<TemplateModel> finalResult = new ArrayList<>();
-        if (images != null) {
-            for (String s : images) {
-                finalResult.add(new TemplateModel(makeSafeKey(s), s, key));
-            }
-        }
- 
-        // reverse(images);
-        adapter.setData(finalResult);
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) { toast(error.getMessage()); }
+        });
     }
 
-    private String makeSafeKey(String s) {
-        return android.util.Base64.encodeToString(s.getBytes(), android.util.Base64.NO_WRAP);
+    private void processSnapshot(DataSnapshot snapshot, String catName, ArrayList<TemplateModel> result) {
+        for (DataSnapshot d : snapshot.getChildren()) {
+            String url = d.hasChild("url") ? d.child("url").getValue(String.class) : 
+                        d.hasChild("imagePath") ? d.child("imagePath").getValue(String.class) : null;
+            if (url != null) result.add(0, new TemplateModel(d.getKey(), url, catName));
+        }
+    }
+
+    private void toast(String msg) {
+        if (isAdded()) Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show();
     }
 
     private int getColorFromAttr(int attr) {
@@ -333,6 +204,4 @@ public class CheckUploadsFragment extends Fragment {
         requireContext().getTheme().resolveAttribute(attr, typedValue, true);
         return typedValue.data;
     }
-
-
 }

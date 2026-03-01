@@ -161,12 +161,21 @@ public class UploadTemplatesActivity extends BaseActivity {
             if (pos < 0 || pos >= sectionKeys.size()) return;
             String sectionKey = sectionKeys.get(pos);
 
-            Intent i = new Intent(Intent.ACTION_PICK);
+            Intent i;
             
             if (sectionKey.equalsIgnoreCase("Reel Maker")) {
+                i = new Intent(Intent.ACTION_PICK);
                 i.setType("video/*");
+            } else if (sectionKey.equalsIgnoreCase("Business Frame")) {
+                // 🛡️ Use ACTION_GET_CONTENT for strict '.png' filtering
+                i = new Intent(Intent.ACTION_GET_CONTENT);
+                i.setType("image/png");
+                i.addCategory(Intent.CATEGORY_OPENABLE);
             } else {
+                i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                 i.setType("image/*");
+                String[] mimeTypes = {"image/jpeg", "image/png", "image/jpg"};
+                i.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
             }
             
             startActivityForResult(i, 101);
@@ -179,11 +188,10 @@ public class UploadTemplatesActivity extends BaseActivity {
             String sectionKey = sectionKeys.get(pos);
 
             if (selectedImageUri != null) {
-                if (sectionKey.equalsIgnoreCase("Reel Maker")) {
-                    Intent i = new Intent(
-                            UploadTemplatesActivity.this,
-                            ImagePreviewActivity.class
-                    );
+                if (sectionKey.equalsIgnoreCase("Reel Maker") || 
+                    sectionKey.equalsIgnoreCase("Business Frame")) {
+                    
+                    Intent i = new Intent(UploadTemplatesActivity.this, ImagePreviewActivity.class);
                     i.putExtra("img", selectedImageUri.toString());
                     startActivity(i);
                 } else {
@@ -265,9 +273,34 @@ public class UploadTemplatesActivity extends BaseActivity {
                     Toast.makeText(this, R.string.msg_select_valid_img, Toast.LENGTH_SHORT).show();
                     return;
                 }
-                if (mimeType.contains("jpeg") && !mimeType.contains("jpg") && !mimeType.contains("png")) {
-                    Toast.makeText(this, R.string.msg_format_supported, Toast.LENGTH_SHORT).show();
-                    return;
+
+                if (sectionKey.equalsIgnoreCase("Business Frame")) {
+                    // Strictly PNG for Business Frame
+                    if (!mimeType.contains("png") && !selectedImageUri.toString().toLowerCase().endsWith(".png")) {
+                         toast(R.string.msg_only_png_frames);
+                         return;
+                    }
+                } else {
+                    if (!mimeType.contains("jpeg") && !mimeType.contains("jpg") && !mimeType.contains("png")) {
+                        Toast.makeText(this, R.string.msg_format_supported, Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                }
+
+                // 📏 SQUARE RATIO CHECK (For all except Ad and Video)
+                if (!sectionKey.equalsIgnoreCase("Advertisement") && !sectionKey.equalsIgnoreCase("Reel Maker")) {
+                    try {
+                        InputStream is = getContentResolver().openInputStream(selectedImageUri);
+                        BitmapFactory.Options opts = new BitmapFactory.Options();
+                        opts.inJustDecodeBounds = true;
+                        BitmapFactory.decodeStream(is, null, opts);
+                        if (is != null) is.close();
+
+                        if (opts.outWidth != opts.outHeight) {
+                            toast(R.string.msg_frame_square);
+                            return;
+                        }
+                    } catch (Exception e) { e.printStackTrace(); }
                 }
             }
  
@@ -309,9 +342,14 @@ public class UploadTemplatesActivity extends BaseActivity {
                     previewImage.setVisibility(View.VISIBLE);
                     previewImage.setImageURI(selectedImageUri);
                     toast(R.string.msg_video_selected);
+                } else if (sectionKey.equalsIgnoreCase("Business Frame")) {
+                     // 🚫 SKIP MANDATORY CROP
+                     selectedImageUri = sourceUri;
+                     previewImage.setVisibility(View.VISIBLE);
+                     previewImage.setImageURI(selectedImageUri);
                 } else {
                     // Re-crop!
-                    startCrop(originalImageUri != null ? originalImageUri : selectedImageUri);
+                    startCrop(sourceUri);
                 }
             }
         } else if (resultCode == RESULT_OK && requestCode == UCrop.REQUEST_CROP) {
@@ -611,6 +649,7 @@ public class UploadTemplatesActivity extends BaseActivity {
 
                         for (DataSnapshot d : snapshot.getChildren()) {
                             String key = d.getKey();
+                            if ("Frame".equalsIgnoreCase(key)) continue;
                             sectionKeys.add(key);
                             sections.add(getLocalizedSectionName(key));
                         }

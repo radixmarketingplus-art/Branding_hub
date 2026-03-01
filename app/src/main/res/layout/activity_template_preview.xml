@@ -118,20 +118,15 @@
 
                 <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
+                    android:padding="16dp">
 
                     <ImageView
                         android:id="@+id/imgPreview"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:scaleType="fitCenter"
-                        android:padding="16dp" />
+                        android:scaleType="fitCenter" />
 
-                    <androidx.viewpager2.widget.ViewPager2
-                        android:id="@+id/vpFrames"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:visibility="gone" />
 
                     <VideoView
                         android:id="@+id/vPreview"

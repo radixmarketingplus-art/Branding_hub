@@ -61,35 +61,42 @@
         </LinearLayout>
 
         <!-- PROFILE IMAGE SECTION -->
-        <FrameLayout
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="32dp">
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:layout_marginBottom="24dp">
 
-            <com.google.android.material.imageview.ShapeableImageView
-                android:id="@+id/profileImg"
-                android:layout_width="130dp"
-                android:layout_height="130dp"
-                android:src="@drawable/ic_profile"
-                android:scaleType="centerCrop"
-                app:shapeAppearanceOverlay="@style/CircleAppearance"
-                app:strokeColor="?attr/colorPrimary"
-                app:strokeWidth="3dp"
-                android:padding="4dp"
-                android:background="#1A000000" />
-
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/btnUploadImg"
+            <FrameLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom|end"
-                android:src="@android:drawable/ic_menu_camera"
-                app:fabCustomSize="40dp"
-                app:maxImageSize="20dp"
-                app:tint="@android:color/white"
-                android:backgroundTint="?attr/colorPrimary"
-                app:elevation="4dp" />
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/profileImg"
+                    android:layout_width="130dp"
+                    android:layout_height="130dp"
+                    android:src="@drawable/ic_profile"
+                    android:scaleType="centerCrop"
+                    app:shapeAppearanceOverlay="@style/CircleAppearance"
+                    app:strokeColor="?attr/colorPrimary"
+                    app:strokeWidth="3dp"
+                    android:padding="4dp"
+                    android:background="#1A000000" />
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/btnUploadImg"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|end"
+                    android:src="@android:drawable/ic_menu_camera"
+                    app:fabCustomSize="40dp"
+                    app:maxImageSize="20dp"
+                    app:tint="@android:color/white"
+                    android:backgroundTint="?attr/colorPrimary"
+                    app:elevation="4dp" />
+            </FrameLayout>
 
             <TextView
                 android:id="@+id/btnRemoveImg"
@@ -97,13 +104,12 @@
                 android:layout_height="wrap_content"
                 android:text="@string/link_remove_img"
                 android:textColor="#EF4444"
-                android:textSize="12sp"
+                android:textSize="14sp"
                 android:fontFamily="sans-serif-bold"
-                android:layout_gravity="bottom|center_horizontal"
-                android:layout_marginBottom="-24dp"
+                android:layout_marginTop="8dp"
                 android:padding="8dp"
                 android:visibility="gone" />
-        </FrameLayout>
+        </LinearLayout>
 
         <!-- FORM SECTIONS -->
         <LinearLayout

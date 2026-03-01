@@ -327,6 +327,9 @@
     <string name="hint_select_state">राज्य चुनें</string>
     <string name="hint_select_city">शहर चुनें</string>
     <string name="btn_save_changes">बदलाव सेव करें</string>
+    <string name="login_congrats">बधाई हो!</string>
+    <string name="login_welcome_msg">आपने सफलतापूर्वक लॉगिन कर लिया है।\nRM Plus में आपका स्वागत है!</string>
+    <string name="btn_continue">होम पर जाएं</string>
 
     <!-- Subscription Screen -->
     <string name="status_checking">सब्सक्रिप्शन की जांच हो रही है...</string>

@@ -172,8 +172,6 @@ public class BaseActivity extends AppCompatActivity {
             return getString(R.string.section_greetings);
         if (key.equalsIgnoreCase("Business Ethics"))
             return getString(R.string.section_business_ethics);
-        if (key.equalsIgnoreCase("Frame"))
-            return getString(R.string.section_frame);
         return key;
     }
 

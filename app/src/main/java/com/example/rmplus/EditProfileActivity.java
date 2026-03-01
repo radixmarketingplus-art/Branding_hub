@@ -57,7 +57,7 @@ public class EditProfileActivity extends AppCompatActivity {
     DatabaseReference userRef;
 
     String oldName, oldDesignation, oldDob, oldMobile, oldCity,
-            oldState, oldGender;
+            oldState, oldGender, initialProfileUrl = "";
 
     private ActivityResultLauncher<Intent> imagePickerLauncher;
     private ActivityResultLauncher<Intent> cropLauncher;
@@ -142,7 +142,7 @@ public class EditProfileActivity extends AppCompatActivity {
         btnUploadImg.setOnClickListener(v -> pickImage());
         btnRemoveImg.setOnClickListener(v -> removeImage());
 
-        profileImg.setOnClickListener(v -> showFullImage());
+        profileImg.setOnClickListener(v -> onProfileImageClick());
 
         findViewById(R.id.btnBack).setOnClickListener(v -> finish());
 
@@ -154,7 +154,8 @@ public class EditProfileActivity extends AppCompatActivity {
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
                     if (result.getResultCode() == RESULT_OK && result.getData() != null) {
-                        startCrop(result.getData().getData());
+                        imgUri = result.getData().getData(); // ✅ Store source for re-cropping
+                        startCrop(imgUri);
                     }
                 });
 
@@ -164,10 +165,15 @@ public class EditProfileActivity extends AppCompatActivity {
                     if (result.getResultCode() == RESULT_OK && result.getData() != null) {
                         Uri resultUri = UCrop.getOutput(result.getData());
                         if (resultUri != null) {
-                            // ✅ Store locally — NO VPS upload here
+                            // ✅ Store locally — NO VPS upload here (Deferred until Save)
                             croppedUri = resultUri;
-                            profileImg.setImageURI(null);
-                            profileImg.setImageURI(resultUri);
+                            Glide.with(EditProfileActivity.this)
+                                    .load(resultUri)
+                                    .placeholder(R.drawable.ic_profile)
+                                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                                    .skipMemoryCache(true)
+                                    .into(profileImg);
+                            
                             btnRemoveImg.setVisibility(View.VISIBLE);
                             Toast.makeText(this, R.string.msg_img_uploaded, Toast.LENGTH_SHORT).show();
                         }
@@ -175,13 +181,32 @@ public class EditProfileActivity extends AppCompatActivity {
                 });
     }
 
+    private void onProfileImageClick() {
+        if (imgUri != null) {
+            // ✅ Case: User picked a new image but hasn't saved yet. 
+            // Re-open crop screen so they can fix any mistakes.
+            startCrop(imgUri);
+        } else if (profileUrl != null && !profileUrl.isEmpty()) {
+            // ✅ Case: Image is already saved in DB. Show full screen preview.
+            showFullImage();
+        }
+    }
+
     private void showFullImage() {
         AppCompatDialog dialog = new AppCompatDialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
         ImageView fullImg = new ImageView(this);
 
-        if (!profileUrl.isEmpty()) {
+        // ✅ Check for unsaved cropped image first, then for existing profile URL
+        Object imageSource = null;
+        if (croppedUri != null) {
+            imageSource = croppedUri;
+        } else if (profileUrl != null && !profileUrl.isEmpty()) {
+            imageSource = profileUrl;
+        }
+
+        if (imageSource != null) {
             Glide.with(this)
-                    .load(profileUrl)
+                    .load(imageSource)
                     .placeholder(R.drawable.ic_profile)
                     .into(fullImg);
         } else {
@@ -206,28 +231,12 @@ public class EditProfileActivity extends AppCompatActivity {
                 .setTitle(R.string.link_remove_img)
                 .setMessage(R.string.msg_confirm_remove_img)
                 .setPositiveButton(R.string.yes, (d, w) -> {
-                    // If not yet saved to VPS (only cropped locally), just clear local state
-                    if (croppedUri != null && (profileUrl == null || profileUrl.isEmpty())) {
-                        croppedUri = null;
-                        profileImg.setImageResource(R.drawable.ic_profile);
-                        btnRemoveImg.setVisibility(View.GONE);
-                        return;
-                    }
-
-                    String urlToDelete = profileUrl;
-
-                    // 1. Clear UI and local variables
+                    // ✅ ONLY update local state. NO Firebase/VPS calls until Save button is clicked.
                     profileUrl = "";
                     croppedUri = null;
+                    imgUri = null; // Clear local picked state
                     profileImg.setImageResource(R.drawable.ic_profile);
                     btnRemoveImg.setVisibility(View.GONE);
-
-                    // 2. Remove from Firebase
-                    userRef.child("profileImage").removeValue();
-
-                    // 3. Delete from VPS
-                    if (urlToDelete != null && !urlToDelete.isEmpty())
-                        deleteImageFromVPS(urlToDelete);
                 })
                 .setNegativeButton(R.string.no, null)
                 .show();
@@ -414,6 +423,7 @@ public class EditProfileActivity extends AppCompatActivity {
                         }
 
                         profileUrl = getValue(s, "profileImage");
+                        initialProfileUrl = profileUrl; // Store original for deferred deletion
                         if (!profileUrl.isEmpty()) {
                             Glide.with(EditProfileActivity.this)
                                     .load(profileUrl)
@@ -515,6 +525,13 @@ public class EditProfileActivity extends AppCompatActivity {
         userRef.child("city").setValue(newCity);
         userRef.child("state").setValue(newState);
         userRef.child("gender").setValue(gender);
+
+        // ✅ If the image was changed or removed, delete the OLD image from VPS
+        if (!initialProfileUrl.isEmpty() && !initialProfileUrl.equals(profileUrl)) {
+            deleteImageFromVPS(initialProfileUrl);
+            initialProfileUrl = profileUrl; // Update original to new state
+        }
+
         userRef.child("profileImage").setValue(profileUrl);
 
         Toast.makeText(this, R.string.msg_profile_updated, Toast.LENGTH_SHORT).show();

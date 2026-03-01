@@ -148,7 +148,6 @@
     <string name="section_motivation">Motivation</string>
     <string name="section_greetings">Greetings</string>
     <string name="section_business_ethics">Business Ethics</string>
-    <string name="section_frame">Frame</string>
     <string name="btn_pick_date">Pick Date</string>
     <string name="btn_set_expiry">Set Expiry Date</string>
     <string name="label_selected">Selected: %1$s</string>
@@ -161,8 +160,8 @@
     <string name="msg_enter_ad_link">Enter advertisement link</string>
     <string name="msg_select_fest_date">Please select festival date</string>
     <string name="msg_only_png_frames">Only PNG allowed for frames</string>
-    <string name="msg_frame_square">Frame must be a perfectly SQUARE image (1:1 ratio)</string>
-    <string name="title_crop_image">Crop Your Image</string>
+    <string name="msg_frame_square">Image must be a perfectly SQUARE (1:1 ratio)</string>
+    <string name="title_crop_image">Crop Your Image</string>                                                              
     <string name="msg_select_valid_video">Please select a valid video</string>
     <string name="msg_select_valid_img">Please select a valid image (JPG, PNG)</string>
     <string name="msg_format_supported">Supported image formats: JPG, JPEG, PNG</string>
@@ -210,13 +209,10 @@
     <string name="btn_text">Text</string>
     <string name="btn_logo">Logo</string>
     <string name="btn_gallery">Gallery</string>
-    <string name="btn_add_frame">Add Frame</string>
     <string name="label_size">Size</string>
     <string name="btn_apply">Apply</string>
     <string name="btn_yes">Yes</string>
     <string name="btn_no">No</string>
-    <string name="msg_no_frames_found">No frames found for %1$s</string>
-    <string name="msg_frame_list_empty">Frame list empty</string>
     <string name="desc_edited_template">Edited Template</string>
 
     <!-- Headers -->
@@ -330,6 +326,9 @@
     <string name="hint_select_state">Select State</string>
     <string name="hint_select_city">Select City</string>
     <string name="btn_save_changes">Save Changes</string>
+    <string name="login_congrats">Congratulations!</string>
+    <string name="login_welcome_msg">You have successfully logged in.\nWelcome to RM Plus!</string>
+    <string name="btn_continue">Continue to Home</string>
 
     <!-- Subscription Screen -->
     <string name="status_checking">Checking subscription...</string>

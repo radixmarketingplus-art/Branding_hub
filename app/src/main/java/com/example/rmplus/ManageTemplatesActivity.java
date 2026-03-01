@@ -16,10 +16,10 @@ import android.view.View;
 import android.widget.*;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager2.widget.ViewPager2;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
@@ -37,29 +37,26 @@ import yuku.ambilwarna.AmbilWarnaDialog;
 public class ManageTemplatesActivity extends AppCompatActivity {
 
     FrameLayout wrapText, wrapLogo, wrapGallery;
-    ImageView imgTemplate, imgFrame, imgLogo, imgGallery;
+    ImageView imgTemplate, imgLogo, imgGallery;
     ImageView btnDeleteText, btnDeleteLogo, btnDeleteGallery;
     TextView txtEdit;
     com.google.android.material.button.MaterialButton btnSave;
     Button btnColor;
-    LinearLayout btnText, btnLogo, btnFrame, btnGallery;
-    ViewPager2 vpFrames;
-    ArrayList<String> slidingFrames = new ArrayList<>();
-    LinearLayout textControls, imageControls;
+    LinearLayout btnText, btnLogo, btnGallery, btnFrame;
+    LinearLayout textControls, imageControls, frameControls;
+    FrameLayout dynamicFrameContainer;
+    RecyclerView rvFrames;
+    String uName, uMobile, uEmail, uProfileUrl;
 
     static final int PICK_LOGO = 101;
     static final int PICK_GALLERY = 102;
     SeekBar seekTextSize, seekImageSize;
     View scaleLogo, scaleGallery; // New containers for scaling content only
 
-    // 🔥 NEW
     String originalPath;
     String templateId;
     String uid;
     DatabaseReference rootRef;
-    LinearLayout frameControls;
-    RecyclerView rvFrames;
-    SeekBar seekFrameSize;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,26 +73,24 @@ public class ManageTemplatesActivity extends AppCompatActivity {
         btnDeleteGallery = findViewById(R.id.btnDeleteGallery);
 
         imgTemplate = findViewById(R.id.imgTemplate);
-        imgFrame = findViewById(R.id.imgFrame);
         imgLogo = findViewById(R.id.imgLogo);
         imgGallery = findViewById(R.id.imgGallery);
         txtEdit = findViewById(R.id.txtEdit);
         btnText = findViewById(R.id.btnText);
         btnLogo = findViewById(R.id.btnLogo);
         btnGallery = findViewById(R.id.btnGallery);
-        btnFrame = findViewById(R.id.btnFrame);
         btnSave = findViewById(R.id.btnSave);
         btnColor = findViewById(R.id.btnColor);
         textControls = findViewById(R.id.textControls);
         imageControls = findViewById(R.id.imageControls);
-        frameControls = findViewById(R.id.frameControls);
-        rvFrames = findViewById(R.id.rvFrames);
-        seekFrameSize = findViewById(R.id.seekFrameSize);
-        vpFrames = findViewById(R.id.vpFrames);
         seekTextSize = findViewById(R.id.seekTextSize);
         seekImageSize = findViewById(R.id.seekImageSize);
         scaleLogo = findViewById(R.id.scaleLogo);
         scaleGallery = findViewById(R.id.scaleGallery);
+        btnFrame = findViewById(R.id.btnFrame);
+        frameControls = findViewById(R.id.frameControls);
+        rvFrames = findViewById(R.id.rvFrames);
+        dynamicFrameContainer = findViewById(R.id.dynamicFrameContainer);
 
         uid = FirebaseAuth.getInstance().getUid();
         rootRef = FirebaseDatabase.getInstance().getReference();
@@ -120,13 +115,11 @@ public class ManageTemplatesActivity extends AppCompatActivity {
         wrapText.setOnClickListener(v -> {
             textControls.setVisibility(View.VISIBLE);
             imageControls.setVisibility(View.GONE);
-            frameControls.setVisibility(View.GONE);
         });
 
         wrapLogo.setOnClickListener(v -> {
             imageControls.setVisibility(View.VISIBLE);
             textControls.setVisibility(View.GONE);
-            frameControls.setVisibility(View.GONE);
             // Sync SeekBar to current scale
             float currentScale = scaleLogo.getScaleX();
             int progress = (int) ((currentScale - 0.2f) * 50f);
@@ -136,7 +129,6 @@ public class ManageTemplatesActivity extends AppCompatActivity {
         wrapGallery.setOnClickListener(v -> {
             imageControls.setVisibility(View.VISIBLE);
             textControls.setVisibility(View.GONE);
-            frameControls.setVisibility(View.GONE);
             // Sync SeekBar to current scale
             float currentScale = scaleGallery.getScaleX();
             int progress = (int) ((currentScale - 0.2f) * 50f);
@@ -156,6 +148,17 @@ public class ManageTemplatesActivity extends AppCompatActivity {
         btnDeleteGallery.setOnClickListener(v -> {
             wrapGallery.setVisibility(View.GONE);
             imgGallery.setImageDrawable(null);
+        });
+
+        // ==== FETCH USER DATA FOR DYNAMIC FRAMES ====
+        loadUserData();
+
+        // ==== FRAME DESIGN SELECTION ====
+        btnFrame.setOnClickListener(v -> {
+            textControls.setVisibility(View.GONE);
+            imageControls.setVisibility(View.GONE);
+            frameControls.setVisibility(View.VISIBLE);
+            setupFrameAdapter();
         });
 
         // ==== TEXT ====
@@ -233,19 +236,9 @@ public class ManageTemplatesActivity extends AppCompatActivity {
             }
         });
 
-        // ==== FRAME ====
-        btnFrame.setOnClickListener(v -> {
-            frameControls.setVisibility(View.VISIBLE);
-            vpFrames.setVisibility(View.VISIBLE);
-            rvFrames.setVisibility(View.GONE);
-            seekFrameSize.setVisibility(View.GONE);
-            textControls.setVisibility(View.GONE);
-            imageControls.setVisibility(View.GONE);
-        });
 
         // ==== COLOR ====
-        loadSlidingFrames();
-        btnColor.setOnClickListener(v -> {
+       btnColor.setOnClickListener(v -> {
             new AmbilWarnaDialog(
                     this,
                     txtEdit.getCurrentTextColor(),
@@ -275,64 +268,6 @@ public class ManageTemplatesActivity extends AppCompatActivity {
                 .setNegativeButton(R.string.btn_no, null)
                 .show());
 
-        String frameKey = getIntent().getStringExtra("frames_key");
-
-        // 🔥 FALLBACK LOGIC (VERY IMPORTANT)
-        if (frameKey == null) {
-            frameKey = "Business Frame";
-        }
-
-        SharedPreferences sp = getSharedPreferences("HOME_DATA", MODE_PRIVATE);
-
-        // 🔥 SAME CATEGORY LIST USED AS FRAMES
-        String json = sp.getString(frameKey, null);
-
-        if (json == null) {
-            Toast.makeText(this,
-                    getString(R.string.msg_no_frames_found, frameKey),
-                    Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        java.lang.reflect.Type type = new com.google.gson.reflect.TypeToken<java.util.ArrayList<String>>() {
-        }.getType();
-
-        java.util.ArrayList<String> frames = new com.google.gson.Gson().fromJson(json, type);
-
-        if (frames == null || frames.isEmpty()) {
-            Toast.makeText(this,
-                    R.string.msg_frame_list_empty,
-                    Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        rvFrames.setLayoutManager(
-                new androidx.recyclerview.widget.LinearLayoutManager(
-                        this,
-                        androidx.recyclerview.widget.RecyclerView.HORIZONTAL,
-                        false));
-
-        rvFrames.setAdapter(
-                new FrameAdapter(frames, path -> {
-
-                    loadImageSmart(path, imgFrame);
-
-                    // 🔥 FIX FRAME SIZE = SQUARE OVERLAY (1080x1080 aspect)
-                    // We match parent but ensure parent canvas is square in layout
-                    FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
-                            FrameLayout.LayoutParams.MATCH_PARENT,
-                            FrameLayout.LayoutParams.MATCH_PARENT);
-                    imgFrame.setLayoutParams(params);
-
-                    imgFrame.setScaleType(ImageView.ScaleType.FIT_XY);
-                    imgFrame.setVisibility(View.VISIBLE);
-
-                    // Frames are now fixed overlays, no dragging
-                    imgFrame.setOnTouchListener(null);
-
-                    rvFrames.setVisibility(View.GONE);
-                    seekFrameSize.setVisibility(View.GONE);
-                }));
     }
 
     // ================= TEXT EDIT =================
@@ -584,10 +519,85 @@ public class ManageTemplatesActivity extends AppCompatActivity {
         }
     }
 
+    private void loadUserData() {
+        if (uid == null) return;
+        rootRef.child("users").child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot s) {
+                uName = s.child("name").getValue(String.class);
+                uMobile = s.child("mobile").getValue(String.class);
+                uEmail = s.child("email").getValue(String.class);
+                uProfileUrl = s.child("profileImage").getValue(String.class);
+            }
+            @Override public void onCancelled(@NonNull DatabaseError e) {}
+        });
+    }
+
+    private void setupFrameAdapter() {
+        ArrayList<String> designs = new ArrayList<>();
+        designs.add("None");
+        designs.add("Design 1");
+        designs.add("Design 2");
+        designs.add("Design 3");
+
+        rvFrames.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
+        rvFrames.setAdapter(new RecyclerView.Adapter() {
+            @NonNull
+            @Override
+            public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                View v = getLayoutInflater().inflate(R.layout.item_frame_design, parent, false);
+                return new RecyclerView.ViewHolder(v) {};
+            }
+
+            @Override
+            public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+                TextView t = holder.itemView.findViewById(R.id.txtTitle);
+                ImageView i = holder.itemView.findViewById(R.id.imgIcon);
+                t.setText(designs.get(position));
+                
+                if (position == 0) i.setImageResource(R.drawable.ic_close_gray);
+                else i.setImageResource(R.drawable.ic_edit);
+
+                holder.itemView.setOnClickListener(v -> {
+                    if (position == 0) dynamicFrameContainer.removeAllViews();
+                    else applyDynamicFrame(position);
+                });
+            }
+
+            @Override
+            public int getItemCount() { return designs.size(); }
+        });
+    }
+
+    private void applyDynamicFrame(int designNum) {
+        dynamicFrameContainer.removeAllViews();
+        int layoutId = R.layout.frame_design_1;
+        if (designNum == 2) layoutId = R.layout.frame_design_2;
+        if (designNum == 3) layoutId = R.layout.frame_design_3;
+
+        View frameView = getLayoutInflater().inflate(layoutId, dynamicFrameContainer, false);
+        
+        TextView tName = frameView.findViewById(R.id.frame_name);
+        TextView tMobile = frameView.findViewById(R.id.frame_mobile);
+        TextView tEmail = frameView.findViewById(R.id.frame_email);
+        ImageView iLogo = frameView.findViewById(R.id.frame_logo);
+
+        if (uName != null && !uName.isEmpty()) tName.setText(uName); else tName.setVisibility(View.GONE);
+        if (uMobile != null && !uMobile.isEmpty()) tMobile.setText(uMobile); else tMobile.setVisibility(View.GONE);
+        if (uEmail != null && !uEmail.isEmpty()) tEmail.setText(uEmail); else tEmail.setVisibility(View.GONE);
+
+        if (uProfileUrl != null && !uProfileUrl.isEmpty()) {
+            Glide.with(this).load(uProfileUrl).placeholder(R.drawable.ic_profile).into(iLogo);
+        } else {
+            iLogo.setImageResource(R.drawable.ic_profile);
+        }
+
+        dynamicFrameContainer.addView(frameView);
+    }
+
     private String makeSafeKey(String value) {
-        return android.util.Base64.encodeToString(
-                value.getBytes(),
-                android.util.Base64.NO_WRAP);
+        if (value == null) return "Unknown";
+        return android.util.Base64.encodeToString(value.getBytes(), android.util.Base64.NO_WRAP).replace(".", "_").replace("$", "_").replace("#", "_");
     }
 
     // Assuming these lines are meant to be in an initialization method like
@@ -615,91 +625,6 @@ public class ManageTemplatesActivity extends AppCompatActivity {
         // loadActiveSubscription(); // This method is not defined in the provided code
 
         findViewById(R.id.btnBack).setOnClickListener(v -> finish());
-    }
-
-    private void loadSlidingFrames() {
-        rootRef.child("templates").child("Frame")
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot snapshot) {
-                        slidingFrames.clear();
-                        for (DataSnapshot d : snapshot.getChildren()) {
-                            String f = d.hasChild("url") ? d.child("url").getValue(String.class)
-                                    : d.child("imagePath").getValue(String.class);
-                            if (f != null)
-                                slidingFrames.add(f);
-                        }
-
-                        if (!slidingFrames.isEmpty()) {
-                            vpFrames.setAdapter(new FrameOverlayAdapter(slidingFrames));
-
-                            // Check for passed frame from intent
-                            String passedFrame = getIntent().getStringExtra("selected_frame");
-                            int startIndex = (Integer.MAX_VALUE / 2);
-                            startIndex = startIndex - (startIndex % (slidingFrames.size() + 1));
-
-                            if (passedFrame != null) {
-                                for (int i = 0; i < slidingFrames.size(); i++) {
-                                    if (slidingFrames.get(i).equals(passedFrame)) {
-                                        startIndex += (i + 1);
-                                        vpFrames.setVisibility(View.VISIBLE);
-                                        break;
-                                    }
-                                }
-                            }
-
-                            vpFrames.setCurrentItem(startIndex, false);
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError error) {
-                    }
-                });
-    }
-
-    class FrameOverlayAdapter extends RecyclerView.Adapter<FrameOverlayAdapter.VH> {
-        ArrayList<String> frames;
-
-        FrameOverlayAdapter(ArrayList<String> frames) {
-            this.frames = frames;
-        }
-
-        @NonNull
-        @Override
-        public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            ImageView imageView = new ImageView(parent.getContext());
-            imageView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT));
-            imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-            return new VH(imageView);
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull VH h, int pos) {
-            int actualPos = pos % (frames.size() + 1);
-            if (actualPos == 0) {
-                h.img.setImageDrawable(null);
-            } else {
-                Glide.with(h.img.getContext())
-                        .load(frames.get(actualPos - 1))
-                        .into(h.img);
-            }
-        }
-
-        @Override
-        public int getItemCount() {
-            return frames.size() > 0 ? Integer.MAX_VALUE : 0;
-        }
-
-        class VH extends RecyclerView.ViewHolder {
-            ImageView img;
-
-            VH(View v) {
-                super(v);
-                img = (ImageView) v;
-            }
-        }
     }
 
 }

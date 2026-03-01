@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
-import androidx.viewpager2.widget.ViewPager2;
 import android.widget.FrameLayout;
 
 public class TemplatePreviewActivity extends AppCompatActivity {
@@ -47,9 +46,7 @@ public class TemplatePreviewActivity extends AppCompatActivity {
     String category;
     String templateId;
     String uid;
-    ViewPager2 vpFrames;
     FrameLayout previewContainer;
-    ArrayList<String> frameList = new ArrayList<>();
 
     DatabaseReference rootRef;
 
@@ -71,7 +68,6 @@ public class TemplatePreviewActivity extends AppCompatActivity {
         imgPlayIcon = findViewById(R.id.imgPlayIcon);
         videoView = findViewById(R.id.vPreview);
         rvSimilar = findViewById(R.id.rvSimilar);
-        vpFrames = findViewById(R.id.vpFrames);
         previewContainer = findViewById(R.id.previewContainer);
 
         uid = FirebaseAuth.getInstance().getUid();
@@ -200,7 +196,6 @@ public class TemplatePreviewActivity extends AppCompatActivity {
         loadLikeStatus();
         loadFavoriteStatus();
         loadSimilarTemplates();
-        loadFrames();
 
         // SEARCH
         btnSearch.setOnClickListener(v ->
@@ -234,16 +229,6 @@ public class TemplatePreviewActivity extends AppCompatActivity {
 
             Intent i = new Intent(this, ManageTemplatesActivity.class);
             i.putExtra("uri", path);
-            
-            // Pass the currently selected frame if any
-            int currentPos = vpFrames.getCurrentItem();
-            if (!frameList.isEmpty()) {
-                int actualPos = currentPos % (frameList.size() + 1);
-                if (actualPos > 0) {
-                    i.putExtra("selected_frame", frameList.get(actualPos - 1));
-                }
-            }
-            
             startActivity(i);
         });
 
@@ -492,7 +477,6 @@ public class TemplatePreviewActivity extends AppCompatActivity {
         if (path == null) return;
         videoView.setVisibility(android.view.View.VISIBLE);
         img.setVisibility(android.view.View.GONE);
-        vpFrames.setVisibility(android.view.View.GONE);
         imgPlayIcon.setVisibility(android.view.View.GONE);
 
         android.widget.MediaController mc = new android.widget.MediaController(this);
@@ -507,63 +491,6 @@ public class TemplatePreviewActivity extends AppCompatActivity {
                (path != null && (path.toLowerCase().endsWith(".mp4") || path.toLowerCase().endsWith(".webm")));
     }
 
-    void loadFrames() {
-        if (isVideo()) return;
-
-        rootRef.child("templates").child("Frame")
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot snapshot) {
-                        frameList.clear();
-                        for (DataSnapshot d : snapshot.getChildren()) {
-                            String f = d.hasChild("url") ? d.child("url").getValue(String.class) : d.child("imagePath").getValue(String.class);
-                            if (f != null) frameList.add(f);
-                        }
-
-                        if (!frameList.isEmpty()) {
-                            vpFrames.setVisibility(android.view.View.VISIBLE);
-                            vpFrames.setAdapter(new FrameOverlayAdapter(frameList));
-                            // Start at middle multiple of (size + 1)
-                            int startItem = (Integer.MAX_VALUE / 2);
-                            startItem = startItem - (startItem % (frameList.size() + 1));
-                            vpFrames.setCurrentItem(startItem, false);
-                        }
-                    }
-                    @Override public void onCancelled(DatabaseError error) {}
-                });
-    }
-
-    class FrameOverlayAdapter extends RecyclerView.Adapter<FrameOverlayAdapter.VH> {
-        ArrayList<String> frames;
-        FrameOverlayAdapter(ArrayList<String> frames) { this.frames = frames; }
-
-        @NonNull @Override
-        public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            ImageView imageView = new ImageView(parent.getContext());
-            imageView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-            imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-            return new VH(imageView);
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull VH h, int pos) {
-            int actualPos = pos % (frames.size() + 1);
-            if (actualPos == 0) {
-                h.img.setImageDrawable(null);
-            } else {
-                Glide.with(h.img.getContext())
-                        .load(frames.get(actualPos - 1))
-                        .into(h.img);
-            }
-        }
-
-        @Override public int getItemCount() { return frames.size() > 0 ? Integer.MAX_VALUE : 0; }
-
-        class VH extends RecyclerView.ViewHolder {
-            ImageView img;
-            VH(View v) { super(v); img = (ImageView) v; }
-        }
-    }
 
     private void toast(String m) {
         Toast.makeText(this, m, Toast.LENGTH_SHORT).show();

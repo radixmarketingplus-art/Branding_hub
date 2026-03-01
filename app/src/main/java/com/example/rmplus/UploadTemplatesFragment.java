@@ -66,8 +66,7 @@ public class UploadTemplatesFragment extends Fragment {
                 getString(R.string.section_business_frame),
                 getString(R.string.section_motivation),
                 getString(R.string.section_greetings),
-                getString(R.string.section_business_ethics),
-                getString(R.string.section_frame)
+                getString(R.string.section_business_ethics)
         };
     }
 
@@ -83,8 +82,7 @@ public class UploadTemplatesFragment extends Fragment {
                 "Business Frame",
                 "Motivation",
                 "Greetings",
-                "Business Ethics",
-                "Frame"
+                "Business Ethics"
         };
     }
 
@@ -120,12 +118,11 @@ public class UploadTemplatesFragment extends Fragment {
                                     selectedImageUri = sourceUri;
                                     previewImage.setVisibility(View.VISIBLE);
                                     previewImage.setImageURI(selectedImageUri);
-                                } else if (sectionKey.equalsIgnoreCase("Frame")) {
-                                    // 🚫 SKIPPING UCROP FOR FRAMES (to keep PNG transparency)
+                                } else if (sectionKey.equalsIgnoreCase("Business Frame")) {
+                                    // 🚫 SKIPPING MANDATORY UCROP FOR THESE SECTIONS
                                     selectedImageUri = sourceUri;
                                     previewImage.setVisibility(View.VISIBLE);
                                     previewImage.setImageURI(selectedImageUri);
-                                    toast(R.string.msg_only_png_frames);
                                 } else {
                                     originalImageUri = sourceUri;
                                     startCrop(sourceUri);
@@ -288,10 +285,6 @@ public class UploadTemplatesFragment extends Fragment {
                             getString(R.string.cat_business)
                     };
                     spinnerSubSection.setAdapter(new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_dropdown_item, subs));
-                } else if (selectedKey.equalsIgnoreCase("Frame")) {
-                    dateContainer.setVisibility(View.GONE);
-                    editAdLink.setVisibility(View.GONE);
-                    subSectionContainer.setVisibility(View.GONE);
                 } else {
                     dateContainer.setVisibility(View.GONE);
                     editAdLink.setVisibility(View.GONE);
@@ -382,13 +375,20 @@ public class UploadTemplatesFragment extends Fragment {
         btnSelectImage.setOnClickListener(v1 -> {
             // ✅ Use canonical key
             String sectionKey = getSelectedSectionKey();
-            Intent i = new Intent(Intent.ACTION_PICK);
+            Intent i;
 
             if (sectionKey.equalsIgnoreCase("Reel Maker")) {
+                i = new Intent(Intent.ACTION_PICK);
                 i.setType("video/*");
+            } else if (sectionKey.equalsIgnoreCase("Business Frame")) {
+                // 🛡️ ACTION_GET_CONTENT is more reliable for strict MIME filtering in the system picker
+                i = new Intent(Intent.ACTION_GET_CONTENT);
+                i.setType("image/png");
+                i.addCategory(Intent.CATEGORY_OPENABLE);
             } else {
-                i.setDataAndType(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
-                String[] mimeTypes = {"image/jpeg", "image/png"};
+                i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                i.setType("image/*");
+                String[] mimeTypes = {"image/jpeg", "image/png", "image/jpg"};
                 i.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
             }
             
@@ -400,8 +400,11 @@ public class UploadTemplatesFragment extends Fragment {
             // ✅ Use canonical key
             String sectionKey = getSelectedSectionKey();
             if (selectedImageUri != null) {
-                if (sectionKey.equalsIgnoreCase("Reel Maker") || sectionKey.equalsIgnoreCase("Frame")) {
-                    // Frame and Video: Open full-screen preview instead of crop
+                if (sectionKey.equalsIgnoreCase("Reel Maker") || 
+                    sectionKey.equalsIgnoreCase("Business Frame")) {
+                    
+                    // These sections open full-screen preview instead of crop by default
+                    // to avoid accidental transparency loss.
                     Intent i = new Intent(requireContext(), ImagePreviewActivity.class);
                     i.putExtra("img", selectedImageUri.toString());
                     startActivity(i);
@@ -504,13 +507,25 @@ public class UploadTemplatesFragment extends Fragment {
                 return;
             }
 
-            if (sectionKey.equalsIgnoreCase("Frame")) {
-                if ((mimeType != null && !mimeType.contains("png")) || (mimeType == null && !uriString.contains(".png"))) {
+            if (sectionKey.equalsIgnoreCase("Business Frame")) {
+                // Strictly PNG for both Frame sections
+                if ((mimeType != null && !mimeType.contains("png")) || (mimeType == null && !uriString.toLowerCase().contains(".png"))) {
                     toast(R.string.msg_only_png_frames);
                     return;
                 }
+            } else {
+                // For other sections, allow JPG/JPEG/PNG
+                boolean validFormat = (mimeType != null && (mimeType.contains("jpeg") || mimeType.contains("jpg") || mimeType.contains("png")))
+                        || isCroppedJpg || isRemoteImage;
                 
-                // 📏 SQUARE ASPECT RATIO CHECK FOR FRAME
+                if (!validFormat) {
+                    toast(R.string.msg_format_supported);
+                    return;
+                }
+            }
+
+            // 📏 SQUARE ASPECT RATIO CHECK (For all except Ad and Video)
+            if (!sectionKey.equalsIgnoreCase("Advertisement") && !sectionKey.equalsIgnoreCase("Reel Maker")) {
                 try {
                     InputStream is = requireContext().getContentResolver().openInputStream(selectedImageUri);
                     android.graphics.BitmapFactory.Options opts = new android.graphics.BitmapFactory.Options();
@@ -524,16 +539,6 @@ public class UploadTemplatesFragment extends Fragment {
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                }
-
-            } else {
-                // For other sections, allow JPG/JPEG/PNG
-                boolean validFormat = (mimeType != null && (mimeType.contains("jpeg") || mimeType.contains("jpg") || mimeType.contains("png")))
-                        || isCroppedJpg || isRemoteImage;
-                
-                if (!validFormat) {
-                    toast(R.string.msg_format_supported);
-                    return;
                 }
             }
         }

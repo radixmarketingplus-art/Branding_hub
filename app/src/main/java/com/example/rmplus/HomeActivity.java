@@ -7,8 +7,16 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.content.Intent;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.app.Dialog;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.view.Window;
+import android.view.WindowManager;
+import android.view.animation.OvershootInterpolator;
+import android.widget.Button;
 
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -171,6 +179,82 @@ public class HomeActivity extends BaseActivity {
 
         // CHECK FOR EXPIRED TEMPLATES
         ExpiryCleanupHelper.checkAndClean(this);
+
+        // ✅ SHOW LOGIN SUCCESS POPUP (If just logged in)
+        if (getIntent().getBooleanExtra("show_login_success", false)) {
+            showLoginSuccessPopup();
+        }
+    }
+
+    private void showLoginSuccessPopup() {
+        Dialog dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.dialog_login_success);
+        dialog.setCancelable(false);
+
+        Window window = dialog.getWindow();
+        if (window != null) {
+            window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+            window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            
+            // Set entry animation for the whole dialog window
+            window.getAttributes().windowAnimations = android.R.style.Animation_Dialog;
+        }
+
+        View container = dialog.findViewById(R.id.dialogContainer);
+        ImageView btnClose = dialog.findViewById(R.id.btnCloseDialog);
+        View icon = dialog.findViewById(R.id.imgSuccessIco);
+
+        dialog.show();
+
+        // ✅ Decent & Simple Interactive Animations
+        if (container != null) {
+            container.setAlpha(0f);
+            container.setTranslationY(100f);
+            container.animate()
+                    .alpha(1f)
+                    .translationY(0f)
+                    .setDuration(600)
+                    .setInterpolator(new OvershootInterpolator())
+                    .start();
+        }
+
+        if (icon != null) {
+            icon.setScaleX(0f);
+            icon.setScaleY(0f);
+            icon.animate()
+                    .scaleX(1f)
+                    .scaleY(1f)
+                    .setStartDelay(300)
+                    .setDuration(500)
+                    .setInterpolator(new OvershootInterpolator())
+                    .start();
+        }
+
+        // ✅ AUTO-HIDE AFTER 4 SECONDS
+        new Handler().postDelayed(() -> {
+            if (dialog.isShowing()) {
+                dismissDialogWithAnim(dialog, container);
+            }
+        }, 4000);
+
+        if (btnClose != null) {
+            btnClose.setOnClickListener(v -> dismissDialogWithAnim(dialog, container));
+        }
+    }
+
+    private void dismissDialogWithAnim(Dialog dialog, View container) {
+        if (container != null) {
+            container.animate()
+                    .alpha(0f)
+                    .scaleX(0.9f)
+                    .scaleY(0.9f)
+                    .setDuration(400)
+                    .withEndAction(dialog::dismiss)
+                    .start();
+        } else {
+            dialog.dismiss();
+        }
     }
 
     // ================= ADVERTISEMENT & TRENDING =================

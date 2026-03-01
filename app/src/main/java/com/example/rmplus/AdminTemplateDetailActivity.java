@@ -47,9 +47,11 @@ public class AdminTemplateDetailActivity extends BaseActivity {
 
         templatePath = getIntent().getStringExtra("path");
         category = getIntent().getStringExtra("category");
+        realTemplateId = getIntent().getStringExtra("id"); // ✅ Accept passed ID
+        
         txtLikeCount = findViewById(R.id.txtLikeCount);
         txtFavCount  = findViewById(R.id.txtFavCount);
-        txtEditCount = findViewById(R.id.txtEditCount);
+        txtEditCount = findViewById(R.id.txtEditCount);                         
         txtSaveCount = findViewById(R.id.txtSaveCount);
 
         // 🔐 SAME KEY USED EVERYWHERE
@@ -144,6 +146,29 @@ public class AdminTemplateDetailActivity extends BaseActivity {
     private String realTemplateId = null; 
 
     private void discoverCategoryAndLoad() {
+        if (realTemplateId != null && category != null && !category.isEmpty()) {
+            // Already have enough info to load directly
+            txtCategory.setText(getLocalizedCategory(category));
+            FirebaseDatabase.getInstance().getReference("templates")
+                    .child(category).child(realTemplateId)
+                    .addListenerForSingleValueEvent(new com.google.firebase.database.ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull com.google.firebase.database.DataSnapshot snapshot) {
+                    if (snapshot.exists()) {
+                        processTemplateData(snapshot);
+                    } else {
+                        // fallback if specific path doesn't exist (maybe category was broad or old)
+                        performFullDiscovery();
+                    }
+                }
+                @Override public void onCancelled(@NonNull com.google.firebase.database.DatabaseError e) {}
+            });
+            return;
+        }
+        performFullDiscovery();
+    }
+
+    private void performFullDiscovery() {
         FirebaseDatabase.getInstance().getReference("templates").addListenerForSingleValueEvent(new com.google.firebase.database.ValueEventListener() {
             @Override
             public void onDataChange(@NonNull com.google.firebase.database.DataSnapshot snapshot) {
@@ -188,30 +213,7 @@ public class AdminTemplateDetailActivity extends BaseActivity {
                     category = foundCat;
                     realTemplateId = foundId;
                     txtCategory.setText(getLocalizedCategory(category));
-                    
-                    // 📅 LOAD DATES & LINKS FROM DB SNAPSHOT
-                    if (finalTemplateSnap.hasChild("expiryDate")) {
-                        Object exp = finalTemplateSnap.child("expiryDate").getValue();
-                        currentExpiry = (exp instanceof Long) ? (Long) exp : ((Integer) exp).longValue();
-                        String dateStr = new java.text.SimpleDateFormat("dd-MM-yyyy", java.util.Locale.US) // ✅ ASCII digits always
-                                .format(new java.util.Date(currentExpiry));
-                        txtExpiryStatus.setText(getString(R.string.label_expires, dateStr));
-                    } else {
-                        txtExpiryStatus.setText(R.string.msg_no_expiry);
-                    }
-
-                    if (finalTemplateSnap.hasChild("link")) {
-                        adLink = finalTemplateSnap.child("link").getValue(String.class);
-                    }
-
-                    if (category.contains("Advertisement")) {
-                        statsLayout.setVisibility(View.GONE);
-                        findViewById(R.id.btnOpenAd).setVisibility(View.VISIBLE);
-                    } else {
-                        findViewById(R.id.btnOpenAd).setVisibility(View.GONE);
-                        setupClicks();
-                        loadStats();
-                    }
+                    processTemplateData(finalTemplateSnap);
                 } else {
                     txtCategory.setText(R.string.label_external_content);
                     realTemplateId = templateKey; // Fallback to Base64
@@ -221,6 +223,32 @@ public class AdminTemplateDetailActivity extends BaseActivity {
 
             @Override public void onCancelled(@NonNull com.google.firebase.database.DatabaseError error) {}
         });
+    }
+
+    private void processTemplateData(com.google.firebase.database.DataSnapshot snap) {
+        // 📅 LOAD DATES & LINKS FROM DB SNAPSHOT
+        if (snap.hasChild("expiryDate")) {
+            Object exp = snap.child("expiryDate").getValue();
+            currentExpiry = (exp instanceof Long) ? (Long) exp : ((Integer) exp).longValue();
+            String dateStr = new java.text.SimpleDateFormat("dd-MM-yyyy", java.util.Locale.US)
+                    .format(new java.util.Date(currentExpiry));
+            txtExpiryStatus.setText(getString(R.string.label_expires, dateStr));
+        } else {
+            txtExpiryStatus.setText(R.string.msg_no_expiry);
+        }
+
+        if (snap.hasChild("link")) {
+            adLink = snap.child("link").getValue(String.class);
+        }
+
+        if (category.contains("Advertisement")) {
+            statsLayout.setVisibility(View.GONE);
+            findViewById(R.id.btnOpenAd).setVisibility(View.VISIBLE);
+        } else {
+            findViewById(R.id.btnOpenAd).setVisibility(View.GONE);
+            setupClicks();
+            loadStats();
+        }
     }
 
     void loadAdvertisementLink() {

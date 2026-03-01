@@ -59,7 +59,9 @@ public class LoginActivity extends AppCompatActivity {
                 sp.getBoolean("isLoggedIn", false);
 
         if (loggedIn && auth.getCurrentUser() != null) {
-            startActivity(new Intent(this, HomeActivity.class));
+            Intent intent = new Intent(this, HomeActivity.class);
+            intent.putExtra("fromAutoLogin", true);
+            startActivity(intent);
             finish();
             return;
         }
@@ -338,15 +340,9 @@ public class LoginActivity extends AppCompatActivity {
                                                                     .putBoolean("isLoggedIn", true)
                                                                     .apply();
 
-                                                            Toast.makeText(LoginActivity.this,
-                                                                    R.string.msg_login_success,
-                                                                    Toast.LENGTH_SHORT).show();
-
-// ===== OPEN HOME =====
-                                                            startActivity(new Intent(
-                                                                    LoginActivity.this,
-                                                                    HomeActivity.class));
-
+                                                            Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+                                                            intent.putExtra("show_login_success", true);
+                                                            startActivity(intent);
                                                             finish();
                                                         }
 

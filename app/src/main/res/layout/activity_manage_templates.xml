@@ -83,18 +83,12 @@
                     android:layout_height="match_parent"
                     android:scaleType="fitCenter" />
 
-                <ImageView
-                    android:id="@+id/imgFrame"
+                <FrameLayout
+                    android:id="@+id/dynamicFrameContainer"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="fitXY"
-                    android:visibility="gone" />
+                    android:layout_height="match_parent" />
 
-                <androidx.viewpager2.widget.ViewPager2
-                    android:id="@+id/vpFrames"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:visibility="gone" />
+
 
                 <FrameLayout
                     android:id="@+id/wrapText"
@@ -255,19 +249,23 @@
                 android:paddingBottom="16dp"
                 android:background="?attr/colorSurface"
                 android:visibility="gone">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Choose Frame Design"
+                    android:fontFamily="sans-serif-bold"
+                    android:textColor="?attr/colorOnSurface"
+                    android:paddingHorizontal="24dp"
+                    android:paddingTop="12dp"
+                    android:paddingBottom="4dp" />
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvFrames"
                     android:layout_width="match_parent"
-                    android:layout_height="100dp"
+                    android:layout_height="120dp"
                     android:clipToPadding="false"
                     android:paddingHorizontal="12dp" />
-                <SeekBar
-                    android:id="@+id/seekFrameSize"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="16dp"
-                    android:max="300" />
             </LinearLayout>
+
         </FrameLayout>
 
         <!-- BOTTOM TOOLBAR -->
@@ -318,7 +316,6 @@
                         android:text="Image"
                         style="@style/EditorToolTextStyle" />
                 </LinearLayout>
-
                 <LinearLayout
                     android:id="@+id/btnFrame"
                     style="@style/EditorToolItemStyle">
