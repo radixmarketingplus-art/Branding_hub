@@ -158,6 +158,14 @@ public class SettingsActivity extends AppCompatActivity {
         // termsBtn.setOnClickListener(v ->
         // openWeb("https://example.com/terms"));
 
+        privacyBtn.setOnClickListener(v->
+                startActivity(new Intent(this,
+                        PrivacyPolicyActivity.class)));
+
+        termsBtn.setOnClickListener(v->
+                startActivity(new Intent(this,
+                        TermsActivity.class)));
+
         // ================= SUPPORT =================
 
         supportBtn.setOnClickListener(v -> showContactSupportDialog());

@@ -692,4 +692,40 @@
         <item>Agatti</item>
         <item>Minicoy</item>
     </string-array>
+    <!-- Structured Terms -->
+    <string name="title_terms">Terms and Conditions</string>
+    <string name="app_version_label">Version 1.0.0 (Stable)</string>
+    <string name="terms_intro">Welcome to RM Plus. Please read our terms and conditions carefully before using our services.</string>
+    <string name="terms_section_usage_title">Application Usage</string>
+    <string name="terms_section_usage_desc">By using RM Plus, you agree to not misuse the application. No illegal or unauthorized activities are allowed within the platform.</string>
+    
+    <string name="terms_section_fees_title">Subscription &amp; Refunds</string>
+    <string name="terms_section_fees_desc">All subscription fees paid to RM Plus are non-refundable. Please ensure you select the right plan before purchasing.</string>
+    
+    <string name="terms_section_admin_title">Account Management</string>
+    <string name="terms_section_admin_desc">The Admin reserves the right to suspend or terminate accounts in case of any misuse or violation of these terms.</string>
+    
+    <string name="terms_section_ip_title">Intellectual Property</string>
+    <string name="terms_section_ip_desc">All content, graphics, and intellectual property within this application belong solely to RM Plus.</string>
+    
+    <string name="terms_section_update_title">Policy Updates</string>
+    <string name="terms_section_update_desc">These terms may be updated or modified at any time without prior notice. Please check regularly.</string>
+
+    <!-- Structured Privacy -->
+    <string name="title_privacy">Privacy Policy</string>
+    <string name="privacy_intro">Your privacy is important to us. This policy explains how we collect, use, and protect your information.</string>
+    <string name="privacy_section_collect_title">Information Collection</string>
+    <string name="privacy_section_collect_desc">We collect only necessary user information such as name, email, and phone number to provide a better experience.</string>
+    
+    <string name="privacy_section_sharing_title">Data Sharing</string>
+    <string name="privacy_section_sharing_desc">Your privacy is our priority. We never sell or share your personal data with any third-party marketing services.</string>
+    
+    <string name="privacy_section_storage_title">Safe &amp; Secure Storage</string>
+    <string name="privacy_section_storage_desc">Your data is securely stored using Firebase industry-standard encryption and protocols.</string>
+    
+    <string name="privacy_section_agreement_title">User Agreement</string>
+    <string name="privacy_section_agreement_desc">By using this application, you consent to our privacy practices and the way we handle your data.</string>
+    
+    <string name="privacy_section_support_title">Help &amp; Support</string>
+    <string name="privacy_section_support_desc">If you have any questions regarding your privacy, please feel free to contact our support team.</string>
 </resources>

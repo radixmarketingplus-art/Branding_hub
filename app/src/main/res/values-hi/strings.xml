@@ -690,4 +690,40 @@
         <item>अगत्ती</item>
         <item>मिनिकॉय</item>
     </string-array>
+    <!-- Structured Terms -->
+    <string name="title_terms">नियम और शर्तें</string>
+    <string name="app_version_label">संस्करण 1.0.0 (स्थिर)</string>
+    <string name="terms_intro">RM Plus में आपका स्वागत है। हमारी सेवाओं का उपयोग करने से पहले कृपया हमारे नियमों और शर्तों को ध्यान से पढ़ें।</string>
+    <string name="terms_section_usage_title">एप्लिकेशन का उपयोग</string>
+    <string name="terms_section_usage_desc">RM Plus का उपयोग करके, आप इस एप्लिकेशन का दुरुपयोग न करने के लिए सहमत हैं। प्लेटफॉर्म के भीतर किसी भी अवैध या अनधिकृत गतिविधियों की अनुमति नहीं है।</string>
+
+    <string name="terms_section_fees_title">सदस्यता और धनवापसी</string>
+    <string name="terms_section_fees_desc">RM Plus को भुगतान किए गए सभी सदस्यता शुल्क गैर-वापसीयोग्य हैं। कृपया खरीदने से पहले सही प्लान चुनना सुनिश्चित करें।</string>
+
+    <string name="terms_section_admin_title">खाता प्रबंधन</string>
+    <string name="terms_section_admin_desc">इन शर्तों के किसी भी दुरुपयोग या उल्लंघन के मामले में एडमिन के पास खातों को निलंबित या समाप्त करने का अधिकार सुरक्षित है।</string>
+
+    <string name="terms_section_ip_title">बौद्धिक संपदा</string>
+    <string name="terms_section_ip_desc">इस एप्लिकेशन के भीतर सभी सामग्री, ग्राफिक्स और बौद्धिक संपदा विशेष रूप से RM Plus की संपत्ति है।</string>
+
+    <string name="terms_section_update_title">पॉलिसी अपडेट</string>
+    <string name="terms_section_update_desc">इन शर्तों को बिना किसी पूर्व सूचना के किसी भी समय अपडेट या संशोधित किया जा सकता है। कृपया नियमित रूप से जाँच करें।</string>
+
+    <!-- Structured Privacy -->
+    <string name="title_privacy">गोपनीयता नीति</string>
+    <string name="privacy_intro">आपकी गोपनीयता हमारे लिए महत्वपूर्ण है। यह पॉलिसी बताती है कि हम आपकी जानकारी कैसे एकत्र करते हैं, उपयोग करते हैं और सुरक्षित रखते हैं।</string>
+    <string name="privacy_section_collect_title">सूचना संग्रह</string>
+    <string name="privacy_section_collect_desc">बेहतर अनुभव प्रदान करने के लिए हम केवल आवश्यक उपयोगकर्ता जानकारी जैसे नाम, ईमेल और फोन नंबर एकत्र करते हैं।</string>
+
+    <string name="privacy_section_sharing_title">डेटा साझा करना</string>
+    <string name="privacy_section_sharing_desc">आपकी गोपनीयता हमारी प्राथमिकता है। हम आपका व्यक्तिगत डेटा कभी भी किसी तीसरे पक्ष की मार्केटिंग सेवाओं को नहीं बेचते या साझा नहीं करते हैं।</string>
+
+    <string name="privacy_section_storage_title">सुरक्षित भंडारण</string>
+    <string name="privacy_section_storage_desc">आपका डेटा फायरबेस के उद्योग-मानक एन्क्रिप्शन और प्रोटोकॉल का उपयोग करके सुरक्षित रूप से संग्रहीत किया जाता है।</string>
+
+    <string name="privacy_section_agreement_title">उपयोगकर्ता समझौता</string>
+    <string name="privacy_section_agreement_desc">इस एप्लिकेशन का उपयोग करके, आप हमारी गोपनीयता प्रथाओं और आपके डेटा को संभालने के तरीके के लिए अपनी सहमति देते हैं।</string>
+
+    <string name="privacy_section_support_title">सहायता और सहायता</string>
+    <string name="privacy_section_support_desc">यदि आपकी गोपनीयता के संबंध में आपके कोई प्रश्न हैं, तो कृपया हमारी सहायता टीम से संपर्क करें।</string>
 </resources>
