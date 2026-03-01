@@ -8,9 +8,9 @@ import java.util.ArrayList;
 public class NotificationAdapter extends BaseAdapter {
 
     Context context;
-    ArrayList<String[]> data;
+    ArrayList<NotificationModel> data;
 
-    public NotificationAdapter(Context context, ArrayList<String[]> data) {
+    public NotificationAdapter(Context context, ArrayList<NotificationModel> data) {
         this.context = context;
         this.data = data;
     }
@@ -42,14 +42,17 @@ public class NotificationAdapter extends BaseAdapter {
         TextView message = view.findViewById(R.id.txtMessage);
         TextView time = view.findViewById(R.id.txtTime);
 
-        title.setText(data.get(i)[0]);
-        message.setText(data.get(i)[1]);
-        time.setText(data.get(i)[2]);
+        NotificationModel model = data.get(i);
 
-        if (data.get(i)[2].isEmpty()) {
-            time.setVisibility(View.GONE);
-        } else {
+        title.setText(model.title);
+        message.setText(model.message);
+
+        if (model.time > 0) {
+            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd MMM, hh:mm a", java.util.Locale.getDefault());
+            time.setText(sdf.format(new java.util.Date(model.time)));
             time.setVisibility(View.VISIBLE);
+        } else {
+            time.setVisibility(View.GONE);
         }
 
         return view;

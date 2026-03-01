@@ -30,6 +30,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
+import com.example.rmplus.NotificationHelper;
 import com.google.gson.reflect.TypeToken;
 
 
@@ -439,9 +440,21 @@ public class UploadTemplatesActivity extends BaseActivity {
                     if (section.equalsIgnoreCase("Advertisement")) {
                         String link = editAdLink.getText().toString().trim();
                         AdvertisementItem adItem = new AdvertisementItem(imageUrl, link, expiryTime, "Admin", System.currentTimeMillis());
+                        adItem.id = templateId; // Important for redirection highlight
 
                         // 1. Firebase
                         dbRef.child(templateId).setValue(adItem);
+
+                        // 📢 SEND BROADCAST
+                        NotificationHelper.sendBroadcast(
+                                UploadTemplatesActivity.this,
+                                templateId,
+                                getString(R.string.title_notif_new_ad),
+                                getString(R.string.msg_notif_new_ad),
+                                "OPEN_AD",
+                                templateId,
+                                expiryTime
+                        );
 
                         // 2. SharedPreferences
                         Type t = new TypeToken<ArrayList<AdvertisementItem>>(){}.getType();
@@ -487,6 +500,32 @@ public class UploadTemplatesActivity extends BaseActivity {
 
                     // 1. Firebase
                     dbRef.child(templateId).setValue(normalItem);
+
+                    // 📢 SEND BROADCAST IF "Latest Update"
+                    if (section.equalsIgnoreCase("Latest Update")) {
+                        NotificationHelper.sendBroadcast(
+                                UploadTemplatesActivity.this,
+                                templateId,
+                                getString(R.string.title_notif_latest_update),
+                                getString(R.string.msg_check_latest_update),
+                                "OPEN_TEMPLATE",
+                                templateId,
+                                expiryTime
+                        );
+                    }
+
+                    // 📢 SEND BROADCAST IF "Business Frame"
+                    if (section.equalsIgnoreCase("Business Frame")) {
+                        NotificationHelper.sendBroadcast(
+                                UploadTemplatesActivity.this,
+                                templateId,
+                                getString(R.string.title_notif_business_frame),
+                                getString(R.string.msg_notif_business_frame),
+                                "OPEN_BUSINESS_FRAME",
+                                templateId,
+                                expiryTime
+                        );
+                    }
 
                     // 2. SharedPreferences
                     Type type = new TypeToken<ArrayList<String>>(){}.getType();

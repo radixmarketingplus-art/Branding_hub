@@ -373,6 +373,9 @@ public class AdminTemplateDetailActivity extends BaseActivity {
                 .child(realTemplateId)
                 .removeValue();
 
+        // 📢 NEW: Also delete the corresponding broadcast notification
+        NotificationHelper.deleteBroadcast(realTemplateId);
+
         // 3. Clean up user_activity AND template_activity (Sequenced to avoid race condition)
         cleanUpActivityNodes(realTemplateId);
         if (!realTemplateId.equals(templateKey)) {

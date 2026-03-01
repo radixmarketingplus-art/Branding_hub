@@ -89,10 +89,17 @@ public class BaseActivity extends AppCompatActivity {
                     @Override
                     public void onDataChange(DataSnapshot snapshot) {
                         int count = 0;
+                        long now = System.currentTimeMillis();
                         for (DataSnapshot d : snapshot.getChildren()) {
                             Boolean read = d.child("read").getValue(Boolean.class);
-                            if (read != null && !read)
-                                count++;
+                            Long expiry = d.child("expiryDate").getValue(Long.class);
+                            
+                            // Only count if not read AND not expired
+                            if (read != null && !read) {
+                                if (expiry == null || expiry == 0 || expiry > now) {
+                                    count++;
+                                }
+                            }
                         }
                         if (count == 0) {
                             headerBadge.setVisibility(View.GONE);

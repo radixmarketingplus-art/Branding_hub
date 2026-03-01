@@ -50,7 +50,7 @@
                 style="@style/Widget.Material3.Button.TonalButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Save"
+                android:text="@string/btn_save"
                 android:fontFamily="sans-serif-bold"
                 app:icon="@drawable/ic_save"
                 app:cornerRadius="12dp" />
@@ -119,7 +119,7 @@
                         style="@style/Widget.Material3.Button.TonalButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Color"
+                        android:text="@string/btn_color"
                         app:cornerRadius="12dp" />
                     <SeekBar
                         android:id="@+id/seekTextSize"
@@ -145,7 +145,7 @@
                         android:layout_width="0dp"
                         android:layout_weight="1"
                         android:layout_height="wrap_content"
-                        android:text="Send to Back"
+                        android:text="@string/btn_send_to_back"
                         android:textSize="12sp"
                         android:layout_marginEnd="8dp"
                         app:cornerRadius="12dp" />
@@ -156,7 +156,7 @@
                         android:layout_width="0dp"
                         android:layout_weight="1"
                         android:layout_height="wrap_content"
-                        android:text="Bring to Front"
+                        android:text="@string/btn_bring_to_front"
                         android:textSize="12sp"
                         android:layout_marginStart="8dp"
                         app:cornerRadius="12dp" />
@@ -178,7 +178,7 @@
                     android:orientation="horizontal"
                     android:gravity="center">
                     <TextView
-                        android:text="Size"
+                        android:text="@string/label_size"
                         android:fontFamily="sans-serif-bold"
                         android:textColor="?attr/colorOnSurface"
                         android:layout_width="wrap_content"
@@ -207,7 +207,7 @@
                         android:layout_width="0dp"
                         android:layout_weight="1"
                         android:layout_height="wrap_content"
-                        android:text="Send to Back"
+                        android:text="@string/btn_send_to_back"
                         android:textSize="12sp"
                         android:layout_marginEnd="8dp"
                         app:cornerRadius="12dp" />
@@ -218,7 +218,7 @@
                         android:layout_width="0dp"
                         android:layout_weight="1"
                         android:layout_height="wrap_content"
-                        android:text="Bring to Front"
+                        android:text="@string/btn_bring_to_front"
                         android:textSize="12sp"
                         android:layout_marginStart="8dp"
                         app:cornerRadius="12dp" />
@@ -246,7 +246,7 @@
                         android:id="@+id/btnTabNormalFrame"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Frame"
+                        android:text="@string/label_frame"
                         android:paddingHorizontal="24dp"
                         android:paddingVertical="8dp"
                         android:textSize="13sp"
@@ -258,7 +258,7 @@
                         android:id="@+id/btnTabBusinessFrame"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Business Frame"
+                        android:text="@string/label_business_frame"
                         android:layout_marginStart="12dp"
                         android:paddingHorizontal="24dp"
                         android:paddingVertical="8dp"
@@ -299,7 +299,7 @@
                         android:src="@drawable/ic_edit"
                         style="@style/EditorToolIconStyle" />
                     <TextView
-                        android:text="Text"
+                        android:text="@string/btn_text"
                         style="@style/EditorToolTextStyle" />
                 </LinearLayout>
 
@@ -312,7 +312,7 @@
                         android:src="@android:drawable/ic_menu_add"
                         style="@style/EditorToolIconStyle" />
                     <TextView
-                        android:text="Image"
+                        android:text="@string/label_image"
                         style="@style/EditorToolTextStyle" />
                 </LinearLayout>
                 <LinearLayout
@@ -322,7 +322,7 @@
                         android:src="@android:drawable/ic_menu_crop"
                         style="@style/EditorToolIconStyle" />
                     <TextView
-                        android:text="Frame"
+                        android:text="@string/label_frame"
                         style="@style/EditorToolTextStyle" />
                 </LinearLayout>
 
@@ -335,7 +335,7 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp" />
                     <TextView
-                        android:text="Bg Color"
+                        android:text="@string/label_bg_color"
                         style="@style/EditorToolTextStyle" />
                 </LinearLayout>
 

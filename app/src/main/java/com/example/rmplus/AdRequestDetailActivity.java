@@ -23,6 +23,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 import com.example.rmplus.AdvertisementItem;
+import com.example.rmplus.NotificationHelper;
 
 
 public class AdRequestDetailActivity extends AppCompatActivity {
@@ -263,16 +264,24 @@ public class AdRequestDetailActivity extends AppCompatActivity {
         // ✅ IF ACCEPTED → ADD TO HOME PAGE
         // ==========================================
         if ("accepted".equals(s)) {
-
             saveToHomeAdvertisement();
-        }
 
-        NotificationHelper.send(
-                this,
-                r.uid,
-                "Advertisement Status: " + s,
-                r.adLink
-        );
+            // 📢 Notify USER (Approved)
+            NotificationHelper.send(
+                    this,
+                    r.uid,
+                    "Advertisement Approved",
+                    "Your advertisement has been approved and is now live."
+            );
+        } else if ("rejected".equals(s)) {
+            // 📢 Notify USER (Rejected)
+            NotificationHelper.send(
+                    this,
+                    r.uid,
+                    "Advertisement Rejected",
+                    "Your advertisement request has been rejected."
+            );
+        }
 
         Toast.makeText(this,
                 R.string.msg_updated,
@@ -302,9 +311,22 @@ public class AdRequestDetailActivity extends AppCompatActivity {
                 r.userName != null ? r.userName : "User",
                 r.time
         );
+        adItem.uid = r.uid; // Set UID for expiry notifications
+        adItem.id = templateId; // Important for redirection highlight
 
         // 1. Firebase
         dbRef.child(templateId).setValue(adItem);
+
+        // 📢 SEND BROADCAST NOTIFICATION
+        NotificationHelper.sendBroadcast(
+                this,
+                templateId,
+                getString(R.string.title_notif_new_ad),
+                getString(R.string.msg_notif_new_ad),
+                "OPEN_AD",
+                templateId,
+                expiryTime
+        );
 
         // 2. SharedPreferences
         SharedPreferences sp =

@@ -40,7 +40,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginStart="8dp"
-                    android:text="Name"
+                    android:text="@string/placeholder_name"
                     android:textColor="#333333"
                     android:textSize="14sp"
                     android:textStyle="bold"
@@ -62,7 +62,7 @@
                     android:id="@+id/frame_mobile"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Mobile"
+                    android:text="@string/placeholder_mobile"
                     android:textColor="#FFFFFF"
                     android:textSize="12sp"
                     android:textStyle="bold" />
@@ -72,7 +72,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
-                    android:text="Email"
+                    android:text="@string/placeholder_email"
                     android:textColor="#BDBDBD"
                     android:textSize="10sp" />
             </LinearLayout>

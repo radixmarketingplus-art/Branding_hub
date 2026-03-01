@@ -285,7 +285,7 @@ public class ApproveRejectActivity extends AppCompatActivity {
                                 ApproveRejectActivity.this,
                                 uid,
                                 "Subscription Approved",
-                                "Your plan has been approved!");
+                                "Your subscription has been approved");
 
                 finish();
         }
@@ -311,7 +311,7 @@ public class ApproveRejectActivity extends AppCompatActivity {
                                 ApproveRejectActivity.this,
                                 uid,
                                 "Subscription Rejected",
-                                "Your plan request was rejected.");
+                                "Your subscription has been rejected");
 
                 finish();
         }

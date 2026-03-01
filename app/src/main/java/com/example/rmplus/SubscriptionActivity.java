@@ -297,11 +297,21 @@ public class SubscriptionActivity extends AppCompatActivity {
                                         .addOnSuccessListener(v -> {
                                             userRef.child("subscriptionStatus").setValue("pending");
 
+                                            // 📢 Notify USER
                                             NotificationHelper.send(
                                                     SubscriptionActivity.this,
                                                     auth.getUid(),
                                                     "Subscription Request Sent",
-                                                    "Your subscription request has been sent for review.");
+                                                    "Your subscription request has been submitted for review.");
+
+                                            // 📢 Notify ADMINS
+                                            NotificationHelper.notifyAdmins(
+                                                    SubscriptionActivity.this,
+                                                    "New Subscription Request",
+                                                    "A user has submitted a new subscription request.",
+                                                    "OPEN_SUBSCRIPTION_REQUESTS",
+                                                    auth.getUid()
+                                            );
 
                                             runOnUiThread(() -> {
                                                 setSubmitting(false);

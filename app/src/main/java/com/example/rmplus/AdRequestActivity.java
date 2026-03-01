@@ -268,6 +268,24 @@ public class AdRequestActivity extends AppCompatActivity {
 
                 adRef.child(id).setValue(r)
                         .addOnSuccessListener(u -> {
+
+                            // 📢 Notify USER
+                            NotificationHelper.send(
+                                    AdRequestActivity.this,
+                                    FirebaseAuth.getInstance().getUid(),
+                                    "Advertisement Request Sent",
+                                    "Your advertisement request has been submitted for review."
+                            );
+
+                            // 📢 Notify ADMINS
+                            NotificationHelper.notifyAdmins(
+                                    AdRequestActivity.this,
+                                    "New Advertisement Request",
+                                    "A user has submitted a new advertisement request.",
+                                    "OPEN_AD_REQUESTS", // Action to handle in NotificationActivity
+                                    id
+                            );
+
                             runOnUiThread(() -> {
                                 setSubmitting(false);
                                 toast(R.string.msg_adv_request_sent);

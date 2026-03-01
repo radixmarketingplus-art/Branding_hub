@@ -21,11 +21,17 @@ public class TemplateGridAdapter
 
     ArrayList<TemplateModel> list;
     ClickListener listener;
+    String highlightId = null;
 
     public TemplateGridAdapter(ArrayList<TemplateModel> list,
                                ClickListener l) {
         this.list = list;
         listener = l;
+    }
+
+    public void setHighlightId(String id) {
+        this.highlightId = id;
+        notifyDataSetChanged();
     }
 
     public void setData(ArrayList<TemplateModel> newList) {
@@ -64,6 +70,20 @@ public class TemplateGridAdapter
 
         h.itemView.setOnClickListener(v ->
                 listener.onClick(list.get(i)));
+
+        // ✨ HIGHLIGHT LOGIC (Blue Shadow/Border)
+        if (h.itemView instanceof com.google.android.material.card.MaterialCardView) {
+            com.google.android.material.card.MaterialCardView card = (com.google.android.material.card.MaterialCardView) h.itemView;
+            if (highlightId != null && highlightId.equals(template.id)) {
+                card.setStrokeColor(android.graphics.Color.parseColor("#4A6CF7")); // Blue highlight
+                card.setStrokeWidth(12); // Thick highlight
+                card.setCardElevation(20); // Extra shadow
+            } else {
+                card.setStrokeWidth(0);
+                // Removed reference to missing R.dimen.cardview_default_elevation
+                card.setCardElevation(10);
+            }
+        }
     }
 
     private String formatDate(String d) {

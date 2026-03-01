@@ -648,6 +648,7 @@ public class UploadTemplatesFragment extends Fragment {
                     if (section.equalsIgnoreCase("Advertisement")) {
                         String link = editAdLink.getText().toString().trim();
                         AdvertisementItem adItem = new AdvertisementItem(imageUrl, link, expiryTime, "Admin", System.currentTimeMillis());
+                        adItem.id = templateId; // Important for redirection highlight
 
                         // 1. Save to Firebase
                         dbRef.child(templateId).setValue(adItem);
@@ -660,6 +661,18 @@ public class UploadTemplatesFragment extends Fragment {
                         sp.edit().putString("Advertisement", gson.toJson(list)).apply();
 
                         toast(R.string.msg_upload_success);
+
+                        // 📢 SEND/UPDATE BROADCAST NOTIFICATION IF "Advertisement"
+                        NotificationHelper.sendBroadcast(
+                                requireContext(),
+                                templateId,
+                                getString(R.string.title_notif_new_ad),
+                                getString(R.string.msg_notif_new_ad),
+                                "OPEN_AD",
+                                templateId,
+                                expiryTime
+                        );
+
                         clearForm();
                         return;
                     }
@@ -705,6 +718,33 @@ public class UploadTemplatesFragment extends Fragment {
                     sp.edit().putString(section, gson.toJson(list)).apply();
 
                     toast(R.string.msg_upload_success);
+
+                    // 📢 SEND/UPDATE BROADCAST NOTIFICATION IF "Latest Update"
+                    if (section.equalsIgnoreCase("Latest Update")) {
+                        NotificationHelper.sendBroadcast(
+                                requireContext(),
+                                templateId, // Use templateId as key to allow updates
+                                getString(R.string.title_notif_latest_update), 
+                                getString(R.string.msg_check_latest_update), 
+                                "OPEN_TEMPLATE",
+                                templateId,
+                                expiryTime // Expiry matches template
+                        );
+                    }
+
+                    // 📢 SEND/UPDATE BROADCAST NOTIFICATION IF "Business Frame"
+                    if (section.equalsIgnoreCase("Business Frame")) {
+                        NotificationHelper.sendBroadcast(
+                                requireContext(),
+                                templateId,
+                                getString(R.string.title_notif_business_frame),
+                                getString(R.string.msg_notif_business_frame),
+                                "OPEN_BUSINESS_FRAME",
+                                templateId,
+                                expiryTime
+                        );
+                    }
+
                     clearForm();
                 });
             }

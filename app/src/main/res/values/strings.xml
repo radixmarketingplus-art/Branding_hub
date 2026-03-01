@@ -213,6 +213,21 @@
     <string name="btn_apply">Apply</string>
     <string name="btn_yes">Yes</string>
     <string name="btn_no">No</string>
+    <string name="btn_save">Save</string>
+    <string name="btn_send_to_back">Send to Back</string>
+    <string name="btn_bring_to_front">Bring to Front</string>
+    <string name="label_frame">Frame</string>
+    <string name="label_business_frame">Business Frame</string>
+    <string name="label_bg_color">Bg Color</string>
+    <string name="label_image">Image</string>
+    <string name="label_none">None</string>
+    <string name="label_design_format">Design %1$d</string>
+    <string name="label_business_format">B-%1$d</string>
+    <string name="title_customer_support">Customer Support</string>
+    <string name="title_agent_support">Agent Support</string>
+    <string name="placeholder_name">Name</string>
+    <string name="placeholder_mobile">Mobile</string>
+    <string name="placeholder_email">Email</string>
     <string name="desc_edited_template">Edited Template</string>
 
     <!-- Headers -->
@@ -727,4 +742,35 @@
     
     <string name="privacy_section_support_title">Help &amp; Support</string>
     <string name="privacy_section_support_desc">If you have any questions regarding your privacy, please feel free to contact our support team.</string>
+    <string name="msg_check_latest_update">Check out the new design in Latest Update section!</string>
+    <string name="title_notif_new_ad">New Premium Advertisement</string>
+    <string name="msg_notif_new_ad">Check out our latest sponsored ad!</string>
+    <string name="title_notif_latest_update">New Latest Update</string>
+    <string name="title_notif_business_frame">New Business Frame</string>
+    <string name="msg_notif_business_frame">New premium frames added to Business section!</string>
+    <string name="title_notif_profile_updated">Profile Updated</string>
+    <string name="msg_notif_profile_updated">Your profile information has been successfully updated.</string>
+    <string name="title_notif_admin_new_sub">New Subscription Request</string>
+    <string name="msg_notif_admin_new_sub">A user has submitted a new subscription request.</string>
+    <string name="title_notif_sub_expired">Subscription Expired</string>
+    <string name="msg_notif_sub_expired">Your premium subscription has expired. Renew now to continue enjoying benefits.</string>
+    <string name="title_notif_admin_new_adv">New Advertisement Request</string>
+    <string name="msg_notif_admin_new_adv">A user has submitted a new advertisement request.</string>
+    <string name="title_notif_adv_approved">Advertisement Approved</string>
+    <string name="msg_notif_adv_approved">Your advertisement has been approved and is now live.</string>
+    <string name="title_notif_adv_rejected">Advertisement Rejected</string>
+    <string name="msg_notif_adv_rejected">Your advertisement request has been rejected.</string>
+    <string name="title_notif_adv_expired">Advertisement Expired</string>
+    <string name="msg_notif_adv_expired">Your advertisement has expired. You can submit a new request to go live again.</string>
+    <string name="msg_adv_request_sent_desc">Your advertisement request has been submitted for review.</string>
+    <string name="title_notif_admin_new_support">New Support Request</string>
+    <string name="msg_notif_admin_new_support">A user has submitted a new support/contact request.</string>
+    <string name="title_notif_support_approved">Support Request Approved</string>
+    <string name="msg_notif_support_approved">Your support request has been approved. You can now chat with our agent.</string>
+    <string name="title_notif_support_rejected">Support Request Rejected</string>
+    <string name="msg_notif_support_rejected">Your support request has been rejected.</string>
+    <string name="msg_support_request_sent_desc">Your support request has been submitted successfully.</string>
+    <string name="title_notif_new_message">New Message</string>
+    <string name="msg_notif_new_message_user">New message from Support Agent.</string>
+    <string name="msg_notif_new_message_admin">New message from user regarding support request.</string>
 </resources>

@@ -18,6 +18,12 @@ public class AdvertisementAdapter
         extends RecyclerView.Adapter<AdvertisementAdapter.VH> {
 
     ArrayList<AdvertisementItem> list;
+    int highlightPos = -1;
+
+    public void setHighlightPos(int pos) {
+        this.highlightPos = pos;
+        notifyDataSetChanged();
+    }
 
     public AdvertisementAdapter(ArrayList<AdvertisementItem> list) {
         this.list = list;
@@ -67,13 +73,30 @@ public class AdvertisementAdapter
         h.itemView.setOnClickListener(v -> {
             Context ctx = v.getContext();
             if (item.link != null && !item.link.isEmpty()) {
+                String finalLink = item.link.trim();
+                if (!finalLink.startsWith("http://") && !finalLink.startsWith("https://")) {
+                    finalLink = "https://" + finalLink;
+                }
                 Intent i = new Intent(
                         Intent.ACTION_VIEW,
-                        Uri.parse(item.link)
+                        Uri.parse(finalLink)
                 );
                 ctx.startActivity(i);
             }
         });
+
+        // ✨ HIGHLIGHT LOGIC (Blue Border) - Specific Position
+        if (h.itemView instanceof com.google.android.material.card.MaterialCardView) {
+            com.google.android.material.card.MaterialCardView card = (com.google.android.material.card.MaterialCardView) h.itemView;
+            if (highlightPos != -1 && highlightPos == position) {
+                card.setStrokeColor(android.graphics.Color.parseColor("#4A6CF7"));
+                card.setStrokeWidth(12);
+                card.setCardElevation(20);
+            } else {
+                card.setStrokeWidth(0);
+                card.setCardElevation(10);
+            }
+        }
     }
 
     @Override

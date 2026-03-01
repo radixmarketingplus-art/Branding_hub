@@ -217,6 +217,21 @@
     <string name="btn_no">नहीं</string>
     <string name="msg_no_frames_found">%1$s के लिए कोई फ्रेम नहीं मिला</string>
     <string name="msg_frame_list_empty">फ्रेम सूची खाली है</string>
+    <string name="btn_save">सेव करें</string>
+    <string name="btn_send_to_back">पीछे भेजें</string>
+    <string name="btn_bring_to_front">आगे लाएं</string>
+    <string name="label_frame">फ्रेम</string>
+    <string name="label_business_frame">बिज़नेस फ्रेम</string>
+    <string name="label_bg_color">पीछे का रंग</string>
+    <string name="label_image">इमेज</string>
+    <string name="label_none">कोई नहीं</string>
+    <string name="label_design_format">डिज़ाइन %1$d</string>
+    <string name="label_business_format">B-%1$d</string>
+    <string name="title_customer_support">ग्राहक सहायता</string>
+    <string name="title_agent_support">एजेंट सहायता</string>
+    <string name="placeholder_name">नाम</string>
+    <string name="placeholder_mobile">मोबाइल</string>
+    <string name="placeholder_email">ईमेल</string>
     <string name="desc_edited_template">संपादित टेम्पलेट</string>
 
     <!-- Headers -->
@@ -729,4 +744,35 @@
 
     <string name="privacy_section_support_title">सहायता और सहायता</string>
     <string name="privacy_section_support_desc">यदि आपकी गोपनीयता के संबंध में आपके कोई प्रश्न हैं, तो कृपया हमारी सहायता टीम से संपर्क करें।</string>
+    <string name="msg_check_latest_update">लेटेस्ट अपडेट सेक्शन में नया डिज़ाइन देखें!</string>
+    <string name="title_notif_new_ad">नया प्रीमियम विज्ञापन</string>
+    <string name="msg_notif_new_ad">हमारा नवीनतम प्रायोजित विज्ञापन देखें!</string>
+    <string name="title_notif_latest_update">नया लेटेस्ट अपडेट</string>
+    <string name="title_notif_business_frame">नया बिज़नेस फ्रेम</string>
+    <string name="msg_notif_business_frame">बिज़नेस सेक्शन में नए प्रीमियम फ्रेम्स जोड़े गए हैं!</string>
+    <string name="title_notif_profile_updated">प्रोफाइल अपडेट हो गई</string>
+    <string name="msg_notif_profile_updated">आपकी प्रोफाइल जानकारी सफलतापूर्वक अपडेट कर दी गई है।</string>
+    <string name="title_notif_admin_new_sub">नया सब्सक्रिप्शन अनुरोध</string>
+    <string name="msg_notif_admin_new_sub">एक यूजर ने नया सब्सक्रिप्शन अनुरोध भेजा है।</string>
+    <string name="title_notif_sub_expired">सब्सक्रिप्शन समाप्त</string>
+    <string name="msg_notif_sub_expired">आपका प्रीमियम सब्सक्रिप्शन समाप्त हो गया है। लाभ जारी रखने के लिए अभी रिन्यू करें।</string>
+    <string name="title_notif_admin_new_adv">नया विज्ञापन अनुरोध</string>
+    <string name="msg_notif_admin_new_adv">एक यूजर ने नया विज्ञापन अनुरोध भेजा है।</string>
+    <string name="title_notif_adv_approved">विज्ञापन स्वीकृत</string>
+    <string name="msg_notif_adv_approved">आपका विज्ञापन स्वीकृत हो गया है और अब लाइव है।</string>
+    <string name="title_notif_adv_rejected">विज्ञापन अस्वीकृत</string>
+    <string name="msg_notif_adv_rejected">आपका विज्ञापन अनुरोध अस्वीकृत कर दिया गया है।</string>
+    <string name="title_notif_adv_expired">विज्ञापन समाप्त</string>
+    <string name="msg_notif_adv_expired">आपका विज्ञापन समाप्त हो गया है। फिर से लाइव होने के लिए आप नया अनुरोध भेज सकते हैं।</string>
+    <string name="msg_adv_request_sent_desc">आपका विज्ञापन अनुरोध समीक्षा के लिए सबमिट कर दिया गया है।</string>
+    <string name="title_notif_admin_new_support">नया सहायता अनुरोध</string>
+    <string name="msg_notif_admin_new_support">एक यूजर ने नया सहायता/संपर्क अनुरोध भेजा है।</string>
+    <string name="title_notif_support_approved">सहायता अनुरोध स्वीकृत</string>
+    <string name="msg_notif_support_approved">आपका सहायता अनुरोध स्वीकृत हो गया है। अब आप हमारे एजेंट से चैट कर सकते हैं।</string>
+    <string name="title_notif_support_rejected">सहायता अनुरोध अस्वीकृत</string>
+    <string name="msg_notif_support_rejected">आपका सहायता अनुरोध अस्वीकृत कर दिया गया है।</string>
+    <string name="msg_support_request_sent_desc">आपका सहायता अनुरोध सफलतापूर्वक सबमिट कर दिया गया है।</string>
+    <string name="title_notif_new_message">नया मैसेज</string>
+    <string name="msg_notif_new_message_user">सपोर्ट एजेंट का नया मैसेज।</string>
+    <string name="msg_notif_new_message_admin">यूजर का नया मैसेज।</string>
 </resources>

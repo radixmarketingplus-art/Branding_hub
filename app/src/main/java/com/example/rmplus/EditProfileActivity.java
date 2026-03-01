@@ -535,11 +535,17 @@ public class EditProfileActivity extends AppCompatActivity {
         userRef.child("profileImage").setValue(profileUrl);
 
         Toast.makeText(this, R.string.msg_profile_updated, Toast.LENGTH_SHORT).show();
+        
+        // 📢 SEND PERSONAL NOTIFICATION (2 Days Expiry + Redirect to Profile)
+        long expiry2Days = System.currentTimeMillis() + (2 * 24 * 60 * 60 * 1000L);
         NotificationHelper.send(
                 EditProfileActivity.this,
                 FirebaseAuth.getInstance().getUid(),
-                "Profile Updated",
-                "Your profile information has been successfully updated.");
+                getString(R.string.title_notif_profile_updated),
+                getString(R.string.msg_notif_profile_updated),
+                "OPEN_PROFILE",
+                "", 
+                expiry2Days);
 
         finish();
     }

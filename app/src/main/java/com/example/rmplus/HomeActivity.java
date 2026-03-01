@@ -36,9 +36,11 @@ import java.util.*;
 
 public class HomeActivity extends BaseActivity {
 
-    TextView btnAll;
-
     RecyclerView rvTrending, rvFestivalCards;
+    androidx.core.widget.NestedScrollView mainScroll;
+    TextView btnAll;
+    String targetId = null;
+    String targetAdId = null;
 
     Handler trendingHandler;
     Runnable trendingRunnable;
@@ -57,7 +59,8 @@ public class HomeActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        // String role = getIntent().getStringExtra("role");
+        targetId = getIntent().getStringExtra("target_template_id");
+        targetAdId = getIntent().getStringExtra("target_ad_id");
         // setupBase(role);
         SharedPreferences sp = getSharedPreferences("APP_DATA", MODE_PRIVATE);
 
@@ -67,6 +70,7 @@ public class HomeActivity extends BaseActivity {
 
         rvTrending = findViewById(R.id.rvTrending);
         rvFestivalCards = findViewById(R.id.rvFestivalCards);
+        mainScroll = findViewById(R.id.mainScroll);
         btnAll = findViewById(R.id.btnAll);
         skTrending = findViewById(R.id.skTrending);
         skFestival = findViewById(R.id.skFestival);
@@ -133,7 +137,7 @@ public class HomeActivity extends BaseActivity {
 
         trendingHandler = new Handler();
         trendingRunnable = () -> autoScrollTrending();
-        trendingHandler.postDelayed(trendingRunnable, 2500);
+        // Removed redundant postDelayed here, will start in onResume
 
         btnAll.setVisibility(View.VISIBLE); // Show it permanently as a gallery link
         btnAll.setOnClickListener(v -> {
@@ -272,7 +276,7 @@ public class HomeActivity extends BaseActivity {
                                     : d.child("url").getValue(String.class);
                             String link = d.child("link").getValue(String.class);
                             if (url != null)
-                                adList.add(new AdvertisementItem(url, link != null ? link : ""));
+                                adList.add(new AdvertisementItem(d.getKey(), url, link != null ? link : ""));
                         }
 
                         if (!adList.isEmpty()) {
@@ -281,8 +285,40 @@ public class HomeActivity extends BaseActivity {
                             int size = adList.size();
                             for (int i = 0; i < 1000; i++)
                                 infiniteList.add(adList.get(i % size));
-                            rvTrending.setAdapter(new AdvertisementAdapter(infiniteList));
                             trendingOriginalSize = size;
+                            rvTrending.setAdapter(new AdvertisementAdapter(infiniteList));
+
+                            // ✨ HIGHLIGHT & SCROLL IF TARGET AD ID MATCHES
+                            if (targetAdId != null) {
+                                // Pause auto-scroller while highlighting
+                                if (trendingHandler != null) trendingHandler.removeCallbacks(trendingRunnable);
+
+                                for (int i = 0; i < infiniteList.size(); i++) {
+                                    if (infiniteList.get(i).id != null && infiniteList.get(i).id.equals(targetAdId)) {
+                                        final int finalPos = i;
+                                        if (rvTrending.getAdapter() instanceof AdvertisementAdapter) {
+                                            AdvertisementAdapter adp = (AdvertisementAdapter) rvTrending.getAdapter();
+                                            adp.setHighlightPos(finalPos);
+                                            
+                                            mainScroll.smoothScrollTo(0, 0); // Ads are at the top
+                                            rvTrending.postDelayed(() -> {
+                                                rvTrending.scrollToPosition(finalPos);
+                                                
+                                                new Handler().postDelayed(() -> {
+                                                    adp.setHighlightPos(-1);
+                                                    targetAdId = null;
+                                                    // Resume auto-scroller
+                                                    if (trendingHandler != null) {
+                                                        trendingHandler.removeCallbacks(trendingRunnable);
+                                                        trendingHandler.postDelayed(trendingRunnable, 3000);
+                                                    }
+                                                }, 4000);
+                                            }, 400);
+                                        }
+                                        break;
+                                    }
+                                }
+                            }
                         } else {
                             // FALLBACK TO TRENDING NOW
                             DataSnapshot trending = root.child("Trending Now");
@@ -603,14 +639,45 @@ public class HomeActivity extends BaseActivity {
 
                                 if (!list.isEmpty()) {
                                     safelyHideSkeleton(skSection);
-                                    rvItems.setAdapter(new TemplateGridAdapter(list, t -> {
+                                    TemplateGridAdapter adapterInstance = new TemplateGridAdapter(list, t -> {
                                         Intent i = new Intent(HomeActivity.this, TemplatePreviewActivity.class);
                                         i.putExtra("id", t.id);
                                         i.putExtra("path", t.url);
                                         i.putExtra("category", t.category);
                                         startActivity(i);
-                                    }));
+                                    });
+                                    rvItems.setAdapter(adapterInstance);
                                     container.addView(sectionView);
+
+                                    // ✨ HIGHLIGHT & SCROLL IF TARGET ID MATCHES
+                                    if (key.equalsIgnoreCase("Latest Update") && targetId != null) {
+                                        for (int i = 0; i < list.size(); i++) {
+                                            if (list.get(i).id != null && list.get(i).id.equals(targetId)) {
+                                                adapterInstance.setHighlightId(targetId);
+                                                final int scrollPos = i;
+                                                final View targetSection = sectionView;
+                                                
+                                                // 1. Scroll vertical page to the section
+                                                mainScroll.postDelayed(() -> {
+                                                    // Calculate absolute top position in ScrollView
+                                                    int verticalPos = targetSection.getTop() + container.getTop();
+                                                    mainScroll.smoothScrollTo(0, verticalPos);
+                                                    
+                                                    // 2. Scroll horizontal list to the item
+                                                    rvItems.postDelayed(() -> {
+                                                        rvItems.smoothScrollToPosition(scrollPos);
+                                                        
+                                                        // 3. Remove highlight after 4 seconds
+                                                        new Handler().postDelayed(() -> {
+                                                            adapterInstance.setHighlightId(null);
+                                                            targetId = null; // Clear so it doesn't trigger again
+                                                        }, 4000);
+                                                    }, 600);
+                                                }, 800);
+                                                break;
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -798,8 +865,10 @@ public class HomeActivity extends BaseActivity {
 
         loadHeroSectionLive(); // Merged loadAdvertisementLive and loadTrendingLive
 
-        if (trendingHandler != null)
+        if (trendingHandler != null) {
+            trendingHandler.removeCallbacks(trendingRunnable);
             trendingHandler.postDelayed(trendingRunnable, 3000);
+        }
     }
 
     @Override
