@@ -14,6 +14,7 @@ import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.widget.*;
+import android.graphics.Color;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.view.ViewGroup;
@@ -36,27 +37,33 @@ import yuku.ambilwarna.AmbilWarnaDialog;
 
 public class ManageTemplatesActivity extends AppCompatActivity {
 
-    FrameLayout wrapText, wrapLogo, wrapGallery;
-    ImageView imgTemplate, imgLogo, imgGallery;
-    ImageView btnDeleteText, btnDeleteLogo, btnDeleteGallery;
-    TextView txtEdit;
+    FrameLayout canvas;
+    View activeOverlay;
+    View activeContent;
+    ImageView imgTemplate;
     com.google.android.material.button.MaterialButton btnSave;
+    com.google.android.material.button.MaterialButton btnSendBack, btnBringFront, btnTextSendBack, btnTextBringFront;
     Button btnColor;
-    LinearLayout btnText, btnLogo, btnGallery, btnFrame;
+    LinearLayout btnText, btnGallery, btnFrame, btnBgColorTool;
+    LinearLayout textLayerControlsLayout, imageLayerControlsLayout;
+    TextView btnTabNormalFrame, btnTabBusinessFrame;
     LinearLayout textControls, imageControls, frameControls;
     FrameLayout dynamicFrameContainer;
     RecyclerView rvFrames;
     String uName, uMobile, uEmail, uProfileUrl;
 
-    static final int PICK_LOGO = 101;
-    static final int PICK_GALLERY = 102;
+    static final int PICK_IMAGE = 101;
     SeekBar seekTextSize, seekImageSize;
-    View scaleLogo, scaleGallery; // New containers for scaling content only
 
     String originalPath;
     String templateId;
     String uid;
+    boolean isBusinessFrame = false;
     DatabaseReference rootRef;
+
+    ScaleGestureDetector scaleGestureDetector;
+    float lastPanX, lastPanY;
+    boolean isPanningCanvas = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,20 +71,9 @@ public class ManageTemplatesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_manage_templates);
 
         // ==== Bind ====
-        wrapText = findViewById(R.id.wrapText);
-        wrapLogo = findViewById(R.id.wrapLogo);
-        wrapGallery = findViewById(R.id.wrapGallery);
-
-        btnDeleteText = findViewById(R.id.btnDeleteText);
-        btnDeleteLogo = findViewById(R.id.btnDeleteLogo);
-        btnDeleteGallery = findViewById(R.id.btnDeleteGallery);
-
+        canvas = findViewById(R.id.canvas);
         imgTemplate = findViewById(R.id.imgTemplate);
-        imgLogo = findViewById(R.id.imgLogo);
-        imgGallery = findViewById(R.id.imgGallery);
-        txtEdit = findViewById(R.id.txtEdit);
         btnText = findViewById(R.id.btnText);
-        btnLogo = findViewById(R.id.btnLogo);
         btnGallery = findViewById(R.id.btnGallery);
         btnSave = findViewById(R.id.btnSave);
         btnColor = findViewById(R.id.btnColor);
@@ -85,12 +81,19 @@ public class ManageTemplatesActivity extends AppCompatActivity {
         imageControls = findViewById(R.id.imageControls);
         seekTextSize = findViewById(R.id.seekTextSize);
         seekImageSize = findViewById(R.id.seekImageSize);
-        scaleLogo = findViewById(R.id.scaleLogo);
-        scaleGallery = findViewById(R.id.scaleGallery);
         btnFrame = findViewById(R.id.btnFrame);
         frameControls = findViewById(R.id.frameControls);
         rvFrames = findViewById(R.id.rvFrames);
         dynamicFrameContainer = findViewById(R.id.dynamicFrameContainer);
+        btnTabNormalFrame = findViewById(R.id.btnTabNormalFrame);
+        btnTabBusinessFrame = findViewById(R.id.btnTabBusinessFrame);
+        btnBgColorTool = findViewById(R.id.btnBgColorTool);
+        btnSendBack = findViewById(R.id.btnSendBack);
+        btnBringFront = findViewById(R.id.btnBringFront);
+        btnTextSendBack = findViewById(R.id.btnTextSendBack);
+        btnTextBringFront = findViewById(R.id.btnTextBringFront);
+        textLayerControlsLayout = findViewById(R.id.textLayerControlsLayout);
+        imageLayerControlsLayout = findViewById(R.id.imageLayerControlsLayout);
 
         uid = FirebaseAuth.getInstance().getUid();
         rootRef = FirebaseDatabase.getInstance().getReference();
@@ -103,97 +106,153 @@ public class ManageTemplatesActivity extends AppCompatActivity {
             loadImageSmart(originalPath, imgTemplate);
         }
 
-        imgLogo.setClipToOutline(true);
-        imgLogo.setBackgroundResource(R.drawable.shape_circle);
+        String category = getIntent().getStringExtra("category");
+        isBusinessFrame = (category != null && category.contains("Business Frame"));
 
-        // ==== Drag & Selection Logic ====
-        enableDrag(wrapText, null);
-        enableDrag(wrapLogo, scaleLogo);
-        enableDrag(wrapGallery, scaleGallery);
+        if (isBusinessFrame) {
+            btnFrame.setVisibility(View.GONE);
+        } else {
+            // Hide bg color tool for non-business frames
+            btnBgColorTool.setVisibility(View.GONE);
+        }
 
-        // Add Tap-to-select behavior
-        wrapText.setOnClickListener(v -> {
-            textControls.setVisibility(View.VISIBLE);
-            imageControls.setVisibility(View.GONE);
+        // Tap on canvas to deselect all, and also Handle 1-finger Pan on Canvas!
+        canvas.setOnTouchListener(new View.OnTouchListener() {
+            float lastX, lastY;
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getPointerCount() == 1) {
+                    int action = event.getActionMasked();
+                    if (action == MotionEvent.ACTION_DOWN) {
+                        lastX = event.getRawX();
+                        lastY = event.getRawY();
+                        deselectAll();
+                        return true; // We MUST return true to receive ACTION_MOVE
+                    } else if (action == MotionEvent.ACTION_MOVE && canvas.getScaleX() > 1.0f) {
+                        float dx = event.getRawX() - lastX;
+                        float dy = event.getRawY() - lastY;
+
+                        canvas.setTranslationX(canvas.getTranslationX() + dx);
+                        canvas.setTranslationY(canvas.getTranslationY() + dy);
+
+                        lastX = event.getRawX();
+                        lastY = event.getRawY();
+                        return true;
+                    }
+                }
+                return false;
+            }
         });
 
-        wrapLogo.setOnClickListener(v -> {
-            imageControls.setVisibility(View.VISIBLE);
-            textControls.setVisibility(View.GONE);
-            // Sync SeekBar to current scale
-            float currentScale = scaleLogo.getScaleX();
-            int progress = (int) ((currentScale - 0.2f) * 50f);
-            seekImageSize.setProgress(Math.max(0, Math.min(100, progress)));
-        });
-
-        wrapGallery.setOnClickListener(v -> {
-            imageControls.setVisibility(View.VISIBLE);
-            textControls.setVisibility(View.GONE);
-            // Sync SeekBar to current scale
-            float currentScale = scaleGallery.getScaleX();
-            int progress = (int) ((currentScale - 0.2f) * 50f);
-            seekImageSize.setProgress(Math.max(0, Math.min(100, progress)));
-        });
-
-        btnDeleteText.setOnClickListener(v -> {
-            wrapText.setVisibility(View.GONE);
-            txtEdit.setText(R.string.ph_edit_text);
-            textControls.setVisibility(View.GONE);
-        });
-        btnDeleteLogo.setOnClickListener(v -> {
-            wrapLogo.setVisibility(View.GONE);
-            imgLogo.setImageDrawable(null);
-            imageControls.setVisibility(View.GONE);
-        });
-        btnDeleteGallery.setOnClickListener(v -> {
-            wrapGallery.setVisibility(View.GONE);
-            imgGallery.setImageDrawable(null);
-        });
+        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
 
         // ==== FETCH USER DATA FOR DYNAMIC FRAMES ====
         loadUserData();
+
+        // ==== CANVAS PINCH TO ZOOM & PAN ====
+        scaleGestureDetector = new ScaleGestureDetector(this,
+                new ScaleGestureDetector.SimpleOnScaleGestureListener() {
+                    @Override
+                    public boolean onScale(ScaleGestureDetector detector) {
+                        if (canvas == null)
+                            return false;
+                        float scaleFactor = canvas.getScaleX() * detector.getScaleFactor();
+                        scaleFactor = Math.max(1.0f, Math.min(scaleFactor, 5.0f)); // Limit zoom (1.0x to 5x)
+                        canvas.setScaleX(scaleFactor);
+                        canvas.setScaleY(scaleFactor);
+
+                        // Snap back translation if fully zoomed out
+                        if (scaleFactor <= 1.0f) {
+                            canvas.setTranslationX(0f);
+                            canvas.setTranslationY(0f);
+                        }
+
+                        return true;
+                    }
+                });
 
         // ==== FRAME DESIGN SELECTION ====
         btnFrame.setOnClickListener(v -> {
             textControls.setVisibility(View.GONE);
             imageControls.setVisibility(View.GONE);
             frameControls.setVisibility(View.VISIBLE);
-            setupFrameAdapter();
+            btnTabNormalFrame.performClick(); // default to normal frame
+        });
+
+        btnTabNormalFrame.setOnClickListener(v -> {
+            btnTabNormalFrame.setTypeface(null, android.graphics.Typeface.BOLD);
+            btnTabNormalFrame.setTextColor(getColorFromAttr(com.google.android.material.R.attr.colorOnSurface));
+            btnTabNormalFrame.setBackgroundResource(R.drawable.bg_filter_chip_selected);
+            btnTabBusinessFrame.setTypeface(null, android.graphics.Typeface.NORMAL);
+            btnTabBusinessFrame.setTextColor(getResources().getColor(android.R.color.darker_gray, getTheme()));
+            btnTabBusinessFrame.setBackgroundResource(R.drawable.bg_filter_chip);
+            setupFrameAdapter("Normal");
+        });
+
+        btnTabBusinessFrame.setOnClickListener(v -> {
+            btnTabBusinessFrame.setTypeface(null, android.graphics.Typeface.BOLD);
+            btnTabBusinessFrame.setTextColor(getColorFromAttr(com.google.android.material.R.attr.colorOnSurface));
+            btnTabBusinessFrame.setBackgroundResource(R.drawable.bg_filter_chip_selected);
+            btnTabNormalFrame.setTypeface(null, android.graphics.Typeface.NORMAL);
+            btnTabNormalFrame.setTextColor(getResources().getColor(android.R.color.darker_gray, getTheme()));
+            btnTabNormalFrame.setBackgroundResource(R.drawable.bg_filter_chip);
+            setupFrameAdapter("Business");
         });
 
         // ==== TEXT ====
         btnText.setOnClickListener(v -> {
-            txtEdit.setText(R.string.ph_edit_text);
-            wrapText.setX(100);
-            wrapText.setY(100);
-            wrapText.setVisibility(View.VISIBLE);
-
-            textControls.setVisibility(View.VISIBLE);
-            imageControls.setVisibility(View.GONE);
-
-            showTextEditor();
+            addNewText();
         });
 
-        // ==== LOGO ====
-        btnLogo.setOnClickListener(v -> {
-            textControls.setVisibility(View.GONE);
-            pickLogoFromGallery();
-        });
-
-        // ==== GALLERY ====
+        // ==== GALLERY (IMAGE) ====
         btnGallery.setOnClickListener(v -> {
-            textControls.setVisibility(View.GONE);
-            Intent i = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-            startActivityForResult(i, PICK_GALLERY);
+            pickImageFromGallery();
+        });
+
+        // ==== BG COLOR ====
+        btnBgColorTool.setOnClickListener(v -> {
+            deselectAll();
+            showColorPickerForCanvas();
+        });
+
+        // ==== LAYER CONTROLS (IMAGE) ====
+        btnSendBack.setOnClickListener(v -> {
+            if (activeOverlay != null && activeOverlay.getParent() == canvas) {
+                canvas.removeView(activeOverlay);
+                int targetIndex = isBusinessFrame ? 0 : 1;
+                canvas.addView(activeOverlay, targetIndex);
+            }
+        });
+
+        btnBringFront.setOnClickListener(v -> {
+            if (activeOverlay != null && activeOverlay.getParent() == canvas) {
+                activeOverlay.bringToFront();
+            }
+        });
+
+        // ==== LAYER CONTROLS (TEXT) ====
+        btnTextSendBack.setOnClickListener(v -> {
+            if (activeOverlay != null && activeOverlay.getParent() == canvas) {
+                canvas.removeView(activeOverlay);
+                int targetIndex = isBusinessFrame ? 0 : 1;
+                canvas.addView(activeOverlay, targetIndex);
+            }
+        });
+
+        btnTextBringFront.setOnClickListener(v -> {
+            if (activeOverlay != null && activeOverlay.getParent() == canvas) {
+                activeOverlay.bringToFront();
+            }
         });
 
         // ==== SEEKBARS ====
         seekTextSize.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if (fromUser) {
-                    float newSize = 20 + (progress * 3); // 20px to ~320px
-                    txtEdit.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, newSize);
+                if (fromUser && activeContent instanceof TextView) {
+                    float newSize = 10 + (progress * 2);
+                    ((TextView) activeContent).setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, newSize);
                 }
             }
 
@@ -209,20 +268,17 @@ public class ManageTemplatesActivity extends AppCompatActivity {
         seekImageSize.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if (fromUser) {
-                    float scale = 0.2f + (progress / 50f); // 0.2x to ~2.2x
-                    if (wrapLogo.getVisibility() == View.VISIBLE && imageControls.getVisibility() == View.VISIBLE) {
-                        scaleLogo.setScaleX(scale);
-                        scaleLogo.setScaleY(scale);
-                        // Fix delete icon position & size by inverting the scale
-                        btnDeleteLogo.setScaleX(1.0f / scale);
-                        btnDeleteLogo.setScaleY(1.0f / scale);
-                    } else if (wrapGallery.getVisibility() == View.VISIBLE
-                            && imageControls.getVisibility() == View.VISIBLE) {
-                        scaleGallery.setScaleX(scale);
-                        scaleGallery.setScaleY(scale);
-                        btnDeleteGallery.setScaleX(1.0f / scale);
-                        btnDeleteGallery.setScaleY(1.0f / scale);
+                if (fromUser && activeOverlay != null && activeContent instanceof ImageView) {
+                    float scale = 0.1f + (progress / 40f);
+                    activeOverlay.setScaleX(scale);
+                    activeOverlay.setScaleY(scale);
+
+                    if (((ViewGroup) activeOverlay).getChildCount() > 1) {
+                        View btnDel = ((ViewGroup) activeOverlay).getChildAt(1);
+                        // Prevent the delete handle from warping or getting stretched weirdly
+                        // Keep its visual size consistent no matter how small the image gets
+                        btnDel.setScaleX(1.0f / scale);
+                        btnDel.setScaleY(1.0f / scale);
                     }
                 }
             }
@@ -236,25 +292,23 @@ public class ManageTemplatesActivity extends AppCompatActivity {
             }
         });
 
-
         // ==== COLOR ====
-       btnColor.setOnClickListener(v -> {
-            new AmbilWarnaDialog(
-                    this,
-                    txtEdit.getCurrentTextColor(),
-                    new AmbilWarnaDialog.OnAmbilWarnaListener() {
+        btnColor.setOnClickListener(v -> {
+            if (activeContent instanceof TextView) {
+                new AmbilWarnaDialog(
+                        this,
+                        ((TextView) activeContent).getCurrentTextColor(),
+                        new AmbilWarnaDialog.OnAmbilWarnaListener() {
+                            @Override
+                            public void onOk(AmbilWarnaDialog dialog, int color) {
+                                ((TextView) activeContent).setTextColor(color);
+                            }
 
-                        @Override
-                        public void onOk(AmbilWarnaDialog dialog, int color) {
-                            txtEdit.setTextColor(color);
-                        }
-
-                        @Override
-                        public void onCancel(AmbilWarnaDialog dialog) {
-                            // nothing
-                        }
-                    }).show();
-
+                            @Override
+                            public void onCancel(AmbilWarnaDialog dialog) {
+                            }
+                        }).show();
+            }
         });
 
         // Text size & Logo size seekbars removed
@@ -271,82 +325,44 @@ public class ManageTemplatesActivity extends AppCompatActivity {
     }
 
     // ================= TEXT EDIT =================
-    void showTextEditor() {
+    void showTextEditor(TextView target) {
         AlertDialog.Builder b = new AlertDialog.Builder(this);
         EditText input = new EditText(this);
-        input.setText(txtEdit.getText());
+        input.setText(target.getText());
         b.setTitle(R.string.ph_edit_text);
         b.setView(input);
         b.setPositiveButton(R.string.btn_apply,
-                (d, w) -> txtEdit.setText(input.getText()));
+                (d, w) -> target.setText(input.getText()));
         b.show();
     }
 
-    // ================= PICK LOGO =================
-    void pickLogoFromGallery() {
+    // ================= PICK IMAGE =================
+    void pickImageFromGallery() {
         Intent i = new Intent(Intent.ACTION_PICK,
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        startActivityForResult(i, PICK_LOGO);
+        startActivityForResult(i, PICK_IMAGE);
     }
 
     @Override
     protected void onActivityResult(int rc, int res, Intent data) {
         super.onActivityResult(rc, res, data);
-        if (rc == PICK_LOGO && res == RESULT_OK && data != null) {
-            startCrop(data.getData(), UCrop.REQUEST_CROP);
-        }
-        if (rc == PICK_GALLERY && res == RESULT_OK && data != null) {
-            startCrop(data.getData(), UCrop.REQUEST_CROP + 1);
+        if (rc == PICK_IMAGE && res == RESULT_OK && data != null) {
+            startCrop(data.getData());
         }
 
         if (rc == UCrop.REQUEST_CROP && res == RESULT_OK) {
             Uri resultUri = UCrop.getOutput(data);
             if (resultUri != null) {
-                imgLogo.setImageURI(null);
-                imgLogo.setImageURI(resultUri);
-                wrapLogo.setVisibility(View.VISIBLE);
-                wrapLogo.setX(100);
-                wrapLogo.setY(100);
-
-                scaleLogo.setScaleX(0.8f);
-                scaleLogo.setScaleY(0.8f);
-                btnDeleteLogo.setScaleX(1.0f / 0.8f);
-                btnDeleteLogo.setScaleY(1.0f / 0.8f);
-                seekImageSize.setProgress(30);
-
-                imageControls.setVisibility(View.VISIBLE);
-                textControls.setVisibility(View.GONE);
-                wrapLogo.requestLayout();
-            }
-        }
-
-        if (rc == UCrop.REQUEST_CROP + 1 && res == RESULT_OK) {
-            Uri resultUri = UCrop.getOutput(data);
-            if (resultUri != null) {
-                imgGallery.setImageURI(null);
-                imgGallery.setImageURI(resultUri);
-                wrapGallery.setVisibility(View.VISIBLE);
-                wrapGallery.setX(150);
-                wrapGallery.setY(150);
-
-                scaleGallery.setScaleX(0.8f);
-                scaleGallery.setScaleY(0.8f);
-                btnDeleteGallery.setScaleX(1.0f / 0.8f);
-                btnDeleteGallery.setScaleY(1.0f / 0.8f);
-                seekImageSize.setProgress(30);
-
-                imageControls.setVisibility(View.VISIBLE);
-                textControls.setVisibility(View.GONE);
-                wrapGallery.requestLayout();
+                addNewImage(resultUri);
             }
         }
     }
 
-    private void startCrop(Uri uri, int requestCode) {
+    private void startCrop(Uri uri) {
         String destinationFileName = "RMPlus_Crop_" + System.currentTimeMillis() + ".jpg";
         UCrop uCrop = UCrop.of(uri, Uri.fromFile(new File(getCacheDir(), destinationFileName)));
-        uCrop.withOptions(new UCrop.Options()); // Default free-style crop
-        uCrop.start(this, requestCode);
+        uCrop.withOptions(new UCrop.Options());
+        uCrop.start(this);
     }
 
     private void loadImageSmart(String path, ImageView imageView) {
@@ -362,125 +378,209 @@ public class ManageTemplatesActivity extends AppCompatActivity {
                 .into(imageView);
     }
 
-    // ================= DRAG & SCALE =================
-    void enableDrag(View wrapperView, View innerScaledView) {
+    // ================= DYNAMIC OVERLAYS =================
 
-        GestureDetector detector = null;
+    private void addNewText() {
+        TextView tv = new TextView(this);
+        tv.setText(R.string.ph_edit_text);
+        tv.setTextSize(24);
+        tv.setTextColor(Color.BLACK);
+        tv.setPadding(30, 30, 30, 30);
+        addOverlay(tv, false);
+    }
 
-        if (wrapperView == wrapText) {
-            detector = new GestureDetector(this,
-                    new GestureDetector.SimpleOnGestureListener() {
-                        public boolean onDoubleTap(MotionEvent e) {
-                            showTextEditor();
-                            return true;
-                        }
-                    });
+    private void addNewImage(Uri uri) {
+        com.google.android.material.imageview.ShapeableImageView iv = new com.google.android.material.imageview.ShapeableImageView(
+                this);
+        iv.setImageURI(uri);
+        iv.setAdjustViewBounds(true);
+        iv.setPadding(30, 30, 30, 30);
+        iv.setScaleType(ImageView.ScaleType.FIT_CENTER);
+
+        // Call addOverlay without inner click listener tracking inside addNewImage
+        addOverlay(iv, true);
+    }
+
+    private void applyShape(com.google.android.material.imageview.ShapeableImageView iv, int shape) {
+        com.google.android.material.shape.ShapeAppearanceModel.Builder builder = new com.google.android.material.shape.ShapeAppearanceModel.Builder();
+        if (shape == 0) { // Rect
+            builder.setAllCorners(com.google.android.material.shape.CornerFamily.ROUNDED, 0f);
+        } else if (shape == 1) { // Circle
+            builder.setAllCorners(com.google.android.material.shape.CornerFamily.ROUNDED, 0f)
+                    .setAllCornerSizes(new com.google.android.material.shape.RelativeCornerSize(0.5f));
+        }
+        iv.setShapeAppearanceModel(builder.build());
+    }
+
+    private void addOverlay(View content, boolean isImage) {
+        deselectAll();
+
+        FrameLayout wrapper = new FrameLayout(this);
+        wrapper.setLayoutParams(
+                new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+        // Content
+        wrapper.addView(content);
+
+        // Delete Button
+        ImageView btnDel = new ImageView(this);
+        btnDel.setImageResource(R.drawable.ic_delete);
+        btnDel.setBackgroundResource(R.drawable.shape_circle);
+        btnDel.setBackgroundTintList(android.content.res.ColorStateList.valueOf(Color.RED));
+        btnDel.setPadding(10, 10, 10, 10);
+        FrameLayout.LayoutParams delParams = new FrameLayout.LayoutParams(60, 60);
+        delParams.gravity = android.view.Gravity.TOP | android.view.Gravity.END;
+        btnDel.setLayoutParams(delParams);
+        btnDel.setOnClickListener(v -> {
+            if (activeOverlay == wrapper) {
+                deselectAll();
+            }
+            ((ViewGroup) wrapper.getParent()).removeView(wrapper);
+        });
+        wrapper.addView(btnDel);
+
+        wrapper.setX(200);
+        wrapper.setY(200);
+        canvas.addView(wrapper);
+
+        enableDrag(wrapper, content);
+        setActive(wrapper);
+
+        content.setOnClickListener(v -> {
+            if (activeOverlay == wrapper) {
+                if (!isImage) {
+                    showTextEditor((TextView) content);
+                } else {
+                    Object tag = content.getTag();
+                    int currentShape = tag instanceof Integer ? (Integer) tag : 0;
+                    int nextShape = (currentShape + 1) % 2; // Only Rect(0) and Circle(1)
+                    content.setTag(nextShape);
+                    applyShape((com.google.android.material.imageview.ShapeableImageView) content, nextShape);
+                }
+            } else {
+                setActive(wrapper);
+            }
+        });
+    }
+
+    private void showColorPickerForCanvas() {
+        int defaultColor = getColorFromAttr(com.google.android.material.R.attr.colorSurfaceVariant);
+        if (canvas.getBackground() instanceof android.graphics.drawable.ColorDrawable) {
+            defaultColor = ((android.graphics.drawable.ColorDrawable) canvas.getBackground()).getColor();
         }
 
-        ScaleGestureDetector scaleDetector = new ScaleGestureDetector(this,
-                new ScaleGestureDetector.SimpleOnScaleGestureListener() {
+        AmbilWarnaDialog dialog = new AmbilWarnaDialog(this, defaultColor, new AmbilWarnaDialog.OnAmbilWarnaListener() {
+            @Override
+            public void onCancel(AmbilWarnaDialog dialog) {
+            }
 
-                    @Override
-                    public boolean onScale(ScaleGestureDetector detector) {
-                        float scaleFactor = detector.getScaleFactor();
-                        if (wrapperView == wrapText) {
-                            float currentSize = txtEdit.getTextSize();
-                            float newSize = currentSize * scaleFactor;
-                            if (newSize < 20)
-                                newSize = 20;
-                            if (newSize > 500)
-                                newSize = 500;
-                            txtEdit.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, newSize);
-                        } else if (innerScaledView != null) {
-                            innerScaledView.setPivotX(detector.getFocusX());
-                            innerScaledView.setPivotY(detector.getFocusY());
-                            float nX = innerScaledView.getScaleX() * scaleFactor;
-                            float nY = innerScaledView.getScaleY() * scaleFactor;
-                            if (nX < 0.1f)
-                                nX = 0.1f;
-                            if (nY < 0.1f)
-                                nY = 0.1f;
-                            innerScaledView.setScaleX(nX);
-                            innerScaledView.setScaleY(nY);
+            @Override
+            public void onOk(AmbilWarnaDialog dialog, int color) {
+                canvas.setBackgroundColor(color);
+            }
+        });
+        dialog.show();
+    }
 
-                            // Apply inverse scale to delete buttons to keep them fixed size and attached
-                            if (innerScaledView == scaleLogo) {
-                                btnDeleteLogo.setScaleX(1.0f / nX);
-                                btnDeleteLogo.setScaleY(1.0f / nY);
-                            } else if (innerScaledView == scaleGallery) {
-                                btnDeleteGallery.setScaleX(1.0f / nX);
-                                btnDeleteGallery.setScaleY(1.0f / nY);
+    private void setActive(View wrapper) {
+        deselectAll();
+        activeOverlay = wrapper;
+
+        if (wrapper == null)
+            return;
+
+        activeContent = ((FrameLayout) wrapper).getChildAt(0);
+
+        // Show handles
+        if (((FrameLayout) wrapper).getChildCount() > 1) {
+            ((FrameLayout) wrapper).getChildAt(1).setVisibility(View.VISIBLE); // Delete
+        }
+
+        if (activeContent instanceof TextView) {
+            textControls.setVisibility(View.VISIBLE);
+            imageControls.setVisibility(View.GONE);
+            frameControls.setVisibility(View.GONE);
+
+            float currentSize = ((TextView) activeContent).getTextSize();
+            int progress = (int) ((currentSize - 10) / 2);
+            seekTextSize.setProgress(Math.max(0, Math.min(100, progress)));
+        } else {
+            imageControls.setVisibility(View.VISIBLE);
+            textControls.setVisibility(View.GONE);
+            frameControls.setVisibility(View.GONE);
+
+            float currentScale = wrapper.getScaleX();
+            int progress = (int) ((currentScale - 0.1f) * 40f);
+            seekImageSize.setProgress(Math.max(0, Math.min(100, progress)));
+        }
+    }
+
+    private void deselectAll() {
+        if (canvas == null)
+            return;
+        for (int i = 0; i < canvas.getChildCount(); i++) {
+            View child = canvas.getChildAt(i);
+            if (child instanceof FrameLayout && child != dynamicFrameContainer) {
+                if (((FrameLayout) child).getChildCount() > 1) {
+                    ((FrameLayout) child).getChildAt(1).setVisibility(View.GONE);
+                }
+            }
+        }
+        activeOverlay = null;
+        activeContent = null;
+        if (textControls != null)
+            textControls.setVisibility(View.GONE);
+        if (imageControls != null)
+            imageControls.setVisibility(View.GONE);
+        if (frameControls != null)
+            frameControls.setVisibility(View.GONE);
+    }
+
+    // ================= DRAG & RESIZE =================
+    void enableDrag(View wrapper, View content) {
+        content.setOnTouchListener(new View.OnTouchListener() {
+            float dX, dY;
+            float startX, startY;
+
+            @Override
+            public boolean onTouch(View v, MotionEvent e) {
+                switch (e.getActionMasked()) {
+                    case MotionEvent.ACTION_DOWN:
+                        if (activeOverlay != wrapper)
+                            setActive(wrapper);
+                        dX = wrapper.getX() - e.getRawX();
+                        dY = wrapper.getY() - e.getRawY();
+                        startX = e.getRawX();
+                        startY = e.getRawY();
+                        return true;
+                    case MotionEvent.ACTION_MOVE:
+                        wrapper.setX(e.getRawX() + dX);
+                        wrapper.setY(e.getRawY() + dY);
+                        return true;
+                    case MotionEvent.ACTION_UP:
+                        float diffX = Math.abs(e.getRawX() - startX);
+                        float diffY = Math.abs(e.getRawY() - startY);
+                        if (diffX < 10 && diffY < 10) {
+                            if (activeOverlay == wrapper) {
+                                v.performClick();
+                            } else {
+                                setActive(wrapper);
                             }
                         }
                         return true;
-                    }
-                });
-
-        GestureDetector finalDetector = detector;
-
-        wrapperView.setOnTouchListener(new View.OnTouchListener() {
-            float dX, dY;
-
-            @Override
-            public boolean onTouch(View view, MotionEvent e) {
-
-                boolean handled = scaleDetector.onTouchEvent(e);
-
-                if (finalDetector != null)
-                    finalDetector.onTouchEvent(e);
-
-                if (scaleDetector.isInProgress()) {
-                    return true;
                 }
-
-                switch (e.getActionMasked()) {
-
-                    case MotionEvent.ACTION_DOWN:
-                        dX = view.getX() - e.getRawX();
-                        dY = view.getY() - e.getRawY();
-                        handled = true;
-                        break;
-
-                    case MotionEvent.ACTION_MOVE:
-                        if (e.getPointerCount() == 1) {
-                            view.setX(e.getRawX() + dX);
-                            view.setY(e.getRawY() + dY);
-                        }
-                        handled = true;
-                        break;
-
-                    case MotionEvent.ACTION_UP:
-                    case MotionEvent.ACTION_CANCEL:
-                        handled = true;
-                        break;
-                }
-                return handled;
+                return false;
             }
         });
     }
 
     // ================= SAVE IMAGE =================
     void saveFinalImage() {
-        // Hide delete buttons before saving
-        btnDeleteText.setVisibility(View.GONE);
-        if (btnDeleteLogo != null)
-            btnDeleteLogo.setVisibility(View.GONE);
-        if (btnDeleteGallery != null)
-            btnDeleteGallery.setVisibility(View.GONE);
+        deselectAll();
 
-        View canvas = findViewById(R.id.canvas);
         canvas.setDrawingCacheEnabled(true);
         Bitmap bitmap = Bitmap.createBitmap(canvas.getDrawingCache());
         canvas.setDrawingCacheEnabled(false);
-
-        // Restore delete buttons
-        if (wrapText.getVisibility() == View.VISIBLE)
-            btnDeleteText.setVisibility(View.VISIBLE);
-        if (wrapLogo.getVisibility() == View.VISIBLE)
-            btnDeleteLogo.setVisibility(View.VISIBLE);
-        if (wrapGallery.getVisibility() == View.VISIBLE)
-            btnDeleteGallery.setVisibility(View.VISIBLE);
-
         String savedPath = MediaStore.Images.Media.insertImage(
                 getContentResolver(),
                 bitmap,
@@ -509,18 +609,9 @@ public class ManageTemplatesActivity extends AppCompatActivity {
         }
     }
 
-    void resetControlsIfNothingSelected() {
-        if (wrapText.getVisibility() != View.VISIBLE) {
-            textControls.setVisibility(View.GONE);
-        }
-
-        if (wrapLogo.getVisibility() != View.VISIBLE && wrapGallery.getVisibility() != View.VISIBLE) {
-            imageControls.setVisibility(View.GONE);
-        }
-    }
-
     private void loadUserData() {
-        if (uid == null) return;
+        if (uid == null)
+            return;
         rootRef.child("users").child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot s) {
@@ -529,62 +620,163 @@ public class ManageTemplatesActivity extends AppCompatActivity {
                 uEmail = s.child("email").getValue(String.class);
                 uProfileUrl = s.child("profileImage").getValue(String.class);
             }
-            @Override public void onCancelled(@NonNull DatabaseError e) {}
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError e) {
+            }
         });
     }
 
-    private void setupFrameAdapter() {
-        ArrayList<String> designs = new ArrayList<>();
-        designs.add("None");
-        designs.add("Design 1");
-        designs.add("Design 2");
-        designs.add("Design 3");
+    static class FrameModel {
+        String title;
+        int layoutId;
+        String imageUrl;
+        int fallbackIcon;
 
+        FrameModel(String t, int l, String i, int f) {
+            title = t;
+            layoutId = l;
+            imageUrl = i;
+            fallbackIcon = f;
+        }
+    }
+
+    private void setupFrameAdapter(String type) {
+        ArrayList<FrameModel> designs = new ArrayList<>();
+        designs.add(new FrameModel("None", -1, null, R.drawable.ic_close_gray));
+
+        if ("Normal".equals(type)) {
+            designs.add(new FrameModel("Design 1", 1, null, R.drawable.ic_edit));
+            designs.add(new FrameModel("Design 2", 2, null, R.drawable.ic_edit));
+            designs.add(new FrameModel("Design 3", 3, null, R.drawable.ic_edit));
+            renderFrameAdapter(designs);
+        } else {
+            rootRef.child("templates").child("Business Frame")
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot s) {
+                            int index = 1;
+                            for (DataSnapshot subSnapshot : s.getChildren()) {
+                                for (DataSnapshot item : subSnapshot.getChildren()) {
+                                    String url = item.hasChild("imagePath")
+                                            ? item.child("imagePath").getValue(String.class)
+                                            : item.child("url").getValue(String.class);
+                                    if (url != null) {
+                                        designs.add(new FrameModel("B-" + index, 0, url, R.drawable.ic_edit));
+                                        index++;
+                                    }
+                                }
+                            }
+                            renderFrameAdapter(designs);
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError e) {
+                        }
+                    });
+        }
+    }
+
+    private void renderFrameAdapter(ArrayList<FrameModel> designs) {
         rvFrames.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
         rvFrames.setAdapter(new RecyclerView.Adapter() {
             @NonNull
             @Override
             public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
                 View v = getLayoutInflater().inflate(R.layout.item_frame_design, parent, false);
-                return new RecyclerView.ViewHolder(v) {};
+                return new RecyclerView.ViewHolder(v) {
+                };
             }
 
             @Override
             public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
                 TextView t = holder.itemView.findViewById(R.id.txtTitle);
                 ImageView i = holder.itemView.findViewById(R.id.imgIcon);
-                t.setText(designs.get(position));
-                
-                if (position == 0) i.setImageResource(R.drawable.ic_close_gray);
-                else i.setImageResource(R.drawable.ic_edit);
+                FrameModel item = designs.get(position);
+
+                if (item.imageUrl != null) {
+                    t.setVisibility(View.GONE);
+                    i.setLayoutParams(new LinearLayout.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.MATCH_PARENT));
+                    i.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                    ((LinearLayout) i.getParent()).setPadding(0, 0, 0, 0);
+
+                    i.setImageTintList(null); // remove tint
+                    Glide.with(ManageTemplatesActivity.this).load(item.imageUrl).into(i);
+                } else {
+                    t.setVisibility(View.VISIBLE);
+                    t.setText(item.title);
+
+                    int size40 = (int) (40 * getResources().getDisplayMetrics().density);
+                    i.setLayoutParams(new LinearLayout.LayoutParams(size40, size40));
+                    i.setScaleType(ImageView.ScaleType.FIT_CENTER);
+
+                    int pad8 = (int) (8 * getResources().getDisplayMetrics().density);
+                    ((LinearLayout) i.getParent()).setPadding(pad8, pad8, pad8, pad8);
+
+                    i.setImageResource(item.fallbackIcon);
+                    i.setImageTintList(android.content.res.ColorStateList
+                            .valueOf(getColorFromAttr(com.google.android.material.R.attr.colorPrimary)));
+                }
 
                 holder.itemView.setOnClickListener(v -> {
-                    if (position == 0) dynamicFrameContainer.removeAllViews();
-                    else applyDynamicFrame(position);
+                    dynamicFrameContainer.removeAllViews();
+                    if (item.layoutId != -1) {
+                        if (item.imageUrl != null) {
+                            // Overlay image frame
+                            ImageView iv = new ImageView(ManageTemplatesActivity.this);
+                            iv.setLayoutParams(new FrameLayout.LayoutParams(-1, -1));
+                            iv.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                            Glide.with(ManageTemplatesActivity.this).load(item.imageUrl).into(iv);
+                            dynamicFrameContainer.addView(iv);
+                        } else {
+                            applyDynamicFrame(item.layoutId);
+                        }
+                    }
                 });
             }
 
             @Override
-            public int getItemCount() { return designs.size(); }
+            public int getItemCount() {
+                return designs.size();
+            }
         });
+    }
+
+    private int getColorFromAttr(int attr) {
+        android.util.TypedValue typedValue = new android.util.TypedValue();
+        getTheme().resolveAttribute(attr, typedValue, true);
+        return typedValue.data;
     }
 
     private void applyDynamicFrame(int designNum) {
         dynamicFrameContainer.removeAllViews();
         int layoutId = R.layout.frame_design_1;
-        if (designNum == 2) layoutId = R.layout.frame_design_2;
-        if (designNum == 3) layoutId = R.layout.frame_design_3;
+        if (designNum == 2)
+            layoutId = R.layout.frame_design_2;
+        if (designNum == 3)
+            layoutId = R.layout.frame_design_3;
 
         View frameView = getLayoutInflater().inflate(layoutId, dynamicFrameContainer, false);
-        
+
         TextView tName = frameView.findViewById(R.id.frame_name);
         TextView tMobile = frameView.findViewById(R.id.frame_mobile);
         TextView tEmail = frameView.findViewById(R.id.frame_email);
         ImageView iLogo = frameView.findViewById(R.id.frame_logo);
 
-        if (uName != null && !uName.isEmpty()) tName.setText(uName); else tName.setVisibility(View.GONE);
-        if (uMobile != null && !uMobile.isEmpty()) tMobile.setText(uMobile); else tMobile.setVisibility(View.GONE);
-        if (uEmail != null && !uEmail.isEmpty()) tEmail.setText(uEmail); else tEmail.setVisibility(View.GONE);
+        if (uName != null && !uName.isEmpty())
+            tName.setText(uName);
+        else
+            tName.setVisibility(View.GONE);
+        if (uMobile != null && !uMobile.isEmpty())
+            tMobile.setText(uMobile);
+        else
+            tMobile.setVisibility(View.GONE);
+        if (uEmail != null && !uEmail.isEmpty())
+            tEmail.setText(uEmail);
+        else
+            tEmail.setVisibility(View.GONE);
 
         if (uProfileUrl != null && !uProfileUrl.isEmpty()) {
             Glide.with(this).load(uProfileUrl).placeholder(R.drawable.ic_profile).into(iLogo);
@@ -596,35 +788,47 @@ public class ManageTemplatesActivity extends AppCompatActivity {
     }
 
     private String makeSafeKey(String value) {
-        if (value == null) return "Unknown";
-        return android.util.Base64.encodeToString(value.getBytes(), android.util.Base64.NO_WRAP).replace(".", "_").replace("$", "_").replace("#", "_");
+        if (value == null)
+            return "Unknown";
+        return android.util.Base64.encodeToString(value.getBytes(), android.util.Base64.NO_WRAP).replace(".", "_")
+                .replace("$", "_").replace("#", "_");
     }
 
-    // Assuming these lines are meant to be in an initialization method like
-    // onCreate
-    // or a similar setup method, not inside makeSafeKey.
-    // The instruction implies they are part of a method that also sets up the back
-    // button.
-    // For now, placing them after makeSafeKey and before loadSlidingFrames,
-    // assuming they belong to a new or existing setup method.
-    // If this is part of onCreate, the user should provide the full onCreate
-    // method.
-    // Based on the instruction's context, it seems to be a new block of code.
-    // I'll place it as a new method or block, respecting the indentation.
-    // Since the instruction shows `findViewById(R.id.btnBack).setOnClickListener(v
-    // -> finish());`
-    // followed by `private void prepareCanvas() { ... }`, and `prepareCanvas` is
-    // not in the original,
-    // I will assume `loadFrames()` and `loadActiveSubscription()` are also part of
-    // this new block.
-    // I'll create a placeholder method for these.
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        if (scaleGestureDetector != null) {
+            scaleGestureDetector.onTouchEvent(ev);
+        }
 
-    // Placeholder for new initialization logic
-    private void setupActivity() {
-        // loadFrames(); // This method is not defined in the provided code
-        // loadActiveSubscription(); // This method is not defined in the provided code
+        int action = ev.getActionMasked();
 
-        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
+        // Multi-touch Pan (e.g. 2 fingers)
+        if (ev.getPointerCount() > 1) {
+            isPanningCanvas = false; // Reset 1-finger pan
+            if (action == MotionEvent.ACTION_POINTER_DOWN) {
+                lastPanX = ev.getX(0);
+                lastPanY = ev.getY(0);
+
+                // Cancel touches for children (stickers)
+                MotionEvent cancelEvent = MotionEvent.obtain(ev);
+                cancelEvent.setAction(MotionEvent.ACTION_CANCEL);
+                super.dispatchTouchEvent(cancelEvent);
+                cancelEvent.recycle();
+            } else if (action == MotionEvent.ACTION_MOVE && canvas != null && canvas.getScaleX() > 1.0f) {
+                float dx = ev.getX(0) - lastPanX;
+                float dy = ev.getY(0) - lastPanY;
+                canvas.setTranslationX(canvas.getTranslationX() + dx);
+                canvas.setTranslationY(canvas.getTranslationY() + dy);
+                lastPanX = ev.getX(0);
+                lastPanY = ev.getY(0);
+            }
+            return true;
+        }
+
+        // 1-finger pan is now handled by canvas's setOnTouchListener!
+
+        // Default routing to children
+        return super.dispatchTouchEvent(ev);
     }
 
 }

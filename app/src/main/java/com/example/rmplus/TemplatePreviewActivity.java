@@ -87,7 +87,8 @@ public class TemplatePreviewActivity extends AppCompatActivity {
 
         rootRef = FirebaseDatabase.getInstance().getReference();
 
-        // If path is missing or category is "MyDesign", fetch details or find true category
+        // If path is missing or category is "MyDesign", fetch details or find true
+        // category
         if (path == null || "MyDesign".equalsIgnoreCase(category)) {
             fetchTemplateDetails();
         } else {
@@ -108,7 +109,8 @@ public class TemplatePreviewActivity extends AppCompatActivity {
                             found = true;
                             DataSnapshot item = catSnap.child(templateId);
                             if (path == null) {
-                                path = item.hasChild("imagePath") ? item.child("imagePath").getValue(String.class) : item.child("url").getValue(String.class);
+                                path = item.hasChild("imagePath") ? item.child("imagePath").getValue(String.class)
+                                        : item.child("url").getValue(String.class);
                             }
                         } else {
                             // Search sub-categories
@@ -118,13 +120,16 @@ public class TemplatePreviewActivity extends AppCompatActivity {
                                     found = true;
                                     DataSnapshot item = subSnap.child(templateId);
                                     if (path == null) {
-                                        path = item.hasChild("imagePath") ? item.child("imagePath").getValue(String.class) : item.child("url").getValue(String.class);
+                                        path = item.hasChild("imagePath")
+                                                ? item.child("imagePath").getValue(String.class)
+                                                : item.child("url").getValue(String.class);
                                     }
                                     break;
                                 }
                             }
                         }
-                        if (found) break;
+                        if (found)
+                            break;
                     }
 
                     if (found || path != null) {
@@ -136,7 +141,10 @@ public class TemplatePreviewActivity extends AppCompatActivity {
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
-                    if (path != null) initUI(); else finish();
+                    if (path != null)
+                        initUI();
+                    else
+                        finish();
                 }
             });
         } else {
@@ -147,16 +155,21 @@ public class TemplatePreviewActivity extends AppCompatActivity {
                         public void onDataChange(@NonNull DataSnapshot s) {
                             if (s.exists()) {
                                 if (path == null) {
-                                    path = s.hasChild("imagePath") ? s.child("imagePath").getValue(String.class) : s.child("url").getValue(String.class);
+                                    path = s.hasChild("imagePath") ? s.child("imagePath").getValue(String.class)
+                                            : s.child("url").getValue(String.class);
                                 }
                                 initUI();
                             } else {
                                 finish();
                             }
                         }
+
                         @Override
                         public void onCancelled(@NonNull DatabaseError e) {
-                            if (path != null) initUI(); else finish();
+                            if (path != null)
+                                initUI();
+                            else
+                                finish();
                         }
                     });
         }
@@ -164,8 +177,8 @@ public class TemplatePreviewActivity extends AppCompatActivity {
 
     void initUI() {
         // Detect Video
-        boolean isVideo = "Reel Maker".equalsIgnoreCase(category) || 
-                          (path != null && (path.toLowerCase().endsWith(".mp4") || path.toLowerCase().endsWith(".webm")));
+        boolean isVideo = "Reel Maker".equalsIgnoreCase(category) ||
+                (path != null && (path.toLowerCase().endsWith(".mp4") || path.toLowerCase().endsWith(".webm")));
 
         if (isVideo) {
             imgPlayIcon.setVisibility(android.view.View.VISIBLE);
@@ -198,8 +211,7 @@ public class TemplatePreviewActivity extends AppCompatActivity {
         loadSimilarTemplates();
 
         // SEARCH
-        btnSearch.setOnClickListener(v ->
-                startActivity(new Intent(this, SearchActivity.class)));
+        btnSearch.setOnClickListener(v -> startActivity(new Intent(this, SearchActivity.class)));
 
         // LIKE
         btnLike.setOnClickListener(v -> toggleLike());
@@ -229,6 +241,7 @@ public class TemplatePreviewActivity extends AppCompatActivity {
 
             Intent i = new Intent(this, ManageTemplatesActivity.class);
             i.putExtra("uri", path);
+            i.putExtra("category", category);
             startActivity(i);
         });
 
@@ -236,13 +249,12 @@ public class TemplatePreviewActivity extends AppCompatActivity {
         btnShare.setOnClickListener(v -> shareImage());
 
         // SAVE
-        btnSave.setOnClickListener(v ->
-                new AlertDialog.Builder(this)
-                        .setTitle(R.string.title_save_template)
-                        .setMessage(R.string.msg_save_confirm)
-                        .setPositiveButton(R.string.yes, (d, w) -> saveImage())
-                        .setNegativeButton(R.string.no, null)
-                        .show());
+        btnSave.setOnClickListener(v -> new AlertDialog.Builder(this)
+                .setTitle(R.string.title_save_template)
+                .setMessage(R.string.msg_save_confirm)
+                .setPositiveButton(R.string.yes, (d, w) -> saveImage())
+                .setNegativeButton(R.string.no, null)
+                .show());
     }
 
     // =====================================================
@@ -251,7 +263,8 @@ public class TemplatePreviewActivity extends AppCompatActivity {
 
     void loadSimilarTemplates() {
 
-        if (category == null) return;
+        if (category == null)
+            return;
 
         // Fetch directly from Firebase as requested
         rootRef.child("templates").child(category)
@@ -285,7 +298,8 @@ public class TemplatePreviewActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onCancelled(DatabaseError error) {}
+                    public void onCancelled(DatabaseError error) {
+                    }
                 });
     }
 
@@ -306,7 +320,9 @@ public class TemplatePreviewActivity extends AppCompatActivity {
                                     btnLike.setColorFilter(Color.RED);
                                 }
                             }
-                            public void onCancelled(DatabaseError e) {}
+
+                            public void onCancelled(DatabaseError e) {
+                            }
                         });
     }
 
@@ -323,7 +339,9 @@ public class TemplatePreviewActivity extends AppCompatActivity {
                                     btnFav.setColorFilter(Color.YELLOW);
                                 }
                             }
-                            public void onCancelled(DatabaseError e) {}
+
+                            public void onCancelled(DatabaseError e) {
+                            }
                         });
     }
 
@@ -341,7 +359,7 @@ public class TemplatePreviewActivity extends AppCompatActivity {
                     .child("likes")
                     .child(uid)
                     .setValue(true);
- 
+
             rootRef.child("user_activity")
                     .child(uid)
                     .child("likes")
@@ -356,7 +374,7 @@ public class TemplatePreviewActivity extends AppCompatActivity {
                     .child("likes")
                     .child(uid)
                     .removeValue();
- 
+
             rootRef.child("user_activity")
                     .child(uid)
                     .child("likes")
@@ -377,7 +395,7 @@ public class TemplatePreviewActivity extends AppCompatActivity {
                     .child("favorites")
                     .child(uid)
                     .setValue(true);
- 
+
             rootRef.child("user_activity")
                     .child(uid)
                     .child("favorites")
@@ -392,7 +410,7 @@ public class TemplatePreviewActivity extends AppCompatActivity {
                     .child("favorites")
                     .child(uid)
                     .removeValue();
- 
+
             rootRef.child("user_activity")
                     .child(uid)
                     .child("favorites")
@@ -408,12 +426,14 @@ public class TemplatePreviewActivity extends AppCompatActivity {
             toast(getString(R.string.msg_sharing_video_link));
             Intent s = new Intent(Intent.ACTION_SEND);
             s.setType("text/plain");
-            s.putExtra(Intent.EXTRA_TEXT, getString(R.string.share_msg_body, getString(R.string.app_name), getPackageName()) + "\n\n" + path);
+            s.putExtra(Intent.EXTRA_TEXT,
+                    getString(R.string.share_msg_body, getString(R.string.app_name), getPackageName()) + "\n\n" + path);
             startActivity(Intent.createChooser(s, getString(R.string.title_share_video)));
             return;
         }
 
-        Bitmap bitmap = Bitmap.createBitmap(previewContainer.getWidth(), previewContainer.getHeight(), Bitmap.Config.ARGB_8888);
+        Bitmap bitmap = Bitmap.createBitmap(previewContainer.getWidth(), previewContainer.getHeight(),
+                Bitmap.Config.ARGB_8888);
         android.graphics.Canvas canvas = new android.graphics.Canvas(bitmap);
         previewContainer.draw(canvas);
 
@@ -433,7 +453,9 @@ public class TemplatePreviewActivity extends AppCompatActivity {
                     s.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                     startActivity(Intent.createChooser(s, getString(R.string.content_desc_share)));
                 });
-            } catch (Exception e) { e.printStackTrace(); }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }).start();
     }
 
@@ -445,7 +467,8 @@ public class TemplatePreviewActivity extends AppCompatActivity {
             return;
         }
 
-        Bitmap bitmap = Bitmap.createBitmap(previewContainer.getWidth(), previewContainer.getHeight(), Bitmap.Config.ARGB_8888);
+        Bitmap bitmap = Bitmap.createBitmap(previewContainer.getWidth(), previewContainer.getHeight(),
+                Bitmap.Config.ARGB_8888);
         android.graphics.Canvas canvas = new android.graphics.Canvas(bitmap);
         previewContainer.draw(canvas);
 
@@ -461,7 +484,9 @@ public class TemplatePreviewActivity extends AppCompatActivity {
                         rootRef.child("user_activity").child(uid).child("saves").child(templateId).setValue(path);
                     }
                 });
-            } catch (Exception e) { e.printStackTrace(); }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }).start();
     }
 
@@ -474,7 +499,8 @@ public class TemplatePreviewActivity extends AppCompatActivity {
     }
 
     private void playVideo() {
-        if (path == null) return;
+        if (path == null)
+            return;
         videoView.setVisibility(android.view.View.VISIBLE);
         img.setVisibility(android.view.View.GONE);
         imgPlayIcon.setVisibility(android.view.View.GONE);
@@ -487,10 +513,9 @@ public class TemplatePreviewActivity extends AppCompatActivity {
     }
 
     private boolean isVideo() {
-        return "Reel Maker".equalsIgnoreCase(category) || 
-               (path != null && (path.toLowerCase().endsWith(".mp4") || path.toLowerCase().endsWith(".webm")));
+        return "Reel Maker".equalsIgnoreCase(category) ||
+                (path != null && (path.toLowerCase().endsWith(".mp4") || path.toLowerCase().endsWith(".webm")));
     }
-
 
     private void toast(String m) {
         Toast.makeText(this, m, Toast.LENGTH_SHORT).show();

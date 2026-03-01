@@ -88,97 +88,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
 
+                <!-- Overlays will be added here dynamically -->
 
-
-                <FrameLayout
-                    android:id="@+id/wrapText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone">
-                    <TextView
-                        android:id="@+id/txtEdit"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/ph_edit_text"
-                        android:textSize="22sp"
-                        android:textColor="?attr/colorOnSurface"
-                        android:paddingTop="12dp"
-                        android:paddingEnd="12dp"
-                        android:paddingStart="4dp"
-                        android:paddingBottom="4dp" />
-                    <ImageView
-                        android:id="@+id/btnDeleteText"
-                        android:layout_width="28dp"
-                        android:layout_height="28dp"
-                        android:layout_gravity="top|end"
-                        android:padding="6dp"
-                        android:background="@drawable/shape_circle"
-                        android:backgroundTint="#EF4444"
-                        android:src="@drawable/ic_delete"
-                        app:tint="@android:color/white" />
-                </FrameLayout>
-
-                <FrameLayout
-                    android:id="@+id/wrapLogo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone">
-                    <FrameLayout 
-                        android:id="@+id/scaleLogo"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="16dp">
-                        <ImageView
-                            android:id="@+id/imgLogo"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:minWidth="100dp"
-                            android:minHeight="100dp"
-                            android:adjustViewBounds="true"
-                            android:scaleType="fitCenter" />
-                        <ImageView
-                            android:id="@+id/btnDeleteLogo"
-                            android:layout_width="28dp"
-                            android:layout_height="28dp"
-                            android:layout_gravity="top|end"
-                            android:padding="6dp"
-                            android:background="@drawable/shape_circle"
-                            android:backgroundTint="#EF4444"
-                            android:src="@drawable/ic_delete"
-                            app:tint="@android:color/white" />
-                    </FrameLayout>
-                </FrameLayout>
-
-                <FrameLayout
-                    android:id="@+id/wrapGallery"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone">
-                    <FrameLayout
-                        android:id="@+id/scaleGallery"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="16dp">
-                        <ImageView
-                            android:id="@+id/imgGallery"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:minWidth="120dp"
-                            android:minHeight="120dp"
-                            android:adjustViewBounds="true"
-                            android:scaleType="fitCenter" />
-                        <ImageView
-                            android:id="@+id/btnDeleteGallery"
-                            android:layout_width="28dp"
-                            android:layout_height="28dp"
-                            android:layout_gravity="top|end"
-                            android:padding="6dp"
-                            android:background="@drawable/shape_circle"
-                            android:backgroundTint="#EF4444"
-                            android:src="@drawable/ic_delete"
-                            app:tint="@android:color/white" />
-                    </FrameLayout>
-                </FrameLayout>
             </FrameLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -193,25 +104,63 @@
                 android:id="@+id/textControls"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
+                android:orientation="vertical"
                 android:padding="16dp"
-                android:gravity="center"
                 android:background="?attr/colorSurface"
                 android:visibility="gone">
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnColor"
-                    style="@style/Widget.Material3.Button.TonalButton"
-                    android:layout_width="wrap_content"
+                
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Color"
-                    app:cornerRadius="12dp" />
-                <SeekBar
-                    android:id="@+id/seekTextSize"
-                    android:layout_width="0dp"
+                    android:orientation="horizontal"
+                    android:gravity="center">
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnColor"
+                        style="@style/Widget.Material3.Button.TonalButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Color"
+                        app:cornerRadius="12dp" />
+                    <SeekBar
+                        android:id="@+id/seekTextSize"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="16dp"
+                        android:max="100"/>
+                </LinearLayout>
+
+                <!-- LAYER CONTROLS (TEXT) -->
+                <LinearLayout
+                    android:id="@+id/textLayerControlsLayout"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="16dp"
-                    android:max="100"/>
+                    android:layout_marginTop="12dp"
+                    android:orientation="horizontal"
+                    android:gravity="center">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnTextSendBack"
+                        style="@style/Widget.Material3.Button.TonalButton"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:text="Send to Back"
+                        android:textSize="12sp"
+                        android:layout_marginEnd="8dp"
+                        app:cornerRadius="12dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnTextBringFront"
+                        style="@style/Widget.Material3.Button.TonalButton"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:text="Bring to Front"
+                        android:textSize="12sp"
+                        android:layout_marginStart="8dp"
+                        app:cornerRadius="12dp" />
+                </LinearLayout>
             </LinearLayout>
 
             <!-- IMAGE CONTROLS -->
@@ -219,25 +168,61 @@
                 android:id="@+id/imageControls"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
+                android:orientation="vertical"
                 android:padding="16dp"
-                android:gravity="center"
                 android:background="?attr/colorSurface"
                 android:visibility="gone">
-                <TextView
-                    android:text="Size"
-                    android:fontFamily="sans-serif-bold"
-                    android:textColor="?attr/colorOnSurface"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-                <SeekBar
-                    android:id="@+id/seekImageSize"
-                    android:layout_width="0dp"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="16dp"
-                    android:progress="40"
-                    android:max="100"/>
+                    android:orientation="horizontal"
+                    android:gravity="center">
+                    <TextView
+                        android:text="Size"
+                        android:fontFamily="sans-serif-bold"
+                        android:textColor="?attr/colorOnSurface"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                    <SeekBar
+                        android:id="@+id/seekImageSize"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="16dp"
+                        android:progress="40"
+                        android:max="100"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/imageLayerControlsLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:orientation="horizontal"
+                    android:gravity="center">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnSendBack"
+                        style="@style/Widget.Material3.Button.TonalButton"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:text="Send to Back"
+                        android:textSize="12sp"
+                        android:layout_marginEnd="8dp"
+                        app:cornerRadius="12dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnBringFront"
+                        style="@style/Widget.Material3.Button.TonalButton"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:text="Bring to Front"
+                        android:textSize="12sp"
+                        android:layout_marginStart="8dp"
+                        app:cornerRadius="12dp" />
+                </LinearLayout>
             </LinearLayout>
 
             <!-- FRAME CONTROLS -->
@@ -249,15 +234,38 @@
                 android:paddingBottom="16dp"
                 android:background="?attr/colorSurface"
                 android:visibility="gone">
-                <TextView
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Choose Frame Design"
-                    android:fontFamily="sans-serif-bold"
-                    android:textColor="?attr/colorOnSurface"
-                    android:paddingHorizontal="24dp"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="16dp"
                     android:paddingTop="12dp"
-                    android:paddingBottom="4dp" />
+                    android:paddingBottom="12dp">
+                    
+                    <TextView
+                        android:id="@+id/btnTabNormalFrame"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Frame"
+                        android:paddingHorizontal="24dp"
+                        android:paddingVertical="8dp"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        android:textColor="?attr/colorOnSurface"
+                        android:background="@drawable/bg_filter_chip_selected" />
+                        
+                    <TextView
+                        android:id="@+id/btnTabBusinessFrame"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Business Frame"
+                        android:layout_marginStart="12dp"
+                        android:paddingHorizontal="24dp"
+                        android:paddingVertical="8dp"
+                        android:textSize="13sp"
+                        android:textColor="?attr/colorOnSurface"
+                        android:background="@drawable/bg_filter_chip" />
+                </LinearLayout>
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvFrames"
                     android:layout_width="match_parent"
@@ -295,16 +303,7 @@
                         style="@style/EditorToolTextStyle" />
                 </LinearLayout>
 
-                <LinearLayout
-                    android:id="@+id/btnLogo"
-                    style="@style/EditorToolItemStyle">
-                    <ImageView
-                        android:src="@android:drawable/ic_menu_gallery"
-                        style="@style/EditorToolIconStyle" />
-                    <TextView
-                        android:text="Logo"
-                        style="@style/EditorToolTextStyle" />
-                </LinearLayout>
+
 
                 <LinearLayout
                     android:id="@+id/btnGallery"
@@ -324,6 +323,19 @@
                         style="@style/EditorToolIconStyle" />
                     <TextView
                         android:text="Frame"
+                        style="@style/EditorToolTextStyle" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/btnBgColorTool"
+                    style="@style/EditorToolItemStyle">
+                    <ImageView
+                        android:src="@drawable/ic_edit"
+                        app:tint="?attr/colorPrimary"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp" />
+                    <TextView
+                        android:text="Bg Color"
                         style="@style/EditorToolTextStyle" />
                 </LinearLayout>
 
