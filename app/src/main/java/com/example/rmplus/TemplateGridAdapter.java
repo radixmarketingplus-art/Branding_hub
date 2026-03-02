@@ -22,11 +22,18 @@ public class TemplateGridAdapter
     ArrayList<TemplateModel> list;
     ClickListener listener;
     String highlightId = null;
+    int layoutRes = R.layout.item_square;
 
     public TemplateGridAdapter(ArrayList<TemplateModel> list,
-                               ClickListener l) {
+            ClickListener l) {
         this.list = list;
         listener = l;
+    }
+
+    public TemplateGridAdapter(ArrayList<TemplateModel> list, int layoutRes, ClickListener l) {
+        this.list = list;
+        this.layoutRes = layoutRes;
+        this.listener = l;
     }
 
     public void setHighlightId(String id) {
@@ -39,13 +46,11 @@ public class TemplateGridAdapter
         notifyDataSetChanged();
     }
 
-
     @Override
     public Holder onCreateViewHolder(ViewGroup p, int v) {
         return new Holder(
                 LayoutInflater.from(p.getContext())
-                        .inflate(R.layout.item_square, p, false)
-        );
+                        .inflate(layoutRes, p, false));
     }
 
     @Override
@@ -68,28 +73,37 @@ public class TemplateGridAdapter
             h.txtDateBadge.setVisibility(View.GONE);
         }
 
-        h.itemView.setOnClickListener(v ->
-                listener.onClick(list.get(i)));
+        h.itemView.setOnClickListener(v -> listener.onClick(list.get(i)));
 
         // ✨ HIGHLIGHT LOGIC (Blue Shadow/Border)
         if (h.itemView instanceof com.google.android.material.card.MaterialCardView) {
             com.google.android.material.card.MaterialCardView card = (com.google.android.material.card.MaterialCardView) h.itemView;
+            float dp10 = android.util.TypedValue.applyDimension(android.util.TypedValue.COMPLEX_UNIT_DIP, 10,
+                    h.itemView.getResources().getDisplayMetrics());
+            float dp20 = android.util.TypedValue.applyDimension(android.util.TypedValue.COMPLEX_UNIT_DIP, 20,
+                    h.itemView.getResources().getDisplayMetrics());
+
             if (highlightId != null && highlightId.equals(template.id)) {
                 card.setStrokeColor(android.graphics.Color.parseColor("#4A6CF7")); // Blue highlight
                 card.setStrokeWidth(12); // Thick highlight
-                card.setCardElevation(20); // Extra shadow
+                card.setCardElevation(dp20); // Extra shadow
             } else {
                 card.setStrokeWidth(0);
-                // Removed reference to missing R.dimen.cardview_default_elevation
-                card.setCardElevation(10);
+                card.setCardElevation(dp10);
             }
         }
     }
 
     private String formatDate(String d) {
         try {
-            java.text.SimpleDateFormat in = new java.text.SimpleDateFormat("d-M-yyyy", java.util.Locale.US); // ✅ parse ASCII stored dates
-            java.text.SimpleDateFormat out = new java.text.SimpleDateFormat("d MMM", java.util.Locale.getDefault()); // display in user language
+            java.text.SimpleDateFormat in = new java.text.SimpleDateFormat("d-M-yyyy", java.util.Locale.US); // ✅ parse
+                                                                                                             // ASCII
+                                                                                                             // stored
+                                                                                                             // dates
+            java.text.SimpleDateFormat out = new java.text.SimpleDateFormat("d MMM", java.util.Locale.getDefault()); // display
+                                                                                                                     // in
+                                                                                                                     // user
+                                                                                                                     // language
             return out.format(in.parse(d));
         } catch (Exception e) {
             return d;

@@ -7,81 +7,71 @@
     android:background="@color/screen_bg"
     android:fitsSystemWindows="true">
 
+    <!-- HEADER SECTION -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/screen_bg"
+        app:elevation="0dp"
+        android:outlineProvider="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:paddingHorizontal="16dp">
+
+                <ImageView
+                    android:id="@+id/btnBack"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_centerVertical="true"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_back"
+                    app:tint="?android:textColorPrimary" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:text="@string/title_admin_panel"
+                    android:textSize="18sp"
+                    android:fontFamily="sans-serif-black"
+                    android:textColor="?android:textColorPrimary" />
+            </RelativeLayout>
+        </LinearLayout>
+    </com.google.android.material.appbar.AppBarLayout>
+
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true"
         android:overScrollMode="never"
         android:paddingBottom="100dp"
-        android:clipToPadding="false">
+        android:clipToPadding="false"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:paddingHorizontal="24dp"
-            android:paddingTop="32dp">
-
-            <!-- HEADER -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:paddingHorizontal="0dp"
-                android:paddingTop="0dp"
-                android:paddingBottom="4dp">
-
-                <ImageButton
-                    android:id="@+id/btnBack"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:src="@drawable/ic_back"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    app:tint="?attr/colorOnSurface"
-                    android:contentDescription="Back" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_weight="1"
-                    android:layout_marginStart="8dp">
-
-                    <TextView
-                        android:id="@+id/adminTitle"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/title_admin_panel"
-                        android:textSize="24sp"
-                        android:fontFamily="sans-serif-black"
-                        android:textColor="?attr/colorOnSurface"
-                        android:letterSpacing="-0.01" />
-
-                    <TextView
-                        android:id="@+id/adminSubtitle"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/desc_admin_panel"
-                        android:textSize="12sp"
-                        android:fontFamily="sans-serif-medium"
-                        android:textColor="?attr/colorOnSurfaceVariant"
-                        android:layout_marginTop="2dp" />
-                </LinearLayout>
-
-            </LinearLayout>
-
-            <View android:layout_width="match_parent" android:layout_height="24dp" />
+            android:paddingTop="20dp">
 
             <!-- UPLOAD TEMPLATES -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
+                android:layout_marginBottom="18dp"
+                android:layout_marginHorizontal="2dp"
                 app:cardCornerRadius="24dp"
-                app:cardElevation="0dp"
-                app:strokeWidth="1dp"
-                app:strokeColor="#0D000000"
+                app:cardElevation="8dp"
+                app:strokeWidth="0dp"
                 app:cardBackgroundColor="@color/surface_light">
 
                 <LinearLayout
@@ -110,14 +100,16 @@
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/uploadTemplatesBtn"
-                        android:layout_width="wrap_content"
-                        android:layout_height="48dp"
+                        android:layout_width="120dp"
+                        android:layout_height="52dp"
                         android:layout_gravity="end"
                         android:text="@string/btn_open"
                         android:textAllCaps="false"
                         android:fontFamily="sans-serif-bold"
+                        android:textColor="@color/white"
                         app:cornerRadius="12dp"
-                        app:backgroundTint="?attr/colorPrimary" />
+                        app:backgroundTint="@null"
+                        android:background="@drawable/bg_admin_button_3d" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -125,11 +117,11 @@
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
+                android:layout_marginBottom="18dp"
+                android:layout_marginHorizontal="2dp"
                 app:cardCornerRadius="24dp"
-                app:cardElevation="0dp"
-                app:strokeWidth="1dp"
-                app:strokeColor="#0D000000"
+                app:cardElevation="8dp"
+                app:strokeWidth="0dp"
                 app:cardBackgroundColor="@color/surface_light">
 
                 <LinearLayout
@@ -158,14 +150,16 @@
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/subscriptionRequestsBtn"
-                        android:layout_width="wrap_content"
-                        android:layout_height="48dp"
+                        android:layout_width="120dp"
+                        android:layout_height="52dp"
                         android:layout_gravity="end"
                         android:text="@string/btn_view"
                         android:textAllCaps="false"
                         android:fontFamily="sans-serif-bold"
+                        android:textColor="@color/white"
                         app:cornerRadius="12dp"
-                        style="@style/Widget.Material3.Button.TonalButton" />
+                        app:backgroundTint="@null"
+                        android:background="@drawable/bg_admin_button_3d" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -173,11 +167,11 @@
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
+                android:layout_marginBottom="18dp"
+                android:layout_marginHorizontal="2dp"
                 app:cardCornerRadius="24dp"
-                app:cardElevation="0dp"
-                app:strokeWidth="1dp"
-                app:strokeColor="#0D000000"
+                app:cardElevation="8dp"
+                app:strokeWidth="0dp"
                 app:cardBackgroundColor="@color/surface_light">
 
                 <LinearLayout
@@ -206,14 +200,16 @@
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/advertisementRequestBtn"
-                        android:layout_width="wrap_content"
-                        android:layout_height="48dp"
+                        android:layout_width="120dp"
+                        android:layout_height="52dp"
                         android:layout_gravity="end"
                         android:text="@string/btn_check"
                         android:textAllCaps="false"
                         android:fontFamily="sans-serif-bold"
+                        android:textColor="@color/white"
                         app:cornerRadius="12dp"
-                        app:backgroundTint="?attr/colorPrimary" />
+                        app:backgroundTint="@null"
+                        android:background="@drawable/bg_admin_button_3d" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -221,11 +217,11 @@
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
+                android:layout_marginBottom="18dp"
+                android:layout_marginHorizontal="2dp"
                 app:cardCornerRadius="24dp"
-                app:cardElevation="0dp"
-                app:strokeWidth="1dp"
-                app:strokeColor="#0D000000"
+                app:cardElevation="8dp"
+                app:strokeWidth="0dp"
                 app:cardBackgroundColor="@color/surface_light">
 
                 <LinearLayout
@@ -254,14 +250,16 @@
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/contactRequestsBtn"
-                        android:layout_width="wrap_content"
-                        android:layout_height="48dp"
+                        android:layout_width="120dp"
+                        android:layout_height="52dp"
                         android:layout_gravity="end"
                         android:text="@string/btn_open"
                         android:textAllCaps="false"
                         android:fontFamily="sans-serif-bold"
+                        android:textColor="@color/white"
                         app:cornerRadius="12dp"
-                        style="@style/Widget.Material3.Button.TonalButton" />
+                        app:backgroundTint="@null"
+                        android:background="@drawable/bg_admin_button_3d" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -270,10 +268,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="24dp"
+                android:layout_marginHorizontal="2dp"
                 app:cardCornerRadius="24dp"
-                app:cardElevation="0dp"
-                app:strokeWidth="1dp"
-                app:strokeColor="#0D000000"
+                app:cardElevation="8dp"
+                app:strokeWidth="0dp"
                 app:cardBackgroundColor="@color/surface_light">
 
                 <LinearLayout
@@ -302,14 +300,16 @@
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/userInfoBtn"
-                        android:layout_width="wrap_content"
-                        android:layout_height="48dp"
+                        android:layout_width="120dp"
+                        android:layout_height="52dp"
                         android:layout_gravity="end"
                         android:text="@string/btn_view"
                         android:textAllCaps="false"
                         android:fontFamily="sans-serif-bold"
+                        android:textColor="@color/white"
                         app:cornerRadius="12dp"
-                        app:backgroundTint="?attr/colorPrimary" />
+                        app:backgroundTint="@null"
+                        android:background="@drawable/bg_admin_button_3d" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 

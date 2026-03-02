@@ -773,4 +773,6 @@
     <string name="title_notif_new_message">New Message</string>
     <string name="msg_notif_new_message_user">New message from Support Agent.</string>
     <string name="msg_notif_new_message_admin">New message from user regarding support request.</string>
+    <string name="no_media_selected">No Media Selected</string>
+    <string name="image_video_doc">Image, Video or Document</string>
 </resources>

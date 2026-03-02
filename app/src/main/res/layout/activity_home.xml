@@ -147,8 +147,8 @@
                     <!-- FESTIVAL CARDS -->
                     <FrameLayout
                         android:layout_width="match_parent"
-                        android:layout_height="130dp"
-                        android:layout_marginTop="12dp">
+                        android:layout_height="155dp"
+                        android:layout_marginTop="8dp">
 
                         <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/rvFestivalCards"

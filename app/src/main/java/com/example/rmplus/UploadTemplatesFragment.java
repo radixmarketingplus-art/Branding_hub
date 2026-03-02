@@ -41,6 +41,7 @@ public class UploadTemplatesFragment extends Fragment {
     MaterialButton btnSelectImage, btnSave, btnPickDate;
     ImageView previewImage;
     LinearLayout dateContainer, subSectionContainer;
+    View placeholderLayout, btnChangeMedia;
 
     Uri selectedImageUri, originalImageUri;
     String selectedDate = "";
@@ -53,10 +54,9 @@ public class UploadTemplatesFragment extends Fragment {
     String oldCategory = "";
     String oldRealId = "";
 
-
     // Localized display names for spinner UI
     String[] getSections() {
-        return new String[]{
+        return new String[] {
                 getString(R.string.section_select),
                 getString(R.string.section_advertisement),
                 getString(R.string.section_festival_cards),
@@ -72,7 +72,7 @@ public class UploadTemplatesFragment extends Fragment {
 
     // ✅ Canonical English keys — always used for Firebase & SharedPreferences
     String[] getSectionKeys() {
-        return new String[]{
+        return new String[] {
                 "Select Section",
                 "Advertisement",
                 "Festival Cards",
@@ -94,42 +94,40 @@ public class UploadTemplatesFragment extends Fragment {
     }
 
     // ✅ Canonical sub-section keys (for Business Frame)
-    static final String[] SUB_SECTION_KEYS = {"Political", "NGO", "Business"};
-
+    static final String[] SUB_SECTION_KEYS = { "Political", "NGO", "Business" };
 
     public UploadTemplatesFragment() {
         super(R.layout.fragment_upload_templates);
     }
 
     // ---------- Image Picker ----------
-    ActivityResultLauncher<Intent> imagePicker =
-            registerForActivityResult(
-                    new ActivityResultContracts.StartActivityForResult(),
-                    result -> {
-                        if (result.getResultCode() == android.app.Activity.RESULT_OK
-                                && result.getData() != null) {
+    ActivityResultLauncher<Intent> imagePicker = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == android.app.Activity.RESULT_OK
+                        && result.getData() != null) {
 
-                            Uri sourceUri = result.getData().getData();
-                            if (sourceUri != null) {
-                                // ✅ Use canonical key for logic comparison
-                                String sectionKey = getSelectedSectionKey();
-                                if (sectionKey.equalsIgnoreCase("Reel Maker")) {
-                                    // Videos don't need cropping here (uCrop is for images)
-                                    selectedImageUri = sourceUri;
-                                    previewImage.setVisibility(View.VISIBLE);
-                                    previewImage.setImageURI(selectedImageUri);
-                                } else if (sectionKey.equalsIgnoreCase("Business Frame")) {
-                                    // 🚫 SKIPPING MANDATORY UCROP FOR THESE SECTIONS
-                                    selectedImageUri = sourceUri;
-                                    previewImage.setVisibility(View.VISIBLE);
-                                    previewImage.setImageURI(selectedImageUri);
-                                } else {
-                                    originalImageUri = sourceUri;
-                                    startCrop(sourceUri);
-                                }
-                            }
+                    Uri sourceUri = result.getData().getData();
+                    if (sourceUri != null) {
+                        // ✅ Use canonical key for logic comparison
+                        String sectionKey = getSelectedSectionKey();
+                        if (sectionKey.equalsIgnoreCase("Reel Maker")) {
+                            // Videos don't need cropping here (uCrop is for images)
+                            selectedImageUri = sourceUri;
+                            updatePreviewVisibility();
+                            previewImage.setImageURI(selectedImageUri);
+                        } else if (sectionKey.equalsIgnoreCase("Business Frame")) {
+                            // 🚫 SKIPPING MANDATORY UCROP FOR THESE SECTIONS
+                            selectedImageUri = sourceUri;
+                            updatePreviewVisibility();
+                            previewImage.setImageURI(selectedImageUri);
+                        } else {
+                            originalImageUri = sourceUri;
+                            startCrop(sourceUri);
                         }
-                    });
+                    }
+                }
+            });
 
     // Modern ActivityResultLauncher for UCrop
     ActivityResultLauncher<Intent> cropLauncher = registerForActivityResult(
@@ -139,13 +137,14 @@ public class UploadTemplatesFragment extends Fragment {
                     final Uri resultUri = UCrop.getOutput(result.getData());
                     if (resultUri != null) {
                         selectedImageUri = resultUri;
-                        previewImage.setVisibility(View.VISIBLE);
+                        updatePreviewVisibility();
                         previewImage.setImageURI(selectedImageUri);
                         toast(R.string.msg_crop_success);
                     }
                 } else if (result.getResultCode() == UCrop.RESULT_ERROR && result.getData() != null) {
                     final Throwable cropError = UCrop.getError(result.getData());
-                    if (cropError != null) toast("Crop Error: " + cropError.getMessage());
+                    if (cropError != null)
+                        toast("Crop Error: " + cropError.getMessage());
                 }
             });
 
@@ -165,12 +164,12 @@ public class UploadTemplatesFragment extends Fragment {
         options.setCompressionFormat(android.graphics.Bitmap.CompressFormat.JPEG);
         options.setCompressionQuality(90);
         options.setHideBottomControls(false);
-        
+
         // Custom Styling to fix visibility and add space from screen edges
         options.setToolbarTitle(getString(R.string.title_crop_image));
         options.setToolbarColor(Color.parseColor("#1B1B1B"));
         options.setStatusBarColor(Color.parseColor("#1B1B1B"));
-        options.setToolbarWidgetColor(Color.WHITE); 
+        options.setToolbarWidgetColor(Color.WHITE);
         options.setActiveControlsWidgetColor(Color.parseColor("#4A6CF7"));
         options.setLogoColor(Color.TRANSPARENT);
         options.setDimmedLayerColor(Color.parseColor("#CC000000"));
@@ -179,12 +178,11 @@ public class UploadTemplatesFragment extends Fragment {
         options.setShowCropGrid(true);
         options.setFreeStyleCropEnabled(true);
         options.setRootViewBackgroundColor(Color.BLACK);
-        
+
         uCrop.withOptions(options);
         // Use launcher instead of deprecated start()
         cropLauncher.launch(uCrop.getIntent(requireContext()));
     }
-
 
     boolean isPopulating = false;
 
@@ -203,22 +201,25 @@ public class UploadTemplatesFragment extends Fragment {
         spinnerSubSection = v.findViewById(R.id.spinnerSubSection);
         editAdLink = v.findViewById(R.id.editAdLink);
         btnPickExpiry = v.findViewById(R.id.btnPickExpiry);
+        placeholderLayout = v.findViewById(R.id.placeholderLayout);
+        btnChangeMedia = v.findViewById(R.id.btnChangeMedia);
 
         btnSelectImage.setAlpha(0.5f);
+        updatePreviewVisibility();
 
+        btnChangeMedia.setOnClickListener(v1 -> btnSelectImage.performClick());
 
         // Spinner
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 requireContext(),
                 android.R.layout.simple_spinner_dropdown_item,
-                getSections()
-        );
+                getSections());
         spinnerSection.setAdapter(adapter);
 
         spinnerSection.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view,
-                                       int position, long id) {
+                    int position, long id) {
 
                 // ✅ Use canonical key for comparison
                 String selectedKey = getSectionKeys()[position];
@@ -236,7 +237,7 @@ public class UploadTemplatesFragment extends Fragment {
                 if (!isPopulating && selectedImageUri != null) {
                     selectedImageUri = null;
                     originalImageUri = null;
-                    previewImage.setVisibility(View.GONE);
+                    updatePreviewVisibility();
                     toast(R.string.msg_reselect_section);
                 }
 
@@ -260,7 +261,8 @@ public class UploadTemplatesFragment extends Fragment {
                                 getString(R.string.cat_ngo),
                                 getString(R.string.cat_business)
                         };
-                        spinnerSubSection.setAdapter(new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_dropdown_item, subs));
+                        spinnerSubSection.setAdapter(new ArrayAdapter<>(requireContext(),
+                                android.R.layout.simple_spinner_dropdown_item, subs));
                     }
                     return;
                 }
@@ -284,7 +286,8 @@ public class UploadTemplatesFragment extends Fragment {
                             getString(R.string.cat_ngo),
                             getString(R.string.cat_business)
                     };
-                    spinnerSubSection.setAdapter(new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_dropdown_item, subs));
+                    spinnerSubSection.setAdapter(
+                            new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_dropdown_item, subs));
                 } else {
                     dateContainer.setVisibility(View.GONE);
                     editAdLink.setVisibility(View.GONE);
@@ -297,7 +300,8 @@ public class UploadTemplatesFragment extends Fragment {
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {}
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
         });
 
         // 🛠️ MOVED EDIT MODE LOGIC HERE (After Adapters & Listeners are Set)
@@ -308,15 +312,15 @@ public class UploadTemplatesFragment extends Fragment {
             oldUrl = args.getString("edit_url");
             oldCategory = args.getString("category", "");
             oldRealId = args.getString("realId", "");
-            
+
             btnSave.setText(R.string.btn_update_template);
 
             if (!oldUrl.isEmpty()) {
-                previewImage.setVisibility(View.VISIBLE);
+                selectedImageUri = Uri.parse(oldUrl);
+                updatePreviewVisibility();
                 com.bumptech.glide.Glide.with(this).load(oldUrl).into(previewImage);
-                selectedImageUri = Uri.parse(oldUrl); 
             }
-            
+
             long passedExpiry = args.getLong("expiryDate", 0);
             if (passedExpiry > 0) {
                 expiryTime = passedExpiry;
@@ -326,7 +330,8 @@ public class UploadTemplatesFragment extends Fragment {
             }
 
             String passedLink = args.getString("link", "");
-            if (!passedLink.isEmpty()) editAdLink.setText(passedLink);
+            if (!passedLink.isEmpty())
+                editAdLink.setText(passedLink);
 
             String passedDate = args.getString("date", "");
             if (!passedDate.isEmpty()) {
@@ -349,17 +354,17 @@ public class UploadTemplatesFragment extends Fragment {
                     spinnerSection.setSelection(i);
                     final String finalSub = sub;
                     spinnerSection.postDelayed(() -> {
-                         if (!finalSub.isEmpty()) {
-                             // ✅ Match sub against English canonical keys
-                             for (int j = 0; j < SUB_SECTION_KEYS.length; j++) {
-                                 if (SUB_SECTION_KEYS[j].equalsIgnoreCase(finalSub)) {
-                                     spinnerSubSection.setSelection(j);
-                                     break;
-                                 }
-                             }
-                         }
-                          isPopulating = false;
-                          toast(R.string.msg_template_loaded);
+                        if (!finalSub.isEmpty()) {
+                            // ✅ Match sub against English canonical keys
+                            for (int j = 0; j < SUB_SECTION_KEYS.length; j++) {
+                                if (SUB_SECTION_KEYS[j].equalsIgnoreCase(finalSub)) {
+                                    spinnerSubSection.setSelection(j);
+                                    break;
+                                }
+                            }
+                        }
+                        isPopulating = false;
+                        toast(R.string.msg_template_loaded);
                     }, 300);
                     break;
                 }
@@ -381,17 +386,18 @@ public class UploadTemplatesFragment extends Fragment {
                 i = new Intent(Intent.ACTION_PICK);
                 i.setType("video/*");
             } else if (sectionKey.equalsIgnoreCase("Business Frame")) {
-                // 🛡️ ACTION_GET_CONTENT is more reliable for strict MIME filtering in the system picker
+                // 🛡️ ACTION_GET_CONTENT is more reliable for strict MIME filtering in the
+                // system picker
                 i = new Intent(Intent.ACTION_GET_CONTENT);
                 i.setType("image/png");
                 i.addCategory(Intent.CATEGORY_OPENABLE);
             } else {
                 i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                 i.setType("image/*");
-                String[] mimeTypes = {"image/jpeg", "image/png", "image/jpg"};
+                String[] mimeTypes = { "image/jpeg", "image/png", "image/jpg" };
                 i.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
             }
-            
+
             imagePicker.launch(i);
         });
 
@@ -400,9 +406,9 @@ public class UploadTemplatesFragment extends Fragment {
             // ✅ Use canonical key
             String sectionKey = getSelectedSectionKey();
             if (selectedImageUri != null) {
-                if (sectionKey.equalsIgnoreCase("Reel Maker") || 
-                    sectionKey.equalsIgnoreCase("Business Frame")) {
-                    
+                if (sectionKey.equalsIgnoreCase("Reel Maker") ||
+                        sectionKey.equalsIgnoreCase("Business Frame")) {
+
                     // These sections open full-screen preview instead of crop by default
                     // to avoid accidental transparency loss.
                     Intent i = new Intent(requireContext(), ImagePreviewActivity.class);
@@ -434,8 +440,7 @@ public class UploadTemplatesFragment extends Fragment {
                     },
                     cal.get(Calendar.YEAR),
                     cal.get(Calendar.MONTH),
-                    cal.get(Calendar.DAY_OF_MONTH)
-            ).show();
+                    cal.get(Calendar.DAY_OF_MONTH)).show();
         });
 
         // Pick Expiry Date
@@ -480,7 +485,6 @@ public class UploadTemplatesFragment extends Fragment {
             }
         }
 
-
         if (sectionKey.equalsIgnoreCase("Festival Cards") && selectedDate.isEmpty()) {
             toast(R.string.msg_select_fest_date);
             return;
@@ -489,19 +493,22 @@ public class UploadTemplatesFragment extends Fragment {
         // ---------- TYPE & SIZE VALIDATION ----------
         String mimeType = requireContext().getContentResolver().getType(selectedImageUri);
         String uriString = selectedImageUri.toString();
-        
+
         if (sectionKey.equalsIgnoreCase("Reel Maker")) {
             // Video Validation
-            if (mimeType == null && !uriString.contains(".mp4") && !uriString.contains(".mkv") && !uriString.contains(".mov")) {
-                 toast(R.string.msg_select_valid_video);
-                 return;
+            if (mimeType == null && !uriString.contains(".mp4") && !uriString.contains(".mkv")
+                    && !uriString.contains(".mov")) {
+                toast(R.string.msg_select_valid_video);
+                return;
             }
         } else {
-            // Image Validation: Check MIME OR check if it's a cropped file/web URL ending in jpg/png
+            // Image Validation: Check MIME OR check if it's a cropped file/web URL ending
+            // in jpg/png
             boolean isImage = (mimeType != null && mimeType.startsWith("image/"));
             boolean isCroppedJpg = uriString.contains("cropped_") && uriString.endsWith(".jpg");
-            boolean isRemoteImage = uriString.startsWith("http") && (uriString.contains(".jpg") || uriString.contains(".png") || uriString.contains(".jpeg"));
-            
+            boolean isRemoteImage = uriString.startsWith("http")
+                    && (uriString.contains(".jpg") || uriString.contains(".png") || uriString.contains(".jpeg"));
+
             if (!isImage && !isCroppedJpg && !isRemoteImage) {
                 toast(R.string.msg_select_valid_img);
                 return;
@@ -509,15 +516,17 @@ public class UploadTemplatesFragment extends Fragment {
 
             if (sectionKey.equalsIgnoreCase("Business Frame")) {
                 // Strictly PNG for both Frame sections
-                if ((mimeType != null && !mimeType.contains("png")) || (mimeType == null && !uriString.toLowerCase().contains(".png"))) {
+                if ((mimeType != null && !mimeType.contains("png"))
+                        || (mimeType == null && !uriString.toLowerCase().contains(".png"))) {
                     toast(R.string.msg_only_png_frames);
                     return;
                 }
             } else {
                 // For other sections, allow JPG/JPEG/PNG
-                boolean validFormat = (mimeType != null && (mimeType.contains("jpeg") || mimeType.contains("jpg") || mimeType.contains("png")))
+                boolean validFormat = (mimeType != null
+                        && (mimeType.contains("jpeg") || mimeType.contains("jpg") || mimeType.contains("png")))
                         || isCroppedJpg || isRemoteImage;
-                
+
                 if (!validFormat) {
                     toast(R.string.msg_format_supported);
                     return;
@@ -531,7 +540,8 @@ public class UploadTemplatesFragment extends Fragment {
                     android.graphics.BitmapFactory.Options opts = new android.graphics.BitmapFactory.Options();
                     opts.inJustDecodeBounds = true;
                     android.graphics.BitmapFactory.decodeStream(is, null, opts);
-                    if (is != null) is.close();
+                    if (is != null)
+                        is.close();
 
                     if (opts.outWidth != opts.outHeight) {
                         toast(R.string.msg_frame_square);
@@ -552,10 +562,11 @@ public class UploadTemplatesFragment extends Fragment {
     }
 
     void saveImage(String section) {
-        // 🛡️ FIX: If in edit mode and image hasn't changed (it's still a web URL), don't re-upload
+        // 🛡️ FIX: If in edit mode and image hasn't changed (it's still a web URL),
+        // don't re-upload
         if (isEditMode && selectedImageUri != null && selectedImageUri.toString().startsWith("http")) {
-             saveTemplateDetails(section, selectedImageUri.toString());
-             return;
+            saveTemplateDetails(section, selectedImageUri.toString());
+            return;
         }
 
         uploadImageToServer(selectedImageUri, new UploadCallback() {
@@ -573,18 +584,21 @@ public class UploadTemplatesFragment extends Fragment {
 
     private void saveTemplateDetails(String section, String imageUrl) {
         if (isEditMode) {
-            String newCategoryPath = section;  // section here is already canonical English key
+            String newCategoryPath = section; // section here is already canonical English key
             if (section.equalsIgnoreCase("Business Frame")) {
-                // ✅ sub-section: use canonical English key (index-based), not localized display text
+                // ✅ sub-section: use canonical English key (index-based), not localized display
+                // text
                 int subPos = spinnerSubSection.getSelectedItemPosition();
-                String subKey = (subPos >= 0 && subPos < SUB_SECTION_KEYS.length) ? SUB_SECTION_KEYS[subPos] : spinnerSubSection.getSelectedItem().toString();
+                String subKey = (subPos >= 0 && subPos < SUB_SECTION_KEYS.length) ? SUB_SECTION_KEYS[subPos]
+                        : spinnerSubSection.getSelectedItem().toString();
                 newCategoryPath += "/" + subKey;
             }
 
             // 🎯 Only remove the old node if the location (category) or ID is changing.
-            // If they are the same, Firebase's setValue() will simply update the existing node.
+            // If they are the same, Firebase's setValue() will simply update the existing
+            // node.
             boolean locationChanged = !oldCategory.equals(newCategoryPath);
-            
+
             if (locationChanged && !oldRealId.isEmpty() && !oldCategory.isEmpty()) {
                 com.google.firebase.database.FirebaseDatabase.getInstance()
                         .getReference("templates")
@@ -599,7 +613,7 @@ public class UploadTemplatesFragment extends Fragment {
             // 🛡️ VPS & Stats Cleanup: Only if image URL is actually different
             if (!oldUrl.isEmpty() && !oldUrl.equals(imageUrl)) {
                 deleteFromVPS(oldUrl);
-                
+
                 String safeKey = android.util.Base64.encodeToString(oldUrl.getBytes(), android.util.Base64.NO_WRAP);
                 com.google.firebase.database.FirebaseDatabase.getInstance()
                         .getReference("template_activity")
@@ -609,151 +623,158 @@ public class UploadTemplatesFragment extends Fragment {
 
         requireActivity().runOnUiThread(() -> {
 
-                    SharedPreferences sp =
-                            requireContext().getSharedPreferences(
-                                    "HOME_DATA",
-                                    android.content.Context.MODE_PRIVATE
-                            );
+            SharedPreferences sp = requireContext().getSharedPreferences(
+                    "HOME_DATA",
+                    android.content.Context.MODE_PRIVATE);
 
-                    Gson gson = new Gson();
-                    DatabaseReference dbRef;
-                    if (section.equalsIgnoreCase("Business Frame")) {
-                        // ✅ Use canonical English key for sub-section
-                        int subPos = spinnerSubSection.getSelectedItemPosition();
-                        String subKey = (subPos >= 0 && subPos < SUB_SECTION_KEYS.length) ? SUB_SECTION_KEYS[subPos] : spinnerSubSection.getSelectedItem().toString();
-                        dbRef = com.google.firebase.database.FirebaseDatabase.getInstance()
-                                .getReference("templates")
-                                .child(section)
-                                .child(subKey);
-                    } else {
-                        dbRef = com.google.firebase.database.FirebaseDatabase.getInstance()
-                                .getReference("templates")
-                                .child(section);
-                    }
-
-                    // Generate Unique ID or use safe key
-                    String templateId;
-                    if (isEditMode) {
-                        templateId = (!oldRealId.isEmpty()) ? oldRealId : 
-                                    android.util.Base64.encodeToString(oldUrl.getBytes(), android.util.Base64.NO_WRAP);
-                    } else {
-                        templateId = dbRef.push().getKey();
-                    }
-
-                    if (templateId == null) templateId = String.valueOf(System.currentTimeMillis());
-
-                    // =============================
-                    // 📢 ADVERTISEMENT
-                    // =============================
-                    if (section.equalsIgnoreCase("Advertisement")) {
-                        String link = editAdLink.getText().toString().trim();
-                        AdvertisementItem adItem = new AdvertisementItem(imageUrl, link, expiryTime, "Admin", System.currentTimeMillis());
-                        adItem.id = templateId; // Important for redirection highlight
-
-                        // 1. Save to Firebase
-                        dbRef.child(templateId).setValue(adItem);
-
-                        // 2. Save to SharedPreferences (Backward Compatibility)
-                        Type t = new TypeToken<ArrayList<AdvertisementItem>>(){}.getType();
-                        ArrayList<AdvertisementItem> list = gson.fromJson(sp.getString("Advertisement", "[]"), t);
-                        if (list == null) list = new ArrayList<>();
-                        list.add(0, adItem);
-                        sp.edit().putString("Advertisement", gson.toJson(list)).apply();
-
-                        toast(R.string.msg_upload_success);
-
-                        // 📢 SEND/UPDATE BROADCAST NOTIFICATION IF "Advertisement"
-                        NotificationHelper.sendBroadcast(
-                                requireContext(),
-                                templateId,
-                                getString(R.string.title_notif_new_ad),
-                                getString(R.string.msg_notif_new_ad),
-                                "OPEN_AD",
-                                templateId,
-                                expiryTime
-                        );
-
-                        clearForm();
-                        return;
-                    }
-
-                    // =============================
-                    // 🎉 FESTIVAL
-                    // =============================
-                    if (section.equalsIgnoreCase("Festival Cards")) {
-                        FestivalCardItem festItem = new FestivalCardItem(imageUrl, selectedDate, expiryTime);
-
-                        // 1. Save to Firebase
-                        dbRef.child(templateId).setValue(festItem);
-
-                        // 2. Save to SharedPreferences
-                        Type t = new TypeToken<ArrayList<FestivalCardItem>>(){}.getType();
-                        ArrayList<FestivalCardItem> list = gson.fromJson(sp.getString(section, "[]"), t);
-                        if (list == null) list = new ArrayList<>();
-                        list.add(0, festItem);
-                        sp.edit().putString(section, gson.toJson(list)).apply();
-
-                        toast(R.string.msg_upload_success);
-                        clearForm();
-                        return;
-                    }
-
-                    // =============================
-                    // 🧩 NORMAL SECTIONS / REELS
-                    // =============================
-                    java.util.Map<String, Object> normalItem = new java.util.HashMap<>();
-                    normalItem.put("url", imageUrl);
-                    normalItem.put("timestamp", System.currentTimeMillis());
-                    normalItem.put("expiryDate", expiryTime);
-                    if (section.equalsIgnoreCase("Reel Maker")) normalItem.put("type", "video");
-
-                    // 1. Save to Firebase
-                    dbRef.child(templateId).setValue(normalItem);
-
-                    // 2. Save to SharedPreferences
-                    Type type = new TypeToken<ArrayList<String>>(){}.getType();
-                    ArrayList<String> list = gson.fromJson(sp.getString(section, "[]"), type);
-                    if (list == null) list = new ArrayList<>();
-                    if (!list.contains(imageUrl)) list.add(0, imageUrl);
-                    sp.edit().putString(section, gson.toJson(list)).apply();
-
-                    toast(R.string.msg_upload_success);
-
-                    // 📢 SEND/UPDATE BROADCAST NOTIFICATION IF "Latest Update"
-                    if (section.equalsIgnoreCase("Latest Update")) {
-                        NotificationHelper.sendBroadcast(
-                                requireContext(),
-                                templateId, // Use templateId as key to allow updates
-                                getString(R.string.title_notif_latest_update), 
-                                getString(R.string.msg_check_latest_update), 
-                                "OPEN_TEMPLATE",
-                                templateId,
-                                expiryTime // Expiry matches template
-                        );
-                    }
-
-                    // 📢 SEND/UPDATE BROADCAST NOTIFICATION IF "Business Frame"
-                    if (section.equalsIgnoreCase("Business Frame")) {
-                        NotificationHelper.sendBroadcast(
-                                requireContext(),
-                                templateId,
-                                getString(R.string.title_notif_business_frame),
-                                getString(R.string.msg_notif_business_frame),
-                                "OPEN_BUSINESS_FRAME",
-                                templateId,
-                                expiryTime
-                        );
-                    }
-
-                    clearForm();
-                });
+            Gson gson = new Gson();
+            DatabaseReference dbRef;
+            if (section.equalsIgnoreCase("Business Frame")) {
+                // ✅ Use canonical English key for sub-section
+                int subPos = spinnerSubSection.getSelectedItemPosition();
+                String subKey = (subPos >= 0 && subPos < SUB_SECTION_KEYS.length) ? SUB_SECTION_KEYS[subPos]
+                        : spinnerSubSection.getSelectedItem().toString();
+                dbRef = com.google.firebase.database.FirebaseDatabase.getInstance()
+                        .getReference("templates")
+                        .child(section)
+                        .child(subKey);
+            } else {
+                dbRef = com.google.firebase.database.FirebaseDatabase.getInstance()
+                        .getReference("templates")
+                        .child(section);
             }
+
+            // Generate Unique ID or use safe key
+            String templateId;
+            if (isEditMode) {
+                templateId = (!oldRealId.isEmpty()) ? oldRealId
+                        : android.util.Base64.encodeToString(oldUrl.getBytes(), android.util.Base64.NO_WRAP);
+            } else {
+                templateId = dbRef.push().getKey();
+            }
+
+            if (templateId == null)
+                templateId = String.valueOf(System.currentTimeMillis());
+
+            // =============================
+            // 📢 ADVERTISEMENT
+            // =============================
+            if (section.equalsIgnoreCase("Advertisement")) {
+                String link = editAdLink.getText().toString().trim();
+                AdvertisementItem adItem = new AdvertisementItem(imageUrl, link, expiryTime, "Admin",
+                        System.currentTimeMillis());
+                adItem.id = templateId; // Important for redirection highlight
+
+                // 1. Save to Firebase
+                dbRef.child(templateId).setValue(adItem);
+
+                // 2. Save to SharedPreferences (Backward Compatibility)
+                Type t = new TypeToken<ArrayList<AdvertisementItem>>() {
+                }.getType();
+                ArrayList<AdvertisementItem> list = gson.fromJson(sp.getString("Advertisement", "[]"), t);
+                if (list == null)
+                    list = new ArrayList<>();
+                list.add(0, adItem);
+                sp.edit().putString("Advertisement", gson.toJson(list)).apply();
+
+                toast(R.string.msg_upload_success);
+
+                // 📢 SEND/UPDATE BROADCAST NOTIFICATION IF "Advertisement"
+                NotificationHelper.sendBroadcast(
+                        requireContext(),
+                        templateId,
+                        getString(R.string.title_notif_new_ad),
+                        getString(R.string.msg_notif_new_ad),
+                        "OPEN_AD",
+                        templateId,
+                        expiryTime);
+
+                clearForm();
+                return;
+            }
+
+            // =============================
+            // 🎉 FESTIVAL
+            // =============================
+            if (section.equalsIgnoreCase("Festival Cards")) {
+                FestivalCardItem festItem = new FestivalCardItem(imageUrl, selectedDate, expiryTime);
+
+                // 1. Save to Firebase
+                dbRef.child(templateId).setValue(festItem);
+
+                // 2. Save to SharedPreferences
+                Type t = new TypeToken<ArrayList<FestivalCardItem>>() {
+                }.getType();
+                ArrayList<FestivalCardItem> list = gson.fromJson(sp.getString(section, "[]"), t);
+                if (list == null)
+                    list = new ArrayList<>();
+                list.add(0, festItem);
+                sp.edit().putString(section, gson.toJson(list)).apply();
+
+                toast(R.string.msg_upload_success);
+                clearForm();
+                return;
+            }
+
+            // =============================
+            // 🧩 NORMAL SECTIONS / REELS
+            // =============================
+            java.util.Map<String, Object> normalItem = new java.util.HashMap<>();
+            normalItem.put("url", imageUrl);
+            normalItem.put("timestamp", System.currentTimeMillis());
+            normalItem.put("expiryDate", expiryTime);
+            if (section.equalsIgnoreCase("Reel Maker"))
+                normalItem.put("type", "video");
+
+            // 1. Save to Firebase
+            dbRef.child(templateId).setValue(normalItem);
+
+            // 2. Save to SharedPreferences
+            Type type = new TypeToken<ArrayList<String>>() {
+            }.getType();
+            ArrayList<String> list = gson.fromJson(sp.getString(section, "[]"), type);
+            if (list == null)
+                list = new ArrayList<>();
+            if (!list.contains(imageUrl))
+                list.add(0, imageUrl);
+            sp.edit().putString(section, gson.toJson(list)).apply();
+
+            toast(R.string.msg_upload_success);
+
+            // 📢 SEND/UPDATE BROADCAST NOTIFICATION IF "Latest Update"
+            if (section.equalsIgnoreCase("Latest Update")) {
+                NotificationHelper.sendBroadcast(
+                        requireContext(),
+                        templateId, // Use templateId as key to allow updates
+                        getString(R.string.title_notif_latest_update),
+                        getString(R.string.msg_check_latest_update),
+                        "OPEN_TEMPLATE",
+                        templateId,
+                        expiryTime // Expiry matches template
+                );
+            }
+
+            // 📢 SEND/UPDATE BROADCAST NOTIFICATION IF "Business Frame"
+            if (section.equalsIgnoreCase("Business Frame")) {
+                NotificationHelper.sendBroadcast(
+                        requireContext(),
+                        templateId,
+                        getString(R.string.title_notif_business_frame),
+                        getString(R.string.msg_notif_business_frame),
+                        "OPEN_BUSINESS_FRAME",
+                        templateId,
+                        expiryTime);
+            }
+
+            clearForm();
+        });
+    }
 
     // ---------------- HELPERS ----------------
 
     void clearForm() {
-        previewImage.setVisibility(View.GONE);
         selectedImageUri = null;
+        updatePreviewVisibility();
         selectedDate = "";
         btnPickDate.setText(R.string.btn_pick_date);
         btnSelectImage.setEnabled(false);
@@ -764,6 +785,18 @@ public class UploadTemplatesFragment extends Fragment {
         oldUrl = "";
         oldCategory = "";
         btnSave.setText(R.string.btn_save_continue);
+    }
+
+    private void updatePreviewVisibility() {
+        if (selectedImageUri != null) {
+            placeholderLayout.setVisibility(View.GONE);
+            previewImage.setVisibility(View.VISIBLE);
+            btnChangeMedia.setVisibility(View.VISIBLE);
+        } else {
+            placeholderLayout.setVisibility(View.VISIBLE);
+            previewImage.setVisibility(View.GONE);
+            btnChangeMedia.setVisibility(View.GONE);
+        }
     }
 
     void toast(int resId) {
@@ -780,30 +813,33 @@ public class UploadTemplatesFragment extends Fragment {
 
     // ---------------- NUCLEAR DELETE (FOR EDIT MODE) ----------------
 
-
     private void removeFromLocal(String url, String category) {
         SharedPreferences sp = requireContext().getSharedPreferences("HOME_DATA", android.content.Context.MODE_PRIVATE);
         Gson gson = new Gson();
         String json = sp.getString(category, null);
-        if (json == null) return;
+        if (json == null)
+            return;
 
         SharedPreferences.Editor editor = sp.edit();
         if ("Festival Cards".equalsIgnoreCase(category)) {
-            Type t = new TypeToken<ArrayList<FestivalCardItem>>(){}.getType();
+            Type t = new TypeToken<ArrayList<FestivalCardItem>>() {
+            }.getType();
             ArrayList<FestivalCardItem> list = gson.fromJson(json, t);
             if (list != null) {
                 list.removeIf(item -> item.imagePath.equals(url));
                 editor.putString(category, gson.toJson(list));
             }
         } else if ("Advertisement".equalsIgnoreCase(category)) {
-            Type t = new TypeToken<ArrayList<AdvertisementItem>>(){}.getType();
+            Type t = new TypeToken<ArrayList<AdvertisementItem>>() {
+            }.getType();
             ArrayList<AdvertisementItem> list = gson.fromJson(json, t);
             if (list != null) {
                 list.removeIf(item -> item.imagePath.equals(url));
                 editor.putString(category, gson.toJson(list));
             }
         } else {
-            Type t = new TypeToken<ArrayList<String>>(){}.getType();
+            Type t = new TypeToken<ArrayList<String>>() {
+            }.getType();
             ArrayList<String> list = gson.fromJson(json, t);
             if (list != null) {
                 list.remove(url);
@@ -823,11 +859,11 @@ public class UploadTemplatesFragment extends Fragment {
                 String data = "url=" + java.net.URLEncoder.encode(url, "UTF-8");
                 conn.getOutputStream().write(data.getBytes());
                 conn.getResponseCode();
-            } catch (Exception e) { e.printStackTrace(); }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }).start();
     }
-
-
 
     private void uploadImageToServer(Uri imageUri, UploadCallback callback) {
 
@@ -835,8 +871,7 @@ public class UploadTemplatesFragment extends Fragment {
             try {
 
                 // ===== SIZE CHECK (≤ 5 MB) =====
-                InputStream sizeCheck =
-                        requireContext().getContentResolver().openInputStream(imageUri);
+                InputStream sizeCheck = requireContext().getContentResolver().openInputStream(imageUri);
 
                 if (sizeCheck == null) {
                     callback.onError("Unable to read image");
@@ -858,13 +893,12 @@ public class UploadTemplatesFragment extends Fragment {
                 // ===== SERVER CONNECTION =====
                 String boundary = "----RMPLUS" + System.currentTimeMillis();
                 String mimeType = requireContext().getContentResolver().getType(imageUri);
-                if (mimeType == null) mimeType = sectionKey.equalsIgnoreCase("Reel Maker") ? "video/mp4" : "image/jpeg";
+                if (mimeType == null)
+                    mimeType = sectionKey.equalsIgnoreCase("Reel Maker") ? "video/mp4" : "image/jpeg";
 
-                java.net.URL url =
-                        new java.net.URL("http://187.77.184.84/upload.php");
+                java.net.URL url = new java.net.URL("http://187.77.184.84/upload.php");
 
-                java.net.HttpURLConnection conn =
-                        (java.net.HttpURLConnection) url.openConnection();
+                java.net.HttpURLConnection conn = (java.net.HttpURLConnection) url.openConnection();
 
                 conn.setRequestMethod("POST");
                 conn.setDoOutput(true);
@@ -872,30 +906,30 @@ public class UploadTemplatesFragment extends Fragment {
                 conn.setRequestProperty("Connection", "Keep-Alive");
                 conn.setRequestProperty(
                         "Content-Type",
-                        "multipart/form-data; boundary=" + boundary
-                );
+                        "multipart/form-data; boundary=" + boundary);
 
-                java.io.DataOutputStream out =
-                        new java.io.DataOutputStream(conn.getOutputStream());
+                java.io.DataOutputStream out = new java.io.DataOutputStream(conn.getOutputStream());
 
                 // ===== FILE PART =====
                 String ext = ".jpg";
-                if (mimeType.contains("png")) ext = ".png";
-                else if (mimeType.contains("mp4")) ext = ".mp4";
-                else if (mimeType.contains("webm")) ext = ".webm";
-                else if (mimeType.contains("mkv") || mimeType.contains("matroska")) ext = ".mkv";
-                
+                if (mimeType.contains("png"))
+                    ext = ".png";
+                else if (mimeType.contains("mp4"))
+                    ext = ".mp4";
+                else if (mimeType.contains("webm"))
+                    ext = ".webm";
+                else if (mimeType.contains("mkv") || mimeType.contains("matroska"))
+                    ext = ".mkv";
+
                 String fileName = "up_" + System.currentTimeMillis() + ext;
 
                 out.writeBytes("--" + boundary + "\r\n");
                 out.writeBytes(
                         "Content-Disposition: form-data; name=\"file\"; filename=\"" +
-                                fileName + "\"\r\n"
-                );
+                                fileName + "\"\r\n");
                 out.writeBytes("Content-Type: " + mimeType + "\r\n\r\n");
 
-                InputStream input =
-                        requireContext().getContentResolver().openInputStream(imageUri);
+                InputStream input = requireContext().getContentResolver().openInputStream(imageUri);
 
                 byte[] buffer = new byte[4096];
                 int bytesRead;
@@ -919,7 +953,8 @@ public class UploadTemplatesFragment extends Fragment {
                             new java.io.InputStreamReader(conn.getInputStream()));
                     StringBuilder response = new StringBuilder();
                     String line;
-                    while ((line = reader.readLine()) != null) response.append(line);
+                    while ((line = reader.readLine()) != null)
+                        response.append(line);
                     reader.close();
 
                     try {
@@ -949,6 +984,7 @@ public class UploadTemplatesFragment extends Fragment {
 
     interface UploadCallback {
         void onSuccess(String imageUrl);
+
         void onError(String message);
     }
 }

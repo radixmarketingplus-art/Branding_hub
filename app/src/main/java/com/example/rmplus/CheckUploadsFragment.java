@@ -37,31 +37,46 @@ public class CheckUploadsFragment extends Fragment {
     ArrayList<TemplateModel> allTemplates = new ArrayList<>();
 
     String getLocalizedName(String key) {
-        if (key == null) return "";
+        if (key == null)
+            return "";
         if (key.contains("/")) {
             String[] parts = key.split("/");
             if (parts.length > 1) {
                 return getLocalizedName(parts[0]) + " / " + getLocalizedSubCatName(parts[1]);
             }
         }
-        if (key.equalsIgnoreCase("All")) return getString(R.string.filter_all);
-        if (key.equalsIgnoreCase("Advertisement")) return getString(R.string.section_advertisement);
-        if (key.equalsIgnoreCase("Festival Cards")) return getString(R.string.section_festival_cards);
-        if (key.equalsIgnoreCase("Latest Update")) return getString(R.string.section_latest_update);
-        if (key.equalsIgnoreCase("Business Special")) return getString(R.string.section_business_special);
-        if (key.equalsIgnoreCase("Reel Maker")) return getString(R.string.section_reel_maker);
-        if (key.equalsIgnoreCase("Business Frame")) return getString(R.string.section_business_frame);
-        if (key.equalsIgnoreCase("Motivation")) return getString(R.string.section_motivation);
-        if (key.equalsIgnoreCase("Greetings")) return getString(R.string.section_greetings);
-        if (key.equalsIgnoreCase("Business Ethics")) return getString(R.string.section_business_ethics);
+        if (key.equalsIgnoreCase("All"))
+            return getString(R.string.filter_all);
+        if (key.equalsIgnoreCase("Advertisement"))
+            return getString(R.string.section_advertisement);
+        if (key.equalsIgnoreCase("Festival Cards"))
+            return getString(R.string.section_festival_cards);
+        if (key.equalsIgnoreCase("Latest Update"))
+            return getString(R.string.section_latest_update);
+        if (key.equalsIgnoreCase("Business Special"))
+            return getString(R.string.section_business_special);
+        if (key.equalsIgnoreCase("Reel Maker"))
+            return getString(R.string.section_reel_maker);
+        if (key.equalsIgnoreCase("Business Frame"))
+            return getString(R.string.section_business_frame);
+        if (key.equalsIgnoreCase("Motivation"))
+            return getString(R.string.section_motivation);
+        if (key.equalsIgnoreCase("Greetings"))
+            return getString(R.string.section_greetings);
+        if (key.equalsIgnoreCase("Business Ethics"))
+            return getString(R.string.section_business_ethics);
         return key;
     }
 
     String getLocalizedSubCatName(String key) {
-        if (key == null) return "";
-        if (key.equalsIgnoreCase("Political")) return getString(R.string.cat_political);
-        if (key.equalsIgnoreCase("NGO")) return getString(R.string.cat_ngo);
-        if (key.equalsIgnoreCase("Business")) return getString(R.string.cat_business);
+        if (key == null)
+            return "";
+        if (key.equalsIgnoreCase("Political"))
+            return getString(R.string.cat_political);
+        if (key.equalsIgnoreCase("NGO"))
+            return getString(R.string.cat_ngo);
+        if (key.equalsIgnoreCase("Business"))
+            return getString(R.string.cat_business);
         return key;
     }
 
@@ -81,7 +96,7 @@ public class CheckUploadsFragment extends Fragment {
 
         recycler.setLayoutManager(new GridLayoutManager(requireContext(), 3));
 
-        adapter = new TemplateGridAdapter(allTemplates, t -> {
+        adapter = new TemplateGridAdapter(allTemplates, R.layout.item_grid_square, t -> {
             Intent i = new Intent(requireContext(), AdminTemplateDetailActivity.class);
             i.putExtra("id", t.id);
             i.putExtra("path", t.url);
@@ -97,8 +112,9 @@ public class CheckUploadsFragment extends Fragment {
 
     void createFilterButtons() {
         filterContainer.removeAllViews();
-        String[] categories = {"All", "Advertisement", "Festival Cards", "Latest Update", "Business Special", "Reel Maker", "Business Frame", "Motivation", "Greetings", "Business Ethics"};
-        
+        String[] categories = { "All", "Advertisement", "Festival Cards", "Latest Update", "Business Special",
+                "Reel Maker", "Business Frame", "Motivation", "Greetings", "Business Ethics" };
+
         for (String c : categories) {
             TextView chip = new TextView(requireContext());
             chip.setText(getLocalizedName(c));
@@ -108,7 +124,8 @@ public class CheckUploadsFragment extends Fragment {
             chip.setBackgroundResource(R.drawable.bg_filter_chip);
             chip.setTextColor(getResources().getColor(android.R.color.darker_gray, requireContext().getTheme()));
 
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT);
             lp.setMargins(8, 0, 8, 0);
             chip.setLayoutParams(lp);
 
@@ -139,12 +156,12 @@ public class CheckUploadsFragment extends Fragment {
     }
 
     // ---------------- DATA (FIREBASE LIVE) ----------------
-    
+
     void loadCategory(String key) {
         currentCategory = key;
         adapter.setData(new ArrayList<>());
         DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference("templates");
-        
+
         if (key.equalsIgnoreCase("All")) {
             dbRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -152,19 +169,23 @@ public class CheckUploadsFragment extends Fragment {
                     ArrayList<TemplateModel> result = new ArrayList<>();
                     for (DataSnapshot catSnap : snapshot.getChildren()) {
                         String catName = catSnap.getKey();
-                        if (catName == null || catName.equalsIgnoreCase("Frame")) continue;
+                        if (catName == null || catName.equalsIgnoreCase("Frame"))
+                            continue;
                         if (catName.equalsIgnoreCase("Business Frame")) {
-                             for (DataSnapshot sub : catSnap.getChildren()) {
-                                 processSnapshot(sub, catName + "/" + sub.getKey(), result);
-                             }
+                            for (DataSnapshot sub : catSnap.getChildren()) {
+                                processSnapshot(sub, catName + "/" + sub.getKey(), result);
+                            }
                         } else {
-                             processSnapshot(catSnap, catName, result);
+                            processSnapshot(catSnap, catName, result);
                         }
                     }
                     adapter.setData(result);
                 }
+
                 @Override
-                public void onCancelled(@NonNull DatabaseError error) { toast(error.getMessage()); }
+                public void onCancelled(@NonNull DatabaseError error) {
+                    toast(error.getMessage());
+                }
             });
             return;
         }
@@ -182,21 +203,26 @@ public class CheckUploadsFragment extends Fragment {
                 }
                 adapter.setData(result);
             }
+
             @Override
-            public void onCancelled(@NonNull DatabaseError error) { toast(error.getMessage()); }
+            public void onCancelled(@NonNull DatabaseError error) {
+                toast(error.getMessage());
+            }
         });
     }
 
     private void processSnapshot(DataSnapshot snapshot, String catName, ArrayList<TemplateModel> result) {
         for (DataSnapshot d : snapshot.getChildren()) {
-            String url = d.hasChild("url") ? d.child("url").getValue(String.class) : 
-                        d.hasChild("imagePath") ? d.child("imagePath").getValue(String.class) : null;
-            if (url != null) result.add(0, new TemplateModel(d.getKey(), url, catName));
+            String url = d.hasChild("url") ? d.child("url").getValue(String.class)
+                    : d.hasChild("imagePath") ? d.child("imagePath").getValue(String.class) : null;
+            if (url != null)
+                result.add(0, new TemplateModel(d.getKey(), url, catName));
         }
     }
 
     private void toast(String msg) {
-        if (isAdded()) Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show();
+        if (isAdded())
+            Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show();
     }
 
     private int getColorFromAttr(int attr) {

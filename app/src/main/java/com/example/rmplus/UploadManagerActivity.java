@@ -13,6 +13,7 @@ public class UploadManagerActivity extends BaseActivity {
 
     LinearLayout tabUpload, tabCheck;
     TextView txtUpload, txtCheck;
+    android.view.View selectionIndicator;
 
     @Override
     protected void onCreate(Bundle b) {
@@ -20,53 +21,55 @@ public class UploadManagerActivity extends BaseActivity {
         setContentView(R.layout.activity_upload_manager);
 
         tabUpload = findViewById(R.id.tabUpload);
-        tabCheck  = findViewById(R.id.tabCheck);
+        tabCheck = findViewById(R.id.tabCheck);
         txtUpload = findViewById(R.id.txtUpload);
-        txtCheck  = findViewById(R.id.txtCheck);
+        txtCheck = findViewById(R.id.txtCheck);
+        selectionIndicator = findViewById(R.id.selectionIndicator);
+
+        // Correctly size the indicator
+        selectionIndicator.post(() -> {
+            android.view.ViewGroup.LayoutParams lp = selectionIndicator.getLayoutParams();
+            lp.width = tabUpload.getWidth();
+            selectionIndicator.setLayoutParams(lp);
+        });
 
         // default
         switchTab(true);
 
         tabUpload.setOnClickListener(v -> switchTab(true));
         tabCheck.setOnClickListener(v -> switchTab(false));
+
+        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
     }
 
     void switchTab(boolean upload) {
 
-        int activeText   = getColorFromAttr(
-                com.google.android.material.R.attr.colorOnPrimary
-        );
-        int inactiveText = getColorFromAttr(
-                com.google.android.material.R.attr.colorOnSurface
-        );
+        int activeText = android.graphics.Color.WHITE;
+        int inactiveText = getColorFromAttr(com.google.android.material.R.attr.colorOnSurfaceVariant);
+
+        float targetX = upload ? 0 : tabUpload.getWidth();
+
+        // SLIDING ANIMATION
+        selectionIndicator.animate()
+                .translationX(targetX)
+                .setDuration(300)
+                .setInterpolator(new android.view.animation.DecelerateInterpolator())
+                .start();
 
         if (upload) {
-
-            // TEXT
             txtUpload.setTypeface(null, Typeface.BOLD);
             txtUpload.setTextColor(activeText);
 
             txtCheck.setTypeface(null, Typeface.NORMAL);
             txtCheck.setTextColor(inactiveText);
 
-            // ✅ BACKGROUND (THIS WAS MISSING)
-            tabUpload.setBackgroundResource(R.drawable.bg_tab_active);
-            tabCheck.setBackground(null);
-
             loadFragment(new UploadTemplatesFragment());
-
         } else {
-
-            // TEXT
             txtCheck.setTypeface(null, Typeface.BOLD);
             txtCheck.setTextColor(activeText);
 
             txtUpload.setTypeface(null, Typeface.NORMAL);
             txtUpload.setTextColor(inactiveText);
-
-            // ✅ BACKGROUND (THIS WAS MISSING)
-            tabCheck.setBackgroundResource(R.drawable.bg_tab_active);
-            tabUpload.setBackground(null);
 
             loadFragment(new CheckUploadsFragment());
         }

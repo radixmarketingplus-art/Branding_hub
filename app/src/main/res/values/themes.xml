@@ -20,6 +20,37 @@
         <item name="colorSurfaceContainer">@color/surface_light</item>
         <item name="colorSurfaceContainerLow">@color/surface_light</item>
         <item name="colorSurfaceContainerHigh">@color/surface_light</item>
+
+        <!-- DatePicker/TimePicker Customization -->
+        <item name="android:datePickerDialogTheme">@style/CustomDatePicker</item>
+        <item name="android:timePickerDialogTheme">@style/CustomTimePicker</item>
+    </style>
+
+    <style name="CustomDatePicker" parent="Theme.AppCompat.Light.Dialog">
+        <item name="android:windowBackground">@android:color/white</item>
+        <item name="android:colorBackground">@android:color/white</item>
+        <item name="android:windowIsTranslucent">false</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="colorAccent">@color/primary</item>
+        <item name="android:headerBackground">@color/primary</item>
+        <item name="android:textColorPrimary">@color/black</item>
+        <item name="android:buttonBarPositiveButtonStyle">@style/DialogButtonStyle</item>
+        <item name="android:buttonBarNegativeButtonStyle">@style/DialogButtonStyle</item>
+    </style>
+
+    <style name="CustomTimePicker" parent="Theme.AppCompat.Light.Dialog">
+        <item name="android:windowBackground">@android:color/white</item>
+        <item name="android:colorBackground">@android:color/white</item>
+        <item name="android:windowIsTranslucent">false</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="colorAccent">@color/primary</item>
+        <item name="android:buttonBarPositiveButtonStyle">@style/DialogButtonStyle</item>
+        <item name="android:buttonBarNegativeButtonStyle">@style/DialogButtonStyle</item>
+    </style>
+
+    <style name="DialogButtonStyle" parent="Widget.AppCompat.Button.Borderless">
+        <item name="android:textColor">@color/primary</item>
+        <item name="android:textStyle">bold</item>
     </style>
 
     <style name="ShapeAppearanceOverlay.App.CornerSize50Percent" parent="">

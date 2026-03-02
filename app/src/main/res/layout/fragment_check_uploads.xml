@@ -9,18 +9,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <!-- TITLE -->
-<!--        <TextView-->
-<!--            android:id="@+id/txtTitle"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:text="Templates"-->
-<!--            android:textSize="22sp"-->
-<!--            android:textStyle="bold"-->
-<!--            android:textColor="?android:textColorPrimary"-->
-<!--            android:padding="16dp"/>-->
+        android:orientation="vertical"
+        android:background="@color/screen_bg">
 
         <!-- FILTER TABS (NO CARD, NO UNDERLINE) -->
         <HorizontalScrollView
@@ -28,14 +18,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:scrollbars="none"
-            android:paddingHorizontal="8dp">
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="0dp"
+            android:paddingBottom="4dp"
+            android:clipToPadding="false">
 
             <LinearLayout
                 android:id="@+id/filterContainer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingVertical="8dp"/>
+                android:orientation="horizontal"/>
         </HorizontalScrollView>
 
         <!-- GRID -->
@@ -43,7 +36,8 @@
             android:id="@+id/recyclerTemplates"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="12dp"
+            android:padding="8dp"
+            android:paddingBottom="100dp"
             android:clipToPadding="false"/>
 
     </LinearLayout>
