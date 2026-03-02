@@ -182,11 +182,23 @@ public class CreateRequestActivity extends AppCompatActivity {
 
                         requestRef.child(id).setValue(r)
                                 .addOnSuccessListener(u -> {
+                                    
+                                    // 📢 Notify USER
                                     NotificationHelper.send(
                                             CreateRequestActivity.this,
-                                            "ADMIN",
+                                            FirebaseAuth.getInstance().getUid(),
+                                            "Support Request Sent",
+                                            "Your support request has been submitted successfully."
+                                    );
+
+                                    // 📢 Notify ADMINS
+                                    NotificationHelper.notifyAdmins(
+                                            CreateRequestActivity.this,
                                             "New Support Request",
-                                            r.title);
+                                            "A user has submitted a new support/contact request.",
+                                            "OPEN_SUPPORT_REQUESTS",
+                                            id
+                                    );
 
                                     runOnUiThread(() -> {
                                         setSubmitting(false);

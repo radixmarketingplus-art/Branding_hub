@@ -33,6 +33,7 @@ public class RequestChatActivity extends AppCompatActivity {
 
     ArrayList<ChatMessage> list = new ArrayList<>();
     ChatAdapter adapter;
+    com.example.rmplus.models.CustomerRequest customerRequest;
 
     @Override
     protected void onCreate(Bundle b) {
@@ -68,9 +69,9 @@ public class RequestChatActivity extends AppCompatActivity {
             chatTitle.setText(title);
 
         if (myUid.equals("ADMIN")) {
-            chatSubtitle.setText("Customer Support");
+            chatSubtitle.setText(R.string.title_customer_support);
         } else {
-            chatSubtitle.setText("Agent Support");
+            chatSubtitle.setText(R.string.title_agent_support);
         }
 
         recycler.setLayoutManager(
@@ -80,6 +81,7 @@ public class RequestChatActivity extends AppCompatActivity {
         recycler.setAdapter(adapter);
 
         loadMessages();
+        loadRequestData();
 
         imgPreview.setOnClickListener(v -> {
 
@@ -174,6 +176,21 @@ public class RequestChatActivity extends AppCompatActivity {
                 });
     }
 
+    void loadRequestData() {
+        FirebaseDatabase.getInstance()
+                .getReference("customer_requests")
+                .child(requestId)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot s) {
+                        customerRequest = s.getValue(com.example.rmplus.models.CustomerRequest.class);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError error) {}
+                });
+    }
+
     void sendText() {
 
         String txt = etMsg.getText().toString().trim();
@@ -197,7 +214,7 @@ public class RequestChatActivity extends AppCompatActivity {
                 .getReference("request_chats")
                 .child(requestId)
                 .child(id)
-                .setValue(m);
+                .setValue(m).addOnSuccessListener(unused -> sendChatNotification());
 
         etMsg.setText("");
     }
@@ -232,7 +249,7 @@ public class RequestChatActivity extends AppCompatActivity {
                     .getReference("request_chats")
                     .child(requestId)
                     .child(id)
-                    .setValue(m);
+                    .setValue(m).addOnSuccessListener(unused -> sendChatNotification());
 
             runOnUiThread(() -> {
                 selectedImageUri = null;
@@ -240,6 +257,29 @@ public class RequestChatActivity extends AppCompatActivity {
                 imgPreview.setVisibility(ImageView.GONE);
             });
         });
+    }
+
+    void sendChatNotification() {
+        if (customerRequest == null) return;
+
+        if (myUid.equalsIgnoreCase("ADMIN")) {
+            // Admin sent message -> Notify user
+            NotificationHelper.send(
+                    this,
+                    customerRequest.uid,
+                    "New Message",
+                    "New message from Support Agent."
+            );
+        } else {
+            // User sent message -> Notify ADMINS
+            NotificationHelper.notifyAdmins(
+                    this,
+                    "New Message",
+                    "New message from user regarding support request.",
+                    "OPEN_CHAT",
+                    requestId
+            );
+        }
     }
 
     private void uploadImageToServer(Uri uri, UrlCallback cb) {

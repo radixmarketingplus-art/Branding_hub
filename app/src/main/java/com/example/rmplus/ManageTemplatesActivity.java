@@ -643,12 +643,12 @@ public class ManageTemplatesActivity extends AppCompatActivity {
 
     private void setupFrameAdapter(String type) {
         ArrayList<FrameModel> designs = new ArrayList<>();
-        designs.add(new FrameModel("None", -1, null, R.drawable.ic_close_gray));
+        designs.add(new FrameModel(getString(R.string.label_none), -1, null, R.drawable.ic_close_gray));
 
         if ("Normal".equals(type)) {
-            designs.add(new FrameModel("Design 1", 1, null, R.drawable.ic_edit));
-            designs.add(new FrameModel("Design 2", 2, null, R.drawable.ic_edit));
-            designs.add(new FrameModel("Design 3", 3, null, R.drawable.ic_edit));
+            designs.add(new FrameModel(getString(R.string.label_design_format, 1), 1, null, R.drawable.ic_edit));
+            designs.add(new FrameModel(getString(R.string.label_design_format, 2), 2, null, R.drawable.ic_edit));
+            designs.add(new FrameModel(getString(R.string.label_design_format, 3), 3, null, R.drawable.ic_edit));
             renderFrameAdapter(designs);
         } else {
             rootRef.child("templates").child("Business Frame")
@@ -662,7 +662,7 @@ public class ManageTemplatesActivity extends AppCompatActivity {
                                             ? item.child("imagePath").getValue(String.class)
                                             : item.child("url").getValue(String.class);
                                     if (url != null) {
-                                        designs.add(new FrameModel("B-" + index, 0, url, R.drawable.ic_edit));
+                                        designs.add(new FrameModel(getString(R.string.label_business_format, index), 0, url, R.drawable.ic_edit));
                                         index++;
                                     }
                                 }
@@ -779,9 +779,10 @@ public class ManageTemplatesActivity extends AppCompatActivity {
             tEmail.setVisibility(View.GONE);
 
         if (uProfileUrl != null && !uProfileUrl.isEmpty()) {
-            Glide.with(this).load(uProfileUrl).placeholder(R.drawable.ic_profile).into(iLogo);
+            iLogo.setVisibility(View.VISIBLE);
+            Glide.with(this).load(uProfileUrl).into(iLogo);
         } else {
-            iLogo.setImageResource(R.drawable.ic_profile);
+            iLogo.setVisibility(View.GONE);
         }
 
         dynamicFrameContainer.addView(frameView);

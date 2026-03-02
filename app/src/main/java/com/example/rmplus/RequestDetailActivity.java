@@ -168,11 +168,23 @@ public class RequestDetailActivity extends AppCompatActivity {
                 .child("status")
                 .setValue(s);
 
-        NotificationHelper.send(
-                this,
-                r.uid,
-                "Request Status: " + s,
-                r.title);
+        if ("accepted".equals(s)) {
+            // 📢 Notify USER (Approved)
+            NotificationHelper.send(
+                    this,
+                    r.uid,
+                    "Support Request Approved",
+                    "Your support request has been approved. You can now chat with our agent."
+            );
+        } else if ("rejected".equals(s)) {
+            // 📢 Notify USER (Rejected)
+            NotificationHelper.send(
+                    this,
+                    r.uid,
+                    "Support Request Rejected",
+                    "Your support request has been rejected."
+            );
+        }
 
         Toast.makeText(this,
                 R.string.msg_updated,

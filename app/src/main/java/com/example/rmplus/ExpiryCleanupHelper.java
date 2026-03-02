@@ -15,23 +15,84 @@ import java.util.ArrayList;
 public class ExpiryCleanupHelper {
 
     public static void checkAndClean(Context context) {
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("templates");
         long now = System.currentTimeMillis();
 
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+        // 1. CLEAN TEMPLATES
+        FirebaseDatabase.getInstance().getReference("templates")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 for (DataSnapshot sectionSnapshot : snapshot.getChildren()) {
                     String category = sectionSnapshot.getKey();
                     if (category == null) continue;
-
-                    // recursive check for items or sub-categories
                     checkNode(context, sectionSnapshot, category, now);
                 }
             }
+            @Override public void onCancelled(DatabaseError error) {}
+        });
 
+        // 2. CLEAN BROADCAST NOTIFICATIONS
+        FirebaseDatabase.getInstance().getReference("broadcast_notifications")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onCancelled(DatabaseError error) {}
+            public void onDataChange(DataSnapshot snapshot) {
+                for (DataSnapshot child : snapshot.getChildren()) {
+                    if (child.hasChild("expiryDate")) {
+                        long expiry = child.child("expiryDate").getValue(Long.class);
+                        if (expiry > 0 && now > expiry) {
+                            child.getRef().removeValue();
+                        }
+                    }
+                }
+            }
+            @Override public void onCancelled(DatabaseError error) {}
+        });
+
+        // 3. CLEAN PRIVATE USER NOTIFICATIONS
+        FirebaseDatabase.getInstance().getReference("notifications")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                for (DataSnapshot userSnap : snapshot.getChildren()) {
+                    for (DataSnapshot notiSnap : userSnap.getChildren()) {
+                        if (notiSnap.hasChild("expiryDate")) {
+                            long expiry = notiSnap.child("expiryDate").getValue(Long.class);
+                            if (expiry > 0 && now > expiry) {
+                                notiSnap.getRef().removeValue();
+                            }
+                        }
+                    }
+                }
+            }
+            @Override public void onCancelled(DatabaseError error) {}
+        });
+
+        // 4. CLEAN EXPIRED SUBSCRIPTIONS
+        FirebaseDatabase.getInstance().getReference("users")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                for (DataSnapshot userSnap : snapshot.getChildren()) {
+                    Boolean isSubscribed = userSnap.child("subscribed").getValue(Boolean.class);
+                    if (isSubscribed != null && isSubscribed) {
+                        Long expiry = userSnap.child("subscriptionExpiry").getValue(Long.class);
+                        if (expiry != null && expiry > 0 && now > expiry) {
+                            // Sub expired!
+                            userSnap.getRef().child("subscribed").setValue(false);
+                            userSnap.getRef().child("subscriptionStatus").setValue("expired");
+                            
+                            // Notify user
+                            NotificationHelper.send(
+                                    context,
+                                    userSnap.getKey(),
+                                    "Subscription Expired",
+                                    "Your premium subscription has expired. Renew now to continue enjoying benefits."
+                            );
+                        }
+                    }
+                }
+            }
+            @Override public void onCancelled(DatabaseError error) {}
         });
     }
 
@@ -51,8 +112,13 @@ public class ExpiryCleanupHelper {
                     url = child.child("imagePath").getValue(String.class);
                 }
 
+                String uid = null;
+                if (child.hasChild("uid")) {
+                    uid = child.child("uid").getValue(String.class);
+                }
+
                 if (expiry > 0 && now > expiry && url != null) {
-                    performNuclearDelete(context, path, child.getKey(), url);
+                    performNuclearDelete(context, path, child.getKey(), url, uid);
                 }
             } else if (child.getChildrenCount() > 0) {
                 // It's likely a sub-category (like 'Political' inside 'Business Frame')
@@ -61,21 +127,34 @@ public class ExpiryCleanupHelper {
         }
     }
 
-    private static void performNuclearDelete(Context context, String path, String key, String url) {
+    private static void performNuclearDelete(Context context, String path, String key, String url, String uid) {
         // 1. Remove from Firebase
         FirebaseDatabase.getInstance().getReference("templates")
                 .child(path).child(key).removeValue();
+
+        // 📢 NOTIFY USER IF ADVERTISEMENT
+        if ("Advertisement".equalsIgnoreCase(path) && uid != null) {
+            NotificationHelper.send(
+                    context,
+                    uid,
+                    "Advertisement Expired",
+                    "Your advertisement has expired. You can submit a new request to go live again."
+            );
+        }
 
         // 2. Remove stats
         FirebaseDatabase.getInstance().getReference("template_activity")
                 .child(key).removeValue();
 
-        // 3. Remove from SharedPreferences
+        // 3. Remove corresponding broadcast notification
+        NotificationHelper.deleteBroadcast(key);
+
+        // 4. Remove from SharedPreferences
         // category for SP is the first part of the path (e.g., "Business Frame")
         String rootCategory = path.contains("/") ? path.split("/")[0] : path;
         removeFromLocal(context, rootCategory, url);
 
-        // 4. Delete from VPS
+        // 5. Delete from VPS
         deleteFromVPS(url);
     }
 
