@@ -9,10 +9,12 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.graphics.Color;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
+import androidx.core.content.ContextCompat;
 
 public class FestivalDateAdapter
         extends RecyclerView.Adapter<FestivalDateAdapter.VH> {
@@ -21,29 +23,29 @@ public class FestivalDateAdapter
     OnDateClickListener listener;
     int selectedPosition = RecyclerView.NO_POSITION;
 
-//    int todayIndex = -1;
+    // int todayIndex = -1;
 
     public interface OnDateClickListener {
         void onDateSelected(String date);
     }
 
     public FestivalDateAdapter(ArrayList<Calendar> dates,
-                               OnDateClickListener listener) {
+            OnDateClickListener listener) {
         this.dates = dates;
         this.listener = listener;
 
-//        Calendar today = Calendar.getInstance();
-//
-//        for (int i = 0; i < dates.size(); i++) {
-//            Calendar c = dates.get(i);
-//            if (c == null) continue;
-//
-//            if (c.get(Calendar.DAY_OF_YEAR) == today.get(Calendar.DAY_OF_YEAR)
-//                    && c.get(Calendar.YEAR) == today.get(Calendar.YEAR)) {
-//                todayIndex = i;
-//                break;
-//            }
-//        }
+        // Calendar today = Calendar.getInstance();
+        //
+        // for (int i = 0; i < dates.size(); i++) {
+        // Calendar c = dates.get(i);
+        // if (c == null) continue;
+        //
+        // if (c.get(Calendar.DAY_OF_YEAR) == today.get(Calendar.DAY_OF_YEAR)
+        // && c.get(Calendar.YEAR) == today.get(Calendar.YEAR)) {
+        // todayIndex = i;
+        // break;
+        // }
+        // }
     }
 
     @NonNull
@@ -63,9 +65,26 @@ public class FestivalDateAdapter
         if (c == null) {
             h.day.setText(h.itemView.getContext().getString(R.string.filter_all));
             h.month.setText("");
-            h.itemView.setBackgroundResource(R.drawable.bg_date_normal);
+
+            if (pos == selectedPosition) {
+                h.container.setBackgroundResource(R.drawable.bg_date_today);
+                h.day.setTextColor(Color.WHITE);
+                h.month.setTextColor(Color.WHITE);
+                h.month.setVisibility(View.GONE);
+            } else {
+                h.container.setBackgroundResource(R.drawable.bg_date_normal);
+                h.day.setTextColor(ContextCompat.getColor(h.itemView.getContext(), R.color.text_primary));
+                h.month.setTextColor(ContextCompat.getColor(h.itemView.getContext(), R.color.text_secondary));
+                h.month.setVisibility(View.GONE);
+            }
 
             h.itemView.setOnClickListener(v -> {
+                int oldPos = selectedPosition;
+                selectedPosition = pos;
+                if (oldPos != RecyclerView.NO_POSITION)
+                    notifyItemChanged(oldPos);
+                notifyItemChanged(selectedPosition);
+
                 if (listener != null) {
                     listener.onDateSelected("CLEAR");
                 }
@@ -76,29 +95,19 @@ public class FestivalDateAdapter
         h.day.setText(String.valueOf(c.get(Calendar.DAY_OF_MONTH)));
         h.month.setText(
                 new SimpleDateFormat("MMM", Locale.getDefault())
-                        .format(c.getTime())
-        );
-
-//        if (pos == todayIndex) {
-//            h.itemView.setBackgroundResource(R.drawable.bg_date_today);
-//        } else {
-//            h.itemView.setBackgroundResource(R.drawable.bg_date_normal);
-//        }
+                        .format(c.getTime()));
 
         if (pos == selectedPosition) {
-            h.itemView.setBackgroundResource(R.drawable.bg_date_today);
+            h.container.setBackgroundResource(R.drawable.bg_date_today);
+            h.day.setTextColor(Color.WHITE);
+            h.month.setTextColor(Color.WHITE);
+            h.month.setVisibility(View.VISIBLE);
         } else {
-            h.itemView.setBackgroundResource(R.drawable.bg_date_normal);
+            h.container.setBackgroundResource(R.drawable.bg_date_normal);
+            h.day.setTextColor(ContextCompat.getColor(h.itemView.getContext(), R.color.text_primary));
+            h.month.setTextColor(ContextCompat.getColor(h.itemView.getContext(), R.color.text_secondary));
+            h.month.setVisibility(View.VISIBLE);
         }
-
-//        h.itemView.setOnClickListener(v -> {
-//            SimpleDateFormat sdf =
-//                    new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
-//
-//            if (listener != null) {
-//                listener.onDateSelected(sdf.format(c.getTime()));
-//            }
-//        });
 
         h.itemView.setOnClickListener(v -> {
 
@@ -110,8 +119,8 @@ public class FestivalDateAdapter
             }
             notifyItemChanged(selectedPosition);
 
-            SimpleDateFormat sdf =
-                    new SimpleDateFormat("dd-MM-yyyy", Locale.US); // ✅ Locale.US: avoid Devanagari numerals in Hindi
+            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.US); // ✅ Locale.US: avoid Devanagari
+                                                                                  // numerals in Hindi
 
             if (listener != null) {
                 listener.onDateSelected(sdf.format(c.getTime()));
@@ -127,11 +136,13 @@ public class FestivalDateAdapter
 
     static class VH extends RecyclerView.ViewHolder {
         TextView day, month;
+        View container;
 
         VH(View v) {
             super(v);
             day = v.findViewById(R.id.txtDay);
             month = v.findViewById(R.id.txtMonth);
+            container = v.findViewById(R.id.dateContainer);
         }
     }
 

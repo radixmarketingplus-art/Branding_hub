@@ -3,33 +3,36 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:layout_marginTop="24dp">
+    android:layout_marginTop="16dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="center_vertical">
+        android:gravity="center_vertical"
+        android:paddingHorizontal="24dp">
 
         <TextView
             android:id="@+id/txtSectionTitle"
-            style="@style/sectionTitle"
-            android:textColor="?android:textColorPrimary"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:text="Section Title" />
+            android:layout_weight="1"
+            android:text="Section Title"
+            android:textSize="18sp"
+            android:fontFamily="sans-serif-black"
+            android:textColor="@color/text_primary" />
 
         <TextView
             android:id="@+id/btnSectionSeeAll"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/btn_see_all"
-            android:textColor="@color/primary"
-            android:textSize="12sp"
-            android:textAllCaps="true"
-            android:letterSpacing="0.05"
-            android:textStyle="bold" />
+            android:textColor="?attr/colorPrimary"
+            android:textSize="14sp"
+            android:fontFamily="sans-serif-medium"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="8dp" />
     </LinearLayout>
 
     <!-- SUB-CATEGORY FILTERS (Hidden by default) -->
@@ -37,37 +40,42 @@
         android:id="@+id/scrollFilters"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="12dp"
         android:scrollbars="none"
+        android:clipToPadding="false"
+        android:paddingHorizontal="20dp"
         android:visibility="gone">
         <LinearLayout
             android:id="@+id/filterContainer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:paddingHorizontal="4dp"/>
+            android:gravity="center_vertical" />
     </HorizontalScrollView>
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="160dp"
-        android:layout_marginTop="8dp">
+        android:layout_height="135dp"
+        android:layout_marginTop="12dp">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvSectionItems"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:clipToPadding="false" />
+            android:clipToPadding="false"
+            android:paddingHorizontal="20dp"
+            android:overScrollMode="never" />
 
         <LinearLayout
             android:id="@+id/skSection"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal"
+            android:paddingHorizontal="24dp"
             android:visibility="visible">
-            <View android:layout_width="120dp" android:layout_height="match_parent" android:background="@drawable/bg_skeleton" android:layout_marginEnd="12dp"/>
-            <View android:layout_width="120dp" android:layout_height="match_parent" android:background="@drawable/bg_skeleton" android:layout_marginEnd="12dp"/>
-            <View android:layout_width="120dp" android:layout_height="match_parent" android:background="@drawable/bg_skeleton" />
+            <View android:layout_width="130dp" android:layout_height="match_parent" android:background="@drawable/bg_skeleton" android:layout_marginEnd="12dp"/>
+            <View android:layout_width="130dp" android:layout_height="match_parent" android:background="@drawable/bg_skeleton" android:layout_marginEnd="12dp"/>
+            <View android:layout_width="130dp" android:layout_height="match_parent" android:background="@drawable/bg_skeleton" />
         </LinearLayout>
     </FrameLayout>
 

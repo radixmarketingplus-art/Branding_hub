@@ -196,7 +196,7 @@ public class HomeActivity extends BaseActivity {
         if (window != null) {
             window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
             window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            
+
             // Set entry animation for the whole dialog window
             window.getAttributes().windowAnimations = android.R.style.Animation_Dialog;
         }
