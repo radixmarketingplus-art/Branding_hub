@@ -124,18 +124,6 @@ public class EditProfileActivity extends AppCompatActivity {
         loadData();
 
         dob.setOnClickListener(v -> showDatePicker());
-        // Also handle the touch on the icon
-        dob.setOnTouchListener((v, event) -> {
-            final int DRAWABLE_RIGHT = 2;
-            if (event.getAction() == android.view.MotionEvent.ACTION_UP) {
-                if (event.getRawX() >= (dob.getRight() - dob.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width()
-                        - dob.getPaddingRight())) {
-                    showDatePicker();
-                    return true;
-                }
-            }
-            return false;
-        });
 
         saveBtn.setOnClickListener(v -> confirmSave());
 

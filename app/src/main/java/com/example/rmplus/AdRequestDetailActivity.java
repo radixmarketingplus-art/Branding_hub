@@ -65,6 +65,8 @@ public class AdRequestDetailActivity extends AppCompatActivity {
         spinnerDuration = findViewById(R.id.spinnerDuration);
         expiryPickerContainer = findViewById(R.id.expiryPickerContainer);
 
+        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
+
         requestId = getIntent().getStringExtra("id");
         isAdmin = getIntent().getBooleanExtra("isAdmin", false);
 
@@ -87,33 +89,42 @@ public class AdRequestDetailActivity extends AppCompatActivity {
 
                                 if (r == null) return;
 
-                                txtTitle.setText(getString(R.string.label_ad_link, r.adLink));
+                                txtTitle.setText(r.adLink != null && !r.adLink.isEmpty() ? r.adLink : "No Link Provided");
                                 txtDesc.setText(R.string.label_ad_request_desc);
                                 
                                 String displayStatus = r.status;
-                                if ("pending".equalsIgnoreCase(r.status)) displayStatus = getString(R.string.tab_pending);
-                                else if ("accepted".equalsIgnoreCase(r.status)) displayStatus = getString(R.string.tab_accepted);
-                                else if ("rejected".equalsIgnoreCase(r.status)) displayStatus = getString(R.string.tab_rejected);
+                                int statusColor = android.graphics.Color.parseColor("#F59E0B"); // Pending Color
                                 
-                                txtStatus.setText(getString(R.string.label_status, displayStatus));
+                                if ("pending".equalsIgnoreCase(r.status)) {
+                                    displayStatus = getString(R.string.tab_pending);
+                                    statusColor = android.graphics.Color.parseColor("#F59E0B");
+                                } else if ("accepted".equalsIgnoreCase(r.status)) {
+                                    displayStatus = getString(R.string.tab_accepted);
+                                    statusColor = android.graphics.Color.parseColor("#10B981");
+                                } else if ("rejected".equalsIgnoreCase(r.status)) {
+                                    displayStatus = getString(R.string.tab_rejected);
+                                    statusColor = android.graphics.Color.parseColor("#EF4444");
+                                }
+                                
+                                txtStatus.setText(displayStatus);
+                                txtStatus.setTextColor(statusColor);
 
                                 String timeStr =
                                         new SimpleDateFormat(
-                                                "dd MMM yyyy, hh:mm a",
+                                                "dd MMM yyyy 'at' hh:mm a",
                                                 Locale.getDefault())
                                                 .format(new Date(r.time));
 
-                                txtTime.setText(getString(R.string.label_time, timeStr));
+                                txtTime.setText(timeStr);
 
                                 // USER INFO (Admin only)
                                 if (isAdmin) {
-                                    txtUserName.setText(getString(R.string.label_name, r.userName));
-                                    txtEmail.setText(getString(R.string.label_email, r.email));
-                                    txtMobile.setText(getString(R.string.label_mobile, r.mobile));
+                                    findViewById(R.id.userCard).setVisibility(View.VISIBLE);
+                                    txtUserName.setText(r.userName);
+                                    txtEmail.setText(r.email);
+                                    txtMobile.setText(r.mobile);
                                 } else {
-                                    txtUserName.setVisibility(View.GONE);
-                                    txtEmail.setVisibility(View.GONE);
-                                    txtMobile.setVisibility(View.GONE);
+                                    findViewById(R.id.userCard).setVisibility(View.GONE);
                                 }
 
                                 // TEMPLATE IMAGE

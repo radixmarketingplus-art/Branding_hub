@@ -141,6 +141,14 @@ public class AdminTemplateDetailActivity extends BaseActivity {
                     SearchActivity.class
             ));
         });
+
+        imgPreview.setOnClickListener(v -> {
+            if (templatePath != null) {
+                Intent i = new Intent(this, ImagePreviewActivity.class);
+                i.putExtra("img", templatePath);
+                startActivity(i);
+            }
+        });
     }
 
     private String realTemplateId = null; 

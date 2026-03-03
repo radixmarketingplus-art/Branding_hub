@@ -21,6 +21,7 @@ public class CreateRequestActivity extends AppCompatActivity {
     EditText etTitle, etDesc;
     Button btnAttach, btnSubmit;
     ImageView imgPreview;
+    View imgPreviewCard;
     ProgressBar progressBar;
 
     Uri selectedUri; // kept locally — uploaded only on submit
@@ -43,6 +44,7 @@ public class CreateRequestActivity extends AppCompatActivity {
         btnAttach = findViewById(R.id.btnAttach);
         btnSubmit = findViewById(R.id.btnSubmit);
         imgPreview = findViewById(R.id.imgPreview);
+        imgPreviewCard = findViewById(R.id.imgPreviewCard);
         progressBar = findViewById(R.id.progressBar);
 
         String[] arr = {
@@ -59,7 +61,7 @@ public class CreateRequestActivity extends AppCompatActivity {
         String uid = FirebaseAuth.getInstance().getUid();
 
         // Tap image preview → fullscreen
-        imgPreview.setOnClickListener(v -> {
+        imgPreviewCard.setOnClickListener(v -> {
             if (selectedUri != null) {
                 Intent i = new Intent(CreateRequestActivity.this, ImagePreviewActivity.class);
                 i.putExtra("img", selectedUri.toString());
@@ -93,7 +95,7 @@ public class CreateRequestActivity extends AppCompatActivity {
                         // ✅ Keep locally only — NO VPS upload here
                         selectedUri = uri;
                         imgPreview.setImageURI(selectedUri);
-                        imgPreview.setVisibility(ImageView.VISIBLE);
+                        imgPreviewCard.setVisibility(View.VISIBLE);
                     }
                 });
 

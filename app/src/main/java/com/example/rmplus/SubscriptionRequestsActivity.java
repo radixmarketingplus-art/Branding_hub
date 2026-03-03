@@ -1,23 +1,31 @@
 package com.example.rmplus;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.*;
-import androidx.appcompat.app.AppCompatActivity;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
-import com.google.firebase.database.*;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.rmplus.adapters.SubscriptionRequestAdapter;
+import com.example.rmplus.models.SubscriptionRequest;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import android.widget.TextView;
 
 public class SubscriptionRequestsActivity extends AppCompatActivity {
 
-    ListView requestList;
+    RecyclerView requestRecycler;
     TextView pendingBtn, approvedBtn, rejectedBtn;
 
-    ArrayList<String> displayList = new ArrayList<>();
-    ArrayList<String> uidList = new ArrayList<>();
+    ArrayList<SubscriptionRequest> list = new ArrayList<>();
+    SubscriptionRequestAdapter adapter;
 
     DatabaseReference requestRef;
     View tabUnderline;
@@ -28,14 +36,19 @@ public class SubscriptionRequestsActivity extends AppCompatActivity {
         super.onCreate(b);
         setContentView(R.layout.activity_subscription_requests);
 
-        requestList = findViewById(R.id.requestList);
+        requestRecycler = findViewById(R.id.requestRecycler);
         pendingBtn = findViewById(R.id.pendingBtn);
         approvedBtn = findViewById(R.id.approvedBtn);
         rejectedBtn = findViewById(R.id.rejectedBtn);
-
         tabUnderline = findViewById(R.id.tabUnderline);
 
-// default: Pending selected
+        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
+
+        requestRecycler.setLayoutManager(new LinearLayoutManager(this));
+        adapter = new SubscriptionRequestAdapter(list, this);
+        requestRecycler.setAdapter(adapter);
+
+        // default: Pending selected
         pendingBtn.post(() -> {
             moveUnderline(pendingBtn);
             updateTabText(pendingBtn);
@@ -66,56 +79,34 @@ public class SubscriptionRequestsActivity extends AppCompatActivity {
             updateTabText(rejectedBtn);
             loadRequests();
         });
-
-        requestList.setOnItemClickListener((a,v,pos,id)->{
-            Intent i = new Intent(this,
-                    ApproveRejectActivity.class);
-            i.putExtra("uid", uidList.get(pos));
-            startActivity(i);
-        });
     }
 
-    void loadRequests(){
+    void loadRequests() {
 
-        requestRef.addListenerForSingleValueEvent(
+        requestRef.addValueEventListener(
                 new ValueEventListener() {
-                    public void onDataChange(DataSnapshot snap){
+                    public void onDataChange(DataSnapshot snap) {
 
-                        displayList.clear();
-                        uidList.clear();
+                        list.clear();
 
-                        for(DataSnapshot d : snap.getChildren()){
+                        for (DataSnapshot d : snap.getChildren()) {
 
-                            String status =
-                                    d.child("status")
-                                            .getValue(String.class);
+                            String status = d.child("status").getValue(String.class);
 
-                            if(status != null &&
-                                    status.equals(currentStatus)){
+                            if (status != null && status.equalsIgnoreCase(currentStatus)) {
 
-                                String name =
-                                        d.child("name")
-                                                .getValue(String.class);
-
-                                String plan =
-                                        d.child("plan")
-                                                .getValue(String.class);
-
-                                displayList.add(
-                                        name + " - " + plan);
-
-                                uidList.add(d.getKey());
+                                SubscriptionRequest r = d.getValue(SubscriptionRequest.class);
+                                if (r != null) {
+                                    r.uid = d.getKey();
+                                    list.add(r);
+                                }
                             }
                         }
-
-                        requestList.setAdapter(
-                                new ArrayAdapter<>(
-                                        SubscriptionRequestsActivity.this,
-                                        android.R.layout.simple_list_item_1,
-                                        displayList));
+                        adapter.notifyDataSetChanged();
                     }
 
-                    public void onCancelled(DatabaseError e){}
+                    public void onCancelled(DatabaseError e) {
+                    }
                 });
     }
 

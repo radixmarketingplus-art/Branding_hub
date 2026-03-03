@@ -51,9 +51,9 @@ public class ApproveRejectActivity extends AppCompatActivity {
                 rejectBtn = findViewById(R.id.rejectBtn);
                 downloadBtn = findViewById(R.id.downloadBtn);
                 spinnerPlan = findViewById(R.id.spinnerPlan);
-                btnUpdateExpiry = findViewById(R.id.btnUpdateExpiry); // Will add this to XML too
-                planGrantContainer = findViewById(R.id.planGrantContainer); // Wrap spinner in this
-                txtCurrentExpiry = findViewById(R.id.txtCurrentExpiry); // To show expiry if approved
+                btnUpdateExpiry = findViewById(R.id.btnUpdateExpiry);
+                planGrantContainer = findViewById(R.id.planGrantContainer);
+                txtCurrentExpiry = findViewById(R.id.txtCurrentExpiry);
 
                 findViewById(R.id.btnBack).setOnClickListener(v -> finish());
 
@@ -87,8 +87,18 @@ public class ApproveRejectActivity extends AppCompatActivity {
                                         public void onDataChange(DataSnapshot s) {
 
                                                 userRequestedPlan = s.child("plan").getValue(String.class);
-                                                planTxt.setText(getString(R.string.label_plan_requested,
-                                                                userRequestedPlan));
+                                                planTxt.setText(userRequestedPlan); // Showing plain plan text for modern look
+
+                                                // Load User Info from request node
+                                                String name = s.child("name").getValue(String.class);
+                                                String email = s.child("email").getValue(String.class);
+                                                String mobile = s.child("mobile").getValue(String.class);
+
+                                                nameTxt.setText(name != null ? name : "User");
+                                                emailTxt.setText(email != null ? email : "No Email");
+                                                mobileTxt.setText(mobile != null ? mobile : "No Mobile");
+
+                                                ((TextView)findViewById(R.id.txtHeaderTitle)).setText(name != null ? name : "Subscription");
 
                                                 String status = s.child("status").getValue(String.class);
 
@@ -124,31 +134,43 @@ public class ApproveRejectActivity extends AppCompatActivity {
                                                         }
                                                 }
 
-                                                if ("approved".equalsIgnoreCase(status)) {
-                                                        approveBtn.setVisibility(View.GONE);
-                                                        rejectBtn.setVisibility(View.GONE);
-                                                        if (planGrantContainer != null)
-                                                                planGrantContainer.setVisibility(View.GONE);
+                                                TextView txtStatus = findViewById(R.id.txtStatus);
+                                                int statusColor = android.graphics.Color.parseColor("#F59E0B"); // Pending
 
-                                                        // Load and show expiry
-                                                        loadExpiryFromUser();
+                                                if ("approved".equalsIgnoreCase(status)) {
+                                                    txtStatus.setText(getString(R.string.tab_accepted));
+                                                    statusColor = android.graphics.Color.parseColor("#10B981");
+                                                    approveBtn.setVisibility(View.GONE);
+                                                    rejectBtn.setVisibility(View.GONE);
+                                                    if (planGrantContainer != null)
+                                                        planGrantContainer.setVisibility(View.GONE);
+                                                    loadExpiryFromUser();
                                                 } else if ("pending".equalsIgnoreCase(status)) {
-                                                        approveBtn.setVisibility(View.VISIBLE);
-                                                        rejectBtn.setVisibility(View.VISIBLE);
-                                                        if (planGrantContainer != null)
-                                                                planGrantContainer.setVisibility(View.VISIBLE);
+                                                    txtStatus.setText(getString(R.string.tab_pending));
+                                                    statusColor = android.graphics.Color.parseColor("#F59E0B");
+                                                    approveBtn.setVisibility(View.VISIBLE);
+                                                    rejectBtn.setVisibility(View.VISIBLE);
+                                                    if (planGrantContainer != null)
+                                                        planGrantContainer.setVisibility(View.VISIBLE);
+                                                } else if ("rejected".equalsIgnoreCase(status)) {
+                                                    txtStatus.setText(getString(R.string.tab_rejected));
+                                                    statusColor = android.graphics.Color.parseColor("#EF4444");
+                                                    approveBtn.setVisibility(View.GONE);
+                                                    rejectBtn.setVisibility(View.GONE);
+                                                    if (planGrantContainer != null)
+                                                        planGrantContainer.setVisibility(View.GONE);
                                                 }
+                                                txtStatus.setTextColor(statusColor);
 
                                                 Long t = s.child("time")
                                                                 .getValue(Long.class);
 
                                                 if (t != null) {
                                                         String dateStr = new java.text.SimpleDateFormat(
-                                                                        "dd MMM yyyy, hh:mm a",
+                                                                        "dd MMM yyyy 'at' hh:mm a",
                                                                         java.util.Locale.getDefault())
                                                                         .format(new java.util.Date(t));
-                                                        dateTxt.setText(getString(R.string.label_requested_on,
-                                                                        dateStr));
+                                                        dateTxt.setText(dateStr);
                                                 }
 
                                                 proofPath = s.child("proofPath")
@@ -193,6 +215,7 @@ public class ApproveRejectActivity extends AppCompatActivity {
                                 txtCurrentExpiry.setText(getString(R.string.label_expires_on, dateStr));
                                 txtCurrentExpiry.setVisibility(View.VISIBLE);
                                 btnUpdateExpiry.setVisibility(View.VISIBLE);
+                                findViewById(R.id.expiryInfoCard).setVisibility(View.VISIBLE);
                         }
                 });
         }

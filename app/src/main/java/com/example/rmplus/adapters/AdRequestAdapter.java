@@ -40,15 +40,41 @@ public class AdRequestAdapter
     public void onBindViewHolder(Holder h, int i){
 
         AdvertisementRequest r = list.get(i);
+        Context ctx = h.itemView.getContext();
 
-        // Title — show link or custom text
-        h.title.setText(R.string.msg_advertisement);
+        // 1. SET TYPE & ICON
+        h.txtRequestType.setText(ctx.getString(R.string.title_adv_request));
+        h.imgIcon.setImageResource(R.drawable.ic_megaphone);
+        h.imgIcon.setBackgroundTintList(android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#FFF4E6")));
 
+        // 2. SET TITLE (Show the Link if available)
+        if (r.adLink != null && !r.adLink.isEmpty()) {
+            h.title.setText(r.adLink);
+        } else {
+            h.title.setText(R.string.msg_advertisement);
+        }
+
+        // 3. SET DATE/TIME
+        String timeStr = new java.text.SimpleDateFormat("hh:mm a", java.util.Locale.getDefault()).format(new java.util.Date(r.time));
+        h.txtTime.setText(timeStr);
+
+        // 4. SET STATUS WITH COLOR
         String displayStatus = r.status;
-        if ("pending".equalsIgnoreCase(r.status)) displayStatus = context.getString(R.string.tab_pending);
-        else if ("accepted".equalsIgnoreCase(r.status)) displayStatus = context.getString(R.string.tab_accepted);
-        else if ("rejected".equalsIgnoreCase(r.status)) displayStatus = context.getString(R.string.tab_rejected);
+        int statusColor = ctx.getColor(R.color.primary);
+        
+        if ("pending".equalsIgnoreCase(r.status)) {
+            displayStatus = ctx.getString(R.string.tab_pending);
+            statusColor = android.graphics.Color.parseColor("#F59E0B"); // Amber
+        } else if ("accepted".equalsIgnoreCase(r.status)) {
+            displayStatus = ctx.getString(R.string.tab_accepted);
+            statusColor = android.graphics.Color.parseColor("#10B981"); // Green
+        } else if ("rejected".equalsIgnoreCase(r.status)) {
+            displayStatus = ctx.getString(R.string.tab_rejected);
+            statusColor = android.graphics.Color.parseColor("#EF4444"); // Red
+        }
+        
         h.status.setText(displayStatus);
+        h.status.setTextColor(statusColor);
 
         h.itemView.setOnClickListener(v -> {
 
@@ -70,12 +96,16 @@ public class AdRequestAdapter
 
     class Holder extends RecyclerView.ViewHolder{
 
-        TextView title, status;
+        TextView title, status, txtRequestType, txtTime;
+        android.widget.ImageView imgIcon;
 
         Holder(View v){
             super(v);
             title = v.findViewById(R.id.txtTitle);
             status = v.findViewById(R.id.txtStatus);
+            txtRequestType = v.findViewById(R.id.txtRequestType);
+            txtTime = v.findViewById(R.id.txtTime);
+            imgIcon = v.findViewById(R.id.imgIcon);
         }
     }
 }

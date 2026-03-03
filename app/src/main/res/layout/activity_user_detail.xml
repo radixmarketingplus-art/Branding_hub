@@ -2,22 +2,44 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?android:colorBackground">
+    android:background="@color/screen_bg"
+    android:fitsSystemWindows="true">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorSurface">
+        android:background="@color/screen_bg"
+        app:elevation="0dp"
+        android:outlineProvider="none">
 
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/toolbar"
+        <!-- HEADER SECTION MATCHING ADMIN/EDIT PROFILE -->
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            app:title="@string/title_user_details"
-            app:titleCentered="true"
-            app:navigationIcon="@drawable/ic_back"/>
+            android:layout_height="64dp"
+            android:paddingHorizontal="16dp">
+
+            <ImageView
+                android:id="@+id/btnBack"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_centerVertical="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:padding="8dp"
+                android:src="@drawable/ic_back"
+                app:tint="?android:textColorPrimary" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="@string/title_user_details"
+                android:textSize="18sp"
+                android:fontFamily="sans-serif-black"
+                android:textColor="?android:textColorPrimary" />
+        </RelativeLayout>
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -54,7 +76,7 @@
                     android:layout_width="32dp"
                     android:layout_height="32dp"
                     android:layout_gravity="bottom|end"
-                    android:src="@android:drawable/ic_menu_camera"
+                    android:src="@drawable/ic_camera_profile"
                     app:fabCustomSize="32dp"
                     app:maxImageSize="18dp"
                     app:tint="@android:color/white"
@@ -270,8 +292,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:text="@string/btn_save_changes"
-                app:cornerRadius="12dp"
-                android:backgroundTint="@color/primary"/>
+                android:textAllCaps="false"
+                android:fontFamily="sans-serif-black"
+                android:textSize="16sp"
+                android:textColor="@color/white"
+                app:cornerRadius="16dp"
+                app:backgroundTint="@null"
+                android:background="@drawable/bg_admin_button_3d" />
 
             <View
                 android:layout_width="match_parent"

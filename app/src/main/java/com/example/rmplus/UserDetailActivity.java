@@ -50,6 +50,7 @@ public class UserDetailActivity extends AppCompatActivity {
     private RadioGroup genderGroup;
     private RadioButton rbMale, rbFemale, rbOther;
     private Button btnSave;
+    private ImageView btnBack;
 
     private String profileUrl = "";
     private Uri croppedUri;
@@ -108,17 +109,15 @@ public class UserDetailActivity extends AppCompatActivity {
         rbFemale = findViewById(R.id.rbFemale);
         rbOther = findViewById(R.id.rbOther);
         btnSave = findViewById(R.id.btnSave);
+        btnBack = findViewById(R.id.btnBack);
 
         txtUid.setText("UID: " + uid);
     }
 
     private void setupToolbar() {
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (btnBack != null) {
+            btnBack.setOnClickListener(v -> finish());
         }
-        toolbar.setNavigationOnClickListener(v -> finish());
     }
 
     private void setupSpinners() {

@@ -45,11 +45,11 @@
                     android:layout_weight="1">
 
                     <TextView
-                        android:id="@+id/txtTitle"
+                        android:id="@+id/txtHeaderTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Request Title"
-                        android:textSize="26sp"
+                        android:text="@string/title_submit_request"
+                        android:textSize="24sp"
                         android:fontFamily="sans-serif-black"
                         android:textColor="?attr/colorOnSurface"
                         android:letterSpacing="-0.01" />
@@ -58,7 +58,7 @@
                         android:id="@+id/txtTime"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Submitted on 25 Feb, 2026"
+                        android:text="Submitted 25 Feb, 2026"
                         android:textSize="12sp"
                         android:fontFamily="sans-serif-medium"
                         android:textColor="?attr/colorOnSurfaceVariant"
@@ -91,6 +91,7 @@
 
             <!-- USER INFO CARD -->
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/userCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
@@ -155,16 +156,17 @@
                                 android:textSize="13sp"
                                 android:fontFamily="sans-serif-medium"
                                 android:textColor="?attr/colorOnSurfaceVariant" />
-                        </LinearLayout>
 
-                        <TextView
-                            android:id="@+id/txtMobile"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="+91 0000000000"
-                            android:textSize="13sp"
-                            android:fontFamily="sans-serif-bold"
-                            android:textColor="?attr/colorPrimary" />
+                            <TextView
+                                android:id="@+id/txtMobile"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="+91 0000000000"
+                                android:textSize="13sp"
+                                android:fontFamily="sans-serif-bold"
+                                android:textColor="?attr/colorPrimary"
+                                android:layout_marginTop="2dp" />
+                        </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
@@ -208,6 +210,16 @@
                         android:layout_marginBottom="8dp" />
 
                     <TextView
+                        android:id="@+id/txtTitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Detailed Title"
+                        android:textSize="18sp"
+                        android:fontFamily="sans-serif-bold"
+                        android:textColor="?attr/colorOnSurface"
+                        android:layout_marginBottom="8dp"/>
+
+                    <TextView
                         android:id="@+id/txtDesc"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -245,42 +257,46 @@
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnApprove"
                     android:layout_width="match_parent"
-                    android:layout_height="56dp"
+                    android:layout_height="64dp"
                     android:text="@string/btn_approve"
                     android:fontFamily="sans-serif-black"
                     android:textSize="16sp"
                     android:textColor="@color/white"
                     app:cornerRadius="16dp"
-                    app:backgroundTint="#10B981"
+                    app:backgroundTint="@null"
+                    android:background="@drawable/bg_button_approve_3d"
                     android:visibility="gone"
                     android:layout_marginBottom="12dp" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnReject"
                     android:layout_width="match_parent"
-                    android:layout_height="56dp"
+                    android:layout_height="64dp"
                     android:text="@string/btn_reject"
                     android:fontFamily="sans-serif-black"
                     android:textSize="16sp"
                     android:textColor="@color/white"
                     app:cornerRadius="16dp"
-                    app:backgroundTint="#EF4444"
+                    app:backgroundTint="@null"
+                    android:background="@drawable/bg_button_reject_3d"
                     android:visibility="gone"
                     android:layout_marginBottom="12dp" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnChat"
                     android:layout_width="match_parent"
-                    android:layout_height="60dp"
+                    android:layout_height="64dp"
                     android:text="@string/btn_open_chat"
                     android:fontFamily="sans-serif-black"
                     android:textSize="16sp"
                     android:textColor="@color/white"
                     app:cornerRadius="16dp"
-                    app:backgroundTint="?attr/colorPrimary"
+                    app:backgroundTint="@null"
+                    android:background="@drawable/bg_button_primary_3d"
                     android:visibility="gone"
-                    app:icon="@android:drawable/stat_notify_chat"
+                    app:icon="@drawable/ic_megaphone"
                     app:iconGravity="textStart"
+                    app:iconTint="@color/white"
                     app:elevation="4dp" />
             </LinearLayout>
 

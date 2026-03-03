@@ -23,6 +23,7 @@
     <string name="btn_download_proof">Download Proof</string>
     <string name="label_grant_plan">Grant Plan (Determines Expiry)</string>
     <string name="label_expires_on">Expires On: %1$s</string>
+    <string name="label_active_plan">Active Plan: %1$s</string>
     <string name="btn_update_expiry">Update Expiry</string>
     <string name="plan_silver">Silver Plan (1 Month)</string>
     <string name="plan_gold">Gold Plan (6 Month)</string>
@@ -101,6 +102,7 @@
     <string name="desc_user_info">View and manage user details</string>
     <string name="title_user_details">User Details</string>
     <string name="label_city">City</string>
+    <string name="label_state">State</string>
     <string name="label_role">Role (admin/user)</string>
     <string name="btn_open">Open</string>
     <string name="btn_view">View</string>
@@ -373,6 +375,7 @@
     <string name="err_enter_description">Enter description</string>
     <string name="notif_new_request">New Request</string>
     <string name="title_adv_request">Advertisement Request</string>
+
     <string name="desc_fill_adv_details">Fill details to publish your advertisement</string>
     <string name="hint_adv_link">Advertisement Website / Link</string>
     <string name="label_upload_adv_template">Upload Advertisement Template</string>

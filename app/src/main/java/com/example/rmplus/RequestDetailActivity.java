@@ -19,6 +19,7 @@ public class RequestDetailActivity extends AppCompatActivity {
     TextView txtUserName, txtEmail, txtMobile;
     TextView txtTitle, txtType, txtDesc, txtStatus, txtTime;
     ImageView imgProof;
+    View imgCard;
 
     Button btnApprove, btnReject, btnChat;
 
@@ -43,6 +44,7 @@ public class RequestDetailActivity extends AppCompatActivity {
         txtTime = findViewById(R.id.txtTime);
 
         imgProof = findViewById(R.id.imgProof);
+        imgCard = findViewById(R.id.imgCard);
 
         btnApprove = findViewById(R.id.btnApprove);
         btnReject = findViewById(R.id.btnReject);
@@ -69,34 +71,50 @@ public class RequestDetailActivity extends AppCompatActivity {
                                 r = s.getValue(CustomerRequest.class);
 
                                 txtTitle.setText(r.title);
-                                txtType.setText(getString(R.string.label_type, r.type));
-                                txtDesc.setText(getString(R.string.label_description, r.description));
-                                txtStatus.setText(getString(R.string.label_status, r.status));
+                                txtType.setText(r.type);
+                                txtDesc.setText(r.description);
+
+                                String displayStatus = r.status;
+                                int statusColor = android.graphics.Color.parseColor("#F59E0B"); // Pending Color
+                                
+                                if ("pending".equalsIgnoreCase(r.status)) {
+                                    displayStatus = getString(R.string.tab_pending);
+                                    statusColor = android.graphics.Color.parseColor("#F59E0B");
+                                } else if ("accepted".equalsIgnoreCase(r.status)) {
+                                    displayStatus = getString(R.string.tab_accepted);
+                                    statusColor = android.graphics.Color.parseColor("#10B981");
+                                } else if ("rejected".equalsIgnoreCase(r.status)) {
+                                    displayStatus = getString(R.string.tab_rejected);
+                                    statusColor = android.graphics.Color.parseColor("#EF4444");
+                                }
+                                
+                                txtStatus.setText(displayStatus);
+                                txtStatus.setTextColor(statusColor);
 
                                 String time = new SimpleDateFormat(
-                                        "dd MMM yyyy, hh:mm a",
+                                        "dd MMM yyyy 'at' hh:mm a",
                                         Locale.getDefault())
                                         .format(new Date(r.time));
 
-                                txtTime.setText(getString(R.string.label_time, time));
+                                txtTime.setText(time);
 
                                 if (isAdmin) {
-                                    txtUserName.setText(getString(R.string.label_name, r.userName));
-                                    txtEmail.setText(getString(R.string.label_email, r.email));
-                                    txtMobile.setText(getString(R.string.label_mobile, r.mobile));
+                                    findViewById(R.id.userCard).setVisibility(View.VISIBLE);
+                                    txtUserName.setText(r.userName);
+                                    txtEmail.setText(r.email);
+                                    txtMobile.setText(r.mobile);
                                 } else {
-                                    txtUserName.setVisibility(View.GONE);
-                                    txtEmail.setVisibility(View.GONE);
-                                    txtMobile.setVisibility(View.GONE);
+                                    findViewById(R.id.userCard).setVisibility(View.GONE);
                                 }
 
                                 if (r.attachmentUrl != null &&
                                         !r.attachmentUrl.isEmpty()) {
 
+                                    imgCard.setVisibility(View.VISIBLE);
                                     imgProof.setVisibility(View.VISIBLE);
                                     loadImageFromUrl(r.attachmentUrl, imgProof);
 
-                                    imgProof.setOnClickListener(v -> {
+                                    imgCard.setOnClickListener(v -> {
                                         Intent i = new Intent(
                                                 RequestDetailActivity.this,
                                                 ImagePreviewActivity.class);

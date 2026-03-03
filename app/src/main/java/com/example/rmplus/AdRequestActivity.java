@@ -144,6 +144,15 @@ public class AdRequestActivity extends AppCompatActivity {
 
         btnUploadProof.setOnClickListener(v -> pickProofImage());
 
+        // ✅ Proof Preview
+        imgProof.setOnClickListener(v -> {
+            if (proofUri != null) {
+                Intent i = new Intent(AdRequestActivity.this, ImagePreviewActivity.class);
+                i.putExtra("img", proofUri.toString());
+                startActivity(i);
+            }
+        });
+
         // ✅ Submit: validate → upload both → save to Firebase
         btnSubmit.setOnClickListener(v -> validateAndSubmit());
     }

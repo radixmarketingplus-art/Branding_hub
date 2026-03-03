@@ -40,13 +40,37 @@ public class RequestAdapter
     public void onBindViewHolder(Holder h,int i){
 
         CustomerRequest r=list.get(i);
+        Context ctx = h.itemView.getContext();
 
+        // 1. SET TYPE & ICON (In RequestAdapter, these are all Contact Requests)
+        h.txtRequestType.setText(ctx.getString(R.string.title_submit_request));
+        h.imgIcon.setImageResource(R.drawable.ic_clipboard_list);
+        h.imgIcon.setBackgroundTintList(android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#E6EEFF")));
+
+        // 2. SET TITLE / PURPOSE
         h.title.setText(r.title);
+
+        // 3. SET DATE/TIME
+        String timeStr = new java.text.SimpleDateFormat("hh:mm a", java.util.Locale.getDefault()).format(new java.util.Date(r.time));
+        h.txtTime.setText(timeStr);
+
+        // 4. SET STATUS WITH COLOR
         String displayStatus = r.status;
-        if ("pending".equalsIgnoreCase(r.status)) displayStatus = context.getString(R.string.tab_pending);
-        else if ("accepted".equalsIgnoreCase(r.status)) displayStatus = context.getString(R.string.tab_accepted);
-        else if ("rejected".equalsIgnoreCase(r.status)) displayStatus = context.getString(R.string.tab_rejected);
+        int statusColor = ctx.getColor(R.color.primary);
+        
+        if ("pending".equalsIgnoreCase(r.status)) {
+            displayStatus = ctx.getString(R.string.tab_pending);
+            statusColor = android.graphics.Color.parseColor("#F59E0B"); // Amber
+        } else if ("accepted".equalsIgnoreCase(r.status)) {
+            displayStatus = ctx.getString(R.string.tab_accepted);
+            statusColor = android.graphics.Color.parseColor("#10B981"); // Green
+        } else if ("rejected".equalsIgnoreCase(r.status)) {
+            displayStatus = ctx.getString(R.string.tab_rejected);
+            statusColor = android.graphics.Color.parseColor("#EF4444"); // Red
+        }
+        
         h.status.setText(displayStatus);
+        h.status.setTextColor(statusColor);
 
         h.itemView.setOnClickListener(v->{
 
@@ -68,12 +92,16 @@ public class RequestAdapter
 
     class Holder extends RecyclerView.ViewHolder{
 
-        TextView title,status;
+        TextView title, status, txtRequestType, txtTime;
+        android.widget.ImageView imgIcon;
 
         Holder(View v){
             super(v);
             title=v.findViewById(R.id.txtTitle);
             status=v.findViewById(R.id.txtStatus);
+            txtRequestType = v.findViewById(R.id.txtRequestType);
+            txtTime = v.findViewById(R.id.txtTime);
+            imgIcon = v.findViewById(R.id.imgIcon);
         }
     }
 }

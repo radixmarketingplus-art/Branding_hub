@@ -18,11 +18,13 @@ import androidx.activity.result.contract.ActivityResultContracts;
 
 public class SubscriptionActivity extends AppCompatActivity {
 
-    TextView statusTxt, amountTxt;
+    TextView statusTxt, amountTxt, planTxt, expiryTxt;
+    View sectionPlanChooser, sectionQrPayment;
     Spinner planSpinner;
     ImageView qrImage, proofPreview;
     Button uploadBtn, submitBtn;
     ProgressBar progressBar;
+    View proofCard;
 
     FirebaseAuth auth;
     DatabaseReference userRef, requestRef;
@@ -49,6 +51,11 @@ public class SubscriptionActivity extends AppCompatActivity {
         uploadBtn=findViewById(R.id.uploadBtn);
         submitBtn=findViewById(R.id.submitBtn);
         progressBar=findViewById(R.id.progressBar);
+        proofCard=findViewById(R.id.proofCard);
+        planTxt=findViewById(R.id.planTxt);
+        expiryTxt=findViewById(R.id.expiryTxt);
+        sectionPlanChooser=findViewById(R.id.sectionPlanChooser);
+        sectionQrPayment=findViewById(R.id.sectionQrPayment);
         TextView upiIdTxt = findViewById(R.id.upiIdTxt);
         upiIdTxt.setText(getString(R.string.label_upi_id, getString(R.string.upi_id_value)));
 
@@ -107,6 +114,16 @@ public class SubscriptionActivity extends AppCompatActivity {
         uploadBtn.setOnClickListener(v->pickImage());
         submitBtn.setOnClickListener(v->submitRequest());
 
+        if (proofCard != null) {
+            proofCard.setOnClickListener(v -> {
+                if (proofUri != null) {
+                    Intent intent = new Intent(this, ImagePreviewActivity.class);
+                    intent.putExtra("img", proofUri.toString());
+                    startActivity(intent);
+                }
+            });
+        }
+
         setupActivityResultLaunchers();
     }
 
@@ -134,7 +151,8 @@ public class SubscriptionActivity extends AppCompatActivity {
         }
         // ✅ Only show preview locally — NO VPS upload here
         proofPreview.setImageURI(proofUri);
-        proofPreview.setVisibility(View.VISIBLE);
+        if (proofCard != null) proofCard.setVisibility(View.VISIBLE);
+        else proofPreview.setVisibility(View.VISIBLE);
     }
 
     // ---------------------------
@@ -154,28 +172,68 @@ public class SubscriptionActivity extends AppCompatActivity {
                                         .getValue(String.class);
 
                         if(sub!=null && sub){
-
                             statusTxt.setText(R.string.status_subscribed);
                             uploadBtn.setVisibility(View.GONE);
                             submitBtn.setVisibility(View.GONE);
                             planSpinner.setEnabled(false);
+                            if (proofCard != null) proofCard.setVisibility(View.GONE);
+                            if (sectionPlanChooser != null) sectionPlanChooser.setVisibility(View.GONE);
+                            if (sectionQrPayment != null) sectionQrPayment.setVisibility(View.GONE);
 
+                            // Load active plan info
+                            String activePlan = s.child("plan").getValue(String.class);
+                            Long expiry = s.child("subscriptionExpiry").getValue(Long.class);
+
+                            if (activePlan != null) {
+                                String planDisplay = getLocalizedPlanName(activePlan);
+                                planTxt.setText(getString(R.string.label_active_plan, planDisplay));
+                                planTxt.setVisibility(View.VISIBLE);
+                            }
+                            if (expiry != null) {
+                                String dateStr = new java.text.SimpleDateFormat("dd-MM-yyyy", java.util.Locale.US)
+                                        .format(new java.util.Date(expiry));
+                                expiryTxt.setText(getString(R.string.label_expires_on, dateStr));
+                                expiryTxt.setVisibility(View.VISIBLE);
+                            }
                         }
-                        else if(status!=null &&
-                                status.equals("rejected")){
-
+                        else if(status!=null && status.equals("pending")){
+                            statusTxt.setText(R.string.status_pending);
+                            uploadBtn.setEnabled(false);
+                            submitBtn.setEnabled(false);
+                            planSpinner.setEnabled(false);
+                            submitBtn.setText(R.string.status_pending);
+                            planTxt.setVisibility(View.GONE);
+                            expiryTxt.setVisibility(View.GONE);
+                            
+                            // Hide QR/Plan chooser while pending to avoid confusion
+                            if (sectionPlanChooser != null) sectionPlanChooser.setVisibility(View.GONE);
+                            if (sectionQrPayment != null) sectionQrPayment.setVisibility(View.GONE);
+                        }
+                        else if(status!=null && status.equals("rejected")){
                             statusTxt.setText(R.string.status_rejected_retry);
                             uploadBtn.setEnabled(true);
                             submitBtn.setEnabled(true);
                             planSpinner.setEnabled(true);
-
+                            submitBtn.setText(R.string.btn_submit_request);
                         }
                         else{
                             statusTxt.setText(R.string.status_not_subscribed);
+                            uploadBtn.setEnabled(true);
+                            submitBtn.setEnabled(true);
+                            planSpinner.setEnabled(true);
+                            submitBtn.setText(R.string.btn_submit_request);
                         }
                     }
                     public void onCancelled(DatabaseError e){}
                 });
+    }
+
+    private String getLocalizedPlanName(String canonical) {
+        if ("Silver".equalsIgnoreCase(canonical)) return getString(R.string.plan_silver);
+        if ("Gold".equalsIgnoreCase(canonical)) return getString(R.string.plan_gold);
+        if ("Diamond".equalsIgnoreCase(canonical)) return getString(R.string.plan_diamond);
+        if ("Custom".equalsIgnoreCase(canonical)) return getString(R.string.plan_custom);
+        return canonical;
     }
 
     // ---------------------------

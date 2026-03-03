@@ -107,7 +107,7 @@
                     android:layout_height="64dp"
                     style="@style/SettingsItemStyle">
                     <ImageView
-                        android:src="@android:drawable/ic_menu_edit"
+                        android:src="@drawable/ic_edit"
                         style="@style/SettingsIconStyle"
                         app:tint="?attr/colorPrimary" />
                     <TextView
@@ -124,7 +124,7 @@
                     android:layout_height="64dp"
                     style="@style/SettingsItemStyle">
                     <ImageView
-                        android:src="@android:drawable/ic_menu_myplaces"
+                        android:src="@drawable/ic_subscription_profile"
                         style="@style/SettingsIconStyle"
                         app:tint="?attr/colorPrimary" />
                     <TextView
@@ -167,7 +167,7 @@
                     android:layout_height="64dp"
                     style="@style/SettingsItemStyle">
                     <ImageView
-                        android:src="@android:drawable/ic_menu_manage"
+                        android:src="@drawable/ic_language_profile"
                         style="@style/SettingsIconStyle"
                         app:tint="?attr/colorPrimary" />
                     <TextView
@@ -183,7 +183,7 @@
                     android:layout_height="64dp"
                     style="@style/SettingsItemStyle">
                     <ImageView
-                        android:src="@android:drawable/ic_menu_day"
+                        android:src="@drawable/ic_dark_mode_profile"
                         style="@style/SettingsIconStyle"
                         app:tint="?attr/colorPrimary" />
                     <TextView
@@ -232,7 +232,7 @@
                     android:layout_height="64dp"
                     style="@style/SettingsItemStyle">
                     <ImageView
-                        android:src="@android:drawable/ic_menu_preferences"
+                        android:src="@drawable/ic_settings_profile"
                         style="@style/SettingsIconStyle"
                         app:tint="?attr/colorPrimary" />
                     <TextView
@@ -249,7 +249,7 @@
                     android:layout_height="64dp"
                     style="@style/SettingsItemStyle">
                     <ImageView
-                        android:src="@android:drawable/btn_star_big_on"
+                        android:src="@drawable/ic_rate_profile"
                         style="@style/SettingsIconStyle"
                         app:tint="?attr/colorPrimary" />
                     <TextView
@@ -266,7 +266,7 @@
                     android:layout_height="64dp"
                     style="@style/SettingsItemStyle">
                     <ImageView
-                        android:src="@android:drawable/ic_dialog_email"
+                        android:src="@drawable/ic_support_profile"
                         style="@style/SettingsIconStyle"
                         app:tint="?attr/colorPrimary" />
                     <TextView
@@ -283,7 +283,7 @@
                     android:layout_height="64dp"
                     style="@style/SettingsItemStyle">
                     <ImageView
-                        android:src="@android:drawable/ic_menu_share"
+                        android:src="@drawable/ic_share_modern"
                         style="@style/SettingsIconStyle"
                         app:tint="?attr/colorPrimary" />
                     <TextView
@@ -301,8 +301,7 @@
             android:text="@string/header_account_mgmt"
             android:paddingHorizontal="24dp"
             android:paddingBottom="12dp"
-            style="@style/SettingsHeader"
-            android:textColor="#EF4444" />
+            style="@style/SettingsHeader"/>
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
@@ -327,7 +326,7 @@
                     android:layout_height="64dp"
                     style="@style/SettingsItemStyle">
                     <ImageView
-                        android:src="@android:drawable/ic_lock_power_off"
+                        android:src="@drawable/ic_logout_profile"
                         style="@style/SettingsIconStyle"
                         app:tint="#64748B" />
                     <TextView
@@ -345,7 +344,7 @@
                     android:layout_height="64dp"
                     style="@style/SettingsItemStyle">
                     <ImageView
-                        android:src="@android:drawable/ic_menu_delete"
+                        android:src="@drawable/ic_delete"
                         style="@style/SettingsIconStyle"
                         app:tint="#EF4444" />
                     <TextView
