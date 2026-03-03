@@ -249,8 +249,8 @@ public class TemplatePreviewActivity extends AppCompatActivity {
             rootRef.child("template_activity")
                     .child(templateId)
                     .child("edits")
-                    .child(uid)
-                    .setValue(true);
+                    .push()
+                    .setValue(uid);
 
             rootRef.child("user_activity")
                     .child(uid)
@@ -441,6 +441,12 @@ public class TemplatePreviewActivity extends AppCompatActivity {
     // =====================================================
 
     void shareImage() {
+        // Record Share Activity
+        rootRef.child("template_activity")
+                .child(templateId)
+                .child("shares")
+                .push()
+                .setValue(uid);
         if (isVideo()) {
             toast(getString(R.string.msg_sharing_video_link));
             Intent s = new Intent(Intent.ACTION_SEND);
@@ -499,7 +505,11 @@ public class TemplatePreviewActivity extends AppCompatActivity {
                 runOnUiThread(() -> {
                     if (saved != null) {
                         toast(getString(R.string.msg_saved_to_gallery));
-                        rootRef.child("template_activity").child(templateId).child("saves").child(uid).setValue(true);
+                        rootRef.child("template_activity")
+                                .child(templateId)
+                                .child("saves")
+                                .push()
+                                .setValue(uid);
                         rootRef.child("user_activity").child(uid).child("saves").child(templateId).setValue(path);
                     }
                 });

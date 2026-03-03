@@ -1,74 +1,111 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/colorSurface"
+    android:background="@color/screen_bg"
     android:fitsSystemWindows="true">
 
-    <LinearLayout
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/screen_bg"
+        app:elevation="0dp">
+
+        <!-- HEADER -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="64dp">
+
+            <ImageView
+                android:id="@+id/btnBack"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="16dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:padding="8dp"
+                android:src="@drawable/ic_back"
+                app:tint="@color/text_primary" />
+
+            <TextView
+                android:id="@+id/txtHeaderTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="User Engagement"
+                android:textSize="18sp"
+                android:fontFamily="sans-serif-black"
+                android:textColor="@color/text_primary" />
+        </RelativeLayout>
+
+        <!-- MODERN TABS SCROLL -->
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="none"
+            android:overScrollMode="never">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="60dp"
+                android:orientation="horizontal"
+                android:paddingHorizontal="16dp"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/tabLike"
+                    style="@style/StatDetailTab"
+                    android:text="@string/tab_likes" />
+
+                <TextView
+                    android:id="@+id/tabFav"
+                    style="@style/StatDetailTab"
+                    android:text="@string/tab_favorite" />
+
+                <TextView
+                    android:id="@+id/tabEdit"
+                    style="@style/StatDetailTab"
+                    android:text="@string/tab_edits" />
+
+                <TextView
+                    android:id="@+id/tabSave"
+                    style="@style/StatDetailTab"
+                    android:text="@string/tab_saved" />
+
+                <TextView
+                    android:id="@+id/tabShare"
+                    style="@style/StatDetailTab"
+                    android:text="@string/btn_share" />
+
+            </LinearLayout>
+        </HorizontalScrollView>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:fillViewport="true"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <!-- ================= TOP TABS ================= -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:orientation="horizontal"
-            android:background="?attr/colorSurface"
-            android:elevation="6dp">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/tabLike"
-                android:layout_width="0dp"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="@string/tab_likes"
-                android:textStyle="bold"
-                android:textColor="?attr/colorOnSurface"/>
+                android:paddingTop="8dp"
+                android:paddingHorizontal="16dp"
+                android:clipToPadding="false"
+                tools:listitem="@android:layout/simple_list_item_2"/>
 
-            <TextView
-                android:id="@+id/tabFav"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="@string/tab_favorite"
-                android:textColor="?attr/colorOnSurfaceVariant"/>
-
-            <TextView
-                android:id="@+id/tabEdit"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="@string/tab_edits"
-                android:textColor="?attr/colorOnSurfaceVariant"/>
-
-            <TextView
-                android:id="@+id/tabSave"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="@string/tab_saved"
-                android:textColor="?attr/colorOnSurfaceVariant"/>
         </LinearLayout>
-
-        <!-- ================= LIST ================= -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp"
-            android:paddingTop="8dp"
-            android:paddingBottom="16dp"
-            android:clipToPadding="false"/>
-    </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -20,7 +20,7 @@ public class StatsDetailActivity extends AppCompatActivity {
     StatUserAdapter adapter;
     ArrayList<StatUserItem> list = new ArrayList<>();
 
-    TextView tabLike, tabFav, tabEdit, tabSave;
+    TextView tabLike, tabFav, tabEdit, tabSave, tabShare;
 
     String templateKey;
     String currentType = "likes";
@@ -49,12 +49,16 @@ public class StatsDetailActivity extends AppCompatActivity {
         tabFav  = findViewById(R.id.tabFav);
         tabEdit = findViewById(R.id.tabEdit);
         tabSave = findViewById(R.id.tabSave);
+        tabShare = findViewById(R.id.tabShare);
 
         tabLike.setOnClickListener(v -> switchTab("likes"));
         tabFav.setOnClickListener(v -> switchTab("favorites"));
         tabEdit.setOnClickListener(v -> switchTab("edits"));
         tabSave.setOnClickListener(v -> switchTab("saves"));
+        tabShare.setOnClickListener(v -> switchTab("shares"));
 
+        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
+        
         // default tab
         if (defaultTab != null) {
             switchTab(defaultTab);
@@ -81,21 +85,25 @@ public class StatsDetailActivity extends AppCompatActivity {
         reset(tabFav);
         reset(tabEdit);
         reset(tabSave);
+        reset(tabShare);
 
         if (currentType.equals("likes")) select(tabLike);
         else if (currentType.equals("favorites")) select(tabFav);
         else if (currentType.equals("edits")) select(tabEdit);
         else if (currentType.equals("saves")) select(tabSave);
+        else if (currentType.equals("shares")) select(tabShare);
     }
 
     void select(TextView t) {
         t.setTypeface(null, Typeface.BOLD);
         t.setTextColor(getColor(android.R.color.white));
+        t.setBackgroundResource(R.drawable.bg_tab_active);
     }
 
     void reset(TextView t) {
         t.setTypeface(null, Typeface.NORMAL);
-        t.setTextColor(0x80FFFFFF);
+        t.setTextColor(getColor(R.color.text_secondary));
+        t.setBackground(null);
     }
 
     // ---------------- DATA ----------------
@@ -117,7 +125,9 @@ public class StatsDetailActivity extends AppCompatActivity {
 
                         for (DataSnapshot d : s.getChildren()) {
                             String uid = d.getKey();
-                            if (uid != null) loadUser(uid);
+                            if (uid != null) {
+                                loadUser(uid);
+                            }
                         }
                     }
 

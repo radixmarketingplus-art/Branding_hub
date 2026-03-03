@@ -36,8 +36,8 @@ public class AdminTemplateDetailActivity extends BaseActivity {
     String templatePath;
     String category;
     String templateKey;
-    View statsLayout;        // whole stats section
     String adLink = null;
+    View statsRow;
 
 
     @Override
@@ -47,12 +47,12 @@ public class AdminTemplateDetailActivity extends BaseActivity {
 
         templatePath = getIntent().getStringExtra("path");
         category = getIntent().getStringExtra("category");
-        realTemplateId = getIntent().getStringExtra("id"); // ✅ Accept passed ID
+        realTemplateId = getIntent().getStringExtra("id"); 
         
-        txtLikeCount = findViewById(R.id.txtLikeCount);
-        txtFavCount  = findViewById(R.id.txtFavCount);
-        txtEditCount = findViewById(R.id.txtEditCount);                         
-        txtSaveCount = findViewById(R.id.txtSaveCount);
+        txtLikeCount  = findViewById(R.id.txtLikeCount);
+        txtFavCount   = findViewById(R.id.txtFavCount);
+        txtEditCount  = findViewById(R.id.txtEditCount);                         
+        txtSaveCount  = findViewById(R.id.txtSaveCount);
 
         // 🔐 SAME KEY USED EVERYWHERE
         templateKey = Base64.encodeToString(
@@ -64,16 +64,16 @@ public class AdminTemplateDetailActivity extends BaseActivity {
         txtCategory = findViewById(R.id.txtCategory);
         txtExpiryStatus = findViewById(R.id.txtExpiryStatus);
 
+        // Header
+        findViewById(R.id.btnBack).setOnClickListener(v -> onBackPressed());
+        findViewById(R.id.btnSearch).setOnClickListener(v -> {
+            startActivity(new Intent(this, SearchActivity.class));
+        });
+        findViewById(R.id.btnDelete).setOnClickListener(v -> confirmDelete());
 
-        findViewById(R.id.btnLike).setOnClickListener(v -> openStats("likes"));
-        findViewById(R.id.btnFav).setOnClickListener(v -> openStats("favorites"));
-        findViewById(R.id.btnEdit).setOnClickListener(v -> openStats("edits"));
-        findViewById(R.id.btnSave).setOnClickListener(v -> openStats("saves"));
-
-        statsLayout = findViewById(R.id.layout_admin_stats);
-        MaterialButton btnOpenAd = findViewById(R.id.btnOpenAd);
-        findViewById(R.id.btnDeleteIcon).setOnClickListener(v -> confirmDelete());
-        findViewById(R.id.btnEditIcon).setOnClickListener(v -> {
+        // Actions
+        MaterialButton btnEditNow = findViewById(R.id.btnEditNow);
+        btnEditNow.setOnClickListener(v -> {
             if (category == null || realTemplateId == null) {
                 android.widget.Toast.makeText(this, R.string.msg_fetching_info, android.widget.Toast.LENGTH_SHORT).show();
                 return;
@@ -89,7 +89,7 @@ public class AdminTemplateDetailActivity extends BaseActivity {
                         Intent i = new Intent(this, UploadManagerActivity.class);
                         i.putExtra("edit_url", templatePath);
                         i.putExtra("category", category);
-                        i.putExtra("realId", realTemplateId); // IMPORTANT for deletion
+                        i.putExtra("realId", realTemplateId); 
                         
                         if (snapshot.exists()) {
                             // Pass Expiry
@@ -111,7 +111,6 @@ public class AdminTemplateDetailActivity extends BaseActivity {
                         }
                         startActivity(i);
                     }).addOnFailureListener(e -> {
-                        // Fallback simple edit if DB fetch fails
                         Intent i = new Intent(this, UploadManagerActivity.class);
                         i.putExtra("edit_url", templatePath);
                         i.putExtra("category", category);
@@ -120,7 +119,14 @@ public class AdminTemplateDetailActivity extends BaseActivity {
                     });
         });
 
-        // 🌐 LOAD FROM VPS URL (Glide handles caching)
+        findViewById(R.id.btnOpenAd).setOnClickListener(v -> {
+            if (adLink != null && !adLink.isEmpty()) {
+                Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(adLink));
+                startActivity(i);
+            }
+        });
+
+        // 🌐 LOAD FROM VPS URL
         Glide.with(this)
                 .load(templatePath)
                 .placeholder(android.R.drawable.ic_menu_gallery)
@@ -128,25 +134,28 @@ public class AdminTemplateDetailActivity extends BaseActivity {
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(imgPreview);
 
-        // ==================================================
-        // 🔎 FIND TRUE CATEGORY AND LOAD DETAILS
-        // ==================================================
+        statsRow = findViewById(R.id.statsRow);
+
         if (templatePath != null) {
             discoverCategoryAndLoad();
         }
-
-        findViewById(R.id.btnSearch).setOnClickListener(v -> {
-            startActivity(new Intent(
-                    AdminTemplateDetailActivity.this,
-                    SearchActivity.class
-            ));
-        });
 
         imgPreview.setOnClickListener(v -> {
             if (templatePath != null) {
                 Intent i = new Intent(this, ImagePreviewActivity.class);
                 i.putExtra("img", templatePath);
                 startActivity(i);
+            }
+        });
+
+        // 🟢 PREMIUM SCROLL BEHAVIOR
+        com.google.android.material.appbar.AppBarLayout appBarLayout = findViewById(R.id.appBar);
+        TextView toolbarTitle = findViewById(R.id.toolbarTitle);
+        appBarLayout.addOnOffsetChangedListener((layout, offset) -> {
+            float alpha = Math.abs(offset) / (float) layout.getTotalScrollRange();
+            toolbarTitle.setAlpha(alpha);
+            if (category != null) {
+                toolbarTitle.setText(getLocalizedCategory(category));
             }
         });
     }
@@ -250,10 +259,11 @@ public class AdminTemplateDetailActivity extends BaseActivity {
         }
 
         if (category.contains("Advertisement")) {
-            statsLayout.setVisibility(View.GONE);
+            if (statsRow != null) statsRow.setVisibility(View.GONE);
             findViewById(R.id.btnOpenAd).setVisibility(View.VISIBLE);
         } else {
             findViewById(R.id.btnOpenAd).setVisibility(View.GONE);
+            if (statsRow != null) statsRow.setVisibility(View.VISIBLE);
             setupClicks();
             loadStats();
         }
@@ -288,21 +298,18 @@ public class AdminTemplateDetailActivity extends BaseActivity {
     }
 
 
-    // ---------------- BUTTON CLICKS ----------------
+    // ---------------- BUTTON CLICKS (STATS DETAILS) ----------------
 
     void setupClicks() {
+        View btnLike = findViewById(R.id.statLike);
+        View btnFav = findViewById(R.id.statFav);
+        View btnEdit = findViewById(R.id.statEdit);
+        View btnSave = findViewById(R.id.statSave);
 
-        findViewById(R.id.btnLike).setOnClickListener(v ->
-                openStats("likes"));
-
-        findViewById(R.id.btnFav).setOnClickListener(v ->
-                openStats("favorites"));
-
-        findViewById(R.id.btnEdit).setOnClickListener(v ->
-                openStats("edits"));
-
-        findViewById(R.id.btnSave).setOnClickListener(v ->
-                openStats("saves"));
+        if (btnLike != null) btnLike.setOnClickListener(v -> openStats("likes"));
+        if (btnFav != null) btnFav.setOnClickListener(v -> openStats("favorites"));
+        if (btnEdit != null) btnEdit.setOnClickListener(v -> openStats("edits"));
+        if (btnSave != null) btnSave.setOnClickListener(v -> openStats("saves"));
     }
 
     void openStats(String tab) {
@@ -398,7 +405,7 @@ public class AdminTemplateDetailActivity extends BaseActivity {
         DatabaseReference activityRef = FirebaseDatabase.getInstance().getReference("template_activity").child(tid);
         DatabaseReference userActivityRef = FirebaseDatabase.getInstance().getReference("user_activity");
         
-        String[] types = {"likes", "favorites", "edits", "saves"};
+        String[] types = {"likes", "favorites", "edits", "saves", "shares"};
         
         // 🔥 FIRST: READ the list of users who interacted with this template
         activityRef.addListenerForSingleValueEvent(new com.google.firebase.database.ValueEventListener() {
