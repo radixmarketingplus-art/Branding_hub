@@ -1,131 +1,432 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<androidx.core.widget.NestedScrollView
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
-    android:background="?attr/colorSurface"
-    android:paddingBottom="16dp">
+    android:background="@color/screen_bg"
+    android:fitsSystemWindows="true">
 
-    <LinearLayout
-        android:orientation="vertical"
+    <!-- HEADER (Consistent with all pages) -->
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="20dp">
+        android:background="@color/screen_bg"
+        app:elevation="0dp"
+        android:outlineProvider="none">
 
-        <!-- HEADER -->
-        <TextView
-            android:text="@string/title_adv_request"
-            android:textSize="22sp"
-            android:textStyle="bold"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
-        <TextView
-            android:text="@string/desc_fill_adv_details"
-            android:textSize="14sp"
-            android:layout_marginBottom="24dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
-        <!-- WEBSITE LINK -->
-        <EditText
-            android:id="@+id/etLink"
-            android:hint="@string/hint_adv_link"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:background="@drawable/bg_glass_input"
-            android:padding="12dp"
-            android:layout_marginBottom="16dp"/>
-
-        <!-- TEMPLATE IMAGE -->
-        <TextView
-            android:text="@string/label_upload_adv_template"
-            android:textStyle="bold"
-            android:layout_marginBottom="6dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-        <ImageView
-            android:id="@+id/imgTemplate"
-            android:layout_width="match_parent"
-            android:layout_height="180dp"
-            android:background="@drawable/bg_image_preview"
-            android:scaleType="centerCrop"
-            android:clickable="true"
-            android:focusable="true"
-            android:visibility="gone"
-            android:layout_marginBottom="4dp"/>
-
-        <TextView
-            android:id="@+id/tvReCropHint"
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/hint_tap_to_recrop"
-            android:textSize="12sp"
-            android:textStyle="italic"
-            android:alpha="0.6"
-            android:visibility="gone"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="8dp"/>
+            android:orientation="vertical">
 
-        <Button
-            android:id="@+id/btnUploadTemplate"
-            android:text="@string/btn_upload_template"
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:paddingHorizontal="16dp">
+
+                <ImageView
+                    android:id="@+id/btnBack"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_centerVertical="true"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_back"
+                    app:tint="?android:textColorPrimary" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:text="@string/title_adv_request"
+                    android:textSize="18sp"
+                    android:fontFamily="sans-serif-black"
+                    android:textColor="?android:textColorPrimary" />
+            </RelativeLayout>
+        </LinearLayout>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- SCROLLABLE CONTENT -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:overScrollMode="never"
+        android:clipToPadding="false"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="@drawable/bg_secondary_button"/>
-
-        <!-- SCANNER IMAGE -->
-        <TextView
-            android:text="@string/label_scan_and_pay"
-            android:textStyle="bold"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="6dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:src="@drawable/qr_1month" />
-
-        <!-- PROOF IMAGE -->
-        <ImageView
-            android:id="@+id/imgProof"
-            android:layout_width="match_parent"
-            android:layout_height="180dp"
-            android:background="@drawable/bg_image_preview"
-            android:visibility="gone"
-            android:layout_marginTop="12dp"
-            android:layout_marginBottom="8dp"/>
-
-        <Button
-            android:id="@+id/btnUploadProof"
-            android:text="@string/btn_upload_payment_proof"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="@drawable/bg_secondary_button"/>
-
-        <!-- SUBMIT -->
-        <Button
-            android:id="@+id/btnSubmitAd"
-            android:text="@string/btn_submit_adv_request"
-            android:layout_width="match_parent"
-            android:layout_height="54dp"
-            android:layout_marginTop="24dp"
-            android:background="@drawable/bg_primary_button"/>
-
-        <!-- PROGRESS (shown during upload+submit) -->
-        <ProgressBar
-            android:id="@+id/progressBar"
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="12dp"
-            android:visibility="gone"/>
+            android:orientation="vertical"
+            android:paddingHorizontal="24dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="40dp">
 
-    </LinearLayout>
+            <!-- ═══════════════════════════════════════════════════
+                 STEP 1: WEBSITE LINK
+                 ═══════════════════════════════════════════════════ -->
 
-</androidx.core.widget.NestedScrollView>
+            <!-- Step Badge -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="12dp">
+
+                <TextView
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:text="1"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"
+                    android:gravity="center"
+                    android:background="@drawable/bg_support_icon"
+                    android:backgroundTint="?attr/colorPrimary" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Website / Redirect Link"
+                    android:textSize="15sp"
+                    android:fontFamily="sans-serif-black"
+                    android:textColor="?attr/colorOnSurface"
+                    android:layout_marginStart="12dp" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/desc_fill_adv_details"
+                android:textSize="12sp"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:layout_marginBottom="12dp" />
+
+            <EditText
+                android:id="@+id/etLink"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:hint="@string/hint_adv_link"
+                android:fontFamily="sans-serif-medium"
+                android:textSize="14sp"
+                android:textColor="?attr/colorOnSurface"
+                android:textColorHint="?attr/colorOnSurfaceVariant"
+                android:background="@drawable/bg_input_2"
+                android:paddingHorizontal="16dp"
+                android:singleLine="true"
+                android:layout_marginBottom="8dp" />
+
+            <!-- Divider -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#10000000"
+                android:layout_marginVertical="20dp" />
+
+            <!-- ═══════════════════════════════════════════════════
+                 STEP 2: UPLOAD AD TEMPLATE
+                 ═══════════════════════════════════════════════════ -->
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="12dp">
+
+                <TextView
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:text="2"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"
+                    android:gravity="center"
+                    android:background="@drawable/bg_support_icon"
+                    android:backgroundTint="?attr/colorPrimary" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_upload_adv_template"
+                    android:textSize="15sp"
+                    android:fontFamily="sans-serif-black"
+                    android:textColor="?attr/colorOnSurface"
+                    android:layout_marginStart="12dp" />
+            </LinearLayout>
+
+            <!-- Upload Zone (Dashed Border) -->
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:background="@drawable/bg_upload_zone_ad"
+                android:layout_marginBottom="8dp">
+
+                <!-- Placeholder (hidden when image selected) -->
+                <LinearLayout
+                    android:id="@+id/templatePlaceholder"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:src="@android:drawable/ic_menu_gallery"
+                        app:tint="?attr/colorPrimary"
+                        android:alpha="0.5"
+                        android:layout_marginBottom="8dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="16:9 Aspect Ratio"
+                        android:textSize="12sp"
+                        android:fontFamily="sans-serif-medium"
+                        android:textColor="?attr/colorOnSurfaceVariant" />
+                </LinearLayout>
+
+                <!-- Image Preview (shown after selection) -->
+                <ImageView
+                    android:id="@+id/imgTemplate"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:visibility="gone" />
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/tvReCropHint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/hint_tap_to_recrop"
+                android:textSize="11sp"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="?attr/colorPrimary"
+                android:alpha="0.7"
+                android:visibility="gone"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="8dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnUploadTemplate"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:text="@string/btn_upload_template"
+                android:fontFamily="sans-serif-bold"
+                android:textAllCaps="false"
+                android:textSize="14sp"
+                android:textColor="?attr/colorPrimary"
+                app:cornerRadius="14dp"
+                app:backgroundTint="#E8EEFF"
+                app:icon="@android:drawable/ic_menu_gallery"
+                app:iconTint="?attr/colorPrimary"
+                app:iconGravity="textStart" />
+
+            <!-- Divider -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#10000000"
+                android:layout_marginVertical="20dp" />
+
+            <!-- ═══════════════════════════════════════════════════
+                 STEP 3: SCAN & PAY
+                 ═══════════════════════════════════════════════════ -->
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="12dp">
+
+                <TextView
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:text="3"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"
+                    android:gravity="center"
+                    android:background="@drawable/bg_support_icon"
+                    android:backgroundTint="?attr/colorPrimary" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_scan_and_pay"
+                    android:textSize="15sp"
+                    android:fontFamily="sans-serif-black"
+                    android:textColor="?attr/colorOnSurface"
+                    android:layout_marginStart="12dp" />
+            </LinearLayout>
+
+            <!-- QR Code in a styled container -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="220dp"
+                android:layout_height="220dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="6dp"
+                app:strokeWidth="0dp"
+                app:cardBackgroundColor="@color/white">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/qr_1month"
+                    android:padding="12dp"
+                    android:scaleType="fitCenter" />
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Divider -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#10000000"
+                android:layout_marginVertical="20dp" />
+
+            <!-- ═══════════════════════════════════════════════════
+                 STEP 4: UPLOAD PAYMENT PROOF
+                 ═══════════════════════════════════════════════════ -->
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="12dp">
+
+                <TextView
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:text="4"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"
+                    android:gravity="center"
+                    android:background="@drawable/bg_support_icon"
+                    android:backgroundTint="?attr/colorPrimary" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Upload Payment Proof"
+                    android:textSize="15sp"
+                    android:fontFamily="sans-serif-black"
+                    android:textColor="?attr/colorOnSurface"
+                    android:layout_marginStart="12dp" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Optional — attach a screenshot of your payment"
+                android:textSize="12sp"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:layout_marginBottom="12dp" />
+
+            <!-- Proof Preview -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="180dp"
+                android:layout_marginBottom="12dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="#1A000000">
+
+                <ImageView
+                    android:id="@+id/imgProof"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:visibility="gone" />
+
+                <!-- Placeholder for proof -->
+                <LinearLayout
+                    android:id="@+id/proofPlaceholder"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:background="#F8FAFC">
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@android:drawable/ic_menu_camera"
+                        app:tint="?attr/colorOnSurfaceVariant"
+                        android:alpha="0.4"
+                        android:layout_marginBottom="6dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Payment screenshot"
+                        android:textSize="12sp"
+                        android:fontFamily="sans-serif-medium"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:alpha="0.6" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnUploadProof"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:text="@string/btn_upload_payment_proof"
+                android:fontFamily="sans-serif-bold"
+                android:textAllCaps="false"
+                android:textSize="14sp"
+                android:textColor="?attr/colorPrimary"
+                app:cornerRadius="14dp"
+                app:backgroundTint="#E8EEFF"
+                app:icon="@android:drawable/ic_menu_camera"
+                app:iconTint="?attr/colorPrimary"
+                app:iconGravity="textStart" />
+
+            <!-- Spacer -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="28dp" />
+
+            <!-- ═══════════════════════════════════════════════════
+                 SUBMIT BUTTON (3D Matte Gradient)
+                 ═══════════════════════════════════════════════════ -->
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSubmitAd"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:text="@string/btn_submit_adv_request"
+                android:fontFamily="sans-serif-black"
+                android:textSize="16sp"
+                android:textColor="@color/white"
+                app:cornerRadius="16dp"
+                app:backgroundTint="@null"
+                android:background="@drawable/bg_button_gradient_main" />
+
+            <!-- Progress -->
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp"
+                android:visibility="gone" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

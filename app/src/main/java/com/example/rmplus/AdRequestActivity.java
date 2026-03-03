@@ -26,77 +26,83 @@ public class AdRequestActivity extends AppCompatActivity {
     ImageView imgTemplate, imgProof;
     Button btnUploadTemplate, btnUploadProof, btnSubmit;
     TextView tvReCropHint;
-    ProgressBar progressBar;   // Loading indicator during submit
+    ProgressBar progressBar; // Loading indicator during submit
 
     // ── Template (advertisement image) — crop → kept locally until submit ──
-    Uri templateUri;            // cropped local URI (not yet on VPS)
-    Uri templateOriginalUri;    // original picked URI (for re-crop)
+    Uri templateUri; // cropped local URI (not yet on VPS)
+    Uri templateOriginalUri; // original picked URI (for re-crop)
 
     // ── Proof (payment screenshot) — kept locally until submit ──
-    Uri proofUri;               // local URI (not yet on VPS)
+    Uri proofUri; // local URI (not yet on VPS)
 
     DatabaseReference usersRef, adRef;
 
     // ─── Image Picker for TEMPLATE ─────────────────────────────────────────────
-    ActivityResultLauncher<Intent> templatePicker =
-            registerForActivityResult(
-                    new ActivityResultContracts.StartActivityForResult(),
-                    result -> {
-                        if (result.getResultCode() == RESULT_OK && result.getData() != null) {
-                            Uri sourceUri = result.getData().getData();
-                            if (sourceUri == null) return;
+    ActivityResultLauncher<Intent> templatePicker = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                    Uri sourceUri = result.getData().getData();
+                    if (sourceUri == null)
+                        return;
 
-                            String mimeType = getContentResolver().getType(sourceUri);
-                            if (!isValidImage(mimeType)) {
-                                toast(R.string.msg_invalid_img_format);
-                                return;
-                            }
-                            templateOriginalUri = sourceUri;
-                            startCropForTemplate(sourceUri);
-                        }
-                    });
+                    String mimeType = getContentResolver().getType(sourceUri);
+                    if (!isValidImage(mimeType)) {
+                        toast(R.string.msg_invalid_img_format);
+                        return;
+                    }
+                    templateOriginalUri = sourceUri;
+                    startCropForTemplate(sourceUri);
+                }
+            });
 
     // ─── UCrop result for TEMPLATE ─────────────────────────────────────────────
-    ActivityResultLauncher<Intent> cropLauncher =
-            registerForActivityResult(
-                    new ActivityResultContracts.StartActivityForResult(),
-                    result -> {
-                        if (result.getResultCode() == RESULT_OK && result.getData() != null) {
-                            Uri croppedUri = UCrop.getOutput(result.getData());
-                            if (croppedUri != null) {
-                                // ✅ Only keep locally — NO VPS upload here
-                                templateUri = croppedUri;
-                                imgTemplate.setImageURI(croppedUri);
-                                imgTemplate.setVisibility(ImageView.VISIBLE);
-                                tvReCropHint.setVisibility(View.VISIBLE);
-                                toast(R.string.msg_crop_success);
-                            }
-                        } else if (result.getResultCode() == UCrop.RESULT_ERROR && result.getData() != null) {
-                            Throwable err = UCrop.getError(result.getData());
-                            if (err != null) toast("Crop Error: " + err.getMessage());
-                        }
-                    });
+    ActivityResultLauncher<Intent> cropLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                    Uri croppedUri = UCrop.getOutput(result.getData());
+                    if (croppedUri != null) {
+                        // ✅ Only keep locally — NO VPS upload here
+                        templateUri = croppedUri;
+                        imgTemplate.setImageURI(croppedUri);
+                        imgTemplate.setVisibility(ImageView.VISIBLE);
+                        View tp = findViewById(R.id.templatePlaceholder);
+                        if (tp != null)
+                            tp.setVisibility(View.GONE);
+                        tvReCropHint.setVisibility(View.VISIBLE);
+                        toast(R.string.msg_crop_success);
+                    }
+                } else if (result.getResultCode() == UCrop.RESULT_ERROR && result.getData() != null) {
+                    Throwable err = UCrop.getError(result.getData());
+                    if (err != null)
+                        toast("Crop Error: " + err.getMessage());
+                }
+            });
 
     // ─── Image Picker for PROOF ────────────────────────────────────────────────
-    ActivityResultLauncher<Intent> proofPicker =
-            registerForActivityResult(
-                    new ActivityResultContracts.StartActivityForResult(),
-                    result -> {
-                        if (result.getResultCode() == RESULT_OK && result.getData() != null) {
-                            Uri sourceUri = result.getData().getData();
-                            if (sourceUri == null) return;
+    ActivityResultLauncher<Intent> proofPicker = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                    Uri sourceUri = result.getData().getData();
+                    if (sourceUri == null)
+                        return;
 
-                            String mimeType = getContentResolver().getType(sourceUri);
-                            if (!isValidImage(mimeType)) {
-                                toast(R.string.msg_invalid_img_format);
-                                return;
-                            }
-                            // ✅ Only keep locally — NO VPS upload here
-                            proofUri = sourceUri;
-                            imgProof.setImageURI(sourceUri);
-                            imgProof.setVisibility(ImageView.VISIBLE);
-                        }
-                    });
+                    String mimeType = getContentResolver().getType(sourceUri);
+                    if (!isValidImage(mimeType)) {
+                        toast(R.string.msg_invalid_img_format);
+                        return;
+                    }
+                    // ✅ Only keep locally — NO VPS upload here
+                    proofUri = sourceUri;
+                    imgProof.setImageURI(sourceUri);
+                    imgProof.setVisibility(ImageView.VISIBLE);
+                    View pp = findViewById(R.id.proofPlaceholder);
+                    if (pp != null)
+                        pp.setVisibility(View.GONE);
+                }
+            });
 
     // ─── onCreate ──────────────────────────────────────────────────────────────
 
@@ -105,14 +111,19 @@ public class AdRequestActivity extends AppCompatActivity {
         super.onCreate(b);
         setContentView(R.layout.activity_ad_request);
 
-        etLink            = findViewById(R.id.etLink);
-        tvReCropHint      = findViewById(R.id.tvReCropHint);
-        imgTemplate       = findViewById(R.id.imgTemplate);
-        imgProof          = findViewById(R.id.imgProof);
+        etLink = findViewById(R.id.etLink);
+        tvReCropHint = findViewById(R.id.tvReCropHint);
+        imgTemplate = findViewById(R.id.imgTemplate);
+        imgProof = findViewById(R.id.imgProof);
         btnUploadTemplate = findViewById(R.id.btnUploadTemplate);
-        btnUploadProof    = findViewById(R.id.btnUploadProof);
-        btnSubmit         = findViewById(R.id.btnSubmitAd);
-        progressBar       = findViewById(R.id.progressBar);
+        btnUploadProof = findViewById(R.id.btnUploadProof);
+        btnSubmit = findViewById(R.id.btnSubmitAd);
+        progressBar = findViewById(R.id.progressBar);
+
+        // Back button
+        View btnBack = findViewById(R.id.btnBack);
+        if (btnBack != null)
+            btnBack.setOnClickListener(v -> finish());
 
         String uid = FirebaseAuth.getInstance().getUid();
 
@@ -142,14 +153,14 @@ public class AdRequestActivity extends AppCompatActivity {
     private void pickTemplateImage() {
         Intent i = new Intent(Intent.ACTION_GET_CONTENT);
         i.setType("image/*");
-        i.putExtra(Intent.EXTRA_MIME_TYPES, new String[]{"image/jpeg", "image/jpg", "image/png"});
+        i.putExtra(Intent.EXTRA_MIME_TYPES, new String[] { "image/jpeg", "image/jpg", "image/png" });
         templatePicker.launch(i);
     }
 
     private void pickProofImage() {
         Intent i = new Intent(Intent.ACTION_GET_CONTENT);
         i.setType("image/*");
-        i.putExtra(Intent.EXTRA_MIME_TYPES, new String[]{"image/jpeg", "image/jpg", "image/png"});
+        i.putExtra(Intent.EXTRA_MIME_TYPES, new String[] { "image/jpeg", "image/jpg", "image/png" });
         proofPicker.launch(i);
     }
 
@@ -158,7 +169,7 @@ public class AdRequestActivity extends AppCompatActivity {
     private void startCropForTemplate(@NonNull Uri uri) {
         String destName = "cropped_ad_" + System.currentTimeMillis() + ".jpg";
         UCrop uCrop = UCrop.of(uri, Uri.fromFile(new File(getCacheDir(), destName)));
-        uCrop.withAspectRatio(16, 9);   // Advertisement: always 16:9
+        uCrop.withAspectRatio(16, 9); // Advertisement: always 16:9
 
         UCrop.Options options = new UCrop.Options();
         options.setCompressionFormat(android.graphics.Bitmap.CompressFormat.JPEG);
@@ -248,23 +259,23 @@ public class AdRequestActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot s) {
 
-                String name   = s.child("name").getValue(String.class);
-                String email  = s.child("email").getValue(String.class);
+                String name = s.child("name").getValue(String.class);
+                String email = s.child("email").getValue(String.class);
                 String mobile = s.child("mobile").getValue(String.class);
 
                 String id = adRef.push().getKey();
 
                 AdvertisementRequest r = new AdvertisementRequest();
-                r.requestId    = id;
-                r.uid          = FirebaseAuth.getInstance().getUid();
-                r.userName     = name;
-                r.email        = email;
-                r.mobile       = mobile;
-                r.adLink       = adLink;
+                r.requestId = id;
+                r.uid = FirebaseAuth.getInstance().getUid();
+                r.userName = name;
+                r.email = email;
+                r.mobile = mobile;
+                r.adLink = adLink;
                 r.templatePath = templateUrl;
-                r.proofPath    = proofUrl;
-                r.status       = "pending";
-                r.time         = System.currentTimeMillis();
+                r.proofPath = proofUrl;
+                r.status = "pending";
+                r.time = System.currentTimeMillis();
 
                 adRef.child(id).setValue(r)
                         .addOnSuccessListener(u -> {
@@ -274,8 +285,7 @@ public class AdRequestActivity extends AppCompatActivity {
                                     AdRequestActivity.this,
                                     FirebaseAuth.getInstance().getUid(),
                                     "Advertisement Request Sent",
-                                    "Your advertisement request has been submitted for review."
-                            );
+                                    "Your advertisement request has been submitted for review.");
 
                             // 📢 Notify ADMINS
                             NotificationHelper.notifyAdmins(
@@ -283,8 +293,7 @@ public class AdRequestActivity extends AppCompatActivity {
                                     "New Advertisement Request",
                                     "A user has submitted a new advertisement request.",
                                     "OPEN_AD_REQUESTS", // Action to handle in NotificationActivity
-                                    id
-                            );
+                                    id);
 
                             runOnUiThread(() -> {
                                 setSubmitting(false);
@@ -326,8 +335,8 @@ public class AdRequestActivity extends AppCompatActivity {
     private boolean isValidImage(String mimeType) {
         return mimeType != null &&
                 (mimeType.equals("image/jpeg") ||
-                 mimeType.equals("image/jpg") ||
-                 mimeType.equals("image/png"));
+                        mimeType.equals("image/jpg") ||
+                        mimeType.equals("image/png"));
     }
 
     void toast(int resId) {
@@ -342,6 +351,7 @@ public class AdRequestActivity extends AppCompatActivity {
 
     interface UploadCallback {
         void onSuccess(String url);
+
         void onError(String message);
     }
 
@@ -350,11 +360,11 @@ public class AdRequestActivity extends AppCompatActivity {
             try {
                 String boundary = "----RMPLUS" + System.currentTimeMillis();
                 String mimeType = getContentResolver().getType(uri);
-                if (mimeType == null) mimeType = "image/jpeg";
+                if (mimeType == null)
+                    mimeType = "image/jpeg";
 
                 java.net.URL url = new java.net.URL("http://187.77.184.84/upload.php");
-                java.net.HttpURLConnection conn =
-                        (java.net.HttpURLConnection) url.openConnection();
+                java.net.HttpURLConnection conn = (java.net.HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("POST");
                 conn.setDoOutput(true);
                 conn.setDoInput(true);
@@ -364,11 +374,11 @@ public class AdRequestActivity extends AppCompatActivity {
 
                 // Determine extension
                 String ext = ".jpg";
-                if (mimeType.contains("png")) ext = ".png";
+                if (mimeType.contains("png"))
+                    ext = ".png";
                 String fileName = "ad_" + System.currentTimeMillis() + ext;
 
-                java.io.DataOutputStream out =
-                        new java.io.DataOutputStream(conn.getOutputStream());
+                java.io.DataOutputStream out = new java.io.DataOutputStream(conn.getOutputStream());
 
                 out.writeBytes("--" + boundary + "\r\n");
                 out.writeBytes("Content-Disposition: form-data; name=\"file\";" +
@@ -378,7 +388,8 @@ public class AdRequestActivity extends AppCompatActivity {
                 InputStream input = getContentResolver().openInputStream(uri);
                 byte[] buffer = new byte[4096];
                 int len;
-                while ((len = input.read(buffer)) != -1) out.write(buffer, 0, len);
+                while ((len = input.read(buffer)) != -1)
+                    out.write(buffer, 0, len);
                 input.close();
 
                 out.writeBytes("\r\n--" + boundary + "--\r\n");
@@ -391,7 +402,8 @@ public class AdRequestActivity extends AppCompatActivity {
                             new InputStreamReader(conn.getInputStream()));
                     StringBuilder res = new StringBuilder();
                     String line;
-                    while ((line = reader.readLine()) != null) res.append(line);
+                    while ((line = reader.readLine()) != null)
+                        res.append(line);
                     reader.close();
 
                     org.json.JSONObject json = new org.json.JSONObject(res.toString());

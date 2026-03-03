@@ -7,79 +7,79 @@
     android:background="@color/screen_bg"
     android:fitsSystemWindows="true">
 
+    <!-- HEADER (Consistent with all pages) -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/screen_bg"
+        app:elevation="0dp"
+        android:outlineProvider="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:paddingHorizontal="16dp">
+
+                <ImageView
+                    android:id="@+id/btnBack"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_centerVertical="true"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_back"
+                    app:tint="?android:textColorPrimary" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:text="My Requests"
+                    android:textSize="18sp"
+                    android:fontFamily="sans-serif-black"
+                    android:textColor="?android:textColorPrimary" />
+            </RelativeLayout>
+        </LinearLayout>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- CONTENT -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:background="@color/screen_bg"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <!-- HEADER -->
-        <com.google.android.material.card.MaterialCardView
+        <!-- TABS (Full width, bottom line indicator) -->
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="0dp"
-            app:cardElevation="4dp"
-            app:strokeWidth="0dp"
-            app:cardBackgroundColor="?attr/colorSurface">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:paddingHorizontal="16dp"
-                    android:paddingTop="20dp"
-                    android:paddingBottom="4dp">
-
-                    <ImageButton
-                        android:id="@+id/btnBack"
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        android:src="@drawable/ic_back"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        app:tint="?attr/colorOnSurface"
-                        android:contentDescription="Back" />
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="My Service Requests"
-                        android:textSize="22sp"
-                        android:fontFamily="sans-serif-black"
-                        android:textColor="?attr/colorOnSurface"
-                        android:layout_marginStart="8dp"
-                        android:letterSpacing="-0.01" />
-
-                </LinearLayout>
-
-                <com.google.android.material.tabs.TabLayout
-                    android:id="@+id/tabLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="?attr/colorSurface"
-                    app:tabMode="fixed"
-                    app:tabGravity="fill"
-                    app:tabIndicatorHeight="4dp"
-                    app:tabIndicatorFullWidth="false"
-                    app:tabIndicatorGravity="bottom"
-                    app:tabIndicatorColor="?attr/colorPrimary"
-                    app:tabSelectedTextColor="?attr/colorPrimary"
-                    app:tabTextColor="?attr/colorOnSurfaceVariant"
-                    app:tabTextAppearance="@style/SettingsTextStyle"
-                    app:tabRippleColor="#0D000000" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+            android:layout_height="44dp"
+            android:background="@color/surface_light"
+            app:tabMode="fixed"
+            app:tabGravity="fill"
+            app:tabIndicatorHeight="3dp"
+            app:tabIndicatorFullWidth="false"
+            app:tabIndicatorGravity="bottom"
+            app:tabIndicatorColor="?attr/colorPrimary"
+            app:tabIndicatorAnimationMode="elastic"
+            app:tabSelectedTextColor="?attr/colorPrimary"
+            app:tabTextColor="?attr/colorOnSurfaceVariant"
+            app:tabTextAppearance="@style/SettingsTextStyle"
+            app:tabRippleColor="#0D000000" />
 
         <!-- PAGER -->
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/viewPager"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginTop="8dp"
             android:overScrollMode="never" />
 
     </LinearLayout>
