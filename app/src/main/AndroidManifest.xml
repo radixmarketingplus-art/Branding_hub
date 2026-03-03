@@ -66,6 +66,9 @@
             android:name=".HomeActivity"
             android:exported="false" />
         <activity
+            android:name=".OnboardingActivity"
+            android:exported="false" />
+        <activity
             android:name=".ImagePreviewActivity"
             android:exported="false" />
         <activity
@@ -79,7 +82,8 @@
             android:exported="false" />
         <activity
             android:name=".RequestChatActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".AdminContactRequestsActivity"
             android:exported="false" />

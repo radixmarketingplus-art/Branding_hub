@@ -1,75 +1,118 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="32dp"
-    app:cardCornerRadius="32dp"
-    app:cardElevation="24dp"
-    app:cardBackgroundColor="@color/surface_light"
-    app:strokeWidth="0dp">
+    android:layout_margin="36dp">
 
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/dialogContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="32dp">
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingTop="20dp"
+        android:paddingBottom="20dp"
+        android:paddingHorizontal="28dp">
 
-        <!-- Close Button Top Right -->
+        <!-- Close Button (Top Right) -->
         <ImageView
             android:id="@+id/btnCloseDialog"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentTop="true"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="end"
+            android:layout_marginBottom="8dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="8dp"
             android:src="@drawable/ic_close_gray"
-            app:tint="?attr/colorOnSurfaceVariant" />
+            android:alpha="0.7"
+            app:tint="#FFFFFF"
+            android:contentDescription="Close" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/btnCloseDialog"
-            android:gravity="center"
-            android:orientation="vertical">
+        <!-- ===== Animated Success Icon Area ===== -->
+        <FrameLayout
+            android:layout_width="130dp"
+            android:layout_height="130dp"
+            android:layout_gravity="center">
 
-            <ImageView
-                android:id="@+id/imgSuccessIco"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:src="@drawable/ic_login_success_premium"
-                app:tint="?attr/colorPrimary" />
-
-            <TextView
-                android:id="@+id/txtSuccessTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:fontFamily="sans-serif-black"
-                android:text="@string/login_congrats"
-                android:textColor="?attr/colorOnSurface"
-                android:textSize="26sp"
-                android:letterSpacing="-0.01" />
-
-            <TextView
-                android:id="@+id/txtSuccessDesc"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:fontFamily="sans-serif-medium"
-                android:gravity="center"
-                android:text="@string/login_welcome_msg"
-                android:textColor="?attr/colorOnSurfaceVariant"
-                android:textSize="14sp"
-                android:lineSpacingExtra="4dp"
-                android:alpha="0.8" />
-
-            <!-- Spacer at the bottom instead of button for "auto-hide" feel -->
+            <!-- Outer Pulse Ring -->
             <View
-                android:layout_width="match_parent"
-                android:layout_height="24dp" />
+                android:id="@+id/pulseRing"
+                android:layout_width="130dp"
+                android:layout_height="130dp"
+                android:layout_gravity="center"
+                android:background="@drawable/bg_success_circle_outer"
+                android:alpha="0" />
 
-        </LinearLayout>
-    </RelativeLayout>
-</com.google.android.material.card.MaterialCardView>
+            <!-- Inner Gradient Circle -->
+            <View
+                android:id="@+id/innerCircle"
+                android:layout_width="88dp"
+                android:layout_height="88dp"
+                android:layout_gravity="center"
+                android:background="@drawable/bg_success_circle_inner" />
+
+            <!-- White Checkmark Icon -->
+            <ImageView
+                android:id="@+id/imgCheckmark"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_check_white"
+                android:alpha="0"
+                android:contentDescription="Success" />
+
+        </FrameLayout>
+
+        <!-- ===== Title ===== -->
+        <TextView
+            android:id="@+id/txtSuccessTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:fontFamily="sans-serif-black"
+            android:text="@string/login_congrats"
+            android:textColor="#FFFFFF"
+            android:textSize="26sp"
+            android:letterSpacing="-0.02"
+            android:alpha="0" />
+
+        <!-- ===== Green Divider ===== -->
+        <View
+            android:id="@+id/dividerLine"
+            android:layout_width="50dp"
+            android:layout_height="3dp"
+            android:layout_marginTop="14dp"
+            android:background="#10B981"
+            android:alpha="0" />
+
+        <!-- ===== Description ===== -->
+        <TextView
+            android:id="@+id/txtSuccessDesc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="center"
+            android:text="@string/login_welcome_msg"
+            android:textColor="#B0B8C9"
+            android:textSize="14sp"
+            android:lineSpacingExtra="5dp"
+            android:alpha="0" />
+
+        <!-- ===== Auto-dismiss Progress Bar ===== -->
+        <ProgressBar
+            android:id="@+id/progressAutoHide"
+            style="@android:style/Widget.ProgressBar.Horizontal"
+            android:layout_width="200dp"
+            android:layout_height="3dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginBottom="8dp"
+            android:max="100"
+            android:progress="100"
+            android:progressDrawable="@drawable/bg_success_progress"
+            android:alpha="0" />
+
+    </LinearLayout>
+
+</RelativeLayout>

@@ -12,94 +12,141 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <!-- HEADER -->
-        <LinearLayout
+        <!-- ================= MODERN HEADER ================= -->
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:paddingHorizontal="16dp"
-            android:paddingTop="12dp"
-            android:paddingBottom="12dp"
-            android:background="?attr/colorSurface"
-            android:elevation="4dp">
-
-            <ImageButton
-                android:id="@+id/btnBack"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:src="@drawable/ic_back"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                app:tint="?attr/colorOnSurface"
-                android:contentDescription="Back" />
+            app:cardCornerRadius="0dp"
+            app:cardElevation="6dp"
+            app:strokeWidth="0dp">
 
             <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_weight="1"
-                android:layout_marginStart="8dp">
+                android:layout_width="match_parent"
+                android:layout_height="72dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="12dp"
+                android:background="?attr/colorSurface">
 
-                <TextView
-                    android:id="@+id/chatTitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/btn_open_chat"
-                    android:textSize="18sp"
-                    android:fontFamily="sans-serif-black"
-                    android:textColor="?attr/colorOnSurface"
-                    android:maxLines="1"
-                    android:ellipsize="end" />
+                <ImageButton
+                    android:id="@+id/btnBack"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:src="@drawable/ic_back"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    app:tint="?attr/colorOnSurface"
+                    android:contentDescription="Back" />
 
-                <TextView
-                    android:id="@+id/chatSubtitle"
-                    android:layout_width="wrap_content"
+                <!-- Avatar Simulation -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginStart="8dp"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="1.5dp"
+                    app:strokeColor="?attr/colorPrimary">
+                    
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerInside"
+                        android:padding="8dp"
+                        android:src="@android:drawable/stat_notify_chat"
+                        app:tint="?attr/colorPrimary" />
+                </com.google.android.material.card.MaterialCardView>
+
+                <LinearLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="Support Agent"
-                    android:textSize="12sp"
-                    android:fontFamily="sans-serif-medium"
-                    android:textColor="?attr/colorOnSurfaceVariant" />
+                    android:orientation="vertical"
+                    android:layout_weight="1"
+                    android:layout_marginStart="12dp">
+
+                    <TextView
+                        android:id="@+id/chatTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Chat Support"
+                        android:textSize="17sp"
+                        android:fontFamily="sans-serif-bold"
+                        android:textColor="?attr/colorOnSurface"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        android:letterSpacing="-0.01" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginTop="1dp">
+
+                        <View
+                            android:layout_width="6dp"
+                            android:layout_height="6dp"
+                            android:background="@drawable/shape_circle"
+                            android:backgroundTint="#22C55E" />
+
+                        <TextView
+                            android:id="@+id/chatSubtitle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Online"
+                            android:textSize="11sp"
+                            android:fontFamily="sans-serif-medium"
+                            android:textColor="#22C55E"
+                            android:layout_marginStart="4dp" />
+                    </LinearLayout>
+                </LinearLayout>
             </LinearLayout>
-        </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
-        <!-- CHAT LIST -->
+        <!-- ================= CHAT LIST ================= -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerChat"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:clipToPadding="false"
-            android:paddingHorizontal="16dp"
+            android:paddingHorizontal="8dp"
             android:paddingTop="12dp"
             android:paddingBottom="12dp"
             android:overScrollMode="never" />
 
-        <!-- PREVIEW BOX -->
+        <!-- ================= IMAGE PREVIEW ================= -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/imgPreviewCard"
-            android:layout_width="match_parent"
+            android:layout_width="160dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"
-            android:layout_marginBottom="8dp"
+            android:layout_marginBottom="12dp"
             android:visibility="gone"
             app:cardCornerRadius="16dp"
-            app:cardElevation="2dp"
-            app:strokeWidth="1dp"
-            app:strokeColor="#1A000000">
+            app:cardElevation="4dp"
+            app:strokeWidth="3dp"
+            app:strokeColor="@color/white">
 
-            <ImageView
-                android:id="@+id/imgPreview"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="140dp"
-                android:scaleType="centerCrop" />
+                android:layout_height="wrap_content">
+                
+                <ImageView
+                    android:id="@+id/imgPreview"
+                    android:layout_width="match_parent"
+                    android:layout_height="120dp"
+                    android:scaleType="centerCrop" />
+                
+                <!-- Close preview icon would go here but keeping it simple as per original logic -->
+            </RelativeLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- INPUT BAR -->
+        <!-- ================= MODERN INPUT BAR ================= -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:cardCornerRadius="0dp"
-            app:cardElevation="12dp"
+            app:cardElevation="16dp"
             app:strokeWidth="0dp">
 
             <LinearLayout
@@ -107,46 +154,50 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:paddingHorizontal="12dp"
-                android:paddingVertical="10dp"
+                android:gravity="bottom"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="12dp"
                 android:background="?attr/colorSurface">
 
                 <ImageButton
                     android:id="@+id/btnAttach"
-                    android:layout_width="44dp"
-                    android:layout_height="44dp"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
                     android:src="@android:drawable/ic_menu_add"
                     app:tint="?attr/colorPrimary"
                     android:background="?attr/selectableItemBackgroundBorderless"
-                    android:padding="8dp" />
+                    android:padding="10dp"
+                    android:layout_marginBottom="2dp" />
 
                 <EditText
                     android:id="@+id/etMsg"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:layout_marginHorizontal="8dp"
+                    android:layout_marginHorizontal="4dp"
                     android:hint="@string/hint_type_message"
                     android:fontFamily="sans-serif-medium"
-                    android:textSize="14sp"
+                    android:textSize="15sp"
                     android:textColor="?attr/colorOnSurface"
                     android:textColorHint="?attr/colorOnSurfaceVariant"
-                    android:background="@drawable/bg_input_2"
-                    android:paddingHorizontal="16dp"
-                    android:paddingVertical="10dp"
-                    android:maxLines="4" />
+                    android:background="@drawable/bg_chat_input_rounded"
+                    android:paddingHorizontal="18dp"
+                    android:paddingVertical="12dp"
+                    android:maxLines="5"
+                    android:minHeight="48dp"
+                    android:gravity="center_vertical" />
 
                 <ImageButton
                     android:id="@+id/btnSend"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:background="@drawable/shape_circle"
-                    android:backgroundTint="?attr/colorPrimary"
+                    android:layout_marginStart="4dp"
+                    android:background="@drawable/bg_send_circle"
                     android:src="@android:drawable/ic_menu_send"
                     app:tint="@color/white"
-                    android:padding="10dp"
-                    app:elevation="4sp" />
+                    android:padding="12dp"
+                    android:elevation="4dp"
+                    android:layout_marginBottom="2dp" />
 
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -154,4 +205,3 @@
     </LinearLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
-

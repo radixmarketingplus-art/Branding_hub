@@ -19,14 +19,13 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ServerValue;
 
-
 public class LoginActivity extends AppCompatActivity {
 
-    EditText email,password;
+    EditText email, password;
     Button loginBtn;
-    TextView forgotBtn,registerBtn;
+    TextView forgotBtn, registerBtn;
     ImageView eyeBtn;
-    boolean visible=false;
+    boolean visible = false;
     FirebaseAuth auth;
 
     // ✅ Added for Email / Phone mode
@@ -34,29 +33,26 @@ public class LoginActivity extends AppCompatActivity {
     boolean loginWithPhone = false;
     boolean isLoggingIn = false;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        email=findViewById(R.id.email);
-        password=findViewById(R.id.password);
-        loginBtn=findViewById(R.id.loginBtn);
-        forgotBtn=findViewById(R.id.forgotPassword);
-        registerBtn=findViewById(R.id.registerText);
+        email = findViewById(R.id.email);
+        password = findViewById(R.id.password);
+        loginBtn = findViewById(R.id.loginBtn);
+        forgotBtn = findViewById(R.id.forgotPassword);
+        registerBtn = findViewById(R.id.registerText);
         eyeBtn = findViewById(R.id.eyeBtn);
 
         // ✅ Initialize mode buttons
         emailModeBtn = findViewById(R.id.emailModeBtn);
         phoneModeBtn = findViewById(R.id.phoneModeBtn);
 
-        auth=FirebaseAuth.getInstance();
-        SharedPreferences sp =
-                getSharedPreferences("APP_DATA", MODE_PRIVATE);
+        auth = FirebaseAuth.getInstance();
+        SharedPreferences sp = getSharedPreferences("APP_DATA", MODE_PRIVATE);
 
-        boolean loggedIn =
-                sp.getBoolean("isLoggedIn", false);
+        boolean loggedIn = sp.getBoolean("isLoggedIn", false);
 
         if (loggedIn && auth.getCurrentUser() != null) {
             Intent intent = new Intent(this, HomeActivity.class);
@@ -77,27 +73,26 @@ public class LoginActivity extends AppCompatActivity {
             email.setHint(R.string.hint_enter_phone);
         });
 
-
         eyeBtn.setOnClickListener(v -> {
 
-            if(visible){
+            if (visible) {
                 password.setTransformationMethod(
                         PasswordTransformationMethod.getInstance());
-                visible=false;
-            }else{
+                visible = false;
+            } else {
                 password.setTransformationMethod(
                         HideReturnsTransformationMethod.getInstance());
-                visible=true;
+                visible = true;
             }
 
         });
 
-
         loginBtn.setOnClickListener(v -> {
 
-            if (isLoggingIn) return;   // ❌ prevent multiple clicks
+            if (isLoggingIn)
+                return; // ❌ prevent multiple clicks
 
-            setLoading(true);  // 🔒 disable button
+            setLoading(true); // 🔒 disable button
 
             String input = email.getText().toString().trim();
             String ps = password.getText().toString().trim();
@@ -113,17 +108,15 @@ public class LoginActivity extends AppCompatActivity {
             email.clearFocus();
             password.clearFocus();
 
-            android.view.inputmethod.InputMethodManager imm =
-                    (android.view.inputmethod.InputMethodManager)
-                            getSystemService(INPUT_METHOD_SERVICE);
+            android.view.inputmethod.InputMethodManager imm = (android.view.inputmethod.InputMethodManager) getSystemService(
+                    INPUT_METHOD_SERVICE);
 
             if (imm != null) {
                 imm.hideSoftInputFromWindow(
                         getCurrentFocus() != null
                                 ? getCurrentFocus().getWindowToken()
                                 : email.getWindowToken(),
-                        0
-                );
+                        0);
             }
 
             if (!isInternetAvailable()) {
@@ -134,14 +127,13 @@ public class LoginActivity extends AppCompatActivity {
                 return;
             }
 
-
             // ❌ OLD EMAIL-ONLY VALIDATION (commented)
             /*
-            if(!Patterns.EMAIL_ADDRESS.matcher(em).matches()){
-                email.setError("Invalid Email");
-                return;
-            }
-            */
+             * if(!Patterns.EMAIL_ADDRESS.matcher(em).matches()){
+             * email.setError("Invalid Email");
+             * return;
+             * }
+             */
 
             // ===================================================
             // ✅ NEW LOGIN LOGIC — EMAIL OR PHONE
@@ -156,9 +148,8 @@ public class LoginActivity extends AppCompatActivity {
                     return;
                 }
 
-                DatabaseReference ref =
-                        FirebaseDatabase.getInstance()
-                                .getReference("users");
+                DatabaseReference ref = FirebaseDatabase.getInstance()
+                        .getReference("users");
 
                 ref.orderByChild("mobile")
                         .equalTo(input)
@@ -176,22 +167,21 @@ public class LoginActivity extends AppCompatActivity {
                                             return;
                                         }
 
-//                                        for (DataSnapshot ds : snapshot.getChildren()) {
-//
-//                                            String userEmail =
-//                                                    ds.child("email")
-//                                                            .getValue(String.class);
-//
-//                                            loginWithEmail(userEmail, ps);
-//                                        }
+                                        // for (DataSnapshot ds : snapshot.getChildren()) {
+                                        //
+                                        // String userEmail =
+                                        // ds.child("email")
+                                        // .getValue(String.class);
+                                        //
+                                        // loginWithEmail(userEmail, ps);
+                                        // }
 
                                         for (DataSnapshot ds : snapshot.getChildren()) {
 
-                                            String userEmail =
-                                                    ds.child("email")
-                                                            .getValue(String.class);
+                                            String userEmail = ds.child("email")
+                                                    .getValue(String.class);
 
-                                            if(userEmail != null && !userEmail.isEmpty()) {
+                                            if (userEmail != null && !userEmail.isEmpty()) {
                                                 loginWithEmail(userEmail, ps);
                                                 return; // ✅ stop after first match
                                             }
@@ -239,26 +229,25 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-
     // ===================================================
     // ✅ HELPER METHOD — SIGN IN WITH EMAIL
     // ===================================================
 
     private void loginWithEmail(String em, String ps) {
 
-        auth.signInWithEmailAndPassword(em,ps)
+        auth.signInWithEmailAndPassword(em, ps)
                 .addOnSuccessListener(result -> {
 
                     // ❌ OLD EMAIL VERIFICATION CHECK (commented)
                     /*
-                    if(auth.getCurrentUser().isEmailVerified()){
-                    */
+                     * if(auth.getCurrentUser().isEmailVerified()){
+                     */
 
                     // ===================================================
                     // ✅ DIRECT LOGIN WITHOUT VERIFICATION
                     // ===================================================
 
-//                    String uid = auth.getUid();
+                    // String uid = auth.getUid();
                     if (auth.getCurrentUser() == null) {
                         setLoading(false);
                         Toast.makeText(this,
@@ -270,25 +259,24 @@ public class LoginActivity extends AppCompatActivity {
                     String uid = auth.getCurrentUser().getUid();
                     String userEmail = auth.getCurrentUser().getEmail();
 
-                    DatabaseReference userRef =
-                            FirebaseDatabase.getInstance()
-                                    .getReference("users")
-                                    .child(uid);
+                    DatabaseReference userRef = FirebaseDatabase.getInstance()
+                            .getReference("users")
+                            .child(uid);
 
                     userRef.addListenerForSingleValueEvent(
                             new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot snapshot) {
 
-                                    if(!snapshot.exists()){
+                                    if (!snapshot.exists()) {
                                         userRef.child("email").setValue(userEmail);
                                         userRef.child("loginCount").setValue(1);
-                                    }else{
+                                    } else {
 
                                         Long count = snapshot.child("loginCount")
                                                 .getValue(Long.class);
 
-                                        if(count == null){
+                                        if (count == null) {
                                             count = 0L;
                                         }
 
@@ -310,38 +298,46 @@ public class LoginActivity extends AppCompatActivity {
 
                                                             String role = snapshot.getValue(String.class);
 
-                                                            if(role == null){
+                                                            if (role == null) {
                                                                 role = "user";
                                                                 userRef.child("role").setValue("user");
                                                             }
 
-//                                                            Toast.makeText(LoginActivity.this,
-//                                                                    "Login Success",
-//                                                                    Toast.LENGTH_SHORT).show();
+                                                            // Toast.makeText(LoginActivity.this,
+                                                            // "Login Success",
+                                                            // Toast.LENGTH_SHORT).show();
 
-//                                                            Intent i = new Intent(
-//                                                                    LoginActivity.this,
-//                                                                    HomeActivity.class);
-//
-//                                                            i.putExtra("role", role);
-//                                                            startActivity(i);
-//                                                            finish();
+                                                            // Intent i = new Intent(
+                                                            // LoginActivity.this,
+                                                            // HomeActivity.class);
+                                                            //
+                                                            // i.putExtra("role", role);
+                                                            // startActivity(i);
+                                                            // finish();
 
                                                             // ===== SAVE ROLE PERMANENTLY =====
-                                                            SharedPreferences sp =
-                                                                    getSharedPreferences("APP_DATA", MODE_PRIVATE);
+                                                            SharedPreferences sp = getSharedPreferences("APP_DATA",
+                                                                    MODE_PRIVATE);
 
                                                             sp.edit()
                                                                     .putString("role", role)
                                                                     .apply();
 
-// ===== OPTIONAL: SAVE LOGIN STATUS =====
+                                                            // ===== OPTIONAL: SAVE LOGIN STATUS =====
                                                             sp.edit()
                                                                     .putBoolean("isLoggedIn", true)
                                                                     .apply();
 
-                                                            Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+                                                            // ===== OPEN HOME (spotlight onboarding runs on
+                                                            // HomeActivity) =====
+                                                            boolean onboardingDone = sp.getBoolean("onboarding_done",
+                                                                    false);
+                                                            Intent intent = new Intent(LoginActivity.this,
+                                                                    HomeActivity.class);
                                                             intent.putExtra("show_login_success", true);
+                                                            if (!onboardingDone) {
+                                                                intent.putExtra("show_onboarding", true);
+                                                            }
                                                             startActivity(intent);
                                                             finish();
                                                         }
@@ -367,13 +363,13 @@ public class LoginActivity extends AppCompatActivity {
 
                     // ❌ OLD ELSE BLOCK FOR VERIFICATION (commented)
                     /*
-                    }
-                    else{
-                        Toast.makeText(this,
-                                "Verify Email First",
-                                Toast.LENGTH_LONG).show();
-                    }
-                    */
+                     * }
+                     * else{
+                     * Toast.makeText(this,
+                     * "Verify Email First",
+                     * Toast.LENGTH_LONG).show();
+                     * }
+                     */
 
                 }).addOnFailureListener(e -> {
 
@@ -430,17 +426,15 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (isLoggingIn) return;   // block back during login
+        if (isLoggingIn)
+            return; // block back during login
         super.onBackPressed();
     }
 
     boolean isInternetAvailable() {
-        android.net.ConnectivityManager cm =
-                (android.net.ConnectivityManager)
-                        getSystemService(CONNECTIVITY_SERVICE);
+        android.net.ConnectivityManager cm = (android.net.ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
 
-        android.net.NetworkInfo net =
-                cm != null ? cm.getActiveNetworkInfo() : null;
+        android.net.NetworkInfo net = cm != null ? cm.getActiveNetworkInfo() : null;
 
         return net != null && net.isConnected();
     }

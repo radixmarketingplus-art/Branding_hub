@@ -1,14 +1,17 @@
 package com.example.rmplus;
 
 import android.Manifest;
+import android.animation.ObjectAnimator;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.content.Intent;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.app.Dialog;
 import android.graphics.Color;
@@ -185,12 +188,23 @@ public class HomeActivity extends BaseActivity {
         ExpiryCleanupHelper.checkAndClean(this);
 
         // ✅ SHOW LOGIN SUCCESS POPUP (If just logged in)
+        boolean showOnboarding = getIntent().getBooleanExtra("show_onboarding", false);
+        if (showOnboarding) {
+            getIntent().removeExtra("show_onboarding");
+        }
         if (getIntent().getBooleanExtra("show_login_success", false)) {
-            showLoginSuccessPopup();
+            getIntent().removeExtra("show_login_success");
+            showLoginSuccessPopup(showOnboarding);
+        } else if (showOnboarding) {
+            // If only onboarding (no success popup), start directly
+            new Handler().postDelayed(this::startSpotlightOnboarding, 800);
         }
     }
 
-    private void showLoginSuccessPopup() {
+    private boolean pendingOnboarding = false;
+
+    private void showLoginSuccessPopup(boolean triggerOnboarding) {
+        this.pendingOnboarding = triggerOnboarding;
         Dialog dialog = new Dialog(this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.dialog_login_success);
@@ -200,48 +214,145 @@ public class HomeActivity extends BaseActivity {
         if (window != null) {
             window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
             window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-
-            // Set entry animation for the whole dialog window
-            window.getAttributes().windowAnimations = android.R.style.Animation_Dialog;
+            // Heavy dim for premium floating feel (no card background)
+            window.setDimAmount(0.85f);
         }
 
+        // ===== Get all views =====
         View container = dialog.findViewById(R.id.dialogContainer);
         ImageView btnClose = dialog.findViewById(R.id.btnCloseDialog);
-        View icon = dialog.findViewById(R.id.imgSuccessIco);
+        View pulseRing = dialog.findViewById(R.id.pulseRing);
+        View innerCircle = dialog.findViewById(R.id.innerCircle);
+        ImageView checkmark = dialog.findViewById(R.id.imgCheckmark);
+        TextView title = dialog.findViewById(R.id.txtSuccessTitle);
+        View divider = dialog.findViewById(R.id.dividerLine);
+        TextView desc = dialog.findViewById(R.id.txtSuccessDesc);
+        ProgressBar progressBar = dialog.findViewById(R.id.progressAutoHide);
 
         dialog.show();
 
-        // ✅ Decent & Simple Interactive Animations
+        // ===== STEP 1: Container slides up with fade =====
         if (container != null) {
             container.setAlpha(0f);
-            container.setTranslationY(100f);
+            container.setTranslationY(80f);
             container.animate()
                     .alpha(1f)
                     .translationY(0f)
-                    .setDuration(600)
-                    .setInterpolator(new OvershootInterpolator())
+                    .setDuration(500)
+                    .setInterpolator(new DecelerateInterpolator(1.5f))
                     .start();
         }
 
-        if (icon != null) {
-            icon.setScaleX(0f);
-            icon.setScaleY(0f);
-            icon.animate()
+        // ===== STEP 2: Inner green circle scales in with bounce =====
+        if (innerCircle != null) {
+            innerCircle.setScaleX(0f);
+            innerCircle.setScaleY(0f);
+            innerCircle.animate()
                     .scaleX(1f)
                     .scaleY(1f)
                     .setStartDelay(300)
-                    .setDuration(500)
-                    .setInterpolator(new OvershootInterpolator())
+                    .setDuration(600)
+                    .setInterpolator(new OvershootInterpolator(1.4f))
                     .start();
         }
 
-        // ✅ AUTO-HIDE AFTER 4 SECONDS
+        // ===== STEP 3: Pulse ring ripple outward =====
+        if (pulseRing != null) {
+            pulseRing.setScaleX(0.6f);
+            pulseRing.setScaleY(0.6f);
+            pulseRing.setAlpha(0f);
+            pulseRing.animate()
+                    .scaleX(1.3f)
+                    .scaleY(1.3f)
+                    .alpha(0.6f)
+                    .setStartDelay(500)
+                    .setDuration(700)
+                    .setInterpolator(new DecelerateInterpolator())
+                    .withEndAction(() -> {
+                        // Fade out the pulse ring after expanding
+                        pulseRing.animate()
+                                .alpha(0f)
+                                .scaleX(1.5f)
+                                .scaleY(1.5f)
+                                .setDuration(600)
+                                .start();
+                    })
+                    .start();
+        }
+
+        // ===== STEP 4: Checkmark pops in with overshoot =====
+        if (checkmark != null) {
+            checkmark.setScaleX(0f);
+            checkmark.setScaleY(0f);
+            checkmark.setRotation(-45f);
+            checkmark.setAlpha(0f);
+            checkmark.animate()
+                    .scaleX(1f)
+                    .scaleY(1f)
+                    .rotation(0f)
+                    .alpha(1f)
+                    .setStartDelay(700)
+                    .setDuration(500)
+                    .setInterpolator(new OvershootInterpolator(2.0f))
+                    .start();
+        }
+
+        // ===== STEP 5: Title slides in =====
+        if (title != null) {
+            title.setTranslationY(20f);
+            title.animate()
+                    .alpha(1f)
+                    .translationY(0f)
+                    .setStartDelay(1000)
+                    .setDuration(400)
+                    .setInterpolator(new DecelerateInterpolator())
+                    .start();
+        }
+
+        // ===== STEP 6: Divider expands =====
+        if (divider != null) {
+            divider.setScaleX(0f);
+            divider.animate()
+                    .alpha(1f)
+                    .scaleX(1f)
+                    .setStartDelay(1200)
+                    .setDuration(400)
+                    .setInterpolator(new DecelerateInterpolator())
+                    .start();
+        }
+
+        // ===== STEP 7: Description fades in =====
+        if (desc != null) {
+            desc.setTranslationY(15f);
+            desc.animate()
+                    .alpha(1f)
+                    .translationY(0f)
+                    .setStartDelay(1400)
+                    .setDuration(400)
+                    .setInterpolator(new DecelerateInterpolator())
+                    .start();
+        }
+
+        // ===== STEP 8: Progress bar countdown (auto-dismiss timer) =====
+        if (progressBar != null) {
+            progressBar.setProgress(100);
+            new Handler().postDelayed(() -> {
+                progressBar.setAlpha(1f);
+                ObjectAnimator progressAnim = ObjectAnimator.ofInt(progressBar, "progress", 100, 0);
+                progressAnim.setDuration(4000);
+                progressAnim.setInterpolator(new DecelerateInterpolator(0.5f));
+                progressAnim.start();
+            }, 1500);
+        }
+
+        // ===== AUTO-HIDE AFTER 5.5 SECONDS (animation time + countdown) =====
         new Handler().postDelayed(() -> {
             if (dialog.isShowing()) {
                 dismissDialogWithAnim(dialog, container);
             }
-        }, 4000);
+        }, 5500);
 
+        // ===== Close button =====
         if (btnClose != null) {
             btnClose.setOnClickListener(v -> dismissDialogWithAnim(dialog, container));
         }
@@ -251,14 +362,71 @@ public class HomeActivity extends BaseActivity {
         if (container != null) {
             container.animate()
                     .alpha(0f)
-                    .scaleX(0.9f)
-                    .scaleY(0.9f)
-                    .setDuration(400)
-                    .withEndAction(dialog::dismiss)
+                    .scaleX(0.85f)
+                    .scaleY(0.85f)
+                    .translationY(50f)
+                    .setDuration(350)
+                    .setInterpolator(new DecelerateInterpolator())
+                    .withEndAction(() -> {
+                        try {
+                            dialog.dismiss();
+                        } catch (Exception ignored) {
+                        }
+                        // ===== START SPOTLIGHT AFTER DIALOG CLOSES =====
+                        if (pendingOnboarding) {
+                            pendingOnboarding = false;
+                            new Handler().postDelayed(() -> startSpotlightOnboarding(), 500);
+                        }
+                    })
                     .start();
         } else {
-            dialog.dismiss();
+            try {
+                dialog.dismiss();
+            } catch (Exception ignored) {
+            }
+            if (pendingOnboarding) {
+                pendingOnboarding = false;
+                new Handler().postDelayed(() -> startSpotlightOnboarding(), 500);
+            }
         }
+    }
+
+    // ===== SPOTLIGHT ONBOARDING WALKTHROUGH =====
+    private void startSpotlightOnboarding() {
+        SpotlightOverlay spotlight = new SpotlightOverlay(this);
+
+        // 1. Profile Icon
+        View btnProfile = findViewById(R.id.btnProfile);
+        if (btnProfile != null) {
+            spotlight.addTarget(btnProfile,
+                    getString(R.string.onboard_spot_profile_title),
+                    getString(R.string.onboard_spot_profile_desc));
+        }
+
+        // 2. Search Icon
+        View btnSearch = findViewById(R.id.btnSearch);
+        if (btnSearch != null) {
+            spotlight.addTarget(btnSearch,
+                    getString(R.string.onboard_spot_search_title),
+                    getString(R.string.onboard_spot_search_desc));
+        }
+
+        // 3. Notification Icon
+        View btnNotif = findViewById(R.id.btnNotification);
+        if (btnNotif != null) {
+            spotlight.addTarget(btnNotif,
+                    getString(R.string.onboard_spot_notif_title),
+                    getString(R.string.onboard_spot_notif_desc));
+        }
+
+        // 4. Bottom Navigation
+        if (bottomNav != null) {
+            spotlight.addTarget(bottomNav,
+                    getString(R.string.onboard_spot_nav_title),
+                    getString(R.string.onboard_spot_nav_desc));
+        }
+
+        spotlight.start(this);
     }
 
     // ================= ADVERTISEMENT & TRENDING =================
@@ -291,7 +459,8 @@ public class HomeActivity extends BaseActivity {
                             // ✨ HIGHLIGHT & SCROLL IF TARGET AD ID MATCHES
                             if (targetAdId != null) {
                                 // Pause auto-scroller while highlighting
-                                if (trendingHandler != null) trendingHandler.removeCallbacks(trendingRunnable);
+                                if (trendingHandler != null)
+                                    trendingHandler.removeCallbacks(trendingRunnable);
 
                                 for (int i = 0; i < infiniteList.size(); i++) {
                                     if (infiniteList.get(i).id != null && infiniteList.get(i).id.equals(targetAdId)) {
@@ -299,11 +468,11 @@ public class HomeActivity extends BaseActivity {
                                         if (rvTrending.getAdapter() instanceof AdvertisementAdapter) {
                                             AdvertisementAdapter adp = (AdvertisementAdapter) rvTrending.getAdapter();
                                             adp.setHighlightPos(finalPos);
-                                            
+
                                             mainScroll.smoothScrollTo(0, 0); // Ads are at the top
                                             rvTrending.postDelayed(() -> {
                                                 rvTrending.scrollToPosition(finalPos);
-                                                
+
                                                 new Handler().postDelayed(() -> {
                                                     adp.setHighlightPos(-1);
                                                     targetAdId = null;
@@ -647,17 +816,17 @@ public class HomeActivity extends BaseActivity {
                                                 adapterInstance.setHighlightId(targetId);
                                                 final int scrollPos = i;
                                                 final View targetSection = sectionView;
-                                                
+
                                                 // 1. Scroll vertical page to the section
                                                 mainScroll.postDelayed(() -> {
                                                     // Calculate absolute top position in ScrollView
                                                     int verticalPos = targetSection.getTop() + container.getTop();
                                                     mainScroll.smoothScrollTo(0, verticalPos);
-                                                    
+
                                                     // 2. Scroll horizontal list to the item
                                                     rvItems.postDelayed(() -> {
                                                         rvItems.smoothScrollToPosition(scrollPos);
-                                                        
+
                                                         // 3. Remove highlight after 4 seconds
                                                         new Handler().postDelayed(() -> {
                                                             adapterInstance.setHighlightId(null);

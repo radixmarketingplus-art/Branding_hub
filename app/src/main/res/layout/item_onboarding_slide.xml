@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:paddingHorizontal="36dp">
+
+    <!-- Icon Circle Background + Icon -->
+    <FrameLayout
+        android:layout_width="160dp"
+        android:layout_height="160dp"
+        android:layout_gravity="center">
+
+        <View
+            android:id="@+id/iconBg"
+            android:layout_width="160dp"
+            android:layout_height="160dp"
+            android:layout_gravity="center"
+            android:background="@drawable/bg_onboarding_icon_circle" />
+
+        <ImageView
+            android:id="@+id/imgSlideIcon"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_gravity="center"
+            android:contentDescription="Feature Icon" />
+
+    </FrameLayout>
+
+    <!-- Title -->
+    <TextView
+        android:id="@+id/txtSlideTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:fontFamily="sans-serif-black"
+        android:gravity="center"
+        android:textColor="#111827"
+        android:textSize="22sp"
+        android:letterSpacing="-0.02" />
+
+    <!-- Description -->
+    <TextView
+        android:id="@+id/txtSlideDesc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:fontFamily="sans-serif-medium"
+        android:gravity="center"
+        android:textColor="#6B7280"
+        android:textSize="14sp"
+        android:lineSpacingExtra="6dp" />
+
+</LinearLayout>

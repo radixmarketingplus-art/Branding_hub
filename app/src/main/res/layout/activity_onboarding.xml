@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/surface_light">
+
+    <!-- Skip Button (Top Right) -->
+    <TextView
+        android:id="@+id/btnSkip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="48dp"
+        android:layout_marginEnd="24dp"
+        android:text="Skip"
+        android:textColor="#6B7280"
+        android:textSize="15sp"
+        android:fontFamily="sans-serif-medium"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="8dp" />
+
+    <!-- ViewPager for slides -->
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewPager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/bottomArea"
+        android:layout_below="@id/btnSkip"
+        android:layout_marginTop="16dp" />
+
+    <!-- Bottom: Dots + Next / Get Started -->
+    <LinearLayout
+        android:id="@+id/bottomArea"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:paddingBottom="40dp"
+        android:paddingHorizontal="28dp">
+
+        <!-- Dot Indicators -->
+        <LinearLayout
+            android:id="@+id/dotContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:layout_marginBottom="28dp" />
+
+        <!-- Next / Get Started Button -->
+        <TextView
+            android:id="@+id/btnNext"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:background="@drawable/bg_onboarding_btn"
+            android:text="Next"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"
+            android:fontFamily="sans-serif-bold"
+            android:gravity="center"
+            android:elevation="4dp" />
+
+    </LinearLayout>
+
+</RelativeLayout>

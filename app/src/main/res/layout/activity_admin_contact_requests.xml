@@ -4,14 +4,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?android:attr/colorBackground"
+    android:background="@color/screen_bg"
     android:fitsSystemWindows="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:paddingTop="8dp">
+        android:paddingTop="12dp">
 
         <!-- ================= TITLE ================= -->
         <TextView
@@ -19,42 +19,38 @@
             android:layout_height="wrap_content"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
-            android:paddingBottom="8dp"
+            android:paddingBottom="0dp"
             android:text="@string/title_contact_requests"
             android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="?attr/colorOnBackground"/>
+            android:fontFamily="sans-serif-black"
+            android:textColor="?attr/colorOnSurface"/>
 
         <!-- ================= TABS ================= -->
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-
+            android:layout_height="36dp"
             android:background="@android:color/transparent"
             android:elevation="0dp"
-
             app:tabMode="fixed"
             app:tabGravity="fill"
-
             app:tabIndicatorColor="@color/primary"
             app:tabIndicatorHeight="3dp"
             app:tabIndicatorFullWidth="true"
-
-            app:tabTextColor="?attr/colorOnSurface"
+            app:tabPaddingTop="0dp"
+            app:tabPaddingBottom="0dp"
+            app:tabTextColor="?attr/colorOnSurfaceVariant"
             app:tabSelectedTextColor="@color/primary"
-
             app:tabRippleColor="@null"
-
-            android:paddingTop="6dp"
-            android:paddingBottom="6dp"/>
+            android:layout_marginBottom="0dp"/>
 
         <!-- ================= CONTENT ================= -->
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/viewPager"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            android:layout_marginTop="0dp"/>
     </LinearLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

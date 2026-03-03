@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="12dp"
+    app:cardBackgroundColor="?attr/colorSurface"
+    app:strokeWidth="0dp">
+
+    <LinearLayout
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <!-- Step Counter -->
+        <TextView
+            android:id="@+id/txtStepCounter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1/5"
+            android:textColor="?attr/colorPrimary"
+            android:textSize="12sp"
+            android:fontFamily="sans-serif-bold"
+            android:letterSpacing="0.05"
+            android:layout_marginBottom="6dp" />
+
+        <!-- Title -->
+        <TextView
+            android:id="@+id/txtSpotTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="?attr/colorOnSurface"
+            android:textSize="17sp"
+            android:fontFamily="sans-serif-bold"
+            android:letterSpacing="-0.01" />
+
+        <!-- Description -->
+        <TextView
+            android:id="@+id/txtSpotDesc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:textSize="13sp"
+            android:fontFamily="sans-serif-medium"
+            android:lineSpacingExtra="4dp" />
+
+        <!-- Buttons Row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="end"
+            android:layout_marginTop="16dp">
+
+            <TextView
+                android:id="@+id/btnSpotSkip"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:gravity="center"
+                android:text="Skip"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textSize="14sp"
+                android:fontFamily="sans-serif-medium"
+                android:paddingHorizontal="16dp"
+                android:background="?attr/selectableItemBackgroundBorderless" />
+
+            <TextView
+                android:id="@+id/btnSpotNext"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:gravity="center"
+                android:text="Next"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp"
+                android:fontFamily="sans-serif-bold"
+                android:paddingHorizontal="24dp"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/bg_onboarding_btn" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

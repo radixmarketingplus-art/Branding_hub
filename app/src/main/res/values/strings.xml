@@ -785,4 +785,30 @@
     <string name="msg_notif_new_message_admin">New message from user regarding support request.</string>
     <string name="no_media_selected">No Media Selected</string>
     <string name="image_video_doc">Image, Video or Document</string>
+
+    <!-- Onboarding Walkthrough -->
+    <string name="onboard_skip">Skip</string>
+    <string name="onboard_next">Next</string>
+    <string name="onboard_get_started">Get Started</string>
+    <string name="onboard_got_it">Got it!</string>
+    <string name="onboard_title_1">Explore Templates</string>
+    <string name="onboard_desc_1">Browse hundreds of ready-made templates for festivals, business, politics, and more. New designs are added daily!</string>
+    <string name="onboard_title_2">Search &amp; Download</string>
+    <string name="onboard_desc_2">Quickly find any template using search. Download, share, or save your favorite designs in one tap.</string>
+    <string name="onboard_title_3">Create Requests</string>
+    <string name="onboard_desc_3">Need a custom design? Submit a request to our team for custom templates, advertisements, or report any issue.</string>
+    <string name="onboard_title_4">My Designs</string>
+    <string name="onboard_desc_4">All your liked, saved, and edited designs are stored in one place. Access your work anytime from My Designs.</string>
+    <string name="onboard_title_admin">Admin Dashboard</string>
+    <string name="onboard_desc_admin">Manage templates, approve subscriptions, handle user requests, and upload new content from the Admin Panel.</string>
+
+    <!-- Spotlight Onboarding Tooltips -->
+    <string name="onboard_spot_profile_title">Your Profile</string>
+    <string name="onboard_spot_profile_desc">Tap here to edit your profile, change language, manage subscription, or contact support.</string>
+    <string name="onboard_spot_search_title">Search Templates</string>
+    <string name="onboard_spot_search_desc">Quickly find any template by name or category. Search from hundreds of designs!</string>
+    <string name="onboard_spot_notif_title">Notifications</string>
+    <string name="onboard_spot_notif_desc">Stay updated! Get notified when new templates are added, or your requests are approved.</string>
+    <string name="onboard_spot_nav_title">Navigation Bar</string>
+    <string name="onboard_spot_nav_desc">Use the bottom bar to switch between Home, Templates, Contact Support, and My Designs sections.</string>
 </resources>
