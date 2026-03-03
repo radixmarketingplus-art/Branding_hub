@@ -3,7 +3,7 @@
     <!-- SHADOW/BASE (The 3D Depth) -->
     <item android:top="4dp">
         <shape>
-            <corners android:radius="30dp"/>
+            <corners android:radius="16dp"/>
             <solid android:color="#1E3A8A"/>
         </shape>
     </item>
@@ -15,7 +15,7 @@
                 android:startColor="#3B82F6"
                 android:endColor="#2563EB"
                 android:angle="45"/>
-            <corners android:radius="30dp"/>
+            <corners android:radius="16dp"/>
             <stroke
                 android:width="1dp"
                 android:color="#40FFFFFF"/>

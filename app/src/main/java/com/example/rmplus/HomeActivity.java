@@ -445,17 +445,8 @@ public class HomeActivity extends BaseActivity {
     void filterFestivalByDate(String date) {
 
         if ("CLEAR".equals(date)) {
-            if (skFestival != null) {
-                skFestival.setVisibility(View.VISIBLE);
-                startPulse(skFestival);
-            }
             loadFestivalCardsLive();
-            btnAll.setVisibility(View.GONE);
-
-            RecyclerView rvDates = findViewById(R.id.rvFestivalDates);
-            if (rvDates.getAdapter() instanceof FestivalDateAdapter) {
-                ((FestivalDateAdapter) rvDates.getAdapter()).clearSelection();
-            }
+            // Don't hide skFestival unnecessarily or hide btnAll
             return;
         }
 
@@ -861,7 +852,7 @@ public class HomeActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
 
-        loadFestivalCards(); // ok
+        loadFestivalCardsLive(); // Always load live for consistency (Replaces loadFestivalCards)
 
         loadHeroSectionLive(); // Merged loadAdvertisementLive and loadTrendingLive
 

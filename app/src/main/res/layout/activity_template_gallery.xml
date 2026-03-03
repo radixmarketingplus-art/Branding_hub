@@ -4,73 +4,102 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/screen_bg"
+    android:background="?android:colorBackground"
     android:fitsSystemWindows="true">
+
+    <!-- HEADER SECTION (COPIED FROM ADMIN PANEL) -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/screen_bg"
+        app:elevation="0dp"
+        android:outlineProvider="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:paddingHorizontal="16dp">
+
+                <ImageView
+                    android:id="@+id/btnBack"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_centerVertical="true"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_back"
+                    app:tint="?android:textColorPrimary" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:text="@string/nav_template"
+                    android:textSize="18sp"
+                    android:fontFamily="sans-serif-black"
+                    android:textColor="?android:textColorPrimary" />
+            </RelativeLayout>
+        </LinearLayout>
+    </com.google.android.material.appbar.AppBarLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:background="@color/screen_bg"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <!-- HEADER -->
-        <LinearLayout
+        <!-- FILTER TABS (MATCHING CHECK UPLOADS DESIGN) -->
+        <HorizontalScrollView
+            android:id="@+id/tabScroll"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingHorizontal="20dp"
-            android:paddingTop="20dp"
-            android:paddingBottom="12dp">
+            android:scrollbars="none"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="0dp"
+            android:paddingBottom="4dp"
+            android:clipToPadding="false">
 
-            <TextView
-                android:id="@+id/txtTitle"
+            <LinearLayout
+                android:id="@+id/filterContainer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/nav_template"
-                android:textSize="28sp"
-                android:fontFamily="sans-serif-black"
-                android:textColor="?attr/colorOnSurface"
-                android:letterSpacing="-0.02" />
+                android:orientation="horizontal" />
+        </HorizontalScrollView>
 
-            <!-- FILTER TABS -->
-            <HorizontalScrollView
-                android:id="@+id/tabScroll"
-                android:layout_width="match_parent"
+        <!-- SUB-FILTER TABS (SAME STYLE AS MAIN TABS) -->
+        <HorizontalScrollView
+            android:id="@+id/subFilterScroll"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="none"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="0dp"
+            android:paddingBottom="4dp"
+            android:clipToPadding="false"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:id="@+id/subFilterContainer"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:scrollbars="none"
-                android:layout_marginTop="16dp">
+                android:orientation="horizontal" />
+        </HorizontalScrollView>
 
-                <LinearLayout
-                    android:id="@+id/filterContainer"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:paddingVertical="4dp" />
-            </HorizontalScrollView>
-
-            <!-- SUB-FILTER TABS -->
-            <HorizontalScrollView
-                android:id="@+id/subFilterScroll"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:scrollbars="none"
-                android:layout_marginTop="8dp"
-                android:visibility="gone">
-
-                <LinearLayout
-                    android:id="@+id/subFilterContainer"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:paddingVertical="4dp" />
-            </HorizontalScrollView>
-        </LinearLayout>
-
-        <!-- GRID -->
+        <!-- GRID (MATCHING CHECK UPLOADS DESIGN) -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerTemplates"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="12dp"
+            android:padding="8dp"
+            android:paddingBottom="100dp"
             android:clipToPadding="false"
             android:overScrollMode="never" />
 

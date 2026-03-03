@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -28,6 +29,8 @@ public class UserListActivity extends AppCompatActivity {
     RecyclerView rvUsers;
     ProgressBar loader;
     TextView txtEmpty;
+    View emptyView;
+    SwipeRefreshLayout swipeRefresh;
     ArrayList<UserItem> list = new ArrayList<>();
     ArrayList<UserItem> fullList = new ArrayList<>(); // To store original data
     UserListAdapter adapter;
@@ -43,11 +46,16 @@ public class UserListActivity extends AppCompatActivity {
         rvUsers = findViewById(R.id.rvUsers);
         loader = findViewById(R.id.loader);
         txtEmpty = findViewById(R.id.txtEmpty);
+        emptyView = findViewById(R.id.emptyView);
         etSearch = findViewById(R.id.etSearch);
+        swipeRefresh = findViewById(R.id.swipeRefresh);
 
         rvUsers.setLayoutManager(new LinearLayoutManager(this));
         adapter = new UserListAdapter(this, list);
         rvUsers.setAdapter(adapter);
+
+        swipeRefresh.setOnRefreshListener(this::loadUsers);
+        swipeRefresh.setColorSchemeResources(R.color.primary);
 
         etSearch.addTextChangedListener(new TextWatcher() {
             @Override
@@ -110,11 +118,13 @@ public class UserListActivity extends AppCompatActivity {
                 }
 
                 loader.setVisibility(View.GONE);
+                swipeRefresh.setRefreshing(false);
+                
                 if (list.isEmpty()) {
-                    txtEmpty.setVisibility(View.VISIBLE);
+                    emptyView.setVisibility(View.VISIBLE);
                     rvUsers.setVisibility(View.GONE);
                 } else {
-                    txtEmpty.setVisibility(View.GONE);
+                    emptyView.setVisibility(View.GONE);
                     rvUsers.setVisibility(View.VISIBLE);
                     adapter.notifyDataSetChanged();
                 }
@@ -123,6 +133,7 @@ public class UserListActivity extends AppCompatActivity {
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 loader.setVisibility(View.GONE);
+                swipeRefresh.setRefreshing(false);
                 Toast.makeText(UserListActivity.this, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });

@@ -21,7 +21,7 @@ public class FestivalDateAdapter
 
     ArrayList<Calendar> dates;
     OnDateClickListener listener;
-    int selectedPosition = RecyclerView.NO_POSITION;
+    int selectedPosition = 0;
 
     // int todayIndex = -1;
 

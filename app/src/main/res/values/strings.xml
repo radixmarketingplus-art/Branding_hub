@@ -100,8 +100,6 @@
     <string name="title_user_info">User Information</string>
     <string name="desc_user_info">View and manage user details</string>
     <string name="title_user_details">User Details</string>
-    <string name="label_user_id">User ID: %1$s</string>
-    <string name="msg_no_users">No users found</string>
     <string name="label_city">City</string>
     <string name="label_role">Role (admin/user)</string>
     <string name="btn_open">Open</string>
@@ -109,7 +107,6 @@
     <string name="btn_check">Check</string>
     <string name="nav_search">Search</string>
     <string name="search_hint">Search templates...</string>
-    <string name="hint_search_users">Search name, email, phone or UID...</string>
     <string name="msg_no_templates">No matching templates 😕</string>
     <string name="msg_video_edit_not_supported">Video editing is not supported yet.</string>
     <string name="title_save_template">Save Template</string>
@@ -229,6 +226,11 @@
     <string name="placeholder_mobile">Mobile</string>
     <string name="placeholder_email">Email</string>
     <string name="desc_edited_template">Edited Template</string>
+    <string name="msg_template_deleted">This template has been deleted by the admin</string>
+    <string name="title_user_list">User Directory</string>
+    <string name="hint_search_users">Search name, email or mobile</string>
+    <string name="msg_no_users_directory">No users matching your search</string>
+    <string name="label_user_id">ID: %1$s</string>
 
     <!-- Headers -->
     <string name="header_account">Account</string>
@@ -772,6 +774,11 @@
     <string name="msg_support_request_sent_desc">Your support request has been submitted successfully.</string>
     <string name="title_notif_new_message">New Message</string>
     <string name="msg_notif_new_message_user">New message from Support Agent.</string>
+    <string name="title_template_preview">Template Preview</string>
+    <string name="btn_edit_now">Edit &amp; Customize Now</string>
+    <string name="btn_fav">Favorite</string>
+    <string name="btn_like">Like</string>
+    <string name="btn_share">Share</string>
     <string name="msg_notif_new_message_admin">New message from user regarding support request.</string>
     <string name="no_media_selected">No Media Selected</string>
     <string name="image_video_doc">Image, Video or Document</string>

@@ -2,67 +2,126 @@
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/cardUser"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="16dp"
-    android:layout_marginVertical="8dp"
-    app:cardCornerRadius="12dp"
-    app:cardElevation="2dp"
-    app:cardBackgroundColor="?attr/colorSurface">
+    android:layout_marginVertical="6dp"
+    app:cardCornerRadius="14dp"
+    app:cardElevation="1.5dp"
+    app:strokeWidth="1dp"
+    app:strokeColor="@color/card_stroke"
+    app:cardBackgroundColor="@color/surface_light"
+    android:foreground="?attr/selectableItemBackground">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="12dp"
         android:gravity="center_vertical">
-
-        <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/imgUser"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:scaleType="centerCrop"
-            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize50Percent"
-            android:src="@drawable/ic_profile"
-            app:strokeWidth="1dp"
-            app:strokeColor="?attr/colorOutlineVariant"/>
+        
+        <!-- SIDE ACCENT STRIP -->
+        <View
+            android:id="@+id/roleStrip"
+            android:layout_width="4dp"
+            android:layout_height="match_parent"
+            android:background="@color/primary" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginStart="16dp">
+            android:orientation="horizontal"
+            android:padding="14dp"
+            android:gravity="center_vertical">
 
-            <TextView
-                android:id="@+id/txtName"
+            <!-- USER AVATAR WITH RING -->
+            <FrameLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="User Name"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textColor="?android:textColorPrimary"/>
+                android:layout_height="wrap_content">
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/imgUser"
+                    android:layout_width="52dp"
+                    android:layout_height="52dp"
+                    android:scaleType="centerCrop"
+                    app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize50Percent"
+                    android:src="@drawable/ic_profile"
+                    app:tint="@color/primary"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="@color/card_stroke" />
+            </FrameLayout>
 
-            <TextView
-                android:id="@+id/txtEmail"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="user@email.com"
-                android:textSize="13sp"
-                android:textColor="?android:textColorSecondary"
-                android:layout_marginTop="2dp"/>
+                android:orientation="vertical"
+                android:layout_weight="1"
+                android:layout_marginStart="14dp">
 
-            <TextView
-                android:id="@+id/txtId"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="UID: 123456789"
-                android:textSize="11sp"
-                android:textColor="?android:textColorSecondary"
-                android:layout_marginTop="2dp"/>
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/txtName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_toStartOf="@id/roleBadge"
+                        android:text="User Name"
+                        android:textSize="16sp"
+                        android:fontFamily="sans-serif-bold"
+                        android:textColor="@color/text_primary"
+                        android:ellipsize="end"
+                        android:singleLine="true"/>
+
+                    <!-- ROLE BADGE -->
+                    <TextView
+                        android:id="@+id/roleBadge"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:text="USER"
+                        android:textSize="10sp"
+                        android:fontFamily="sans-serif-black"
+                        android:textColor="@color/white"
+                        android:background="@drawable/bg_role_user"
+                        android:paddingHorizontal="6dp"
+                        android:paddingVertical="2dp"
+                        android:textAllCaps="true"/>
+                </RelativeLayout>
+
+                <TextView
+                    android:id="@+id/txtEmail"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="user@email.com"
+                    android:textSize="13sp"
+                    android:fontFamily="sans-serif-medium"
+                    android:textColor="@color/text_secondary"
+                    android:layout_marginTop="1dp"
+                    android:ellipsize="end"
+                    android:singleLine="true"/>
+
+                <TextView
+                    android:id="@+id/txtMobile"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="+91 9999999999"
+                    android:textSize="12sp"
+                    android:textColor="@color/text_secondary"
+                    android:fontFamily="sans-serif"
+                    android:alpha="0.8"
+                    android:layout_marginTop="2dp"/>
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginStart="8dp"
+                android:alpha="0.3"
+                android:src="@android:drawable/ic_media_play"
+                app:tint="@color/text_secondary" />
 
         </LinearLayout>
-
     </LinearLayout>
-
 </com.google.android.material.card.MaterialCardView>

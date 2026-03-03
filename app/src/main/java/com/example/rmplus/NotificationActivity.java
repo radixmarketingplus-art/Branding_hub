@@ -3,6 +3,7 @@ package com.example.rmplus;
 import android.os.Bundle;
 import android.widget.*;
 import android.view.View;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -26,6 +27,8 @@ public class NotificationActivity extends AppCompatActivity {
     View redDot;
 
     View tabUnderline;
+    View emptyView;
+    SwipeRefreshLayout swipeRefresh;
     ArrayList<NotificationModel> list = new ArrayList<>();
     ArrayList<String> keyList = new ArrayList<>();
 
@@ -46,6 +49,11 @@ public class NotificationActivity extends AppCompatActivity {
         txtNew = findViewById(R.id.txtNew);
         txtRead = findViewById(R.id.txtRead);
         tabUnderline = findViewById(R.id.tabUnderline);
+        emptyView = findViewById(R.id.emptyView);
+        swipeRefresh = findViewById(R.id.swipeRefresh);
+
+        swipeRefresh.setOnRefreshListener(this::loadNotifications);
+        swipeRefresh.setColorSchemeResources(R.color.primary);
 
         // SAFETY CHECK
         if (FirebaseAuth.getInstance().getCurrentUser() == null) {
@@ -217,21 +225,16 @@ public class NotificationActivity extends AppCompatActivity {
         }
 
         redDot.setVisibility(hasUnread ? View.VISIBLE : View.GONE);
+        swipeRefresh.setRefreshing(false);
 
         if (list.size() == 0) {
-            list.add(new NotificationModel(
-                    null,
-                    getString(R.string.msg_no_notifications),
-                    getString(R.string.msg_no_notifications_desc),
-                    0,
-                    true,
-                    null,
-                    null,
-                    0L
-            ));
+            emptyView.setVisibility(View.VISIBLE);
+            notiList.setVisibility(View.GONE);
+        } else {
+            emptyView.setVisibility(View.GONE);
+            notiList.setVisibility(View.VISIBLE);
+            notiList.setAdapter(new NotificationAdapter(this, list));
         }
-
-        notiList.setAdapter(new NotificationAdapter(this, list));
     }
 
     private NotificationModel parseNotification(DataSnapshot d, boolean isBroadcast) {
@@ -342,20 +345,16 @@ public class NotificationActivity extends AppCompatActivity {
 
     private void moveUnderline(View tab) {
         tab.post(() -> {
-
             int tabWidth = tab.getWidth();
             int tabLeft = tab.getLeft();
 
-            LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) tabUnderline.getLayoutParams();
-
+            android.widget.FrameLayout.LayoutParams params = (android.widget.FrameLayout.LayoutParams) tabUnderline.getLayoutParams();
             params.width = tabWidth;
-            params.leftMargin = tabLeft;
-
             tabUnderline.setLayoutParams(params);
 
             tabUnderline.animate()
-                    .x(tabLeft)
-                    .setDuration(200)
+                    .translationX(tabLeft)
+                    .setDuration(250)
                     .start();
         });
     }

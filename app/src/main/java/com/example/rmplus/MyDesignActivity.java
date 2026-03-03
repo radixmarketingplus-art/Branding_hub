@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.*;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -26,6 +27,7 @@ public class MyDesignActivity extends BaseActivity {
 
     TextView txtLikes, txtFav, txtEdits, txtSaved;
     View tabUnderline;
+    ProgressBar progress;
 
     TemplateGridAdapter adapter;
     ArrayList<TemplateModel> list = new ArrayList<>();
@@ -47,6 +49,7 @@ public class MyDesignActivity extends BaseActivity {
 
         setupBase(role, R.id.myDesign);
 
+        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
         txtTitle = findViewById(R.id.txtTitle);
         recycler = findViewById(R.id.recycler);
 
@@ -56,6 +59,7 @@ public class MyDesignActivity extends BaseActivity {
         txtSaved = findViewById(R.id.txtSaved);
 
         tabUnderline = findViewById(R.id.tabUnderline);
+        progress = findViewById(R.id.progress);
 
         ViewCompat.setOnApplyWindowInsetsListener(bottomNav, (view, insets) -> {
 
@@ -70,9 +74,9 @@ public class MyDesignActivity extends BaseActivity {
             return insets;
         });
 
-        recycler.setLayoutManager(new GridLayoutManager(this, 2));
+        recycler.setLayoutManager(new GridLayoutManager(this, 3));
 
-        adapter = new TemplateGridAdapter(list, t -> {
+        adapter = new TemplateGridAdapter(list, R.layout.item_grid_square, t -> {
             Intent i = new Intent(this, TemplatePreviewActivity.class);
             i.putExtra("id", t.id);
             i.putExtra("path", t.url);
@@ -158,25 +162,51 @@ public class MyDesignActivity extends BaseActivity {
     }
 
     void loadTemplates() {
-        rootRef.child("user_activity")
-                .child(uid)
-                .child(currentType)
+        if (progress != null) progress.setVisibility(View.VISIBLE);
+
+        // 🟢 STEP 1: LOAD INSTANTLY (Very Fast)
+        rootRef.child("user_activity").child(uid).child(currentType)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot snapshot) {
-                        list.clear();
-                        for (DataSnapshot snap : snapshot.getChildren()) {
-                            String templateId = snap.getKey();
-                            String url = snap.getValue(String.class);
-                            if (templateId != null && url != null) {
-                                list.add(new TemplateModel(templateId, url, "MyDesign"));
-                            }
-                        }
-                        adapter.setData(list);
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                list.clear();
+                for (DataSnapshot snap : snapshot.getChildren()) {
+                    String templateId = snap.getKey();
+                    String url = snap.getValue(String.class);
+                    if (templateId != null && url != null) {
+                        list.add(new TemplateModel(templateId, url, "MyDesign"));
                     }
- 
-                    @Override public void onCancelled(DatabaseError error) {}
-                });
+                }
+                
+                // Show items immediately
+                adapter.setData(list);
+                if (progress != null) progress.setVisibility(View.GONE);
+
+                // 🟢 STEP 2: BACKGROUND CLEANUP
+                validateAndClean(new ArrayList<>(list));
+            }
+
+            @Override public void onCancelled(@NonNull DatabaseError error) {
+                if (progress != null) progress.setVisibility(View.GONE);
+            }
+        });
+    }
+
+    private void validateAndClean(ArrayList<TemplateModel> currentList) {
+        DatabaseReference templatesRef = rootRef.child("templates");
+        DatabaseReference userRef = rootRef.child("user_activity").child(uid).child(currentType);
+
+        for (TemplateModel model : currentList) {
+            // Check each ID asynchronously in the background
+            rootRef.child("template_activity").child(model.id).get().addOnSuccessListener(snapshot -> {
+                if (!snapshot.exists()) {
+                    // 🧹 Delete silently from UI and DB if missing
+                    userRef.child(model.id).removeValue();
+                    list.removeIf(item -> item.id.equals(model.id));
+                    adapter.notifyDataSetChanged();
+                }
+            });
+        }
     }
 
     private int getColorFromAttr(int attr) {

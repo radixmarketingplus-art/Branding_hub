@@ -53,6 +53,8 @@ public class TemplateGalleryActivity extends BaseActivity {
 
         setupBase(role, R.id.template);
 
+        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
+
         recycler = findViewById(R.id.recyclerTemplates);
         filterContainer = findViewById(R.id.filterContainer);
         subFilterContainer = findViewById(R.id.subFilterContainer);
@@ -76,7 +78,7 @@ public class TemplateGalleryActivity extends BaseActivity {
                 new GridLayoutManager(this, 3)
         );
 
-        adapter = new TemplateGridAdapter(allTemplatesModel, template -> {
+        adapter = new TemplateGridAdapter(allTemplatesModel, R.layout.item_grid_square, template -> {
 
             Intent i = new Intent(
                     TemplateGalleryActivity.this,

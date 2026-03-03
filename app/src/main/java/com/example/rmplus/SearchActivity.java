@@ -28,6 +28,7 @@ public class SearchActivity extends AppCompatActivity {
     ImageButton btnSearch, btnMic, btnClear;
     RecyclerView recycler;
     TextView txtEmpty;
+    View emptyView;
 
     TemplateGridAdapter adapter;
     ArrayList<TemplateSearchItem> allTemplates = new ArrayList<>();
@@ -43,14 +44,16 @@ public class SearchActivity extends AppCompatActivity {
         btnClear = findViewById(R.id.btnClear);
         recycler = findViewById(R.id.recyclerSearch);
         txtEmpty = findViewById(R.id.txtEmpty);
+        emptyView = findViewById(R.id.emptyView);
 
         findViewById(R.id.btnBack).setOnClickListener(v -> finish());
 
         recycler.setLayoutManager(
-                new GridLayoutManager(this, 2));
+                new GridLayoutManager(this, 3));
 
         adapter = new TemplateGridAdapter(
                 new ArrayList<>(),
+                R.layout.item_grid_square,
                 this::openPreview);
         recycler.setAdapter(adapter);
 
@@ -65,10 +68,17 @@ public class SearchActivity extends AppCompatActivity {
             public void beforeTextChanged(CharSequence s, int a, int b, int c) {
             }
 
+            @Override
             public void onTextChanged(CharSequence s, int a, int b, int c) {
+                if (s.length() > 0) {
+                    btnClear.setVisibility(View.VISIBLE);
+                } else {
+                    btnClear.setVisibility(View.GONE);
+                }
                 performSearch();
             }
 
+            @Override
             public void afterTextChanged(Editable e) {
             }
         });
@@ -81,7 +91,8 @@ public class SearchActivity extends AppCompatActivity {
 
         if (q.isEmpty()) {
             adapter.setData(new ArrayList<>());
-            txtEmpty.setVisibility(View.GONE);
+            emptyView.setVisibility(View.GONE);
+            recycler.setVisibility(View.VISIBLE);
             return;
         }
 
@@ -100,7 +111,13 @@ public class SearchActivity extends AppCompatActivity {
         }
 
         adapter.setData(result);
-        txtEmpty.setVisibility(result.isEmpty() ? View.VISIBLE : View.GONE);
+        if (result.isEmpty()) {
+            emptyView.setVisibility(View.VISIBLE);
+            recycler.setVisibility(View.GONE);
+        } else {
+            emptyView.setVisibility(View.GONE);
+            recycler.setVisibility(View.VISIBLE);
+        }
     }
 
     private String makeSafeKey(String s) {
@@ -128,7 +145,8 @@ public class SearchActivity extends AppCompatActivity {
     void clearSearch() {
         edtSearch.setText("");
         adapter.setData(new ArrayList<>());
-        txtEmpty.setVisibility(View.GONE);
+        emptyView.setVisibility(View.GONE);
+        recycler.setVisibility(View.VISIBLE);
     }
 
     // --------------------------------------

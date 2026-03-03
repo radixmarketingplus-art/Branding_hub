@@ -47,7 +47,7 @@ public class ManageTemplatesActivity extends AppCompatActivity {
     LinearLayout btnText, btnGallery, btnFrame, btnBgColorTool;
     LinearLayout textLayerControlsLayout, imageLayerControlsLayout;
     TextView btnTabNormalFrame, btnTabBusinessFrame;
-    LinearLayout textControls, imageControls, frameControls;
+    com.google.android.material.card.MaterialCardView textControls, imageControls, frameControls;
     FrameLayout dynamicFrameContainer;
     RecyclerView rvFrames;
     String uName, uMobile, uEmail, uProfileUrl;
@@ -704,6 +704,18 @@ public class ManageTemplatesActivity extends AppCompatActivity {
 
                     i.setImageTintList(null); // remove tint
                     Glide.with(ManageTemplatesActivity.this).load(item.imageUrl).into(i);
+                } else if (item.layoutId != -1) {
+                    t.setVisibility(View.GONE);
+                    i.setLayoutParams(new LinearLayout.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.MATCH_PARENT));
+                    i.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                    ((LinearLayout) i.getParent()).setPadding(0, 0, 0, 0);
+
+                    i.setImageTintList(null); // remove tint
+                    
+                    Bitmap previewBmp = createFramePreview(item.layoutId);
+                    i.setImageBitmap(previewBmp);
                 } else {
                     t.setVisibility(View.VISIBLE);
                     t.setText(item.title);
@@ -748,6 +760,46 @@ public class ManageTemplatesActivity extends AppCompatActivity {
         android.util.TypedValue typedValue = new android.util.TypedValue();
         getTheme().resolveAttribute(attr, typedValue, true);
         return typedValue.data;
+    }
+
+    private Bitmap createFramePreview(int designNum) {
+        int layoutId = R.layout.frame_design_1;
+        if (designNum == 2) layoutId = R.layout.frame_design_2;
+        if (designNum == 3) layoutId = R.layout.frame_design_3;
+
+        View frameView = getLayoutInflater().inflate(layoutId, null, false);
+
+        TextView tName = frameView.findViewById(R.id.frame_name);
+        TextView tMobile = frameView.findViewById(R.id.frame_mobile);
+        TextView tEmail = frameView.findViewById(R.id.frame_email);
+        ImageView iLogo = frameView.findViewById(R.id.frame_logo);
+
+        if (uName != null && !uName.isEmpty()) tName.setText(uName);
+        else if (tName != null) tName.setVisibility(View.GONE);
+            
+        if (uMobile != null && !uMobile.isEmpty()) tMobile.setText(uMobile);
+        else if (tMobile != null) tMobile.setVisibility(View.GONE);
+            
+        if (uEmail != null && !uEmail.isEmpty()) tEmail.setText(uEmail);
+        else if (tEmail != null) tEmail.setVisibility(View.GONE);
+
+        if (iLogo != null) {
+            iLogo.setVisibility(View.GONE); 
+        }
+
+        int sizePx = 1080;
+        int measureSpec = View.MeasureSpec.makeMeasureSpec(sizePx, View.MeasureSpec.EXACTLY);
+        frameView.measure(measureSpec, measureSpec);
+        frameView.layout(0, 0, sizePx, sizePx);
+
+        Bitmap bitmap = Bitmap.createBitmap(sizePx, sizePx, Bitmap.Config.ARGB_8888);
+        android.graphics.Canvas c = new android.graphics.Canvas(bitmap);
+        
+        c.drawColor(android.graphics.Color.parseColor("#E0E0E0")); 
+        
+        frameView.draw(c);
+
+        return bitmap;
     }
 
     private void applyDynamicFrame(int designNum) {

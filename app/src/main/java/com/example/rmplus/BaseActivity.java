@@ -59,7 +59,7 @@ public class BaseActivity extends AppCompatActivity {
                                 } else {
                                     btnProfile.setImageResource(R.drawable.ic_profile);
                                     btnProfile.setImageTintList(android.content.res.ColorStateList
-                                            .valueOf(getResources().getColor(R.color.primary)));
+                                            .valueOf(androidx.core.content.ContextCompat.getColor(BaseActivity.this, R.color.primary)));
                                 }
                             }
 
@@ -134,22 +134,22 @@ public class BaseActivity extends AppCompatActivity {
 
                 if (id == R.id.home) {
                     startActivity(new Intent(this, HomeActivity.class));
-                    overridePendingTransition(R.anim.nav_fade_in, R.anim.nav_fade_out);
+                    applyTransition();
                 } else if (id == R.id.contact) {
                     startActivity(new Intent(this, ContactActivity.class));
-                    overridePendingTransition(R.anim.nav_fade_in, R.anim.nav_fade_out);
+                    applyTransition();
                 } else if (id == R.id.admin) {
                     startActivity(new Intent(this, AdminPanelActivity.class));
-                    overridePendingTransition(R.anim.nav_fade_in, R.anim.nav_fade_out);
+                    applyTransition();
                 } else if (id == R.id.upload) {
                     startActivity(new Intent(this, UploadTemplatesActivity.class));
-                    overridePendingTransition(R.anim.nav_fade_in, R.anim.nav_fade_out);
+                    applyTransition();
                 } else if (id == R.id.template) {
                     startActivity(new Intent(this, TemplateGalleryActivity.class));
-                    overridePendingTransition(R.anim.nav_fade_in, R.anim.nav_fade_out);
+                    applyTransition();
                 } else if (id == R.id.myDesign) {
                     startActivity(new Intent(this, MyDesignActivity.class));
-                    overridePendingTransition(R.anim.nav_fade_in, R.anim.nav_fade_out);
+                    applyTransition();
                 }
                 return true;
             });
@@ -206,5 +206,14 @@ public class BaseActivity extends AppCompatActivity {
         if (status.equalsIgnoreCase("rejected"))
             return getString(R.string.tab_rejected);
         return status;
+    }
+
+    @SuppressWarnings("deprecation")
+    protected void applyTransition() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            overrideActivityTransition(OVERRIDE_TRANSITION_OPEN, R.anim.nav_fade_in, R.anim.nav_fade_out);
+        } else {
+            overridePendingTransition(R.anim.nav_fade_in, R.anim.nav_fade_out);
+        }
     }
 }

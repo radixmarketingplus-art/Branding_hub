@@ -2,131 +2,97 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    android:background="@color/screen_bg">
+    android:background="@color/screen_bg"
+    android:fitsSystemWindows="true">
 
-    <LinearLayout
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/screen_bg"
+        app:elevation="0dp"
+        android:outlineProvider="none">
+
+        <!-- HEADER (MATCHING ADMIN PANEL/GALLERY) -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="64dp">
+
+            <ImageView
+                android:id="@+id/btnBack"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="16dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:padding="8dp"
+                android:src="@drawable/ic_back"
+                app:tint="@color/text_primary" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="@string/title_template_preview"
+                android:textSize="18sp"
+                android:fontFamily="sans-serif-black"
+                android:textColor="@color/text_primary" />
+
+            <!-- SEARCH QUICK LINK -->
+            <ImageView
+                android:id="@+id/btnSearch"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="16dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:padding="8dp"
+                android:src="@android:drawable/ic_menu_search"
+                app:tint="@color/text_primary" />
+        </RelativeLayout>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:fillViewport="true"
+        android:overScrollMode="never"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <!-- TOP BAR -->
-        <com.google.android.material.card.MaterialCardView
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="64dp"
-            app:cardCornerRadius="0dp"
-            app:cardElevation="4dp"
-            app:strokeWidth="0dp"
-            app:cardBackgroundColor="?attr/colorSurface">
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="40dp">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:paddingHorizontal="12dp">
-
-                <ImageButton
-                    android:id="@+id/btnBack"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:src="@drawable/ic_back"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    app:tint="?attr/colorOnSurface"
-                    android:padding="12dp"
-                    android:visibility="gone" /> <!-- Just in case -->
-
-                <View android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" />
-
-                <ImageButton
-                    android:id="@+id/btnSearch"
-                    android:layout_width="44dp"
-                    android:layout_height="44dp"
-                    android:src="@android:drawable/ic_menu_search"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    app:tint="?attr/colorOnSurface"
-                    android:padding="10dp" />
-
-                <ImageButton
-                    android:id="@+id/btnLike"
-                    android:layout_width="44dp"
-                    android:layout_height="44dp"
-                    android:src="@android:drawable/btn_star_big_off"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    app:tint="?attr/colorOnSurface"
-                    android:padding="10dp" />
-
-                <ImageButton
-                    android:id="@+id/btnFav"
-                    android:layout_width="44dp"
-                    android:layout_height="44dp"
-                    android:src="@android:drawable/btn_star"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    app:tint="?attr/colorOnSurface"
-                    android:padding="10dp" />
-
-                <ImageButton
-                    android:id="@+id/btnShare"
-                    android:layout_width="44dp"
-                    android:layout_height="44dp"
-                    android:src="@android:drawable/ic_menu_share"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    app:tint="?attr/colorOnSurface"
-                    android:padding="10dp" />
-
-                <ImageButton
-                    android:id="@+id/btnEdit"
-                    android:layout_width="44dp"
-                    android:layout_height="44dp"
-                    android:src="@android:drawable/ic_menu_edit"
-                    android:background="@drawable/shape_circle"
-                    android:backgroundTint="?attr/colorPrimary"
-                    app:tint="@color/white"
-                    android:padding="11dp"
-                    android:layout_marginStart="4dp" />
-
-                <ImageButton
-                    android:id="@+id/btnSave"
-                    android:layout_width="44dp"
-                    android:layout_height="44dp"
-                    android:src="@android:drawable/ic_menu_save"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    app:tint="?attr/colorOnSurface"
-                    android:padding="10dp"
-                    android:layout_marginStart="4dp" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- PREVIEW AREA -->
-        <FrameLayout
-            android:id="@+id/previewContainer"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:padding="20dp">
-
+            <!-- PREVIEW AREA (The Top Hero) -->
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/previewContainer"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="32dp"
                 app:cardCornerRadius="24dp"
-                app:cardElevation="2dp"
-                app:strokeWidth="1dp"
-                app:strokeColor="#0D000000"
+                app:cardElevation="8dp"
+                app:strokeWidth="1.5dp"
+                app:strokeColor="@color/card_stroke"
                 app:cardBackgroundColor="@color/surface_light">
 
                 <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:padding="16dp">
+                    android:layout_height="wrap_content"
+                    android:minHeight="340dp">
 
                     <ImageView
                         android:id="@+id/imgPreview"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
+                        android:adjustViewBounds="true"
                         android:scaleType="fitCenter" />
-
 
                     <VideoView
                         android:id="@+id/vPreview"
@@ -143,39 +109,209 @@
                         android:src="@android:drawable/ic_media_play"
                         android:alpha="0.8"
                         app:tint="@color/white"
+                        android:background="@drawable/shape_circle"
+                        android:backgroundTint="#80000000"
+                        android:padding="16dp"
                         android:visibility="gone" />
                 </FrameLayout>
             </com.google.android.material.card.MaterialCardView>
-        </FrameLayout>
 
-        <!-- SIMILAR SECTION -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingTop="12dp">
-
-            <TextView
+            <!-- TEMPLATE INFO (Standard Section) -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/title_similar_templates"
-                android:fontFamily="sans-serif-black"
-                android:textSize="20sp"
-                android:textColor="?attr/colorOnSurface"
+                android:orientation="vertical"
                 android:paddingHorizontal="24dp"
-                android:layout_marginBottom="12dp"
-                android:letterSpacing="-0.01" />
+                android:layout_marginBottom="24dp">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvSimilar"
+                <TextView
+                    android:id="@+id/txtCategory"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Festival Greetings"
+                    android:fontFamily="sans-serif-black"
+                    android:textSize="22sp"
+                    android:textColor="@color/text_primary"
+                    android:letterSpacing="-0.01" />
+            </LinearLayout>
+
+            <!-- MAIN ACTION: EDIT/CUSTOMIZE (Standard Section) -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnEdit"
                 android:layout_width="match_parent"
-                android:layout_height="240dp"
-                android:clipToPadding="false"
-                android:paddingHorizontal="20dp"
-                android:paddingBottom="24dp"
-                android:overScrollMode="never" />
+                android:layout_height="64dp"
+                android:layout_marginHorizontal="24dp"
+                android:text="@string/btn_edit_now"
+                android:textSize="16sp"
+                android:fontFamily="sans-serif-black"
+                app:cornerRadius="16dp"
+                app:icon="@android:drawable/ic_menu_edit"
+                app:iconSize="20dp"
+                app:iconPadding="10dp"
+                app:iconGravity="textStart"
+                android:layout_marginBottom="24dp"
+                app:backgroundTint="@null"
+                android:background="@drawable/bg_3d_gradient_button_16"
+                android:textColor="@color/white"
+                app:elevation="0dp" />
+
+            <!-- QUICK ACTIONS ROW (Standard Section) -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:paddingHorizontal="24dp"
+                android:layout_marginBottom="40dp">
+
+                <!-- [Actions remain same as before] -->
+                <LinearLayout
+                    android:id="@+id/btnFav"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?attr/selectableItemBackground">
+                    <ImageView
+                        android:id="@+id/imgFav"
+                        android:layout_width="26dp"
+                        android:layout_height="26dp"
+                        android:src="@android:drawable/btn_star_big_off"
+                        app:tint="@color/text_secondary" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/btn_fav"
+                        android:textSize="12sp"
+                        android:fontFamily="sans-serif-bold"
+                        android:textColor="@color/text_secondary"
+                        android:layout_marginTop="4dp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/btnLike"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?attr/selectableItemBackground">
+                    <ImageView
+                        android:id="@+id/imgLike"
+                        android:layout_width="26dp"
+                        android:layout_height="26dp"
+                        android:src="@drawable/ic_heart"
+                        app:tint="@color/text_secondary" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/btn_like"
+                        android:textSize="12sp"
+                        android:fontFamily="sans-serif-bold"
+                        android:textColor="@color/text_secondary"
+                        android:layout_marginTop="4dp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/btnShare"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?attr/selectableItemBackground">
+                    <ImageView
+                        android:layout_width="26dp"
+                        android:layout_height="26dp"
+                        android:src="@drawable/ic_share_modern"
+                        app:tint="@color/text_secondary" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/btn_share"
+                        android:textSize="12sp"
+                        android:fontFamily="sans-serif-bold"
+                        android:textColor="@color/text_secondary"
+                        android:layout_marginTop="4dp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/btnSave"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?attr/selectableItemBackground">
+                    <ImageView
+                        android:layout_width="26dp"
+                        android:layout_height="26dp"
+                        android:src="@drawable/ic_download_modern"
+                        app:tint="@color/text_secondary" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/btn_save"
+                        android:textSize="12sp"
+                        android:fontFamily="sans-serif-bold"
+                        android:textColor="@color/text_secondary"
+                        android:layout_marginTop="4dp" />
+                </LinearLayout>
+            </LinearLayout>
 
         </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- BOTTOM SHEET: SIMILAR TEMPLATES (Google Image Style) -->
+    <LinearLayout
+        android:id="@+id/bottomSheetSimilar"
+        android:layout_width="match_parent"
+        android:layout_height="450dp"
+        android:background="@drawable/bg_premium_panel_top_rounded"
+        android:orientation="vertical"
+        android:elevation="16dp"
+        app:behavior_peekHeight="140dp"
+        app:behavior_hideable="false"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+
+        <!-- GRABBER FOR SHEET -->
+        <View
+            android:layout_width="40dp"
+            android:layout_height="4dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp"
+            android:background="#30808080" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/title_similar_templates"
+            android:fontFamily="sans-serif-black"
+            android:textSize="18sp"
+            android:textColor="@color/text_primary"
+            android:paddingHorizontal="24dp"
+            android:layout_marginBottom="16dp"
+            android:letterSpacing="-0.01" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvSimilar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingHorizontal="16dp"
+            android:paddingBottom="40dp"
+            android:nestedScrollingEnabled="true"
+            android:overScrollMode="never" />
 
     </LinearLayout>
 

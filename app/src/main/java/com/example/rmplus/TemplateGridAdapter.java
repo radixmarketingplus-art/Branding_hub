@@ -61,8 +61,9 @@ public class TemplateGridAdapter
         // 🔥 Load from URL or local automatically
         Glide.with(h.img.getContext())
                 .load(template.url)
-                .placeholder(R.drawable.ic_launcher_foreground)
-                .error(R.drawable.ic_launcher_foreground)
+                .placeholder(android.R.drawable.ic_menu_gallery)
+                .error(android.R.drawable.ic_menu_report_image)
+                .centerCrop()
                 .into(h.img);
 
         // 📅 SHOW DATE IF AVAILABLE (For Festival Cards)

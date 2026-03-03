@@ -11,6 +11,7 @@ import android.provider.MediaStore;
 import android.util.Base64;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
@@ -36,11 +37,13 @@ import android.widget.FrameLayout;
 public class TemplatePreviewActivity extends AppCompatActivity {
 
     ImageView img;
-    ImageButton btnLike, btnShare, btnEdit, btnSave;
-    ImageButton btnSearch, btnFav;
-    ImageView imgPlayIcon;
+    View btnLike, btnShare, btnSave, btnFav;
+    com.google.android.material.button.MaterialButton btnEdit;
+    ImageView btnSearch, btnBack;
+    ImageView imgPlayIcon, imgLike, imgFav;
     android.widget.VideoView videoView;
     RecyclerView rvSimilar;
+    TextView txtCategory;
 
     String path;
     String category;
@@ -66,9 +69,13 @@ public class TemplatePreviewActivity extends AppCompatActivity {
         btnFav = findViewById(R.id.btnFav);
         btnSave = findViewById(R.id.btnSave);
         imgPlayIcon = findViewById(R.id.imgPlayIcon);
+        imgLike = findViewById(R.id.imgLike);
+        imgFav = findViewById(R.id.imgFav);
         videoView = findViewById(R.id.vPreview);
         rvSimilar = findViewById(R.id.rvSimilar);
         previewContainer = findViewById(R.id.previewContainer);
+        txtCategory = findViewById(R.id.txtCategory);
+        btnBack = findViewById(R.id.btnBack);
 
         uid = FirebaseAuth.getInstance().getUid();
 
@@ -135,6 +142,15 @@ public class TemplatePreviewActivity extends AppCompatActivity {
                     if (found || path != null) {
                         initUI();
                     } else {
+                        // 🧹 SELF-CLEANING: If template is deleted from main nodes,
+                        // remove it from user's history too to avoid "blank" items.
+                        if (uid != null) {
+                            String[] types = {"likes", "favorites", "edits", "saves"};
+                            for (String type : types) {
+                                rootRef.child("user_activity").child(uid).child(type).child(templateId).removeValue();
+                            }
+                        }
+                        Toast.makeText(TemplatePreviewActivity.this, R.string.msg_template_deleted, Toast.LENGTH_SHORT).show();
                         finish();
                     }
                 }
@@ -192,6 +208,9 @@ public class TemplatePreviewActivity extends AppCompatActivity {
                 .placeholder(R.drawable.ic_launcher_foreground)
                 .error(R.drawable.ic_launcher_foreground)
                 .into(img);
+
+        btnBack.setOnClickListener(v -> finish());
+        txtCategory.setText(category != null ? category : "Visual Design");
 
         // FULL SCREEN PREVIEW / VIDEO PLAY
         img.setOnClickListener(v -> {
@@ -286,7 +305,7 @@ public class TemplatePreviewActivity extends AppCompatActivity {
                         }
 
                         rvSimilar.setLayoutManager(new GridLayoutManager(TemplatePreviewActivity.this, 3));
-                        TemplateGridAdapter adapter = new TemplateGridAdapter(list, t -> {
+                        TemplateGridAdapter adapter = new TemplateGridAdapter(list, R.layout.item_grid_square, t -> {
                             Intent i = new Intent(TemplatePreviewActivity.this, TemplatePreviewActivity.class);
                             i.putExtra("id", t.id);
                             i.putExtra("path", t.url);
@@ -317,7 +336,7 @@ public class TemplatePreviewActivity extends AppCompatActivity {
                             public void onDataChange(DataSnapshot s) {
                                 if (s.exists()) {
                                     isLiked = true;
-                                    btnLike.setColorFilter(Color.RED);
+                                    imgLike.setColorFilter(Color.RED);
                                 }
                             }
 
@@ -336,7 +355,7 @@ public class TemplatePreviewActivity extends AppCompatActivity {
                             public void onDataChange(DataSnapshot s) {
                                 if (s.exists()) {
                                     isFav = true;
-                                    btnFav.setColorFilter(Color.YELLOW);
+                                    imgFav.setColorFilter(Color.YELLOW);
                                 }
                             }
 
@@ -352,7 +371,7 @@ public class TemplatePreviewActivity extends AppCompatActivity {
         isLiked = !isLiked;
 
         if (isLiked) {
-            btnLike.setColorFilter(Color.RED);
+            imgLike.setColorFilter(Color.RED);
 
             rootRef.child("template_activity")
                     .child(templateId)
@@ -367,7 +386,7 @@ public class TemplatePreviewActivity extends AppCompatActivity {
                     .setValue(path);
 
         } else {
-            btnLike.clearColorFilter();
+            imgLike.clearColorFilter();
 
             rootRef.child("template_activity")
                     .child(templateId)
@@ -388,7 +407,7 @@ public class TemplatePreviewActivity extends AppCompatActivity {
         isFav = !isFav;
 
         if (isFav) {
-            btnFav.setColorFilter(Color.YELLOW);
+            imgFav.setColorFilter(Color.YELLOW);
 
             rootRef.child("template_activity")
                     .child(templateId)
@@ -403,7 +422,7 @@ public class TemplatePreviewActivity extends AppCompatActivity {
                     .setValue(path);
 
         } else {
-            btnFav.clearColorFilter();
+            imgFav.clearColorFilter();
 
             rootRef.child("template_activity")
                     .child(templateId)
