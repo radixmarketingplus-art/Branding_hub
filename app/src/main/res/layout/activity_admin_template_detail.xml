@@ -36,6 +36,29 @@
                 app:layout_collapseParallaxMultiplier="0.7"
                 tools:src="@drawable/bg_placeholder" />
 
+            <!-- PLAY ICON FOR VIDEO -->
+            <FrameLayout
+                android:id="@+id/layPlay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:visibility="gone"
+                app:layout_collapseMode="parallax">
+
+                <View
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/bg_play_glass"/>
+
+                <ImageView
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_play_arrow_filled"
+                    android:tint="#FFFFFF"/>
+            </FrameLayout>
+
             <!-- Gradient Overlay for readability -->
             <View
                 android:layout_width="match_parent"

@@ -40,10 +40,15 @@ public class TemplatePreviewActivity extends AppCompatActivity {
     View btnLike, btnShare, btnSave, btnFav;
     com.google.android.material.button.MaterialButton btnEdit;
     ImageView btnSearch, btnBack;
-    ImageView imgPlayIcon, imgLike, imgFav;
+    ImageView imgLike, imgFav;
+    View layPlay, previewBottomShadow;
     android.widget.VideoView videoView;
     RecyclerView rvSimilar;
     TextView txtCategory;
+    ViewGroup.LayoutParams params;
+
+    FrameLayout progressOverlay;
+    TextView txtProgressTitle, txtProgressSub;
 
     String path;
     String category;
@@ -68,7 +73,8 @@ public class TemplatePreviewActivity extends AppCompatActivity {
         btnSearch = findViewById(R.id.btnSearch);
         btnFav = findViewById(R.id.btnFav);
         btnSave = findViewById(R.id.btnSave);
-        imgPlayIcon = findViewById(R.id.imgPlayIcon);
+        layPlay = findViewById(R.id.layPlay);
+        previewBottomShadow = findViewById(R.id.previewBottomShadow);
         imgLike = findViewById(R.id.imgLike);
         imgFav = findViewById(R.id.imgFav);
         videoView = findViewById(R.id.vPreview);
@@ -76,6 +82,11 @@ public class TemplatePreviewActivity extends AppCompatActivity {
         previewContainer = findViewById(R.id.previewContainer);
         txtCategory = findViewById(R.id.txtCategory);
         btnBack = findViewById(R.id.btnBack);
+        params = previewContainer.getLayoutParams();
+
+        progressOverlay = findViewById(R.id.progressOverlay);
+        txtProgressTitle = findViewById(R.id.txtProgressTitle);
+        txtProgressSub = findViewById(R.id.txtProgressSub);
 
         uid = FirebaseAuth.getInstance().getUid();
 
@@ -126,6 +137,7 @@ public class TemplatePreviewActivity extends AppCompatActivity {
                                     category = catSnap.getKey() + "/" + subSnap.getKey();
                                     found = true;
                                     DataSnapshot item = subSnap.child(templateId);
+                                    String type = item.child("type").getValue(String.class);
                                     if (path == null) {
                                         path = item.hasChild("imagePath")
                                                 ? item.child("imagePath").getValue(String.class)
@@ -197,10 +209,21 @@ public class TemplatePreviewActivity extends AppCompatActivity {
                 (path != null && (path.toLowerCase().endsWith(".mp4") || path.toLowerCase().endsWith(".webm")));
 
         if (isVideo) {
-            imgPlayIcon.setVisibility(android.view.View.VISIBLE);
+            layPlay.setVisibility(android.view.View.VISIBLE);
+            previewBottomShadow.setVisibility(android.view.View.VISIBLE);
+//            btnEdit.setVisibility(android.view.View.GONE); // 🚫 HIDE EDIT OPTION FOR VIDEOS
+            btnShare.setVisibility(android.view.View.GONE); // 🚫 HIDE SHARE OPTION FOR VIDEOS
+            // 🎬 Fixed height for Video
+            params.height = (int) android.util.TypedValue.applyDimension(android.util.TypedValue.COMPLEX_UNIT_DIP, 380, getResources().getDisplayMetrics());
         } else {
-            imgPlayIcon.setVisibility(android.view.View.GONE);
+            layPlay.setVisibility(android.view.View.GONE);
+            previewBottomShadow.setVisibility(android.view.View.GONE);
+            btnEdit.setVisibility(android.view.View.VISIBLE); // ✅ SHOW EDIT OPTION FOR IMAGES
+            btnShare.setVisibility(android.view.View.VISIBLE); // ✅ SHOW SHARE OPTION FOR IMAGES
+            // 🖼️ Dynamic height for Image
+            params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
         }
+        previewContainer.setLayoutParams(params);
 
         // MAIN IMAGE
         Glide.with(this)
@@ -223,7 +246,7 @@ public class TemplatePreviewActivity extends AppCompatActivity {
             }
         });
 
-        imgPlayIcon.setOnClickListener(v -> playVideo());
+        layPlay.setOnClickListener(v -> playVideo());
 
         loadLikeStatus();
         loadFavoriteStatus();
@@ -240,12 +263,6 @@ public class TemplatePreviewActivity extends AppCompatActivity {
 
         // EDIT
         btnEdit.setOnClickListener(v -> {
-
-            if (isVideo) {
-                toast(getString(R.string.msg_video_edit_not_supported));
-                return;
-            }
-
             rootRef.child("template_activity")
                     .child(templateId)
                     .child("edits")
@@ -261,6 +278,7 @@ public class TemplatePreviewActivity extends AppCompatActivity {
             Intent i = new Intent(this, ManageTemplatesActivity.class);
             i.putExtra("uri", path);
             i.putExtra("category", category);
+            i.putExtra("isVideo", isVideo());
             startActivity(i);
         });
 
@@ -300,7 +318,8 @@ public class TemplatePreviewActivity extends AppCompatActivity {
                             }
 
                             if (itemPath != null && !d.getKey().equals(templateId)) {
-                                list.add(new TemplateModel(d.getKey(), itemPath, category));
+                                String type = d.child("type").getValue(String.class);
+                                list.add(new TemplateModel(d.getKey(), itemPath, category, null, type));
                             }
                         }
 
@@ -488,7 +507,7 @@ public class TemplatePreviewActivity extends AppCompatActivity {
 
     void saveImage() {
         if (isVideo()) {
-            toast(getString(R.string.msg_video_download_not_supported));
+            handleVideoAction(false);
             return;
         }
 
@@ -532,7 +551,8 @@ public class TemplatePreviewActivity extends AppCompatActivity {
             return;
         videoView.setVisibility(android.view.View.VISIBLE);
         img.setVisibility(android.view.View.GONE);
-        imgPlayIcon.setVisibility(android.view.View.GONE);
+        layPlay.setVisibility(android.view.View.GONE);
+        previewBottomShadow.setVisibility(android.view.View.GONE);
 
         android.widget.MediaController mc = new android.widget.MediaController(this);
         mc.setAnchorView(videoView);
@@ -544,6 +564,89 @@ public class TemplatePreviewActivity extends AppCompatActivity {
     private boolean isVideo() {
         return "Reel Maker".equalsIgnoreCase(category) ||
                 (path != null && (path.toLowerCase().endsWith(".mp4") || path.toLowerCase().endsWith(".webm")));
+    }
+
+    void handleVideoAction(boolean isShare) {
+        if (path == null) return;
+
+        progressOverlay.setVisibility(View.VISIBLE);
+        txtProgressTitle.setText(isShare ? "Preparing Video..." : "Downloading Video...");
+        txtProgressSub.setText("Please wait a moment");
+
+        new Thread(() -> {
+            try {
+                File tempFile = new File(getCacheDir(), "video_" + System.currentTimeMillis() + ".mp4");
+                java.net.URL url = new java.net.URL(path);
+                java.io.InputStream is = url.openStream();
+                java.io.FileOutputStream fos = new java.io.FileOutputStream(tempFile);
+                byte[] buffer = new byte[16384];
+                int read;
+                while ((read = is.read(buffer)) != -1) {
+                    fos.write(buffer, 0, read);
+                }
+                fos.close();
+                is.close();
+
+                runOnUiThread(() -> {
+                    progressOverlay.setVisibility(View.GONE);
+                    if (isShare) {
+                        shareVideoFile(tempFile);
+                    } else {
+                        saveVideoToGallery(tempFile);
+                    }
+                });
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                runOnUiThread(() -> {
+                    progressOverlay.setVisibility(View.GONE);
+                    Toast.makeText(this, "Action failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+            }
+        }).start();
+    }
+
+    void shareVideoFile(File file) {
+        Uri uri = FileProvider.getUriForFile(this, getPackageName() + ".provider", file);
+        Intent s = new Intent(Intent.ACTION_SEND);
+        s.setType("video/*");
+        s.putExtra(Intent.EXTRA_STREAM, uri);
+        s.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        startActivity(Intent.createChooser(s, getString(R.string.title_share_video)));
+    }
+
+    void saveVideoToGallery(File file) {
+        android.content.ContentValues values = new android.content.ContentValues();
+        values.put(MediaStore.Video.Media.DISPLAY_NAME, "RMPlus_Video_" + System.currentTimeMillis() + ".mp4");
+        values.put(MediaStore.Video.Media.MIME_TYPE, "video/mp4");
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+            values.put(MediaStore.Video.Media.IS_PENDING, 1);
+        }
+
+        Uri collection = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q ?
+                MediaStore.Video.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY) :
+                MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+
+        Uri itemUri = getContentResolver().insert(collection, values);
+        if (itemUri != null) {
+            try (java.io.OutputStream os = getContentResolver().openOutputStream(itemUri);
+                 java.io.InputStream isInput = new java.io.FileInputStream(file)) {
+                byte[] buffer = new byte[8192];
+                int read;
+                while ((read = isInput.read(buffer)) != -1) {
+                    os.write(buffer, 0, read);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                android.content.ContentValues updateValues = new android.content.ContentValues();
+                updateValues.put(MediaStore.Video.Media.IS_PENDING, 0);
+                getContentResolver().update(itemUri, updateValues, null, null);
+            }
+            Toast.makeText(this, R.string.msg_saved_to_gallery, Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void toast(String m) {

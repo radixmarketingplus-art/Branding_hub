@@ -27,7 +27,8 @@ public class ImagePreviewActivity extends AppCompatActivity {
 
         findViewById(R.id.btnBack).setOnClickListener(v -> finish());
 
-        boolean isVideo = path.toLowerCase().endsWith(".mp4") || 
+        boolean isVideo = getIntent().getBooleanExtra("is_video", false) || 
+                          path.toLowerCase().endsWith(".mp4") || 
                           path.toLowerCase().endsWith(".webm") || 
                           path.toLowerCase().endsWith(".mkv") || 
                           path.toLowerCase().endsWith(".mov");

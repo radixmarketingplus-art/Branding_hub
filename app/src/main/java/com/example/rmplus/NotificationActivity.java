@@ -65,6 +65,11 @@ public class NotificationActivity extends AppCompatActivity {
                 .getReference("notifications")
                 .child(FirebaseAuth.getInstance().getUid());
 
+        // 🧹 CLEAR ALL NOTIFICATIONS (AND BADGE) WHEN OPENED
+        android.app.NotificationManager nm = (android.app.NotificationManager) getSystemService(android.content.Context.NOTIFICATION_SERVICE);
+        if (nm != null) nm.cancelAll();
+        me.leolin.shortcutbadger.ShortcutBadger.removeCount(this);
+
         broadcastRef = FirebaseDatabase.getInstance()
                 .getReference("broadcast_notifications");
 

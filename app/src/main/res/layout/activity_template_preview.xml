@@ -83,6 +83,7 @@
                 app:cardBackgroundColor="@color/surface_light">
 
                 <FrameLayout
+                    android:id="@+id/layPreviewFrame"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:minHeight="340dp">
@@ -101,18 +102,36 @@
                         android:layout_gravity="center"
                         android:visibility="gone" />
 
-                    <ImageView
-                        android:id="@+id/imgPlayIcon"
-                        android:layout_width="64dp"
-                        android:layout_height="64dp"
+                    <!-- BOTTOM GRADIENT FOR CONTRAST -->
+                    <View
+                        android:id="@+id/previewBottomShadow"
+                        android:layout_width="match_parent"
+                        android:layout_height="80dp"
+                        android:layout_gravity="bottom"
+                        android:background="@drawable/bg_bottom_shadow"
+                        android:visibility="gone"/>
+
+                    <!-- PLAY ICON FOR VIDEO -->
+                    <FrameLayout
+                        android:id="@+id/layPlay"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:src="@android:drawable/ic_media_play"
-                        android:alpha="0.8"
-                        app:tint="@color/white"
-                        android:background="@drawable/shape_circle"
-                        android:backgroundTint="#80000000"
-                        android:padding="16dp"
-                        android:visibility="gone" />
+                        android:visibility="gone">
+
+                        <View
+                            android:layout_width="64dp"
+                            android:layout_height="64dp"
+                            android:layout_gravity="center"
+                            android:background="@drawable/bg_play_glass"/>
+
+                        <ImageView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_play_arrow_filled"
+                            android:tint="#FFFFFF"/>
+                    </FrameLayout>
                 </FrameLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -315,4 +334,49 @@
 
     </LinearLayout>
 
+    <!-- PROGRESS OVERLAY -->
+    <FrameLayout
+        android:id="@+id/progressOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#80000000"
+        android:elevation="100dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="gone">
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="0dp">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="24dp">
+                <ProgressBar
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:indeterminateTint="@color/primary" />
+                <TextView
+                    android:id="@+id/txtProgressTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="Processing..."
+                    android:textColor="@color/text_primary"
+                    android:fontFamily="sans-serif-bold" />
+                <TextView
+                    android:id="@+id/txtProgressSub"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="Please wait"
+                    android:textSize="12sp"
+                    android:textColor="@color/text_secondary" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+    </FrameLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

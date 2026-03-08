@@ -1,0 +1,359 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="320dp"
+    android:layout_height="match_parent"
+    android:layout_gravity="start"
+    android:background="@color/screen_bg"
+    android:clickable="true"
+    android:focusable="true"
+    android:orientation="vertical">
+
+    <!-- MENU HEADER (Professional Dashboard Style) -->
+    <LinearLayout
+        android:id="@+id/drawerHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_drawer_header"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="32dp">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/drawerProfileImage"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_profile"
+            app:shapeAppearanceOverlay="@style/CircleAppearance"
+            app:strokeColor="@android:color/white"
+            app:strokeWidth="2dp"
+            android:background="#1AFFFFFF"
+            android:padding="3dp" />
+
+        <TextView
+            android:id="@+id/drawerName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:fontFamily="sans-serif-black"
+            android:text="RM Plus User"
+            android:textColor="@android:color/white"
+            android:textSize="22sp"
+            android:letterSpacing="-0.01" />
+
+        <TextView
+            android:id="@+id/drawerEmail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:fontFamily="sans-serif-medium"
+            android:text="user@example.com"
+            android:textColor="#CCFFFFFF"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/drawerMobile"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:fontFamily="sans-serif"
+            android:text="+91 00000 00000"
+            android:textColor="#99FFFFFF"
+            android:textSize="13sp" />
+    </LinearLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:overScrollMode="never">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingVertical="20dp"
+            android:paddingHorizontal="16dp">
+
+            <!-- ACCOUNT SECTION -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/header_account"
+                android:layout_marginStart="12dp"
+                android:layout_marginBottom="8dp"
+                style="@style/SettingsHeader" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="#0D000000"
+                app:cardBackgroundColor="@color/surface_light"
+                android:layout_marginBottom="24dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingVertical="4dp">
+
+                    <LinearLayout
+                        android:id="@+id/drawerEdit"
+                        style="@style/SettingsItemStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp">
+                        <ImageView
+                            style="@style/SettingsIconStyle"
+                            android:src="@drawable/ic_edit"
+                            app:tint="?attr/colorPrimary" />
+                        <TextView
+                            style="@style/SettingsTextStyle"
+                            android:text="@string/btn_edit_profile"
+                            android:fontFamily="sans-serif-bold" />
+                    </LinearLayout>
+
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginHorizontal="16dp" android:background="#0D000000" />
+
+                    <LinearLayout
+                        android:id="@+id/drawerSubscription"
+                        style="@style/SettingsItemStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp">
+                        <ImageView
+                            style="@style/SettingsIconStyle"
+                            android:src="@drawable/ic_subscription_profile"
+                            app:tint="?attr/colorPrimary" />
+                        <TextView
+                            style="@style/SettingsTextStyle"
+                            android:text="@string/menu_subscription"
+                            android:fontFamily="sans-serif-bold" />
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- PREFERENCES -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/header_preferences"
+                android:layout_marginStart="12dp"
+                android:layout_marginBottom="8dp"
+                style="@style/SettingsHeader" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="#0D000000"
+                app:cardBackgroundColor="@color/surface_light"
+                android:layout_marginBottom="24dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingVertical="4dp">
+
+                    <LinearLayout
+                        android:id="@+id/drawerLanguage"
+                        style="@style/SettingsItemStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp">
+                        <ImageView
+                            style="@style/SettingsIconStyle"
+                            android:src="@drawable/ic_language_profile"
+                            app:tint="?attr/colorPrimary" />
+                        <TextView
+                            style="@style/SettingsTextStyle"
+                            android:text="@string/menu_language"
+                            android:fontFamily="sans-serif-bold" />
+                    </LinearLayout>
+
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginHorizontal="16dp" android:background="#0D000000" />
+
+                    <LinearLayout
+                        style="@style/SettingsItemStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp">
+                        <ImageView
+                            style="@style/SettingsIconStyle"
+                            android:src="@drawable/ic_dark_mode_profile"
+                            app:tint="?attr/colorPrimary" />
+                        <TextView
+                            style="@style/SettingsTextStyle"
+                            android:layout_weight="1"
+                            android:text="@string/menu_mode"
+                            android:fontFamily="sans-serif-bold" />
+                        <com.google.android.material.materialswitch.MaterialSwitch
+                            android:id="@+id/drawerDarkSwitch"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp" />
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- APP & SUPPORT -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/header_app"
+                android:layout_marginStart="12dp"
+                android:layout_marginBottom="8dp"
+                style="@style/SettingsHeader" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="#0D000000"
+                app:cardBackgroundColor="@color/surface_light"
+                android:layout_marginBottom="24dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingVertical="4dp">
+
+                    <LinearLayout
+                        android:id="@+id/drawerSettings"
+                        style="@style/SettingsItemStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp">
+                        <ImageView
+                            style="@style/SettingsIconStyle"
+                            android:src="@drawable/ic_settings_profile"
+                            app:tint="?attr/colorPrimary" />
+                        <TextView
+                            style="@style/SettingsTextStyle"
+                            android:text="@string/menu_settings"
+                            android:fontFamily="sans-serif-bold" />
+                    </LinearLayout>
+
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginHorizontal="16dp" android:background="#0D000000" />
+
+                    <LinearLayout
+                        android:id="@+id/drawerRate"
+                        style="@style/SettingsItemStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp">
+                        <ImageView
+                            style="@style/SettingsIconStyle"
+                            android:src="@drawable/ic_rate_profile"
+                            app:tint="?attr/colorPrimary" />
+                        <TextView
+                            style="@style/SettingsTextStyle"
+                            android:text="@string/menu_rate"
+                            android:fontFamily="sans-serif-bold" />
+                    </LinearLayout>
+
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginHorizontal="16dp" android:background="#0D000000" />
+
+                    <LinearLayout
+                        android:id="@+id/drawerSupport"
+                        style="@style/SettingsItemStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp">
+                        <ImageView
+                            style="@style/SettingsIconStyle"
+                            android:src="@drawable/ic_support_profile"
+                            app:tint="?attr/colorPrimary" />
+                        <TextView
+                            style="@style/SettingsTextStyle"
+                            android:text="@string/menu_support"
+                            android:fontFamily="sans-serif-bold" />
+                    </LinearLayout>
+
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginHorizontal="16dp" android:background="#0D000000" />
+
+                    <LinearLayout
+                        android:id="@+id/drawerShare"
+                        style="@style/SettingsItemStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp">
+                        <ImageView
+                            style="@style/SettingsIconStyle"
+                            android:src="@drawable/ic_share_modern"
+                            app:tint="?attr/colorPrimary" />
+                        <TextView
+                            style="@style/SettingsTextStyle"
+                            android:text="@string/menu_share"
+                            android:fontFamily="sans-serif-bold" />
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- DANGER ZONE -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/header_account_mgmt"
+                android:layout_marginStart="12dp"
+                android:layout_marginBottom="8dp"
+                style="@style/SettingsHeader" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="#0D000000"
+                app:cardBackgroundColor="@color/surface_light"
+                android:layout_marginBottom="24dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingVertical="4dp">
+
+                    <LinearLayout
+                        android:id="@+id/drawerLogout"
+                        style="@style/SettingsItemStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp">
+                        <ImageView
+                            style="@style/SettingsIconStyle"
+                            android:src="@drawable/ic_logout_profile"
+                            app:tint="#64748B" />
+                        <TextView
+                            style="@style/SettingsTextStyle"
+                            android:text="@string/menu_logout"
+                            android:textColor="#64748B"
+                            android:fontFamily="sans-serif-bold" />
+                    </LinearLayout>
+
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginHorizontal="16dp" android:background="#0D000000" />
+
+                    <LinearLayout
+                        android:id="@+id/drawerDelete"
+                        style="@style/SettingsItemStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp">
+                        <ImageView
+                            style="@style/SettingsIconStyle"
+                            android:src="@drawable/ic_delete"
+                            app:tint="#EF4444" />
+                        <TextView
+                            style="@style/SettingsTextStyle"
+                            android:text="@string/menu_delete_account"
+                            android:textColor="#EF4444"
+                            android:fontFamily="sans-serif-bold" />
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</LinearLayout>

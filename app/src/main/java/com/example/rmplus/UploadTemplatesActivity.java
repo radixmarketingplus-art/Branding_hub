@@ -52,7 +52,7 @@ public class UploadTemplatesActivity extends BaseActivity {
     long expiryTime = System.currentTimeMillis() + (7L * 24 * 60 * 60 * 1000); // Default 7 days
     String selectedDate = "";
     EditText editAdLink; // NEW
-    View placeholderLayout, previewWrapper, btnChangeMedia; // Added
+    View placeholderLayout, previewWrapper, btnChangeMedia, icPlayVideo; // Added icPlayVideo
 
     ArrayList<String> sections = new ArrayList<>();
     ArrayList<String> sectionKeys = new ArrayList<>();
@@ -95,6 +95,8 @@ public class UploadTemplatesActivity extends BaseActivity {
         placeholderLayout = findViewById(R.id.placeholderLayout);
         previewWrapper = findViewById(R.id.previewWrapper);
         btnChangeMedia = findViewById(R.id.btnChangeMedia);
+
+        icPlayVideo = findViewById(R.id.icPlayVideo);
 
         findViewById(R.id.btnBack).setOnClickListener(v -> {
             startActivity(new Intent(this, HomeActivity.class));
@@ -163,6 +165,8 @@ public class UploadTemplatesActivity extends BaseActivity {
                     selectedDate = "";
                     btnPickDate.setText(R.string.btn_pick_date);
                 }
+
+                updatePreviewVisibility(sectionKey);
             }
 
             @Override
@@ -182,9 +186,12 @@ public class UploadTemplatesActivity extends BaseActivity {
             String sectionKey = sectionKeys.get(pos);
 
             if (selectedImageUri != null) {
-                if (sectionKey.equalsIgnoreCase("Reel Maker") ||
-                        sectionKey.equalsIgnoreCase("Business Frame")) {
-
+                if (sectionKey.equalsIgnoreCase("Reel Maker")) {
+                    Intent i = new Intent(UploadTemplatesActivity.this, ImagePreviewActivity.class);
+                    i.putExtra("img", selectedImageUri.toString());
+                    i.putExtra("is_video", true);
+                    startActivity(i);
+                } else if (sectionKey.equalsIgnoreCase("Business Frame")) {
                     Intent i = new Intent(UploadTemplatesActivity.this, ImagePreviewActivity.class);
                     i.putExtra("img", selectedImageUri.toString());
                     startActivity(i);
@@ -192,6 +199,15 @@ public class UploadTemplatesActivity extends BaseActivity {
                     // Re-crop!
                     startCrop(originalImageUri != null ? originalImageUri : selectedImageUri);
                 }
+            }
+        });
+
+        icPlayVideo.setOnClickListener(v -> {
+            if (selectedImageUri != null) {
+                Intent i = new Intent(UploadTemplatesActivity.this, ImagePreviewActivity.class);
+                i.putExtra("img", selectedImageUri.toString());
+                i.putExtra("is_video", true);
+                startActivity(i);
             }
         });
 
@@ -261,6 +277,8 @@ public class UploadTemplatesActivity extends BaseActivity {
                     Toast.makeText(this, R.string.msg_format_supported, Toast.LENGTH_SHORT).show();
                     return;
                 }
+                
+                // Size check is now handled inside uploadImageToServer with better detection
             } else {
                 // Image Validation
                 if (mimeType == null || !mimeType.startsWith("image/")) {
@@ -338,7 +356,12 @@ public class UploadTemplatesActivity extends BaseActivity {
                     previewImage.setVisibility(View.VISIBLE);
                     placeholderLayout.setVisibility(View.GONE);
                     btnChangeMedia.setVisibility(View.VISIBLE);
-                    previewImage.setImageURI(selectedImageUri);
+                    
+                    com.bumptech.glide.Glide.with(this)
+                            .load(selectedImageUri)
+                            .into(previewImage);
+
+                    icPlayVideo.setVisibility(View.VISIBLE);
                     toast(R.string.msg_video_selected);
                 } else if (sectionKey.equalsIgnoreCase("Business Frame")) {
                     // 🚫 SKIP MANDATORY CROP
@@ -360,6 +383,7 @@ public class UploadTemplatesActivity extends BaseActivity {
                 placeholderLayout.setVisibility(View.GONE);
                 btnChangeMedia.setVisibility(View.VISIBLE);
                 previewImage.setImageURI(selectedImageUri);
+                icPlayVideo.setVisibility(View.GONE);
                 toast(R.string.msg_crop_success);
             }
         } else if (resultCode == UCrop.RESULT_ERROR) {
@@ -558,129 +582,116 @@ public class UploadTemplatesActivity extends BaseActivity {
         });
     }
 
+    private void updatePreviewVisibility(String sectionKey) {
+        if (selectedImageUri == null) {
+            icPlayVideo.setVisibility(View.GONE);
+            return;
+        }
+        if (sectionKey.equalsIgnoreCase("Reel Maker")) {
+            icPlayVideo.setVisibility(View.VISIBLE);
+            com.bumptech.glide.Glide.with(this).load(selectedImageUri).into(previewImage);
+        } else {
+            icPlayVideo.setVisibility(View.GONE);
+            previewImage.setImageURI(selectedImageUri);
+        }
+    }
+
     private void uploadImageToServer(Uri imageUri, UploadCallback callback) {
+        android.content.ContentResolver resolver = getContentResolver();
+        int pos = spinnerSection.getSelectedItemPosition();
+        String sectionKey = (pos >= 0 && pos < sectionKeys.size()) ? sectionKeys.get(pos) : "";
+        boolean isReel = sectionKey.equalsIgnoreCase("Reel Maker");
+        long limit = (isReel ? 50L : 15L) * 1024 * 1024;
 
         new Thread(() -> {
             try {
+                // 1. Get File Size reliably
+                long fileSize = -1;
+                try (android.content.res.AssetFileDescriptor afd = resolver.openAssetFileDescriptor(imageUri, "r")) {
+                    if (afd != null) fileSize = afd.getLength();
+                } catch (Exception ignored) {}
 
-                // ===== GET REAL FILE SIZE =====
-                android.database.Cursor cursor = getContentResolver().query(
-                        imageUri, null, null, null, null);
-
-                int size = 0;
-
-                if (cursor != null) {
-                    int sizeIndex = cursor.getColumnIndex(android.provider.OpenableColumns.SIZE);
-                    if (cursor.moveToFirst() && sizeIndex != -1) {
-                        size = (int) cursor.getLong(sizeIndex);
-                    }
-                    cursor.close();
+                if (fileSize > limit) {
+                    callback.onError("File is too big (" + (fileSize / 1024 / 1024) + "MB). Max limit is 50MB.");
+                    return;
                 }
 
-                int pos = spinnerSection.getSelectedItemPosition();
-                String sectionKey = (pos >= 0 && pos < sectionKeys.size()) ? sectionKeys.get(pos) : "";
+                String mimeType = resolver.getType(imageUri);
+                if (mimeType == null) mimeType = isReel ? "video/mp4" : "image/jpeg";
 
-                if (size > 5 * 1024 * 1024) {
-                    int limit = sectionKey.equalsIgnoreCase("Reel Maker") ? 30 * 1024 * 1024 : 5 * 1024 * 1024;
-                    String limitText = sectionKey.equalsIgnoreCase("Reel Maker") ? "30 MB" : "5 MB";
-
-                    if (size > limit) {
-                        callback.onError(getString(R.string.msg_file_size_limit, limitText));
-                        return;
-                    }
-                }
-
+                // 2. Setup Connection
                 String boundary = "----RMPLUS" + System.currentTimeMillis();
-                String mimeType = getContentResolver().getType(imageUri);
-                if (mimeType == null)
-                    mimeType = sectionKey.equalsIgnoreCase("Reel Maker") ? "video/mp4" : "image/jpeg";
-
-                java.net.URL url = new java.net.URL("http://187.77.184.84/upload.php");
-
-                java.net.HttpURLConnection conn = (java.net.HttpURLConnection) url.openConnection();
-
+                java.net.HttpURLConnection conn = (java.net.HttpURLConnection) new java.net.URL("http://187.77.184.84/upload.php").openConnection();
+                conn.setConnectTimeout(60000);
+                conn.setReadTimeout(180000);
                 conn.setRequestMethod("POST");
                 conn.setDoOutput(true);
                 conn.setDoInput(true);
+                conn.setUseCaches(false);
                 conn.setRequestProperty("Connection", "Keep-Alive");
-                conn.setRequestProperty(
-                        "Content-Type",
-                        "multipart/form-data; boundary=" + boundary);
+                conn.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
 
-                java.io.DataOutputStream out = new java.io.DataOutputStream(conn.getOutputStream());
+                // Metadata
+                String ext = isReel ? ".mp4" : ".jpg";
+                if (mimeType.contains("png")) ext = ".png";
 
-                String ext = ".jpg";
-                if (mimeType.contains("png"))
-                    ext = ".png";
-                else if (mimeType.contains("mp4"))
-                    ext = ".mp4";
-                else if (mimeType.contains("webm"))
-                    ext = ".webm";
-                else if (mimeType.contains("mkv") || mimeType.contains("matroska"))
-                    ext = ".mkv";
+                String head = "--" + boundary + "\r\n" +
+                              "Content-Disposition: form-data; name=\"file\"; filename=\"up_" + System.currentTimeMillis() + ext + "\"\r\n" +
+                              "Content-Type: " + mimeType + "\r\n\r\n";
+                String tail = "\r\n--" + boundary + "--\r\n";
 
-                String fileName = "up_" + System.currentTimeMillis() + ext;
+                byte[] headBytes = head.getBytes("UTF-8");
+                byte[] tailBytes = tail.getBytes("UTF-8");
 
-                // ===== FILE PART =====
-                out.writeBytes("--" + boundary + "\r\n");
-                out.writeBytes(
-                        "Content-Disposition: form-data; name=\"file\"; filename=\"" +
-                                fileName + "\"\r\n");
-                out.writeBytes("Content-Type: " + mimeType + "\r\n\r\n");
-
-                InputStream input = getContentResolver().openInputStream(imageUri);
-
-                byte[] buffer = new byte[4096];
-                int bytesRead;
-
-                while ((bytesRead = input.read(buffer)) != -1) {
-                    out.write(buffer, 0, bytesRead);
+                if (fileSize > 0) {
+                    conn.setFixedLengthStreamingMode(headBytes.length + (int)fileSize + tailBytes.length);
+                } else {
+                    conn.setChunkedStreamingMode(16384);
                 }
 
-                input.close();
-
-                out.writeBytes("\r\n");
-                out.writeBytes("--" + boundary + "--\r\n");
-                out.flush();
-                out.close();
-
-                // ===== RESPONSE =====
-                int responseCode = conn.getResponseCode();
-
-                if (responseCode == 200) {
-                    java.io.BufferedReader reader = new java.io.BufferedReader(
-                            new java.io.InputStreamReader(conn.getInputStream()));
-                    StringBuilder response = new StringBuilder();
-                    String line;
-                    while ((line = reader.readLine()) != null)
-                        response.append(line);
-                    reader.close();
-
-                    try {
-                        org.json.JSONObject json = new org.json.JSONObject(response.toString());
-                        if (json.has("status") && "success".equals(json.getString("status"))) {
-                            String imageUrl = json.getString("url");
-                            callback.onSuccess(imageUrl);
-                        } else {
-                            callback.onError("Server rejected upload");
+                try (java.io.OutputStream out = conn.getOutputStream()) {
+                    out.write(headBytes);
+                    try (InputStream input = resolver.openInputStream(imageUri)) {
+                        byte[] buffer = new byte[16384];
+                        int read;
+                        while ((read = input.read(buffer)) != -1) {
+                            out.write(buffer, 0, read);
                         }
-                    } catch (org.json.JSONException e) {
-                        callback.onError("Invalid server response");
+                    }
+                    out.write(tailBytes);
+                    out.flush();
+                }
+
+                // 3. Response handling
+                int responseCode = conn.getResponseCode();
+                InputStream resStream = (responseCode >= 200 && responseCode < 300) ? conn.getInputStream() : conn.getErrorStream();
+                StringBuilder sb = new StringBuilder();
+                if (resStream != null) {
+                    java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.InputStreamReader(resStream));
+                    String line;
+                    while ((line = reader.readLine()) != null) sb.append(line);
+                    reader.close();
+                }
+
+                String raw = sb.toString().trim();
+                if (responseCode == 200 && !raw.isEmpty()) {
+                    org.json.JSONObject json = new org.json.JSONObject(raw);
+                    if (json.has("status") && "success".equals(json.getString("status"))) {
+                        callback.onSuccess(json.getString("url"));
+                    } else {
+                        callback.onError("Server: " + json.optString("message", raw));
                     }
                 } else {
-                    callback.onError("Server error: " + responseCode);
+                    callback.onError("Server Error " + responseCode + (raw.isEmpty() ? "" : ": " + raw));
                 }
 
-            } catch (java.net.SocketTimeoutException e) {
-                callback.onError("Connection timeout");
-            } catch (java.io.IOException e) {
-                callback.onError("Network error: " + e.getMessage());
             } catch (Exception e) {
                 e.printStackTrace();
-                callback.onError("Upload failed");
+                callback.onError("Upload Error: " + e.getLocalizedMessage());
             }
         }).start();
     }
+
 
     void loadDynamicSections() {
         FirebaseDatabase.getInstance().getReference("templates")

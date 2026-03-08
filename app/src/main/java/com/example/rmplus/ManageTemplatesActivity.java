@@ -41,6 +41,8 @@ public class ManageTemplatesActivity extends AppCompatActivity {
     View activeOverlay;
     View activeContent;
     ImageView imgTemplate;
+    VideoView videoTemplate;
+    com.google.android.material.card.MaterialCardView canvasContainer;
     com.google.android.material.button.MaterialButton btnSave;
     com.google.android.material.button.MaterialButton btnSendBack, btnBringFront, btnTextSendBack, btnTextBringFront;
     Button btnColor;
@@ -59,6 +61,7 @@ public class ManageTemplatesActivity extends AppCompatActivity {
     String templateId;
     String uid;
     boolean isBusinessFrame = false;
+    boolean isVideo = false;
     DatabaseReference rootRef;
 
     ScaleGestureDetector scaleGestureDetector;
@@ -73,6 +76,8 @@ public class ManageTemplatesActivity extends AppCompatActivity {
         // ==== Bind ====
         canvas = findViewById(R.id.canvas);
         imgTemplate = findViewById(R.id.imgTemplate);
+        videoTemplate = findViewById(R.id.videoTemplate);
+        canvasContainer = findViewById(R.id.canvasContainer);
         btnText = findViewById(R.id.btnText);
         btnGallery = findViewById(R.id.btnGallery);
         btnSave = findViewById(R.id.btnSave);
@@ -103,7 +108,29 @@ public class ManageTemplatesActivity extends AppCompatActivity {
 
         if (originalPath != null) {
             templateId = makeSafeKey(originalPath);
-            loadImageSmart(originalPath, imgTemplate);
+            
+            isVideo = getIntent().getBooleanExtra("isVideo", false);
+            if (isVideo) {
+                // 🎬 Adjust Ratio for Reel/Video (9:16)
+                androidx.constraintlayout.widget.ConstraintLayout.LayoutParams lp = (androidx.constraintlayout.widget.ConstraintLayout.LayoutParams) canvasContainer.getLayoutParams();
+                lp.dimensionRatio = "9:16";
+                canvasContainer.setLayoutParams(lp);
+
+                imgTemplate.setVisibility(View.GONE);
+                videoTemplate.setVisibility(View.VISIBLE);
+                videoTemplate.setVideoURI(Uri.parse(originalPath));
+                videoTemplate.setOnPreparedListener(mp -> {
+                    mp.setLooping(true);
+                    videoTemplate.start();
+                });
+            } else {
+                // 🖼️ Default Ratio for Image (1:1)
+                androidx.constraintlayout.widget.ConstraintLayout.LayoutParams lp = (androidx.constraintlayout.widget.ConstraintLayout.LayoutParams) canvasContainer.getLayoutParams();
+                lp.dimensionRatio = "1:1";
+                canvasContainer.setLayoutParams(lp);
+                
+                loadImageSmart(originalPath, imgTemplate);
+            }
         }
 
         String category = getIntent().getStringExtra("category");
@@ -576,6 +603,11 @@ public class ManageTemplatesActivity extends AppCompatActivity {
 
     // ================= SAVE IMAGE =================
     void saveFinalImage() {
+        if (isVideo) {
+            Toast.makeText(this, "Video saving with overlays is currently in development. You can preview it here.", Toast.LENGTH_LONG).show();
+            return;
+        }
+
         deselectAll();
 
         canvas.setDrawingCacheEnabled(true);
@@ -588,10 +620,7 @@ public class ManageTemplatesActivity extends AppCompatActivity {
                 getString(R.string.desc_edited_template));
 
         if (savedPath != null) {
-
-            Toast.makeText(this,
-                    R.string.msg_saved_to_gallery,
-                    Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.msg_saved_to_gallery, Toast.LENGTH_SHORT).show();
 
             String safeId = makeSafeKey(originalPath);
 
@@ -606,6 +635,8 @@ public class ManageTemplatesActivity extends AppCompatActivity {
                     .child("edits")
                     .child(safeId)
                     .setValue(savedPath);
+        } else {
+            Toast.makeText(this, "Failed to save image!", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -882,6 +913,22 @@ public class ManageTemplatesActivity extends AppCompatActivity {
 
         // Default routing to children
         return super.dispatchTouchEvent(ev);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (isVideo && videoTemplate != null) {
+            videoTemplate.pause();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (isVideo && videoTemplate != null) {
+            videoTemplate.start();
+        }
     }
 
 }

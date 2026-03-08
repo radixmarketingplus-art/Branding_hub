@@ -50,7 +50,7 @@ public class NotificationHelper {
         String localizedTitle = getLocalized(context, title);
         String localizedMessage = getLocalized(context, message);
 
-        showPhoneNotification(context, localizedTitle, localizedMessage);
+        showPhoneNotification(context, uid, localizedTitle, localizedMessage);
     }
 
     // NEW: Overloaded send with action and expiry support
@@ -83,7 +83,7 @@ public class NotificationHelper {
 
         String localizedTitle = getLocalized(context, title);
         String localizedMessage = getLocalized(context, message);
-        showPhoneNotification(context, localizedTitle, localizedMessage);
+        showPhoneNotification(context, uid, localizedTitle, localizedMessage);
     }
 
     // NEW: Send broadcast notification to ALL users
@@ -112,7 +112,7 @@ public class NotificationHelper {
         // ✅ Also show tray notification for the current admin (optional but good for feedback)
         String localizedTitle = getLocalized(context, title);
         String localizedMessage = getLocalized(context, message);
-        showPhoneNotification(context, localizedTitle, localizedMessage);
+        showPhoneNotification(context, null, localizedTitle, localizedMessage);
     }
 
     // NEW: Delete broadcast notification from ALL users (when item is deleted)
@@ -140,6 +140,7 @@ public class NotificationHelper {
     }
 
     private static void showPhoneNotification(Context context,
+                                              String uid,
                                               String title,
                                               String message){
 
@@ -157,13 +158,43 @@ public class NotificationHelper {
                             context.getString(R.string.app_name) + " " + context.getString(R.string.btn_notifications),
                             NotificationManager.IMPORTANCE_HIGH
                     );
-
+            channel.setShowBadge(true); // 🔥 ENSURE BADGES ARE ENABLED
             manager.createNotificationChannel(channel);
         }
 
-        Intent intent =
-                new Intent(context,
-                        NotificationActivity.class);
+        // FETCH CURRENT UNREAD COUNT FROM FIREBASE (For Badge)
+        if (uid != null) {
+            FirebaseDatabase.getInstance().getReference("notifications").child(uid)
+                .addListenerForSingleValueEvent(new com.google.firebase.database.ValueEventListener() {
+                    @Override
+                    public void onDataChange(com.google.firebase.database.DataSnapshot snapshot) {
+                        int count = 0;
+                        for (com.google.firebase.database.DataSnapshot d : snapshot.getChildren()) {
+                            Boolean r = d.child("read").getValue(Boolean.class);
+                            if (r != null && !r) count++;
+                        }
+                        displayNotification(context, manager, title, message, count);
+                    }
+                    @Override public void onCancelled(com.google.firebase.database.DatabaseError error) {
+                        displayNotification(context, manager, title, message, 0);
+                    }
+                });
+        } else {
+            // Probably a broadcast, we don't fetch per-user count here for broadcast
+            displayNotification(context, manager, title, message, 0);
+        }
+    }
+
+    private static void displayNotification(Context context, NotificationManager manager, String title, String message, int count) {
+        
+        // 🚀 UPDATE LAUNCHER BADGE (Universal Support)
+        if (count > 0) {
+            me.leolin.shortcutbadger.ShortcutBadger.applyCount(context, count);
+        } else {
+            me.leolin.shortcutbadger.ShortcutBadger.removeCount(context);
+        }
+
+        Intent intent = new Intent(context, NotificationActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
         PendingIntent pendingIntent =
@@ -176,21 +207,17 @@ public class NotificationHelper {
                 );
 
         NotificationCompat.Builder builder =
-                new NotificationCompat.Builder(context,CHANNEL_ID)
-                        .setSmallIcon(
-                                android.R.drawable.ic_dialog_info)
+                new NotificationCompat.Builder(context, CHANNEL_ID)
+                        .setSmallIcon(R.mipmap.ic_launcher) // Try to use original icon
                         .setContentTitle(title)
                         .setContentText(message)
                         .setAutoCancel(true)
                         .setContentIntent(pendingIntent)
-                        .setPriority(
-                                NotificationCompat.PRIORITY_HIGH
-                        );
+                        .setNumber(count) // 🔥 THIS SETS THE BADGE COUNT
+                        .setBadgeIconType(NotificationCompat.BADGE_ICON_SMALL)
+                        .setPriority(NotificationCompat.PRIORITY_HIGH);
 
-        manager.notify(
-                (int) System.currentTimeMillis(),
-                builder.build()
-        );
+        manager.notify((int) System.currentTimeMillis(), builder.build());
     }
 
     public static String getLocalized(android.content.Context context, String text) {

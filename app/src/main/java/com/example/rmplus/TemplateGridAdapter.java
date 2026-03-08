@@ -74,6 +74,23 @@ public class TemplateGridAdapter
             h.txtDateBadge.setVisibility(View.GONE);
         }
 
+        // 🎬 PREMIUM VIDEO UI
+        // 🎬 IMPROVED VIDEO DETECTION (Handles MyDesign + Firebase URLs)
+        String lowerUrl = template.url != null ? template.url.toLowerCase() : "";
+        String cleanUrl = lowerUrl.split("\\?")[0];
+        boolean isExtensionVideo = cleanUrl.endsWith(".mp4") || cleanUrl.endsWith(".webm") || cleanUrl.endsWith(".mkv");
+        boolean isPathVideo = lowerUrl.contains("/reel maker/") || lowerUrl.contains("/reel%20maker/");
+        
+        boolean isVideo = "video".equalsIgnoreCase(template.type) || 
+                         (template.category != null && template.category.equalsIgnoreCase("Reel Maker")) ||
+                         isExtensionVideo || isPathVideo;
+        
+        if (isVideo) {
+            h.layPlay.setVisibility(View.VISIBLE);
+        } else {
+            h.layPlay.setVisibility(View.GONE);
+        }
+
         h.itemView.setOnClickListener(v -> listener.onClick(list.get(i)));
 
         // ✨ HIGHLIGHT LOGIC (Blue Shadow/Border)
@@ -102,9 +119,9 @@ public class TemplateGridAdapter
                                                                                                              // stored
                                                                                                              // dates
             java.text.SimpleDateFormat out = new java.text.SimpleDateFormat("d MMM", java.util.Locale.getDefault()); // display
-                                                                                                                     // in
-                                                                                                                     // user
-                                                                                                                     // language
+                                                                                                                      // in
+                                                                                                                      // user
+                                                                                                                      // language
             return out.format(in.parse(d));
         } catch (Exception e) {
             return d;
@@ -119,11 +136,13 @@ public class TemplateGridAdapter
     class Holder extends RecyclerView.ViewHolder {
 
         ImageView img;
+        View layPlay;
         TextView txtDateBadge;
 
         Holder(View v) {
             super(v);
             img = v.findViewById(R.id.img);
+            layPlay = v.findViewById(R.id.layPlay);
             txtDateBadge = v.findViewById(R.id.txtDateBadge);
         }
     }

@@ -246,6 +246,16 @@
                     android:visibility="gone"
                     tools:visibility="visible" />
 
+                <!-- Play Button Overlay -->
+                <ImageView
+                    android:id="@+id/icPlayVideo"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_play_video"
+                    android:visibility="gone"
+                    android:alpha="0.8" />
+
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/btnChangeMedia"
                     android:layout_width="wrap_content"

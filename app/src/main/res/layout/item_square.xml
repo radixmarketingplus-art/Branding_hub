@@ -21,6 +21,13 @@
         android:scaleType="centerCrop"
         android:contentDescription="Image"/>
 
+    <!-- BOTTOM GRADIENT FOR CONTRAST -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_gravity="bottom"
+        android:background="@drawable/bg_bottom_shadow"/>
+
     <!-- DATE BADGE -->
     <TextView
         android:id="@+id/txtDateBadge"
@@ -39,5 +46,27 @@
         android:background="@drawable/bg_date_badge"
         android:elevation="8dp"
         android:visibility="gone"/>
+
+    <!-- PLAY ICON FOR VIDEO -->
+    <FrameLayout
+        android:id="@+id/layPlay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone">
+
+        <View
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_gravity="center"
+            android:background="@drawable/bg_play_glass"/>
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_play_arrow_filled"
+            android:tint="#FFFFFF"/>
+    </FrameLayout>
 
 </com.google.android.material.card.MaterialCardView>

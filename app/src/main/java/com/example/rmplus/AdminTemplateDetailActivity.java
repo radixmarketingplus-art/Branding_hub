@@ -37,7 +37,7 @@ public class AdminTemplateDetailActivity extends BaseActivity {
     String category;
     String templateKey;
     String adLink = null;
-    View statsRow;
+    View statsRow, layPlay;
 
 
     @Override
@@ -135,6 +135,7 @@ public class AdminTemplateDetailActivity extends BaseActivity {
                 .into(imgPreview);
 
         statsRow = findViewById(R.id.statsRow);
+        layPlay = findViewById(R.id.layPlay);
 
         if (templatePath != null) {
             discoverCategoryAndLoad();
@@ -267,6 +268,25 @@ public class AdminTemplateDetailActivity extends BaseActivity {
             setupClicks();
             loadStats();
         }
+
+        // 🎬 SHOW VIDEO INDICATOR
+        if (layPlay != null) {
+            String type = snap.child("type").getValue(String.class);
+            if (isVideo(type)) layPlay.setVisibility(View.VISIBLE);
+            else layPlay.setVisibility(View.GONE);
+        }
+    }
+
+    private boolean isVideo(String type) {
+        if ("video".equalsIgnoreCase(type)) return true;
+        if (category != null && category.equalsIgnoreCase("Reel Maker")) return true;
+        
+        // Final check based on URL extension
+        if (templatePath != null) {
+            String lower = templatePath.toLowerCase().split("\\?")[0];
+            return lower.endsWith(".mp4") || lower.endsWith(".webm") || lower.contains("/reel maker/") || lower.contains("/reel%20maker/");
+        }
+        return false;
     }
 
     void loadAdvertisementLink() {

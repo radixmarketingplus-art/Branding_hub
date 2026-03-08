@@ -395,10 +395,10 @@ public class HomeActivity extends BaseActivity {
     private void startSpotlightOnboarding() {
         SpotlightOverlay spotlight = new SpotlightOverlay(this);
 
-        // 1. Profile Icon
-        View btnProfile = findViewById(R.id.btnProfile);
-        if (btnProfile != null) {
-            spotlight.addTarget(btnProfile,
+        // 1. Profile/Menu Icon
+        View btnMenu = findViewById(R.id.btnMenu);
+        if (btnMenu != null) {
+            spotlight.addTarget(btnMenu,
                     getString(R.string.onboard_spot_profile_title),
                     getString(R.string.onboard_spot_profile_desc));
         }
@@ -495,8 +495,9 @@ public class HomeActivity extends BaseActivity {
                             for (DataSnapshot d : trending.getChildren()) {
                                 String url = d.hasChild("imagePath") ? d.child("imagePath").getValue(String.class)
                                         : d.child("url").getValue(String.class);
+                                String type = d.child("type").getValue(String.class);
                                 if (url != null)
-                                    trendList.add(new TemplateModel(d.getKey(), url, "Trending Now"));
+                                    trendList.add(new TemplateModel(d.getKey(), url, "Trending Now", null, type));
                             }
                             if (trendList.isEmpty())
                                 return;
@@ -628,14 +629,15 @@ public class HomeActivity extends BaseActivity {
                     public void onDataChange(DataSnapshot snapshot) {
                         safelyHideSkeleton(skFestival);
                         ArrayList<TemplateModel> all = new ArrayList<>();
-                        for (DataSnapshot d : snapshot.getChildren()) {
-                            String url = d.hasChild("imagePath") ? d.child("imagePath").getValue(String.class)
-                                    : d.child("url").getValue(String.class);
-                            String itemDate = d.child("date").getValue(String.class);
-                            if (url != null) {
-                                all.add(new TemplateModel(d.getKey(), url, "Festival Cards", itemDate));
+                            for (DataSnapshot d : snapshot.getChildren()) {
+                                String url = d.hasChild("imagePath") ? d.child("imagePath").getValue(String.class)
+                                        : d.child("url").getValue(String.class);
+                                String itemDate = d.child("date").getValue(String.class);
+                                String type = d.child("type").getValue(String.class);
+                                if (url != null) {
+                                    all.add(new TemplateModel(d.getKey(), url, "Festival Cards", itemDate, type));
+                                }
                             }
-                        }
 
                         ArrayList<TemplateModel> filtered = new ArrayList<>();
                         // Standardize to "d-M-yyyy" to handle non-padded dates from Upload (1-2-2026)
@@ -792,8 +794,9 @@ public class HomeActivity extends BaseActivity {
                                     String url = itemSnapshot.hasChild("imagePath")
                                             ? itemSnapshot.child("imagePath").getValue(String.class)
                                             : itemSnapshot.child("url").getValue(String.class);
+                                    String type = itemSnapshot.child("type").getValue(String.class);
                                     if (url != null) {
-                                        list.add(new TemplateModel(itemSnapshot.getKey(), url, key));
+                                        list.add(new TemplateModel(itemSnapshot.getKey(), url, key, null, type));
                                     }
                                 }
 
@@ -863,15 +866,16 @@ public class HomeActivity extends BaseActivity {
                     ArrayList<TemplateModel> allList = new ArrayList<>();
                     for (DataSnapshot subSnapshot : snapshot.getChildren()) {
                         // Skip if it's not a sub-category node (though typically they all are here)
-                        for (DataSnapshot itemSnapshot : subSnapshot.getChildren()) {
-                            String url = itemSnapshot.hasChild("imagePath")
-                                    ? itemSnapshot.child("imagePath").getValue(String.class)
-                                    : itemSnapshot.child("url").getValue(String.class);
-                            if (url != null) {
-                                allList.add(new TemplateModel(itemSnapshot.getKey(), url,
-                                        parentKey + "/" + subSnapshot.getKey()));
+                            for (DataSnapshot itemSnapshot : subSnapshot.getChildren()) {
+                                String url = itemSnapshot.hasChild("imagePath")
+                                        ? itemSnapshot.child("imagePath").getValue(String.class)
+                                        : itemSnapshot.child("url").getValue(String.class);
+                                String type = itemSnapshot.child("type").getValue(String.class);
+                                if (url != null) {
+                                    allList.add(new TemplateModel(itemSnapshot.getKey(), url,
+                                            parentKey + "/" + subSnapshot.getKey(), null, type));
+                                }
                             }
-                        }
                     }
                     rvItems.setAdapter(new TemplateGridAdapter(allList, t -> {
                         Intent i = new Intent(HomeActivity.this, TemplatePreviewActivity.class);
@@ -896,8 +900,9 @@ public class HomeActivity extends BaseActivity {
                     for (DataSnapshot d : snapshot.getChildren()) {
                         String url = d.hasChild("imagePath") ? d.child("imagePath").getValue(String.class)
                                 : d.child("url").getValue(String.class);
+                        String type = d.child("type").getValue(String.class);
                         if (url != null) {
-                            list.add(new TemplateModel(d.getKey(), url, parentKey + "/" + subKey));
+                            list.add(new TemplateModel(d.getKey(), url, parentKey + "/" + subKey, null, type));
                         }
                     }
                     rvItems.setAdapter(new TemplateGridAdapter(list, t -> {
@@ -928,8 +933,9 @@ public class HomeActivity extends BaseActivity {
                         for (DataSnapshot d : snapshot.getChildren()) {
                             String url = d.hasChild("imagePath") ? d.child("imagePath").getValue(String.class)
                                     : d.child("url").getValue(String.class);
+                            String type = d.child("type").getValue(String.class);
                             if (url != null) {
-                                list.add(new TemplateModel(d.getKey(), url, key));
+                                list.add(new TemplateModel(d.getKey(), url, key, null, type));
                             }
                         }
                         // Use a new TemplateModel adapter or update ImageAdapter
@@ -959,8 +965,9 @@ public class HomeActivity extends BaseActivity {
                             String url = d.hasChild("imagePath") ? d.child("imagePath").getValue(String.class)
                                     : d.child("url").getValue(String.class);
                             String date = d.child("date").getValue(String.class);
+                            String type = d.child("type").getValue(String.class);
                             if (url != null) {
-                                list.add(new TemplateModel(d.getKey(), url, "Festival Cards", date));
+                                list.add(new TemplateModel(d.getKey(), url, "Festival Cards", date, type));
                             }
                         }
                         rvFestivalCards.setAdapter(new TemplateGridAdapter(list, t -> {

@@ -20,7 +20,7 @@ import java.io.*;
 import java.io.File;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class AdRequestActivity extends AppCompatActivity {
+public class AdRequestActivity extends BaseActivity {
 
     EditText etLink;
     ImageView imgTemplate, imgProof;
@@ -110,6 +110,9 @@ public class AdRequestActivity extends AppCompatActivity {
     protected void onCreate(Bundle b) {
         super.onCreate(b);
         setContentView(R.layout.activity_ad_request);
+
+        // This initializes the bottom nav from the layout
+        setupBase("user", R.id.ad_request);
 
         etLink = findViewById(R.id.etLink);
         tvReCropHint = findViewById(R.id.tvReCropHint);

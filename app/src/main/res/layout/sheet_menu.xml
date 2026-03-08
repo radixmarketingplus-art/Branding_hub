@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_bottom_sheet_rounded_30"
+    android:orientation="vertical"
+    android:paddingBottom="24dp">
+
+    <!-- DRAG HANDLE -->
+    <View
+        android:layout_width="40dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="12dp"
+        android:background="#D1D5DB" />
+
+    <!-- USER HEADER -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:padding="24dp">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/menuProfileImage"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_profile"
+            app:shapeAppearanceOverlay="@style/CircleAppearance"
+            app:strokeColor="?attr/colorPrimary"
+            app:strokeWidth="1.5dp" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/menuName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-black"
+                android:textColor="?attr/colorOnSurface"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/menuEmail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textSize="14sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginHorizontal="24dp"
+        android:background="#0D000000" />
+
+    <!-- MENU ITEMS -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- EDIT PROFILE -->
+            <LinearLayout
+                android:id="@+id/menuEdit"
+                style="@style/SettingsItemStyle"
+                android:layout_width="match_parent"
+                android:layout_height="56dp">
+                <ImageView
+                    style="@style/SettingsIconStyle"
+                    android:src="@drawable/ic_edit"
+                    app:tint="?attr/colorPrimary" />
+                <TextView
+                    style="@style/SettingsTextStyle"
+                    android:text="@string/btn_edit_profile" />
+            </LinearLayout>
+
+            <!-- SUBSCRIPTION -->
+            <LinearLayout
+                android:id="@+id/menuSubscription"
+                style="@style/SettingsItemStyle"
+                android:layout_width="match_parent"
+                android:layout_height="56dp">
+                <ImageView
+                    style="@style/SettingsIconStyle"
+                    android:src="@drawable/ic_subscription_profile"
+                    app:tint="?attr/colorPrimary" />
+                <TextView
+                    style="@style/SettingsTextStyle"
+                    android:text="@string/menu_subscription" />
+            </LinearLayout>
+
+            <!-- LANGUAGE -->
+            <LinearLayout
+                android:id="@+id/menuLanguage"
+                style="@style/SettingsItemStyle"
+                android:layout_width="match_parent"
+                android:layout_height="56dp">
+                <ImageView
+                    style="@style/SettingsIconStyle"
+                    android:src="@drawable/ic_language_profile"
+                    app:tint="?attr/colorPrimary" />
+                <TextView
+                    style="@style/SettingsTextStyle"
+                    android:text="@string/menu_language" />
+            </LinearLayout>
+
+            <!-- SETTINGS -->
+            <LinearLayout
+                android:id="@+id/menuSettings"
+                style="@style/SettingsItemStyle"
+                android:layout_width="match_parent"
+                android:layout_height="56dp">
+                <ImageView
+                    style="@style/SettingsIconStyle"
+                    android:src="@drawable/ic_settings_profile"
+                    app:tint="?attr/colorPrimary" />
+                <TextView
+                    style="@style/SettingsTextStyle"
+                    android:text="@string/menu_settings" />
+            </LinearLayout>
+
+            <!-- SUPPORT -->
+            <LinearLayout
+                android:id="@+id/menuSupport"
+                style="@style/SettingsItemStyle"
+                android:layout_width="match_parent"
+                android:layout_height="56dp">
+                <ImageView
+                    style="@style/SettingsIconStyle"
+                    android:src="@drawable/ic_support_profile"
+                    app:tint="?attr/colorPrimary" />
+                <TextView
+                    style="@style/SettingsTextStyle"
+                    android:text="@string/menu_support" />
+            </LinearLayout>
+
+            <!-- RATE APP -->
+            <LinearLayout
+                android:id="@+id/menuRate"
+                style="@style/SettingsItemStyle"
+                android:layout_width="match_parent"
+                android:layout_height="56dp">
+                <ImageView
+                    style="@style/SettingsIconStyle"
+                    android:src="@drawable/ic_rate_profile"
+                    app:tint="?attr/colorPrimary" />
+                <TextView
+                    style="@style/SettingsTextStyle"
+                    android:text="@string/menu_rate" />
+            </LinearLayout>
+
+            <!-- SHARE -->
+            <LinearLayout
+                android:id="@+id/menuShare"
+                style="@style/SettingsItemStyle"
+                android:layout_width="match_parent"
+                android:layout_height="56dp">
+                <ImageView
+                    style="@style/SettingsIconStyle"
+                    android:src="@drawable/ic_share_modern"
+                    app:tint="?attr/colorPrimary" />
+                <TextView
+                    style="@style/SettingsTextStyle"
+                    android:text="@string/menu_share" />
+            </LinearLayout>
+
+            <!-- DARK MODE -->
+            <LinearLayout
+                style="@style/SettingsItemStyle"
+                android:layout_width="match_parent"
+                android:layout_height="56dp">
+                <ImageView
+                    style="@style/SettingsIconStyle"
+                    android:src="@drawable/ic_dark_mode_profile"
+                    app:tint="?attr/colorPrimary" />
+                <TextView
+                    style="@style/SettingsTextStyle"
+                    android:layout_weight="1"
+                    android:text="@string/menu_mode" />
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/menuDarkSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginHorizontal="24dp"
+                android:layout_marginVertical="8dp"
+                android:background="#0D000000" />
+
+            <!-- LOGOUT -->
+            <LinearLayout
+                android:id="@+id/menuLogout"
+                style="@style/SettingsItemStyle"
+                android:layout_width="match_parent"
+                android:layout_height="56dp">
+                <ImageView
+                    style="@style/SettingsIconStyle"
+                    android:src="@drawable/ic_logout_profile"
+                    app:tint="#64748B" />
+                <TextView
+                    style="@style/SettingsTextStyle"
+                    android:text="@string/menu_logout"
+                    android:textColor="#64748B" />
+            </LinearLayout>
+
+            <!-- DELETE ACCOUNT -->
+            <LinearLayout
+                android:id="@+id/menuDelete"
+                style="@style/SettingsItemStyle"
+                android:layout_width="match_parent"
+                android:layout_height="56dp">
+                <ImageView
+                    style="@style/SettingsIconStyle"
+                    android:src="@drawable/ic_delete"
+                    app:tint="#EF4444" />
+                <TextView
+                    style="@style/SettingsTextStyle"
+                    android:text="@string/menu_delete_account"
+                    android:textColor="#EF4444" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</LinearLayout>

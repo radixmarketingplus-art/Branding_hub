@@ -220,7 +220,8 @@ public class TemplateGalleryActivity extends BaseActivity {
                     for (com.google.firebase.database.DataSnapshot subSnap : snapshot.getChildren()) {
                         for (com.google.firebase.database.DataSnapshot itemSnap : subSnap.getChildren()) {
                             String url = itemSnap.hasChild("imagePath") ? itemSnap.child("imagePath").getValue(String.class) : itemSnap.child("url").getValue(String.class);
-                            if (url != null) result.add(new TemplateModel(itemSnap.getKey(), url, "Business Frame/" + subSnap.getKey()));
+                            String type = itemSnap.child("type").getValue(String.class);
+                            if (url != null) result.add(new TemplateModel(itemSnap.getKey(), url, "Business Frame/" + subSnap.getKey(), null, type));
                         }
                     }
                     adapter.setData(result);
@@ -234,7 +235,8 @@ public class TemplateGalleryActivity extends BaseActivity {
                     ArrayList<TemplateModel> result = new ArrayList<>();
                     for (com.google.firebase.database.DataSnapshot d : snapshot.getChildren()) {
                         String url = d.hasChild("imagePath") ? d.child("imagePath").getValue(String.class) : d.child("url").getValue(String.class);
-                        if (url != null) result.add(new TemplateModel(d.getKey(), url, "Business Frame/" + sub));
+                        String type = d.child("type").getValue(String.class);
+                        if (url != null) result.add(new TemplateModel(d.getKey(), url, "Business Frame/" + sub, null, type));
                     }
                     adapter.setData(result);
                 }
@@ -340,8 +342,9 @@ public class TemplateGalleryActivity extends BaseActivity {
                                     String path = itemSnapshot.hasChild("imagePath") ? 
                                             itemSnapshot.child("imagePath").getValue(String.class) : 
                                             itemSnapshot.child("url").getValue(String.class);
+                                    String type = itemSnapshot.child("type").getValue(String.class);
                                     if (path != null) {
-                                        result.add(new TemplateModel(itemSnapshot.getKey(), path, cat + "/" + subSnapshot.getKey()));
+                                        result.add(new TemplateModel(itemSnapshot.getKey(), path, cat + "/" + subSnapshot.getKey(), null, type));
                                     }
                                 }
                             }
@@ -350,8 +353,9 @@ public class TemplateGalleryActivity extends BaseActivity {
                                 String path = itemSnapshot.hasChild("imagePath") ? 
                                         itemSnapshot.child("imagePath").getValue(String.class) : 
                                         itemSnapshot.child("url").getValue(String.class);
+                                String type = itemSnapshot.child("type").getValue(String.class);
                                 if (path != null) {
-                                    result.add(new TemplateModel(itemSnapshot.getKey(), path, cat));
+                                    result.add(new TemplateModel(itemSnapshot.getKey(), path, cat, null, type));
                                 }
                             }
                         }
@@ -374,8 +378,9 @@ public class TemplateGalleryActivity extends BaseActivity {
                         } else if (itemSnapshot.hasChild("url")) {
                             path = itemSnapshot.child("url").getValue(String.class);
                         }
+                        String type = itemSnapshot.child("type").getValue(String.class);
                         if (path != null) {
-                            result.add(new TemplateModel(itemSnapshot.getKey(), path, key));
+                            result.add(new TemplateModel(itemSnapshot.getKey(), path, key, null, type));
                         }
                     }
                     adapter.setData(result);

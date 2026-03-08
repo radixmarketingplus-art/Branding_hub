@@ -17,6 +17,11 @@
         android:icon="@drawable/ic_template"/>
 
     <item
+        android:id="@+id/ad_request"
+        android:title="@string/nav_ad_request"
+        android:icon="@drawable/ic_megaphone"/>
+
+    <item
         android:id="@+id/contact"
         android:title="@string/nav_contact"
         android:icon="@drawable/ic_call"/>
