@@ -109,9 +109,12 @@ public class OnboardingActivity extends AppCompatActivity {
 
     // ===== FINISH ONBOARDING & GO TO HOME =====
     private void finishOnboarding() {
-        // Mark onboarding done in SharedPreferences
+        // Mark onboarding done for this user
         SharedPreferences sp = getSharedPreferences("APP_DATA", MODE_PRIVATE);
-        sp.edit().putBoolean("onboarding_done", true).apply();
+        String uid = com.google.firebase.auth.FirebaseAuth.getInstance().getUid();
+        if (uid != null) {
+            sp.edit().putBoolean("onboarding_done_" + uid, true).apply();
+        }
 
         Intent intent = new Intent(this, HomeActivity.class);
         intent.putExtra("show_login_success", true);

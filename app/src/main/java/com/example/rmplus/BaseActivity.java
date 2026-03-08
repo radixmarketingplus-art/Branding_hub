@@ -120,7 +120,7 @@ public class BaseActivity extends AppCompatActivity {
                         for (DataSnapshot d : snapshot.getChildren()) {
                             Boolean read = d.child("read").getValue(Boolean.class);
                             Long expiry = d.child("expiryDate").getValue(Long.class);
-                            
+
                             // Only count if not read AND not expired
                             if (read != null && !read) {
                                 if (expiry == null || expiry == 0 || expiry > now) {
@@ -243,7 +243,8 @@ public class BaseActivity extends AppCompatActivity {
 
     private void setupDrawer() {
         DrawerLayout drawer = findViewById(R.id.drawerLayout);
-        if (drawer == null) return;
+        if (drawer == null)
+            return;
 
         ShapeableImageView profileImg = findViewById(R.id.drawerProfileImage);
         TextView nameTxt = findViewById(R.id.drawerName);
@@ -257,9 +258,12 @@ public class BaseActivity extends AppCompatActivity {
                     .addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot s) {
-                            if (nameTxt != null) nameTxt.setText(s.child("name").getValue(String.class));
-                            if (emailTxt != null) emailTxt.setText(s.child("email").getValue(String.class));
-                            if (mobileTxt != null) mobileTxt.setText(s.child("mobile").getValue(String.class));
+                            if (nameTxt != null)
+                                nameTxt.setText(s.child("name").getValue(String.class));
+                            if (emailTxt != null)
+                                emailTxt.setText(s.child("email").getValue(String.class));
+                            if (mobileTxt != null)
+                                mobileTxt.setText(s.child("mobile").getValue(String.class));
                             String url = s.child("profileImage").getValue(String.class);
                             if (url != null && !url.isEmpty() && profileImg != null) {
                                 Glide.with(BaseActivity.this)
@@ -269,7 +273,10 @@ public class BaseActivity extends AppCompatActivity {
                                         .into(profileImg);
                             }
                         }
-                        @Override public void onCancelled(DatabaseError e) {}
+
+                        @Override
+                        public void onCancelled(DatabaseError e) {
+                        }
                     });
         }
 
@@ -277,49 +284,85 @@ public class BaseActivity extends AppCompatActivity {
             int currentMode = AppCompatDelegate.getDefaultNightMode();
             darkSwitch.setChecked(currentMode == AppCompatDelegate.MODE_NIGHT_YES);
             darkSwitch.setOnCheckedChangeListener((v, isChecked) -> {
-                AppCompatDelegate.setDefaultNightMode(isChecked ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
+                AppCompatDelegate.setDefaultNightMode(
+                        isChecked ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
                 drawer.closeDrawer(Gravity.START);
             });
         }
 
         // Drawer Item Listeners
         View edit = findViewById(R.id.drawerEdit);
-        if (edit != null) edit.setOnClickListener(v -> { drawer.closeDrawer(Gravity.START); startActivity(new Intent(this, EditProfileActivity.class)); });
+        if (edit != null)
+            edit.setOnClickListener(v -> {
+                drawer.closeDrawer(Gravity.START);
+                startActivity(new Intent(this, EditProfileActivity.class));
+            });
         View sub = findViewById(R.id.drawerSubscription);
-        if (sub != null) sub.setOnClickListener(v -> { drawer.closeDrawer(Gravity.START); startActivity(new Intent(this, SubscriptionActivity.class)); });
+        if (sub != null)
+            sub.setOnClickListener(v -> {
+                drawer.closeDrawer(Gravity.START);
+                startActivity(new Intent(this, SubscriptionActivity.class));
+            });
         View lang = findViewById(R.id.drawerLanguage);
-        if (lang != null) lang.setOnClickListener(v -> { drawer.closeDrawer(Gravity.START); showLanguageDialog(); });
+        if (lang != null)
+            lang.setOnClickListener(v -> {
+                drawer.closeDrawer(Gravity.START);
+                showLanguageDialog();
+            });
         View settings = findViewById(R.id.drawerSettings);
-        if (settings != null) settings.setOnClickListener(v -> { drawer.closeDrawer(Gravity.START); startActivity(new Intent(this, SettingsActivity.class)); });
+        if (settings != null)
+            settings.setOnClickListener(v -> {
+                drawer.closeDrawer(Gravity.START);
+                startActivity(new Intent(this, SettingsActivity.class));
+            });
         View rate = findViewById(R.id.drawerRate);
-        if (rate != null) rate.setOnClickListener(v -> {
-            drawer.closeDrawer(Gravity.START);
-            try {
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + getPackageName())));
-            } catch (Exception e) {
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + getPackageName())));
-            }
-        });
+        if (rate != null)
+            rate.setOnClickListener(v -> {
+                drawer.closeDrawer(Gravity.START);
+                try {
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + getPackageName())));
+                } catch (Exception e) {
+                    startActivity(new Intent(Intent.ACTION_VIEW,
+                            Uri.parse("https://play.google.com/store/apps/details?id=" + getPackageName())));
+                }
+            });
         View support = findViewById(R.id.drawerSupport);
-        if (support != null) support.setOnClickListener(v -> { drawer.closeDrawer(Gravity.START); showContactSupportDialog(); });
+        if (support != null)
+            support.setOnClickListener(v -> {
+                drawer.closeDrawer(Gravity.START);
+                showContactSupportDialog();
+            });
         View share = findViewById(R.id.drawerShare);
-        if (share != null) share.setOnClickListener(v -> { drawer.closeDrawer(Gravity.START); shareApp(); });
+        if (share != null)
+            share.setOnClickListener(v -> {
+                drawer.closeDrawer(Gravity.START);
+                shareApp();
+            });
         View logout = findViewById(R.id.drawerLogout);
-        if (logout != null) logout.setOnClickListener(v -> {
-            drawer.closeDrawer(Gravity.START);
-            FirebaseAuth.getInstance().signOut();
-            getSharedPreferences("APP_DATA", MODE_PRIVATE).edit().clear().apply();
-            Intent intent = new Intent(this, LoginActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-            finishAffinity();
-        });
+        if (logout != null)
+            logout.setOnClickListener(v -> {
+                drawer.closeDrawer(Gravity.START);
+                FirebaseAuth.getInstance().signOut();
+                getSharedPreferences("APP_DATA", MODE_PRIVATE).edit()
+                        .remove("isLoggedIn")
+                        .remove("role")
+                        .apply();
+                Intent intent = new Intent(this, LoginActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                finishAffinity();
+            });
         View delete = findViewById(R.id.drawerDelete);
-        if (delete != null) delete.setOnClickListener(v -> { drawer.closeDrawer(Gravity.START); deleteAccount(); });
+        if (delete != null)
+            delete.setOnClickListener(v -> {
+                drawer.closeDrawer(Gravity.START);
+                deleteAccount();
+            });
     }
 
     private void showMenuSheet() {
-        com.google.android.material.bottomsheet.BottomSheetDialog sheet = new com.google.android.material.bottomsheet.BottomSheetDialog(this);
+        com.google.android.material.bottomsheet.BottomSheetDialog sheet = new com.google.android.material.bottomsheet.BottomSheetDialog(
+                this);
         View view = getLayoutInflater().inflate(R.layout.sheet_menu, null);
         sheet.setContentView(view);
 
@@ -344,41 +387,70 @@ public class BaseActivity extends AppCompatActivity {
                                         .into(profileImg);
                             }
                         }
-                        @Override public void onCancelled(DatabaseError e) {}
+
+                        @Override
+                        public void onCancelled(DatabaseError e) {
+                        }
                     });
         }
 
         int currentMode = AppCompatDelegate.getDefaultNightMode();
         darkSwitch.setChecked(currentMode == AppCompatDelegate.MODE_NIGHT_YES);
         darkSwitch.setOnCheckedChangeListener((v, isChecked) -> {
-            AppCompatDelegate.setDefaultNightMode(isChecked ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
+            AppCompatDelegate.setDefaultNightMode(
+                    isChecked ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
             sheet.dismiss();
         });
 
-        view.findViewById(R.id.menuEdit).setOnClickListener(v -> { sheet.dismiss(); startActivity(new Intent(this, EditProfileActivity.class)); });
-        view.findViewById(R.id.menuSubscription).setOnClickListener(v -> { sheet.dismiss(); startActivity(new Intent(this, SubscriptionActivity.class)); });
-        view.findViewById(R.id.menuLanguage).setOnClickListener(v -> { sheet.dismiss(); showLanguageDialog(); });
-        view.findViewById(R.id.menuSettings).setOnClickListener(v -> { sheet.dismiss(); startActivity(new Intent(this, SettingsActivity.class)); });
+        view.findViewById(R.id.menuEdit).setOnClickListener(v -> {
+            sheet.dismiss();
+            startActivity(new Intent(this, EditProfileActivity.class));
+        });
+        view.findViewById(R.id.menuSubscription).setOnClickListener(v -> {
+            sheet.dismiss();
+            startActivity(new Intent(this, SubscriptionActivity.class));
+        });
+        view.findViewById(R.id.menuLanguage).setOnClickListener(v -> {
+            sheet.dismiss();
+            showLanguageDialog();
+        });
+        view.findViewById(R.id.menuSettings).setOnClickListener(v -> {
+            sheet.dismiss();
+            startActivity(new Intent(this, SettingsActivity.class));
+        });
         view.findViewById(R.id.menuRate).setOnClickListener(v -> {
             sheet.dismiss();
             try {
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + getPackageName())));
             } catch (Exception e) {
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + getPackageName())));
+                startActivity(new Intent(Intent.ACTION_VIEW,
+                        Uri.parse("https://play.google.com/store/apps/details?id=" + getPackageName())));
             }
         });
-        view.findViewById(R.id.menuSupport).setOnClickListener(v -> { sheet.dismiss(); showContactSupportDialog(); });
-        view.findViewById(R.id.menuShare).setOnClickListener(v -> { sheet.dismiss(); shareApp(); });
+        view.findViewById(R.id.menuSupport).setOnClickListener(v -> {
+            sheet.dismiss();
+            showContactSupportDialog();
+        });
+        view.findViewById(R.id.menuShare).setOnClickListener(v -> {
+            sheet.dismiss();
+            shareApp();
+        });
         view.findViewById(R.id.menuLogout).setOnClickListener(v -> {
             sheet.dismiss();
             FirebaseAuth.getInstance().signOut();
-            getSharedPreferences("APP_DATA", MODE_PRIVATE).edit().clear().apply();
+            getSharedPreferences("APP_DATA", MODE_PRIVATE).edit()
+                    .remove("isLoggedIn")
+                    .remove("role")
+                    .apply();
             Intent intent = new Intent(this, LoginActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
             finishAffinity();
         });
-        view.findViewById(R.id.menuDelete).setOnClickListener(v -> { sheet.dismiss(); deleteAccount(); });
+        view.findViewById(R.id.menuDelete).setOnClickListener(v -> {
+            sheet.dismiss();
+            deleteAccount();
+        });
 
         sheet.show();
     }
@@ -388,8 +460,10 @@ public class BaseActivity extends AppCompatActivity {
         new AlertDialog.Builder(this)
                 .setTitle(R.string.select_language)
                 .setItems(lang, (d, i) -> {
-                    if (i == 0) setLocale("en");
-                    else setLocale("hi");
+                    if (i == 0)
+                        setLocale("en");
+                    else
+                        setLocale("hi");
                 }).show();
     }
 

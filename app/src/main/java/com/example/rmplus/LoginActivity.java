@@ -330,7 +330,8 @@ public class LoginActivity extends AppCompatActivity {
 
                                                             // ===== OPEN HOME (spotlight onboarding runs on
                                                             // HomeActivity) =====
-                                                            boolean onboardingDone = sp.getBoolean("onboarding_done",
+                                                            boolean onboardingDone = sp.getBoolean(
+                                                                    "onboarding_done_" + uid,
                                                                     false);
                                                             Intent intent = new Intent(LoginActivity.this,
                                                                     HomeActivity.class);

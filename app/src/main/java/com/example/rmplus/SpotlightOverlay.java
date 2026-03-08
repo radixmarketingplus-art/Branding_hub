@@ -70,14 +70,15 @@ public class SpotlightOverlay extends FrameLayout {
         if (targets.isEmpty())
             return;
 
-        // Add to the activity's root content view
-        ViewGroup root = activity.findViewById(android.R.id.content);
+        // Add to the window's DecorView so overlay renders above everything
+        ViewGroup root = (ViewGroup) activity.getWindow().getDecorView();
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
                 LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         root.addView(this, params);
 
-        // Use hardware layer for PorterDuff to work
-        setLayerType(LAYER_TYPE_HARDWARE, null);
+        // Ensure overlay is on top of all elevated views
+        bringToFront();
+        setTranslationZ(999f);
 
         // Show first target after a brief delay for layout
         postDelayed(() -> showTarget(0), 300);
@@ -128,12 +129,15 @@ public class SpotlightOverlay extends FrameLayout {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+        // Use saveLayer so PorterDuff CLEAR works without LAYER_TYPE_HARDWARE
+        int sc = canvas.saveLayer(0, 0, getWidth(), getHeight(), null);
         // Draw dark overlay
         canvas.drawRect(0, 0, getWidth(), getHeight(), overlayPaint);
         // Clear the spotlight circle
         if (animatedRadius > 0) {
             canvas.drawCircle(spotX, spotY, animatedRadius, clearPaint);
         }
+        canvas.restoreToCount(sc);
     }
 
     private void showTooltip(SpotlightTarget target, float cx, float cy, float radius) {
@@ -216,9 +220,12 @@ public class SpotlightOverlay extends FrameLayout {
     }
 
     private void dismiss() {
-        // Mark onboarding as done
+        // Mark onboarding as done for this user
         SharedPreferences sp = getContext().getSharedPreferences("APP_DATA", Context.MODE_PRIVATE);
-        sp.edit().putBoolean("onboarding_done", true).apply();
+        String uid = com.google.firebase.auth.FirebaseAuth.getInstance().getUid();
+        if (uid != null) {
+            sp.edit().putBoolean("onboarding_done_" + uid, true).apply();
+        }
 
         // Fade out animation
         animate()

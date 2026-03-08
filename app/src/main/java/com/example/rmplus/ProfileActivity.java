@@ -123,8 +123,10 @@ public class ProfileActivity extends AppCompatActivity {
                         auth.signOut();
 
                         SharedPreferences sp = getSharedPreferences("APP_DATA", MODE_PRIVATE);
-
-                        sp.edit().clear().apply();
+                        sp.edit()
+                                        .remove("isLoggedIn")
+                                        .remove("role")
+                                        .apply();
 
                         startActivity(new Intent(this,
                                         LoginActivity.class));
