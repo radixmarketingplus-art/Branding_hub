@@ -13,71 +13,76 @@
         android:fillViewport="true"
         android:overScrollMode="never">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="24dp">
+            android:orientation="vertical">
 
-            <!-- TOP ILLUSTRATION -->
-            <ImageView
-                android:id="@+id/appLogo"
-                android:layout_width="0dp"
-                android:layout_height="240dp"
-                android:src="@drawable/security_illustration1"
-                android:scaleType="fitCenter"
-                android:layout_marginTop="32dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintWidth_percent="0.75" />
-
-            <!-- TITLE SECTION -->
+            <!-- TOP SECTION (illustration + title) -->
             <LinearLayout
-                android:id="@+id/titleSection"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:gravity="center"
-                android:layout_marginTop="32dp"
-                app:layout_constraintTop_toBottomOf="@id/appLogo">
+                android:gravity="center_horizontal"
+                android:paddingHorizontal="24dp"
+                android:paddingTop="32dp">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/title_welcome_back"
-                    android:textSize="28sp"
-                    android:fontFamily="sans-serif-black"
-                    android:textColor="?attr/colorOnSurface"
-                    android:letterSpacing="-0.02" />
+                <!-- TOP ILLUSTRATION -->
+                <ImageView
+                    android:id="@+id/appLogo"
+                    android:layout_width="match_parent"
+                    android:layout_height="240dp"
+                    android:src="@drawable/security_illustration1"
+                    android:scaleType="fitCenter" />
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <!-- TITLE SECTION -->
+                <LinearLayout
+                    android:id="@+id/titleSection"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/desc_signin_continue"
-                    android:textSize="15sp"
-                    android:textColor="?attr/colorOnSurfaceVariant"
-                    android:layout_marginTop="8dp"
-                    android:fontFamily="sans-serif-medium" />
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:layout_marginTop="32dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/title_welcome_back"
+                        android:textSize="28sp"
+                        android:fontFamily="sans-serif-black"
+                        android:textColor="?attr/colorOnSurface"
+                        android:letterSpacing="-0.02" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/desc_signin_continue"
+                        android:textSize="15sp"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:layout_marginTop="8dp"
+                        android:fontFamily="sans-serif-medium" />
+                </LinearLayout>
             </LinearLayout>
 
-            <!-- FORM CARD -->
+            <!-- FORM CARD - Bottom Sheet Style (top rounded, sides + bottom flush) -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/bottomCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
-                app:cardCornerRadius="24dp"
-                app:cardElevation="0dp"
+                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.TopRounded"
+                app:cardElevation="16dp"
                 app:cardBackgroundColor="@color/surface_light"
-                app:strokeWidth="1dp"
-                app:strokeColor="#0D000000"
-                app:layout_constraintTop_toBottomOf="@id/titleSection">
+                app:strokeWidth="0dp">
 
+                <!-- Negative margin trick: push card sides/bottom flush, keep top rounded visible -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="24dp">
+                    android:paddingHorizontal="24dp"
+                    android:paddingTop="28dp"
+                    android:paddingBottom="24dp">
 
                     <com.google.android.material.button.MaterialButtonToggleGroup
                         android:id="@+id/modeToggle"
@@ -176,27 +181,23 @@
                         app:backgroundTint="?attr/colorPrimary"
                         android:letterSpacing="0.01" />
 
+                    <!-- FOOTER (inside card for bottom flush design) -->
+                    <TextView
+                        android:id="@+id/registerText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/btn_create_account"
+                        android:textColor="?attr/colorPrimary"
+                        android:textSize="15sp"
+                        android:fontFamily="sans-serif-medium"
+                        android:layout_marginTop="24dp"
+                        android:layout_gravity="center_horizontal" />
+
                 </LinearLayout>
 
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- FOOTER -->
-            <TextView
-                android:id="@+id/registerText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/btn_create_account"
-                android:textColor="?attr/colorPrimary"
-                android:textSize="15sp"
-                android:fontFamily="sans-serif-medium"
-                android:layout_marginTop="32dp"
-                android:layout_marginBottom="24dp"
-                app:layout_constraintTop_toBottomOf="@id/bottomCard"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
     </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

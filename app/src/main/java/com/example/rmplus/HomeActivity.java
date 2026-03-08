@@ -369,24 +369,36 @@ public class HomeActivity extends BaseActivity {
                     .setInterpolator(new DecelerateInterpolator())
                     .withEndAction(() -> {
                         try {
-                            dialog.dismiss();
+                            if (!isFinishing() && !isDestroyed() && dialog != null && dialog.isShowing()) {
+                                dialog.dismiss();
+                            }
                         } catch (Exception ignored) {
                         }
                         // ===== START SPOTLIGHT AFTER DIALOG CLOSES =====
-                        if (pendingOnboarding) {
+                        if (pendingOnboarding && !isFinishing() && !isDestroyed()) {
                             pendingOnboarding = false;
-                            new Handler().postDelayed(() -> startSpotlightOnboarding(), 500);
+                            new Handler().postDelayed(() -> {
+                                if (!isFinishing() && !isDestroyed()) {
+                                    startSpotlightOnboarding();
+                                }
+                            }, 500);
                         }
                     })
                     .start();
         } else {
             try {
-                dialog.dismiss();
+                if (!isFinishing() && !isDestroyed() && dialog != null && dialog.isShowing()) {
+                    dialog.dismiss();
+                }
             } catch (Exception ignored) {
             }
-            if (pendingOnboarding) {
+            if (pendingOnboarding && !isFinishing() && !isDestroyed()) {
                 pendingOnboarding = false;
-                new Handler().postDelayed(() -> startSpotlightOnboarding(), 500);
+                new Handler().postDelayed(() -> {
+                    if (!isFinishing() && !isDestroyed()) {
+                        startSpotlightOnboarding();
+                    }
+                }, 500);
             }
         }
     }
@@ -629,15 +641,15 @@ public class HomeActivity extends BaseActivity {
                     public void onDataChange(DataSnapshot snapshot) {
                         safelyHideSkeleton(skFestival);
                         ArrayList<TemplateModel> all = new ArrayList<>();
-                            for (DataSnapshot d : snapshot.getChildren()) {
-                                String url = d.hasChild("imagePath") ? d.child("imagePath").getValue(String.class)
-                                        : d.child("url").getValue(String.class);
-                                String itemDate = d.child("date").getValue(String.class);
-                                String type = d.child("type").getValue(String.class);
-                                if (url != null) {
-                                    all.add(new TemplateModel(d.getKey(), url, "Festival Cards", itemDate, type));
-                                }
+                        for (DataSnapshot d : snapshot.getChildren()) {
+                            String url = d.hasChild("imagePath") ? d.child("imagePath").getValue(String.class)
+                                    : d.child("url").getValue(String.class);
+                            String itemDate = d.child("date").getValue(String.class);
+                            String type = d.child("type").getValue(String.class);
+                            if (url != null) {
+                                all.add(new TemplateModel(d.getKey(), url, "Festival Cards", itemDate, type));
                             }
+                        }
 
                         ArrayList<TemplateModel> filtered = new ArrayList<>();
                         // Standardize to "d-M-yyyy" to handle non-padded dates from Upload (1-2-2026)
@@ -866,16 +878,16 @@ public class HomeActivity extends BaseActivity {
                     ArrayList<TemplateModel> allList = new ArrayList<>();
                     for (DataSnapshot subSnapshot : snapshot.getChildren()) {
                         // Skip if it's not a sub-category node (though typically they all are here)
-                            for (DataSnapshot itemSnapshot : subSnapshot.getChildren()) {
-                                String url = itemSnapshot.hasChild("imagePath")
-                                        ? itemSnapshot.child("imagePath").getValue(String.class)
-                                        : itemSnapshot.child("url").getValue(String.class);
-                                String type = itemSnapshot.child("type").getValue(String.class);
-                                if (url != null) {
-                                    allList.add(new TemplateModel(itemSnapshot.getKey(), url,
-                                            parentKey + "/" + subSnapshot.getKey(), null, type));
-                                }
+                        for (DataSnapshot itemSnapshot : subSnapshot.getChildren()) {
+                            String url = itemSnapshot.hasChild("imagePath")
+                                    ? itemSnapshot.child("imagePath").getValue(String.class)
+                                    : itemSnapshot.child("url").getValue(String.class);
+                            String type = itemSnapshot.child("type").getValue(String.class);
+                            if (url != null) {
+                                allList.add(new TemplateModel(itemSnapshot.getKey(), url,
+                                        parentKey + "/" + subSnapshot.getKey(), null, type));
                             }
+                        }
                     }
                     rvItems.setAdapter(new TemplateGridAdapter(allList, t -> {
                         Intent i = new Intent(HomeActivity.this, TemplatePreviewActivity.class);

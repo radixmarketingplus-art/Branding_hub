@@ -45,6 +45,7 @@ public class ManageTemplatesActivity extends AppCompatActivity {
     com.google.android.material.card.MaterialCardView canvasContainer;
     com.google.android.material.button.MaterialButton btnSave;
     com.google.android.material.button.MaterialButton btnSendBack, btnBringFront, btnTextSendBack, btnTextBringFront;
+    com.google.android.material.button.MaterialButton btnFont, btnBold, btnItalic, btnUnderline;
     Button btnColor;
     LinearLayout btnText, btnGallery, btnFrame, btnBgColorTool;
     LinearLayout textLayerControlsLayout, imageLayerControlsLayout;
@@ -56,6 +57,7 @@ public class ManageTemplatesActivity extends AppCompatActivity {
 
     static final int PICK_IMAGE = 101;
     SeekBar seekTextSize, seekImageSize;
+    SeekBar seekTextRotate, seekImageRotate;
 
     String originalPath;
     String templateId;
@@ -86,6 +88,8 @@ public class ManageTemplatesActivity extends AppCompatActivity {
         imageControls = findViewById(R.id.imageControls);
         seekTextSize = findViewById(R.id.seekTextSize);
         seekImageSize = findViewById(R.id.seekImageSize);
+        seekTextRotate = findViewById(R.id.seekTextRotate);
+        seekImageRotate = findViewById(R.id.seekImageRotate);
         btnFrame = findViewById(R.id.btnFrame);
         frameControls = findViewById(R.id.frameControls);
         rvFrames = findViewById(R.id.rvFrames);
@@ -100,6 +104,11 @@ public class ManageTemplatesActivity extends AppCompatActivity {
         textLayerControlsLayout = findViewById(R.id.textLayerControlsLayout);
         imageLayerControlsLayout = findViewById(R.id.imageLayerControlsLayout);
 
+        btnFont = findViewById(R.id.btnFont);
+        btnBold = findViewById(R.id.btnBold);
+        btnItalic = findViewById(R.id.btnItalic);
+        btnUnderline = findViewById(R.id.btnUnderline);
+
         uid = FirebaseAuth.getInstance().getUid();
         rootRef = FirebaseDatabase.getInstance().getReference();
 
@@ -108,27 +117,34 @@ public class ManageTemplatesActivity extends AppCompatActivity {
 
         if (originalPath != null) {
             templateId = makeSafeKey(originalPath);
-            
+
             isVideo = getIntent().getBooleanExtra("isVideo", false);
             if (isVideo) {
                 // 🎬 Adjust Ratio for Reel/Video (9:16)
-                androidx.constraintlayout.widget.ConstraintLayout.LayoutParams lp = (androidx.constraintlayout.widget.ConstraintLayout.LayoutParams) canvasContainer.getLayoutParams();
+                androidx.constraintlayout.widget.ConstraintLayout.LayoutParams lp = (androidx.constraintlayout.widget.ConstraintLayout.LayoutParams) canvasContainer
+                        .getLayoutParams();
                 lp.dimensionRatio = "9:16";
                 canvasContainer.setLayoutParams(lp);
 
                 imgTemplate.setVisibility(View.GONE);
                 videoTemplate.setVisibility(View.VISIBLE);
                 videoTemplate.setVideoURI(Uri.parse(originalPath));
+
+                android.widget.MediaController mediaController = new android.widget.MediaController(this);
+                mediaController.setAnchorView(videoTemplate);
+                videoTemplate.setMediaController(mediaController);
+
                 videoTemplate.setOnPreparedListener(mp -> {
                     mp.setLooping(true);
                     videoTemplate.start();
                 });
             } else {
                 // 🖼️ Default Ratio for Image (1:1)
-                androidx.constraintlayout.widget.ConstraintLayout.LayoutParams lp = (androidx.constraintlayout.widget.ConstraintLayout.LayoutParams) canvasContainer.getLayoutParams();
+                androidx.constraintlayout.widget.ConstraintLayout.LayoutParams lp = (androidx.constraintlayout.widget.ConstraintLayout.LayoutParams) canvasContainer
+                        .getLayoutParams();
                 lp.dimensionRatio = "1:1";
                 canvasContainer.setLayoutParams(lp);
-                
+
                 loadImageSmart(originalPath, imgTemplate);
             }
         }
@@ -247,7 +263,7 @@ public class ManageTemplatesActivity extends AppCompatActivity {
         btnSendBack.setOnClickListener(v -> {
             if (activeOverlay != null && activeOverlay.getParent() == canvas) {
                 canvas.removeView(activeOverlay);
-                int targetIndex = isBusinessFrame ? 0 : 1;
+                int targetIndex = isVideo ? 2 : (isBusinessFrame ? 0 : 1);
                 canvas.addView(activeOverlay, targetIndex);
             }
         });
@@ -262,7 +278,7 @@ public class ManageTemplatesActivity extends AppCompatActivity {
         btnTextSendBack.setOnClickListener(v -> {
             if (activeOverlay != null && activeOverlay.getParent() == canvas) {
                 canvas.removeView(activeOverlay);
-                int targetIndex = isBusinessFrame ? 0 : 1;
+                int targetIndex = isVideo ? 2 : (isBusinessFrame ? 0 : 1);
                 canvas.addView(activeOverlay, targetIndex);
             }
         });
@@ -273,6 +289,12 @@ public class ManageTemplatesActivity extends AppCompatActivity {
             }
         });
 
+        // ==== TEXT FORMATTING CONTROLS ====
+        btnBold.setOnClickListener(v -> toggleTextStyle(android.graphics.Typeface.BOLD));
+        btnItalic.setOnClickListener(v -> toggleTextStyle(android.graphics.Typeface.ITALIC));
+        btnUnderline.setOnClickListener(v -> toggleUnderline());
+        btnFont.setOnClickListener(v -> showFontPicker());
+
         // ==== SEEKBARS ====
         seekTextSize.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -280,6 +302,24 @@ public class ManageTemplatesActivity extends AppCompatActivity {
                 if (fromUser && activeContent instanceof TextView) {
                     float newSize = 10 + (progress * 2);
                     ((TextView) activeContent).setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, newSize);
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
+        });
+
+        seekTextRotate.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (fromUser && activeOverlay != null && activeContent instanceof TextView) {
+                    float rotation = progress - 180; // center is 0 degrees
+                    activeOverlay.setRotation(rotation);
                 }
             }
 
@@ -302,11 +342,27 @@ public class ManageTemplatesActivity extends AppCompatActivity {
 
                     if (((ViewGroup) activeOverlay).getChildCount() > 1) {
                         View btnDel = ((ViewGroup) activeOverlay).getChildAt(1);
-                        // Prevent the delete handle from warping or getting stretched weirdly
-                        // Keep its visual size consistent no matter how small the image gets
                         btnDel.setScaleX(1.0f / scale);
                         btnDel.setScaleY(1.0f / scale);
                     }
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
+        });
+
+        seekImageRotate.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (fromUser && activeOverlay != null && activeContent instanceof ImageView) {
+                    float rotation = progress - 180; // center is 0 degrees
+                    activeOverlay.setRotation(rotation);
                 }
             }
 
@@ -528,9 +584,28 @@ public class ManageTemplatesActivity extends AppCompatActivity {
             imageControls.setVisibility(View.GONE);
             frameControls.setVisibility(View.GONE);
 
-            float currentSize = ((TextView) activeContent).getTextSize();
+            TextView tv = (TextView) activeContent;
+            float currentSize = tv.getTextSize();
             int progress = (int) ((currentSize - 10) / 2);
             seekTextSize.setProgress(Math.max(0, Math.min(100, progress)));
+
+            float rotation = wrapper.getRotation() + 180;
+            seekTextRotate.setProgress(Math.max(0, Math.min(360, (int) rotation)));
+
+            // Sync text styles
+            int style = tv.getTypeface() != null ? tv.getTypeface().getStyle() : android.graphics.Typeface.NORMAL;
+            btnBold.setBackgroundTintList(android.content.res.ColorStateList.valueOf(
+                    (style & android.graphics.Typeface.BOLD) != 0
+                            ? getColorFromAttr(com.google.android.material.R.attr.colorPrimaryContainer)
+                            : getColorFromAttr(com.google.android.material.R.attr.colorSurfaceVariant)));
+            btnItalic.setBackgroundTintList(android.content.res.ColorStateList.valueOf(
+                    (style & android.graphics.Typeface.ITALIC) != 0
+                            ? getColorFromAttr(com.google.android.material.R.attr.colorPrimaryContainer)
+                            : getColorFromAttr(com.google.android.material.R.attr.colorSurfaceVariant)));
+            boolean isUnderlined = (tv.getPaintFlags() & android.graphics.Paint.UNDERLINE_TEXT_FLAG) != 0;
+            btnUnderline.setBackgroundTintList(android.content.res.ColorStateList.valueOf(
+                    isUnderlined ? getColorFromAttr(com.google.android.material.R.attr.colorPrimaryContainer)
+                            : getColorFromAttr(com.google.android.material.R.attr.colorSurfaceVariant)));
         } else {
             imageControls.setVisibility(View.VISIBLE);
             textControls.setVisibility(View.GONE);
@@ -539,6 +614,9 @@ public class ManageTemplatesActivity extends AppCompatActivity {
             float currentScale = wrapper.getScaleX();
             int progress = (int) ((currentScale - 0.1f) * 40f);
             seekImageSize.setProgress(Math.max(0, Math.min(100, progress)));
+
+            float rotation = wrapper.getRotation() + 180;
+            seekImageRotate.setProgress(Math.max(0, Math.min(360, (int) rotation)));
         }
     }
 
@@ -604,7 +682,7 @@ public class ManageTemplatesActivity extends AppCompatActivity {
     // ================= SAVE IMAGE =================
     void saveFinalImage() {
         if (isVideo) {
-            Toast.makeText(this, "Video saving with overlays is currently in development. You can preview it here.", Toast.LENGTH_LONG).show();
+            saveFinalVideo();
             return;
         }
 
@@ -638,6 +716,262 @@ public class ManageTemplatesActivity extends AppCompatActivity {
         } else {
             Toast.makeText(this, "Failed to save image!", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void saveFinalVideo() {
+        deselectAll();
+
+        // Custom Progress Dialog
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
+        LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setPadding(60, 40, 60, 40);
+
+        TextView tv = new TextView(this);
+        tv.setText("Generating video, please wait...");
+        tv.setTextSize(16);
+        tv.setPadding(0, 0, 0, 30);
+        layout.addView(tv);
+
+        ProgressBar pb = new ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal);
+        pb.setIndeterminate(false);
+        pb.setMax(100);
+        pb.setProgress(0);
+        pb.setScaleY(3f); // Make it thicker to be clearly visible
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            pb.setProgressTintList(
+                    android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#4285F4"))); // Google
+                                                                                                               // Blue
+            pb.setProgressBackgroundTintList(
+                    android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#E0E0E0")));
+        }
+        layout.addView(pb);
+
+        TextView progressText = new TextView(this);
+        progressText.setText("0%");
+        progressText.setGravity(android.view.Gravity.END);
+        progressText.setPadding(0, 10, 0, 0);
+        layout.addView(progressText);
+
+        builder.setView(layout);
+        builder.setCancelable(false);
+        android.app.AlertDialog dialog = builder.create();
+        dialog.show();
+
+        int totalDurationMs = videoTemplate.getDuration();
+        if (totalDurationMs <= 0)
+            totalDurationMs = 1; // safeguard
+        final int finalDuration = totalDurationMs;
+
+        com.arthenica.mobileffmpeg.Config.enableStatisticsCallback(newStatistics -> {
+            int time = newStatistics.getTime();
+            int progress = (int) ((time * 100) / finalDuration);
+            if (progress > 100)
+                progress = 100;
+            if (progress < 0)
+                progress = 0;
+
+            final int p = progress;
+            runOnUiThread(() -> {
+                pb.setProgress(p);
+                progressText.setText(p + "%");
+            });
+        });
+
+        // 1. Hide video and image to capture pure overlays with transparent background
+        videoTemplate.setVisibility(View.INVISIBLE);
+        int oldImgVis = imgTemplate.getVisibility();
+        imgTemplate.setVisibility(View.INVISIBLE);
+
+        android.graphics.drawable.Drawable oldBg = canvas.getBackground();
+        canvas.setBackgroundColor(android.graphics.Color.TRANSPARENT);
+
+        canvas.post(() -> {
+            canvas.setDrawingCacheEnabled(true);
+            Bitmap bitmap = Bitmap.createBitmap(canvas.getDrawingCache());
+            canvas.setDrawingCacheEnabled(false);
+
+            // Restore UI
+            canvas.setBackground(oldBg);
+            videoTemplate.setVisibility(View.VISIBLE);
+            imgTemplate.setVisibility(oldImgVis);
+
+            // 2. Save overlay to temp file
+            java.io.File overlayFile = new java.io.File(getCacheDir(), "temp_overlay.png");
+            try (java.io.FileOutputStream out = new java.io.FileOutputStream(overlayFile)) {
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+            } catch (Exception e) {
+                dialog.dismiss();
+                Toast.makeText(this, "Failed to capture overlay", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // 3. Define output file
+            java.io.File moviesDir = android.os.Environment
+                    .getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_MOVIES);
+            if (!moviesDir.exists())
+                moviesDir.mkdirs();
+            String timestamp = new java.text.SimpleDateFormat("yyyyMMdd_HHmmss", java.util.Locale.US)
+                    .format(new java.util.Date());
+            java.io.File outputFile = new java.io.File(moviesDir, "RMPlus_Video_" + timestamp + ".mp4");
+
+            // 4. Build ffmpeg command
+            int canvasW = bitmap.getWidth();
+            int canvasH = bitmap.getHeight();
+            if (canvasW % 2 != 0)
+                canvasW += 1; // ffmpeg encoders often complain about odd dimensions
+            if (canvasH % 2 != 0)
+                canvasH += 1;
+
+            String filterComplex = String.format(java.util.Locale.US,
+                    "[0:v]scale=%d:%d:force_original_aspect_ratio=decrease,pad=%d:%d:(ow-iw)/2:(oh-ih)/2[vidpadded];[vidpadded][1:v]overlay=0:0",
+                    canvasW, canvasH, canvasW, canvasH);
+
+            // Use -b:v 15M to force high bitrate and maintain original quality, -q:v 2 as
+            // fallback for quality scale
+            String command = String.format(java.util.Locale.US,
+                    "-y -i \"%s\" -i \"%s\" -filter_complex \"%s\" -b:v 15M -q:v 2 -c:a copy \"%s\"",
+                    originalPath, overlayFile.getAbsolutePath(), filterComplex, outputFile.getAbsolutePath());
+
+            // 5. Execute
+            com.arthenica.mobileffmpeg.FFmpeg.executeAsync(command, new com.arthenica.mobileffmpeg.ExecuteCallback() {
+                @Override
+                public void apply(long executionId, int returnCode) {
+                    runOnUiThread(() -> {
+                        dialog.dismiss();
+                        com.arthenica.mobileffmpeg.Config.enableStatisticsCallback(null); // clear callback
+                        if (returnCode == com.arthenica.mobileffmpeg.Config.RETURN_CODE_SUCCESS) {
+                            Toast.makeText(ManageTemplatesActivity.this, "Video saved successfully to Movies folder!",
+                                    Toast.LENGTH_LONG).show();
+
+                            android.content.Intent mediaScanIntent = new android.content.Intent(
+                                    android.content.Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+                            android.net.Uri contentUri = android.net.Uri.fromFile(outputFile);
+                            mediaScanIntent.setData(contentUri);
+                            sendBroadcast(mediaScanIntent);
+
+                            String safeId = makeSafeKey(originalPath);
+                            rootRef.child("user_activity").child(uid).child("edits").child(safeId)
+                                    .setValue(outputFile.getAbsolutePath());
+                        } else {
+                            Toast.makeText(ManageTemplatesActivity.this,
+                                    "Failed to save video. Error code: " + returnCode, Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
+            });
+        });
+    }
+
+    private void toggleTextStyle(int style) {
+        if (activeContent instanceof TextView) {
+            TextView tv = (TextView) activeContent;
+            android.graphics.Typeface current = tv.getTypeface();
+            int currentStyle = (current != null) ? current.getStyle() : android.graphics.Typeface.NORMAL;
+            int newStyle = currentStyle ^ style;
+
+            android.graphics.Typeface tf = android.graphics.Typeface.create(current, newStyle);
+            tv.setTypeface(tf);
+
+            // Sync toggle button highlight
+            if (style == android.graphics.Typeface.BOLD) {
+                btnBold.setBackgroundTintList(android.content.res.ColorStateList.valueOf(
+                        (newStyle & android.graphics.Typeface.BOLD) != 0
+                                ? getColorFromAttr(com.google.android.material.R.attr.colorPrimaryContainer)
+                                : getColorFromAttr(com.google.android.material.R.attr.colorSurfaceVariant)));
+            } else {
+                btnItalic.setBackgroundTintList(android.content.res.ColorStateList.valueOf(
+                        (newStyle & android.graphics.Typeface.ITALIC) != 0
+                                ? getColorFromAttr(com.google.android.material.R.attr.colorPrimaryContainer)
+                                : getColorFromAttr(com.google.android.material.R.attr.colorSurfaceVariant)));
+            }
+        }
+    }
+
+    private void toggleUnderline() {
+        if (activeContent instanceof TextView) {
+            TextView tv = (TextView) activeContent;
+            int flags = tv.getPaintFlags();
+            boolean isUnderlined;
+            if ((flags & android.graphics.Paint.UNDERLINE_TEXT_FLAG) != 0) {
+                tv.setPaintFlags(flags & ~android.graphics.Paint.UNDERLINE_TEXT_FLAG);
+                isUnderlined = false;
+            } else {
+                tv.setPaintFlags(flags | android.graphics.Paint.UNDERLINE_TEXT_FLAG);
+                isUnderlined = true;
+            }
+            btnUnderline.setBackgroundTintList(android.content.res.ColorStateList.valueOf(
+                    isUnderlined ? getColorFromAttr(com.google.android.material.R.attr.colorPrimaryContainer)
+                            : getColorFromAttr(com.google.android.material.R.attr.colorSurfaceVariant)));
+        }
+    }
+
+    private void showFontPicker() {
+        if (!(activeContent instanceof TextView))
+            return;
+        TextView tv = (TextView) activeContent;
+
+        String[] fontNames = {
+                "Default Sans", "Serif", "Monospace",
+                "Lobster (Cursive)", "Pacifico (Handwriting)", "Anton (Heavy)",
+                "Righteous (Display)", "Bebas Neue", "Medium", "Black"
+        };
+
+        new AlertDialog.Builder(this)
+                .setTitle("Choose Font")
+                .setItems(fontNames, (dialog, which) -> {
+                    android.graphics.Typeface tf = null;
+                    try {
+                        switch (which) {
+                            case 0:
+                                tf = android.graphics.Typeface.SANS_SERIF;
+                                break;
+                            case 1:
+                                tf = android.graphics.Typeface.SERIF;
+                                break;
+                            case 2:
+                                tf = android.graphics.Typeface.MONOSPACE;
+                                break;
+                            case 3:
+                                tf = android.graphics.Typeface.createFromAsset(getAssets(),
+                                        "fonts/Lobster-Regular.ttf");
+                                break;
+                            case 4:
+                                tf = android.graphics.Typeface.createFromAsset(getAssets(),
+                                        "fonts/Pacifico-Regular.ttf");
+                                break;
+                            case 5:
+                                tf = android.graphics.Typeface.createFromAsset(getAssets(), "fonts/Anton-Regular.ttf");
+                                break;
+                            case 6:
+                                tf = android.graphics.Typeface.createFromAsset(getAssets(),
+                                        "fonts/Righteous-Regular.ttf");
+                                break;
+                            case 7:
+                                tf = android.graphics.Typeface.createFromAsset(getAssets(),
+                                        "fonts/BebasNeue-Regular.ttf");
+                                break;
+                            case 8:
+                                tf = android.graphics.Typeface.create("sans-serif-medium",
+                                        android.graphics.Typeface.NORMAL);
+                                break;
+                            case 9:
+                                tf = android.graphics.Typeface.create("sans-serif-black",
+                                        android.graphics.Typeface.NORMAL);
+                                break;
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        tf = android.graphics.Typeface.DEFAULT;
+                    }
+
+                    if (tf != null) {
+                        int currentStyle = tv.getTypeface() != null ? tv.getTypeface().getStyle()
+                                : android.graphics.Typeface.NORMAL;
+                        tv.setTypeface(tf, currentStyle);
+                    }
+                })
+                .show();
     }
 
     private void loadUserData() {
@@ -693,7 +1027,8 @@ public class ManageTemplatesActivity extends AppCompatActivity {
                                             ? item.child("imagePath").getValue(String.class)
                                             : item.child("url").getValue(String.class);
                                     if (url != null) {
-                                        designs.add(new FrameModel(getString(R.string.label_business_format, index), 0, url, R.drawable.ic_edit));
+                                        designs.add(new FrameModel(getString(R.string.label_business_format, index), 0,
+                                                url, R.drawable.ic_edit));
                                         index++;
                                     }
                                 }
@@ -744,7 +1079,7 @@ public class ManageTemplatesActivity extends AppCompatActivity {
                     ((LinearLayout) i.getParent()).setPadding(0, 0, 0, 0);
 
                     i.setImageTintList(null); // remove tint
-                    
+
                     Bitmap previewBmp = createFramePreview(item.layoutId);
                     i.setImageBitmap(previewBmp);
                 } else {
@@ -795,8 +1130,10 @@ public class ManageTemplatesActivity extends AppCompatActivity {
 
     private Bitmap createFramePreview(int designNum) {
         int layoutId = R.layout.frame_design_1;
-        if (designNum == 2) layoutId = R.layout.frame_design_2;
-        if (designNum == 3) layoutId = R.layout.frame_design_3;
+        if (designNum == 2)
+            layoutId = R.layout.frame_design_2;
+        if (designNum == 3)
+            layoutId = R.layout.frame_design_3;
 
         View frameView = getLayoutInflater().inflate(layoutId, null, false);
 
@@ -805,17 +1142,23 @@ public class ManageTemplatesActivity extends AppCompatActivity {
         TextView tEmail = frameView.findViewById(R.id.frame_email);
         ImageView iLogo = frameView.findViewById(R.id.frame_logo);
 
-        if (uName != null && !uName.isEmpty()) tName.setText(uName);
-        else if (tName != null) tName.setVisibility(View.GONE);
-            
-        if (uMobile != null && !uMobile.isEmpty()) tMobile.setText(uMobile);
-        else if (tMobile != null) tMobile.setVisibility(View.GONE);
-            
-        if (uEmail != null && !uEmail.isEmpty()) tEmail.setText(uEmail);
-        else if (tEmail != null) tEmail.setVisibility(View.GONE);
+        if (uName != null && !uName.isEmpty())
+            tName.setText(uName);
+        else if (tName != null)
+            tName.setVisibility(View.GONE);
+
+        if (uMobile != null && !uMobile.isEmpty())
+            tMobile.setText(uMobile);
+        else if (tMobile != null)
+            tMobile.setVisibility(View.GONE);
+
+        if (uEmail != null && !uEmail.isEmpty())
+            tEmail.setText(uEmail);
+        else if (tEmail != null)
+            tEmail.setVisibility(View.GONE);
 
         if (iLogo != null) {
-            iLogo.setVisibility(View.GONE); 
+            iLogo.setVisibility(View.GONE);
         }
 
         int sizePx = 1080;
@@ -825,9 +1168,9 @@ public class ManageTemplatesActivity extends AppCompatActivity {
 
         Bitmap bitmap = Bitmap.createBitmap(sizePx, sizePx, Bitmap.Config.ARGB_8888);
         android.graphics.Canvas c = new android.graphics.Canvas(bitmap);
-        
-        c.drawColor(android.graphics.Color.parseColor("#E0E0E0")); 
-        
+
+        c.drawColor(android.graphics.Color.parseColor("#E0E0E0"));
+
         frameView.draw(c);
 
         return bitmap;

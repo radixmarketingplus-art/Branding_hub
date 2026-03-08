@@ -78,5 +78,8 @@ dependencies {
     annotationProcessor 'com.github.bumptech.glide:compiler:4.16.0'
 
     // 🔥 FOR ICON BADGE (Notification Count)
-    implementation 'com.github.leolin310148:ShortcutBadger:6d4ce808b0'
+    implementation 'me.leolin:ShortcutBadger:1.1.22@aar'
+    
+    // 🔥 FFMPEG FOR VIDEO OVERLAYS (Aliyun cache)
+    implementation 'com.arthenica:mobile-ffmpeg-min:4.4.LTS'
 }

@@ -33,6 +33,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import android.widget.FrameLayout;
+import android.widget.ProgressBar;
 
 public class TemplatePreviewActivity extends AppCompatActivity {
 
@@ -49,6 +50,7 @@ public class TemplatePreviewActivity extends AppCompatActivity {
 
     FrameLayout progressOverlay;
     TextView txtProgressTitle, txtProgressSub;
+    ProgressBar progressBarHorizontal;
 
     String path;
     String category;
@@ -87,6 +89,7 @@ public class TemplatePreviewActivity extends AppCompatActivity {
         progressOverlay = findViewById(R.id.progressOverlay);
         txtProgressTitle = findViewById(R.id.txtProgressTitle);
         txtProgressSub = findViewById(R.id.txtProgressSub);
+        progressBarHorizontal = findViewById(R.id.progressBarHorizontal);
 
         uid = FirebaseAuth.getInstance().getUid();
 
@@ -157,12 +160,13 @@ public class TemplatePreviewActivity extends AppCompatActivity {
                         // 🧹 SELF-CLEANING: If template is deleted from main nodes,
                         // remove it from user's history too to avoid "blank" items.
                         if (uid != null) {
-                            String[] types = {"likes", "favorites", "edits", "saves"};
+                            String[] types = { "likes", "favorites", "edits", "saves" };
                             for (String type : types) {
                                 rootRef.child("user_activity").child(uid).child(type).child(templateId).removeValue();
                             }
                         }
-                        Toast.makeText(TemplatePreviewActivity.this, R.string.msg_template_deleted, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(TemplatePreviewActivity.this, R.string.msg_template_deleted, Toast.LENGTH_SHORT)
+                                .show();
                         finish();
                     }
                 }
@@ -211,10 +215,12 @@ public class TemplatePreviewActivity extends AppCompatActivity {
         if (isVideo) {
             layPlay.setVisibility(android.view.View.VISIBLE);
             previewBottomShadow.setVisibility(android.view.View.VISIBLE);
-//            btnEdit.setVisibility(android.view.View.GONE); // 🚫 HIDE EDIT OPTION FOR VIDEOS
+            // btnEdit.setVisibility(android.view.View.GONE); // 🚫 HIDE EDIT OPTION FOR
+            // VIDEOS
             btnShare.setVisibility(android.view.View.GONE); // 🚫 HIDE SHARE OPTION FOR VIDEOS
             // 🎬 Fixed height for Video
-            params.height = (int) android.util.TypedValue.applyDimension(android.util.TypedValue.COMPLEX_UNIT_DIP, 380, getResources().getDisplayMetrics());
+            params.height = (int) android.util.TypedValue.applyDimension(android.util.TypedValue.COMPLEX_UNIT_DIP, 380,
+                    getResources().getDisplayMetrics());
         } else {
             layPlay.setVisibility(android.view.View.GONE);
             previewBottomShadow.setVisibility(android.view.View.GONE);
@@ -567,27 +573,43 @@ public class TemplatePreviewActivity extends AppCompatActivity {
     }
 
     void handleVideoAction(boolean isShare) {
-        if (path == null) return;
+        if (path == null)
+            return;
 
         progressOverlay.setVisibility(View.VISIBLE);
         txtProgressTitle.setText(isShare ? "Preparing Video..." : "Downloading Video...");
-        txtProgressSub.setText("Please wait a moment");
+        txtProgressSub.setText("0%");
+        progressBarHorizontal.setProgress(0);
 
         new Thread(() -> {
             try {
                 File tempFile = new File(getCacheDir(), "video_" + System.currentTimeMillis() + ".mp4");
-                java.net.URL url = new java.net.URL(path);
-                java.io.InputStream is = url.openStream();
+                java.net.HttpURLConnection connection = (java.net.HttpURLConnection) new java.net.URL(path)
+                        .openConnection();
+                connection.connect();
+                int totalSize = connection.getContentLength();
+                java.io.InputStream is = connection.getInputStream();
                 java.io.FileOutputStream fos = new java.io.FileOutputStream(tempFile);
                 byte[] buffer = new byte[16384];
                 int read;
+                long downloaded = 0;
                 while ((read = is.read(buffer)) != -1) {
                     fos.write(buffer, 0, read);
+                    downloaded += read;
+                    if (totalSize > 0) {
+                        final int progress = (int) ((downloaded * 100) / totalSize);
+                        runOnUiThread(() -> {
+                            progressBarHorizontal.setProgress(progress);
+                            txtProgressSub.setText(progress + "%");
+                        });
+                    }
                 }
                 fos.close();
                 is.close();
 
                 runOnUiThread(() -> {
+                    progressBarHorizontal.setProgress(100);
+                    txtProgressSub.setText("100%");
                     progressOverlay.setVisibility(View.GONE);
                     if (isShare) {
                         shareVideoFile(tempFile);
@@ -623,14 +645,14 @@ public class TemplatePreviewActivity extends AppCompatActivity {
             values.put(MediaStore.Video.Media.IS_PENDING, 1);
         }
 
-        Uri collection = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q ?
-                MediaStore.Video.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY) :
-                MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+        Uri collection = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q
+                ? MediaStore.Video.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
+                : MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
 
         Uri itemUri = getContentResolver().insert(collection, values);
         if (itemUri != null) {
             try (java.io.OutputStream os = getContentResolver().openOutputStream(itemUri);
-                 java.io.InputStream isInput = new java.io.FileInputStream(file)) {
+                    java.io.InputStream isInput = new java.io.FileInputStream(file)) {
                 byte[] buffer = new byte[8192];
                 int read;
                 while ((read = isInput.read(buffer)) != -1) {

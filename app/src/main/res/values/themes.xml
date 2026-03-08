@@ -57,6 +57,14 @@
         <item name="cornerSize">50%</item>
     </style>
 
+    <!-- Only top corners rounded for bottom-sheet style cards -->
+    <style name="ShapeAppearanceOverlay.App.TopRounded" parent="">
+        <item name="cornerSizeTopLeft">36dp</item>
+        <item name="cornerSizeTopRight">36dp</item>
+        <item name="cornerSizeBottomLeft">0dp</item>
+        <item name="cornerSizeBottomRight">0dp</item>
+    </style>
+
     <style name="Theme.App" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">@color/primary</item>
         <item name="colorSurface">@color/surface_light</item>

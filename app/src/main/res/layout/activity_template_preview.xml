@@ -345,7 +345,7 @@
         android:focusable="true"
         android:visibility="gone">
         <com.google.android.material.card.MaterialCardView
-            android:layout_width="200dp"
+            android:layout_width="280dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             app:cardCornerRadius="20dp"
@@ -356,25 +356,33 @@
                 android:orientation="vertical"
                 android:gravity="center"
                 android:padding="24dp">
-                <ProgressBar
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:indeterminateTint="@color/primary" />
                 <TextView
                     android:id="@+id/txtProgressTitle"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
                     android:text="Processing..."
                     android:textColor="@color/text_primary"
-                    android:fontFamily="sans-serif-bold" />
+                    android:fontFamily="sans-serif-bold"
+                    android:textSize="16sp" />
+                <ProgressBar
+                    android:id="@+id/progressBarHorizontal"
+                    style="@android:style/Widget.ProgressBar.Horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="12dp"
+                    android:layout_marginTop="16dp"
+                    android:max="100"
+                    android:progress="0"
+                    android:scaleY="3"
+                    android:progressTint="#4285F4"
+                    android:progressBackgroundTint="#E0E0E0" />
                 <TextView
                     android:id="@+id/txtProgressSub"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:text="Please wait"
-                    android:textSize="12sp"
+                    android:layout_marginTop="10dp"
+                    android:text="0%"
+                    android:textSize="13sp"
+                    android:gravity="end"
                     android:textColor="@color/text_secondary" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>

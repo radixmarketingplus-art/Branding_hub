@@ -146,13 +146,96 @@
                             android:layout_height="wrap_content"
                             android:text="@string/btn_color"
                             app:cornerRadius="12dp" />
+                            <SeekBar
+                                android:id="@+id/seekTextSize"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginStart="16dp"
+                                android:max="100"/>
+                        </LinearLayout>
+                        
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:orientation="horizontal"
+                        android:gravity="center">
+                        <TextView
+                            android:text="Rotate"
+                            android:fontFamily="sans-serif-bold"
+                            android:textColor="?attr/colorOnSurface"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
                         <SeekBar
-                            android:id="@+id/seekTextSize"
+                            android:id="@+id/seekTextRotate"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:layout_marginStart="16dp"
-                            android:max="100"/>
+                            android:progress="180"
+                            android:max="360"/>
+                    </LinearLayout>
+                        
+                    <!-- Text Formatting Controls -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:orientation="horizontal"
+                        android:gravity="center">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnFont"
+                            style="@style/Widget.Material3.Button.TonalButton"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content"
+                            android:text="Font"
+                            android:insetTop="0dp"
+                            android:insetBottom="0dp"
+                            app:cornerRadius="12dp"
+                            android:layout_marginEnd="8dp" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnBold"
+                            style="@style/Widget.Material3.Button.TonalButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:minWidth="48dp"
+                            android:text="B"
+                            android:textStyle="bold"
+                            android:insetTop="0dp"
+                            android:insetBottom="0dp"
+                            android:paddingHorizontal="12dp"
+                            app:cornerRadius="12dp"
+                            android:layout_marginEnd="4dp" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnItalic"
+                            style="@style/Widget.Material3.Button.TonalButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:minWidth="48dp"
+                            android:text="I"
+                            android:textStyle="italic"
+                            android:insetTop="0dp"
+                            android:insetBottom="0dp"
+                            android:paddingHorizontal="12dp"
+                            app:cornerRadius="12dp"
+                            android:layout_marginEnd="4dp" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnUnderline"
+                            style="@style/Widget.Material3.Button.TonalButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:minWidth="48dp"
+                            android:text="U"
+                            android:insetTop="0dp"
+                            android:insetBottom="0dp"
+                            android:paddingHorizontal="12dp"
+                            app:cornerRadius="12dp" />
                     </LinearLayout>
 
                     <!-- LAYER CONTROLS (TEXT) -->
@@ -228,6 +311,28 @@
                             android:layout_marginStart="16dp"
                             android:progress="40"
                             android:max="100"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:orientation="horizontal"
+                        android:gravity="center">
+                        <TextView
+                            android:text="Rotate"
+                            android:fontFamily="sans-serif-bold"
+                            android:textColor="?attr/colorOnSurface"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                        <SeekBar
+                            android:id="@+id/seekImageRotate"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginStart="16dp"
+                            android:progress="180"
+                            android:max="360"/>
                     </LinearLayout>
 
                     <LinearLayout
