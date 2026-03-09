@@ -218,39 +218,49 @@ public class TemplatePreviewActivity extends AppCompatActivity {
         if (isVideo) {
             layPlay.setVisibility(android.view.View.VISIBLE);
             previewBottomShadow.setVisibility(android.view.View.VISIBLE);
-            // btnEdit.setVisibility(android.view.View.GONE); 
+            // btnEdit.setVisibility(android.view.View.GONE);
             // 🎬 Fixed height for Video to show 9:16 Reels correctly
             params.height = (int) android.util.TypedValue.applyDimension(android.util.TypedValue.COMPLEX_UNIT_DIP, 480,
                     getResources().getDisplayMetrics());
-            
-            // OPTIONAL: Reduce horizontal margin for video to look more like a phone screen/reel
+
+            // OPTIONAL: Reduce horizontal margin for video to look more like a phone
+            // screen/reel
             if (previewContainer.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
                 ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) previewContainer.getLayoutParams();
-                lp.setMarginStart((int) android.util.TypedValue.applyDimension(android.util.TypedValue.COMPLEX_UNIT_DIP, 60, getResources().getDisplayMetrics()));
-                lp.setMarginEnd((int) android.util.TypedValue.applyDimension(android.util.TypedValue.COMPLEX_UNIT_DIP, 60, getResources().getDisplayMetrics()));
+                lp.setMarginStart((int) android.util.TypedValue.applyDimension(android.util.TypedValue.COMPLEX_UNIT_DIP,
+                        60, getResources().getDisplayMetrics()));
+                lp.setMarginEnd((int) android.util.TypedValue.applyDimension(android.util.TypedValue.COMPLEX_UNIT_DIP,
+                        60, getResources().getDisplayMetrics()));
                 previewContainer.setLayoutParams(lp);
             }
 
             // Standard peek height for video
-            BottomSheetBehavior.from(bottomSheetSimilar).setPeekHeight((int) android.util.TypedValue.applyDimension(android.util.TypedValue.COMPLEX_UNIT_DIP, 140, getResources().getDisplayMetrics()));
+            BottomSheetBehavior.from(bottomSheetSimilar).setPeekHeight((int) android.util.TypedValue
+                    .applyDimension(android.util.TypedValue.COMPLEX_UNIT_DIP, 140, getResources().getDisplayMetrics()));
 
         } else {
             layPlay.setVisibility(android.view.View.GONE);
             previewBottomShadow.setVisibility(android.view.View.GONE);
-            // btnEdit.setVisibility(android.view.View.VISIBLE); // ✅ SHOW EDIT OPTION FOR IMAGES
-            // btnShare.setVisibility(android.view.View.VISIBLE); // ✅ SHOW SHARE OPTION FOR IMAGES
+            // btnEdit.setVisibility(android.view.View.VISIBLE); // ✅ SHOW EDIT OPTION FOR
+            // IMAGES
+            // btnShare.setVisibility(android.view.View.VISIBLE); // ✅ SHOW SHARE OPTION FOR
+            // IMAGES
             // 🖼️ Dynamic height for Image
             params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
             // Restore default margin for images
             if (previewContainer.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
                 ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) previewContainer.getLayoutParams();
-                lp.setMarginStart((int) android.util.TypedValue.applyDimension(android.util.TypedValue.COMPLEX_UNIT_DIP, 20, getResources().getDisplayMetrics()));
-                lp.setMarginEnd((int) android.util.TypedValue.applyDimension(android.util.TypedValue.COMPLEX_UNIT_DIP, 20, getResources().getDisplayMetrics()));
+                lp.setMarginStart((int) android.util.TypedValue.applyDimension(android.util.TypedValue.COMPLEX_UNIT_DIP,
+                        20, getResources().getDisplayMetrics()));
+                lp.setMarginEnd((int) android.util.TypedValue.applyDimension(android.util.TypedValue.COMPLEX_UNIT_DIP,
+                        20, getResources().getDisplayMetrics()));
                 previewContainer.setLayoutParams(lp);
             }
 
-            // Increase peek height for images so there is no huge gap between the 1:1 image and the sheet
-            BottomSheetBehavior.from(bottomSheetSimilar).setPeekHeight((int) android.util.TypedValue.applyDimension(android.util.TypedValue.COMPLEX_UNIT_DIP, 240, getResources().getDisplayMetrics()));
+            // Increase peek height for images so there is no huge gap between the 1:1 image
+            // and the sheet
+            BottomSheetBehavior.from(bottomSheetSimilar).setPeekHeight((int) android.util.TypedValue
+                    .applyDimension(android.util.TypedValue.COMPLEX_UNIT_DIP, 240, getResources().getDisplayMetrics()));
         }
         previewContainer.setLayoutParams(params);
 
@@ -506,7 +516,7 @@ public class TemplatePreviewActivity extends AppCompatActivity {
         new Thread(() -> {
             try {
                 String saved = MediaStore.Images.Media.insertImage(
-                        getContentResolver(), bitmap, "RMPlus_" + System.currentTimeMillis(), "Template");
+                        getContentResolver(), bitmap, "RMAdsMaker_" + System.currentTimeMillis(), "Template");
 
                 runOnUiThread(() -> {
                     if (saved != null) {
@@ -620,7 +630,7 @@ public class TemplatePreviewActivity extends AppCompatActivity {
 
     void saveVideoToGallery(File file) {
         android.content.ContentValues values = new android.content.ContentValues();
-        values.put(MediaStore.Video.Media.DISPLAY_NAME, "RMPlus_Video_" + System.currentTimeMillis() + ".mp4");
+        values.put(MediaStore.Video.Media.DISPLAY_NAME, "RMAdsMaker_Video_" + System.currentTimeMillis() + ".mp4");
         values.put(MediaStore.Video.Media.MIME_TYPE, "video/mp4");
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
             values.put(MediaStore.Video.Media.IS_PENDING, 1);

@@ -91,9 +91,11 @@ public class ApproveRejectActivity extends AppCompatActivity {
                                                 String disc = s.child("discountPrice").getValue(String.class);
 
                                                 String fullPlanDetails = userRequestedPlan;
-                                                if (amt != null) fullPlanDetails += "\nAmount: ₹" + amt;
-                                                if (disc != null && !disc.equals("0")) fullPlanDetails += " (Disc: ₹" + disc + ")";
-                                                
+                                                if (amt != null)
+                                                        fullPlanDetails += "\nAmount: ₹" + amt;
+                                                if (disc != null && !disc.equals("0"))
+                                                        fullPlanDetails += " (Disc: ₹" + disc + ")";
+
                                                 planTxt.setText(fullPlanDetails);
 
                                                 // Load User Info from request node
@@ -105,7 +107,8 @@ public class ApproveRejectActivity extends AppCompatActivity {
                                                 emailTxt.setText(email != null ? email : "No Email");
                                                 mobileTxt.setText(mobile != null ? mobile : "No Mobile");
 
-                                                ((TextView)findViewById(R.id.txtHeaderTitle)).setText(name != null ? name : "Subscription");
+                                                ((TextView) findViewById(R.id.txtHeaderTitle))
+                                                                .setText(name != null ? name : "Subscription");
 
                                                 String status = s.child("status").getValue(String.class);
 
@@ -145,27 +148,27 @@ public class ApproveRejectActivity extends AppCompatActivity {
                                                 int statusColor = android.graphics.Color.parseColor("#F59E0B"); // Pending
 
                                                 if ("approved".equalsIgnoreCase(status)) {
-                                                    txtStatus.setText(getString(R.string.tab_accepted));
-                                                    statusColor = android.graphics.Color.parseColor("#10B981");
-                                                    approveBtn.setVisibility(View.GONE);
-                                                    rejectBtn.setVisibility(View.GONE);
-                                                    if (planGrantContainer != null)
-                                                        planGrantContainer.setVisibility(View.GONE);
-                                                    loadExpiryFromUser();
+                                                        txtStatus.setText(getString(R.string.tab_accepted));
+                                                        statusColor = android.graphics.Color.parseColor("#10B981");
+                                                        approveBtn.setVisibility(View.GONE);
+                                                        rejectBtn.setVisibility(View.GONE);
+                                                        if (planGrantContainer != null)
+                                                                planGrantContainer.setVisibility(View.GONE);
+                                                        loadExpiryFromUser();
                                                 } else if ("pending".equalsIgnoreCase(status)) {
-                                                    txtStatus.setText(getString(R.string.tab_pending));
-                                                    statusColor = android.graphics.Color.parseColor("#F59E0B");
-                                                    approveBtn.setVisibility(View.VISIBLE);
-                                                    rejectBtn.setVisibility(View.VISIBLE);
-                                                    if (planGrantContainer != null)
-                                                        planGrantContainer.setVisibility(View.VISIBLE);
+                                                        txtStatus.setText(getString(R.string.tab_pending));
+                                                        statusColor = android.graphics.Color.parseColor("#F59E0B");
+                                                        approveBtn.setVisibility(View.VISIBLE);
+                                                        rejectBtn.setVisibility(View.VISIBLE);
+                                                        if (planGrantContainer != null)
+                                                                planGrantContainer.setVisibility(View.VISIBLE);
                                                 } else if ("rejected".equalsIgnoreCase(status)) {
-                                                    txtStatus.setText(getString(R.string.tab_rejected));
-                                                    statusColor = android.graphics.Color.parseColor("#EF4444");
-                                                    approveBtn.setVisibility(View.GONE);
-                                                    rejectBtn.setVisibility(View.GONE);
-                                                    if (planGrantContainer != null)
-                                                        planGrantContainer.setVisibility(View.GONE);
+                                                        txtStatus.setText(getString(R.string.tab_rejected));
+                                                        statusColor = android.graphics.Color.parseColor("#EF4444");
+                                                        approveBtn.setVisibility(View.GONE);
+                                                        rejectBtn.setVisibility(View.GONE);
+                                                        if (planGrantContainer != null)
+                                                                planGrantContainer.setVisibility(View.GONE);
                                                 }
                                                 txtStatus.setTextColor(statusColor);
 
@@ -373,7 +376,7 @@ public class ApproveRejectActivity extends AppCompatActivity {
                                 values.put(MediaStore.Images.Media.MIME_TYPE,
                                                 "image/jpeg");
                                 values.put(MediaStore.Images.Media.RELATIVE_PATH,
-                                                "Pictures/RMPlus");
+                                                "Pictures/RMAdsMaker");
 
                                 Uri uri = getContentResolver().insert(
                                                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI,

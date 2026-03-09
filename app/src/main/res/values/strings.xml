@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">RM Plus</string>
+    <string name="app_name">RM Ads Maker</string>
     <string name="splash_tagline">Grow Your Business Digitally</string>
     <string name="desc_app_logo">App Logo</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -347,7 +347,7 @@
     <string name="hint_select_city">Select City</string>
     <string name="btn_save_changes">Save Changes</string>
     <string name="login_congrats">Congratulations!</string>
-    <string name="login_welcome_msg">You have successfully logged in.\nWelcome to RM Plus!</string>
+    <string name="login_welcome_msg">You have successfully logged in.\nWelcome to RM Ads Maker!</string>
     <string name="btn_continue">Continue to Home</string>
 
     <!-- Subscription Screen -->
@@ -405,7 +405,7 @@
     <string name="msg_delete_confirm">This cannot be undone. Are you sure?</string>
     <string name="share_msg_body">%1$s - Grow your business digitally! \n\nDownload Link: https://play.google.com/store/apps/details?id=%2$s</string>
     <string name="user_not_logged_in">User not logged in</string>
-    <string name="support_email_subject">RM Plus Support</string>
+    <string name="support_email_subject">RM Ads Maker Support</string>
     <string name="plan_1_month">1 Month</string>
     <string name="plan_3_month">3 Month</string>
     <string name="plan_6_month">6 Month</string>
@@ -715,18 +715,18 @@
     <!-- Structured Terms -->
     <string name="title_terms">Terms and Conditions</string>
     <string name="app_version_label">Version 1.0.0 (Stable)</string>
-    <string name="terms_intro">Welcome to RM Plus. Please read our terms and conditions carefully before using our services.</string>
+    <string name="terms_intro">Welcome to RM Ads Maker. Please read our terms and conditions carefully before using our services.</string>
     <string name="terms_section_usage_title">Application Usage</string>
-    <string name="terms_section_usage_desc">By using RM Plus, you agree to not misuse the application. No illegal or unauthorized activities are allowed within the platform.</string>
+    <string name="terms_section_usage_desc">By using RM Ads Maker, you agree to not misuse the application. No illegal or unauthorized activities are allowed within the platform.</string>
     
     <string name="terms_section_fees_title">Subscription &amp; Refunds</string>
-    <string name="terms_section_fees_desc">All subscription fees paid to RM Plus are non-refundable. Please ensure you select the right plan before purchasing.</string>
+    <string name="terms_section_fees_desc">All subscription fees paid to RM Ads Maker are non-refundable. Please ensure you select the right plan before purchasing.</string>
     
     <string name="terms_section_admin_title">Account Management</string>
     <string name="terms_section_admin_desc">The Admin reserves the right to suspend or terminate accounts in case of any misuse or violation of these terms.</string>
     
     <string name="terms_section_ip_title">Intellectual Property</string>
-    <string name="terms_section_ip_desc">All content, graphics, and intellectual property within this application belong solely to RM Plus.</string>
+    <string name="terms_section_ip_desc">All content, graphics, and intellectual property within this application belong solely to RM Ads Maker.</string>
     
     <string name="terms_section_update_title">Policy Updates</string>
     <string name="terms_section_update_desc">These terms may be updated or modified at any time without prior notice. Please check regularly.</string>

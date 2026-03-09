@@ -138,6 +138,9 @@ public class ManageTemplatesActivity extends AppCompatActivity {
                     mp.setLooping(true);
                     videoTemplate.start();
                 });
+
+                // Hide Business Frame tab for videos as requested
+                btnTabBusinessFrame.setVisibility(View.GONE);
             } else {
                 // 🖼️ Default Ratio for Image (1:1)
                 androidx.constraintlayout.widget.ConstraintLayout.LayoutParams lp = (androidx.constraintlayout.widget.ConstraintLayout.LayoutParams) canvasContainer
@@ -442,7 +445,7 @@ public class ManageTemplatesActivity extends AppCompatActivity {
     }
 
     private void startCrop(Uri uri) {
-        String destinationFileName = "RMPlus_Crop_" + System.currentTimeMillis() + ".jpg";
+        String destinationFileName = "RMAdsMaker_Crop_" + System.currentTimeMillis() + ".jpg";
         UCrop uCrop = UCrop.of(uri, Uri.fromFile(new File(getCacheDir(), destinationFileName)));
         uCrop.withOptions(new UCrop.Options());
         uCrop.start(this);
@@ -694,7 +697,7 @@ public class ManageTemplatesActivity extends AppCompatActivity {
         String savedPath = MediaStore.Images.Media.insertImage(
                 getContentResolver(),
                 bitmap,
-                "RMPlus_Edit_" + System.currentTimeMillis(),
+                "RMAdsMaker_Edit_" + System.currentTimeMillis(),
                 getString(R.string.desc_edited_template));
 
         if (savedPath != null) {
@@ -813,7 +816,7 @@ public class ManageTemplatesActivity extends AppCompatActivity {
                 moviesDir.mkdirs();
             String timestamp = new java.text.SimpleDateFormat("yyyyMMdd_HHmmss", java.util.Locale.US)
                     .format(new java.util.Date());
-            java.io.File outputFile = new java.io.File(moviesDir, "RMPlus_Video_" + timestamp + ".mp4");
+            java.io.File outputFile = new java.io.File(moviesDir, "RMAdsMaker_Video_" + timestamp + ".mp4");
 
             // 4. Build ffmpeg command
             int canvasW = bitmap.getWidth();
@@ -1014,6 +1017,12 @@ public class ManageTemplatesActivity extends AppCompatActivity {
             designs.add(new FrameModel(getString(R.string.label_design_format, 1), 1, null, R.drawable.ic_edit));
             designs.add(new FrameModel(getString(R.string.label_design_format, 2), 2, null, R.drawable.ic_edit));
             designs.add(new FrameModel(getString(R.string.label_design_format, 3), 3, null, R.drawable.ic_edit));
+            designs.add(new FrameModel(getString(R.string.label_design_format, 4), 4, null, R.drawable.ic_edit));
+            designs.add(new FrameModel(getString(R.string.label_design_format, 5), 5, null, R.drawable.ic_edit));
+            designs.add(new FrameModel(getString(R.string.label_design_format, 6), 6, null, R.drawable.ic_edit));
+            designs.add(new FrameModel(getString(R.string.label_design_format, 7), 7, null, R.drawable.ic_edit));
+            designs.add(new FrameModel(getString(R.string.label_design_format, 8), 8, null, R.drawable.ic_edit));
+            designs.add(new FrameModel(getString(R.string.label_design_format, 9), 9, null, R.drawable.ic_edit));
             renderFrameAdapter(designs);
         } else {
             rootRef.child("templates").child("Business Frame")
@@ -1134,6 +1143,18 @@ public class ManageTemplatesActivity extends AppCompatActivity {
             layoutId = R.layout.frame_design_2;
         if (designNum == 3)
             layoutId = R.layout.frame_design_3;
+        if (designNum == 4)
+            layoutId = R.layout.frame_design_4;
+        if (designNum == 5)
+            layoutId = R.layout.frame_design_5;
+        if (designNum == 6)
+            layoutId = R.layout.frame_design_6;
+        if (designNum == 7)
+            layoutId = R.layout.frame_design_7;
+        if (designNum == 8)
+            layoutId = R.layout.frame_design_8;
+        if (designNum == 9)
+            layoutId = R.layout.frame_design_9;
 
         View frameView = getLayoutInflater().inflate(layoutId, null, false);
 
@@ -1183,6 +1204,18 @@ public class ManageTemplatesActivity extends AppCompatActivity {
             layoutId = R.layout.frame_design_2;
         if (designNum == 3)
             layoutId = R.layout.frame_design_3;
+        if (designNum == 4)
+            layoutId = R.layout.frame_design_4;
+        if (designNum == 5)
+            layoutId = R.layout.frame_design_5;
+        if (designNum == 6)
+            layoutId = R.layout.frame_design_6;
+        if (designNum == 7)
+            layoutId = R.layout.frame_design_7;
+        if (designNum == 8)
+            layoutId = R.layout.frame_design_8;
+        if (designNum == 9)
+            layoutId = R.layout.frame_design_9;
 
         View frameView = getLayoutInflater().inflate(layoutId, dynamicFrameContainer, false);
 
