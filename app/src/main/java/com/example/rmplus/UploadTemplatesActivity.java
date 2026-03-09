@@ -279,6 +279,37 @@ public class UploadTemplatesActivity extends BaseActivity {
                 }
                 
                 // Size check is now handled inside uploadImageToServer with better detection
+                
+                // Check if Reel Maker video is 9:16 (vertical reel) or something similar.
+                try {
+                    android.media.MediaMetadataRetriever retriever = new android.media.MediaMetadataRetriever();
+                    retriever.setDataSource(this, selectedImageUri);
+                    String widthStr = retriever.extractMetadata(android.media.MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH);
+                    String heightStr = retriever.extractMetadata(android.media.MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT);
+                    String rotationStr = retriever.extractMetadata(android.media.MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION);
+                    
+                    if (widthStr != null && heightStr != null) {
+                        int width = Integer.parseInt(widthStr);
+                        int height = Integer.parseInt(heightStr);
+                        int rotation = rotationStr != null ? Integer.parseInt(rotationStr) : 0;
+                        
+                        if (rotation == 90 || rotation == 270) {
+                            int temp = width;
+                            width = height;
+                            height = temp;
+                        }
+                        
+                        // Allow 9:16 strictly (or very close to it)
+                        // width / height should be ~ 0.5625 (9/16)
+                        float ratio = (float) width / height;
+                        if (ratio > 0.6f) { // it is wider than 9:16 (e.g., 1:1 is 1.0, 16:9 is 1.77)
+                            Toast.makeText(this, "Video must be in vertical ratio (like 9:16) for Reel Maker", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             } else {
                 // Image Validation
                 if (mimeType == null || !mimeType.startsWith("image/")) {
@@ -731,7 +762,7 @@ public class UploadTemplatesActivity extends BaseActivity {
         Intent i;
 
         if (sectionKey.equalsIgnoreCase("Reel Maker")) {
-            i = new Intent(Intent.ACTION_PICK);
+            i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Video.Media.EXTERNAL_CONTENT_URI);
             i.setType("video/*");
         } else if (sectionKey.equalsIgnoreCase("Business Frame")) {
             // 🛡️ Use ACTION_GET_CONTENT for strict '.png' filtering

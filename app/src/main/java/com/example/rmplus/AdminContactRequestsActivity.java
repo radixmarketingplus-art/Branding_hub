@@ -3,6 +3,7 @@ package com.example.rmplus;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.View;
+import android.content.Intent;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
@@ -22,6 +23,12 @@ public class AdminContactRequestsActivity extends AppCompatActivity {
 
         tabLayout = findViewById(R.id.tabLayout);
         viewPager = findViewById(R.id.viewPager);
+
+        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
+        
+        findViewById(R.id.btnSupportSetup).setOnClickListener(v -> {
+            startActivity(new Intent(this, AdminSupportSettingsActivity.class));
+        });
 
         RequestPagerAdapter adapter =
                 new RequestPagerAdapter(this, true);

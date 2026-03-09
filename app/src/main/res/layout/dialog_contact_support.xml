@@ -47,6 +47,7 @@
                 android:textColor="?attr/colorOnSurface"/>
 
             <TextView
+                android:id="@+id/tvCallNumber"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="+91 7089927270"
@@ -94,6 +95,7 @@
                 android:textColor="?attr/colorOnSurface"/>
 
             <TextView
+                android:id="@+id/tvEmailAddress"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="prikhush332@gmail.com"

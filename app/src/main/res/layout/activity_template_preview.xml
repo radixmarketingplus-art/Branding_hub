@@ -172,7 +172,8 @@
                 app:backgroundTint="@null"
                 android:background="@drawable/bg_3d_gradient_button_16"
                 android:textColor="@color/white"
-                app:elevation="0dp" />
+                app:elevation="0dp"
+                android:visibility="gone" />
 
             <!-- QUICK ACTIONS ROW (Standard Section) -->
             <LinearLayout
@@ -237,7 +238,7 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/btnShare"
+                    android:id="@+id/btnEditBottom"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -249,12 +250,12 @@
                     <ImageView
                         android:layout_width="26dp"
                         android:layout_height="26dp"
-                        android:src="@drawable/ic_share_modern"
+                        android:src="@android:drawable/ic_menu_edit"
                         app:tint="@color/text_secondary" />
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/btn_share"
+                        android:text="Edit"
                         android:textSize="12sp"
                         android:fontFamily="sans-serif-bold"
                         android:textColor="@color/text_secondary"

@@ -11,32 +11,43 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.*;
 
+import android.graphics.Paint;
+import android.provider.MediaStore;
 import java.io.InputStream;
 import java.util.HashMap;
 import androidx.activity.result.ActivityResultLauncher;
+import androidx.annotation.NonNull;
 import androidx.activity.result.contract.ActivityResultContracts;
+import com.example.rmplus.models.SubscriptionPlan;
+import com.example.rmplus.adapters.UserSubscriptionPlanAdapter;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import java.util.ArrayList;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+import java.util.Date;
 
 public class SubscriptionActivity extends AppCompatActivity {
 
-    TextView statusTxt, amountTxt, planTxt, expiryTxt;
+    TextView statusTxt, amountTxt, originalAmountTxt, savingsDetailTxt, planTxt, expiryTxt;
     View sectionPlanChooser, sectionQrPayment;
-    Spinner planSpinner;
+    RecyclerView plansRecycler;
+    UserSubscriptionPlanAdapter planAdapter;
     ImageView qrImage, proofPreview;
     Button uploadBtn, submitBtn;
     ProgressBar progressBar;
-    View proofCard;
+    View proofCard, expiryContainer;
+    TextView upiIdTxt;
 
     FirebaseAuth auth;
     DatabaseReference userRef, requestRef;
 
-    Uri proofUri;           // kept locally — uploaded only on submit
-    // proofUrl is no longer stored as a field; upload happens at submit time
+    Uri proofUri; // Final URI
 
     private ActivityResultLauncher<Intent> imagePickerLauncher;
 
-    String[] plans;          // localized display names (shown in spinner)
-    String[] plansEn;         // canonical English keys (saved to Firebase)
-    String[] prices={"₹199","₹499","₹899","₹1499"};
+    ArrayList<SubscriptionPlan> dynamicPlans = new ArrayList<>();
+    DatabaseReference plansRef;
 
     @Override
     protected void onCreate(Bundle b) {
@@ -45,7 +56,9 @@ public class SubscriptionActivity extends AppCompatActivity {
 
         statusTxt=findViewById(R.id.statusTxt);
         amountTxt=findViewById(R.id.amountTxt);
-        planSpinner=findViewById(R.id.planSpinner);
+        originalAmountTxt=findViewById(R.id.originalAmountTxt);
+        savingsDetailTxt=findViewById(R.id.savingsDetailTxt);
+        plansRecycler=findViewById(R.id.plansRecycler);
         qrImage=findViewById(R.id.qrImage);
         proofPreview=findViewById(R.id.proofPreview);
         uploadBtn=findViewById(R.id.uploadBtn);
@@ -56,7 +69,9 @@ public class SubscriptionActivity extends AppCompatActivity {
         expiryTxt=findViewById(R.id.expiryTxt);
         sectionPlanChooser=findViewById(R.id.sectionPlanChooser);
         sectionQrPayment=findViewById(R.id.sectionQrPayment);
-        TextView upiIdTxt = findViewById(R.id.upiIdTxt);
+        upiIdTxt = findViewById(R.id.upiIdTxt);
+        expiryContainer = findViewById(R.id.expiryContainer);
+        // Default initial text
         upiIdTxt.setText(getString(R.string.label_upi_id, getString(R.string.upi_id_value)));
 
         auth=FirebaseAuth.getInstance();
@@ -69,45 +84,12 @@ public class SubscriptionActivity extends AppCompatActivity {
                 .getReference("subscription_requests")
                 .child(auth.getUid());
 
-        // ✅ Canonical English keys — always saved to Firebase
-        plansEn = new String[]{"1 Month", "3 Months", "6 Months", "1 Year"};
+        plansRecycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
-        // Localized display names — shown in UI only
-        plans = new String[]{
-                getString(R.string.plan_1_month),
-                getString(R.string.plan_3_month),
-                getString(R.string.plan_6_month),
-                getString(R.string.plan_1_year)
-        };
+        plansRef = FirebaseDatabase.getInstance()
+                .getReference("dynamic_subscriptions");
 
-        planSpinner.setAdapter(
-                new ArrayAdapter<>(this,
-                        android.R.layout.simple_spinner_dropdown_item,
-                        plans));
-
-        int[] qrImages = {
-                R.drawable.qr_1month,
-                R.drawable.qr_3month,
-                R.drawable.qr_6month,
-                R.drawable.qr_1year
-        };
-
-        planSpinner.setOnItemSelectedListener(
-                new AdapterView.OnItemSelectedListener() {
-
-                    public void onItemSelected(
-                            AdapterView<?> parent,
-                            View view,
-                            int position,
-                            long id) {
-
-                        qrImage.setImageResource(qrImages[position]);
-                        amountTxt.setText(getString(R.string.label_amount, prices[position]));
-                    }
-
-                    public void onNothingSelected(AdapterView<?> parent) {}
-                });
-
+        loadDynamicPlans();
 
         checkSubscriptionStatus();
 
@@ -125,6 +107,99 @@ public class SubscriptionActivity extends AppCompatActivity {
         }
 
         setupActivityResultLaunchers();
+    }
+
+    void loadDynamicPlans() {
+        plansRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                dynamicPlans.clear();
+                ArrayList<String> planNames = new ArrayList<>();
+
+                String today = new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(new Date());
+
+                for (DataSnapshot d : snapshot.getChildren()) {
+                    SubscriptionPlan p = d.getValue(SubscriptionPlan.class);
+                    if (p != null) {
+                        if (p.isSpecificDay) {
+                            if (p.specificDate != null && p.specificDate.equals(today)) {
+                                dynamicPlans.add(p);
+                                planNames.add(p.duration);
+                            }
+                        } else {
+                            dynamicPlans.add(p);
+                            planNames.add(p.duration);
+                        }
+                    }
+                }
+
+                if (dynamicPlans.isEmpty()) {
+                    amountTxt.setText("No active plans available");
+                    qrImage.setImageResource(R.drawable.ic_gallery_modern);
+                } else {
+                    planAdapter = new UserSubscriptionPlanAdapter(dynamicPlans, plan -> {
+                        updatePlanDetails(plan);
+                    });
+                    plansRecycler.setAdapter(planAdapter);
+
+                    // Load initial details
+                    updatePlanDetails(dynamicPlans.get(0));
+                }
+            }
+
+            private void updatePlanDetails(SubscriptionPlan selected) {
+                if (selected == null || isFinishing() || isDestroyed()) return;
+                
+                // Professional Amount Display
+                try {
+                    double amount = Double.parseDouble(selected.amount);
+                    double discount = (selected.discountPrice != null && !selected.discountPrice.isEmpty()) ? Double.parseDouble(selected.discountPrice) : 0;
+
+                    if (discount > 0) {
+                        double original = amount + discount;
+                        int percent = (int) ((discount / original) * 100);
+
+                        originalAmountTxt.setText("₹" + (int)original);
+                        originalAmountTxt.setPaintFlags(originalAmountTxt.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                        originalAmountTxt.setVisibility(View.VISIBLE);
+
+                        savingsDetailTxt.setText("You save ₹" + (int)discount + " (" + percent + "%)");
+                        savingsDetailTxt.setVisibility(View.VISIBLE);
+
+                        String detail = String.format(Locale.US, "₹%d", (int)amount);
+                        amountTxt.setText(detail);
+                    } else {
+                        originalAmountTxt.setVisibility(View.GONE);
+                        savingsDetailTxt.setVisibility(View.GONE);
+                        amountTxt.setText("₹" + (int)amount);
+                    }
+                } catch (Exception e) {
+                    amountTxt.setText("₹" + selected.amount);
+                }
+
+                // UPI ID update
+                String upi = (selected.upiId != null && !selected.upiId.isEmpty()) ? selected.upiId : getString(R.string.upi_id_value);
+                upiIdTxt.setText(getString(R.string.label_upi_id, upi));
+
+                // Scanner Image Update
+                android.util.Log.d("SubActivity", "Updating QR for plan: " + selected.duration + " URL: " + selected.scannerUrl);
+                
+                if (selected.scannerUrl != null && !selected.scannerUrl.isEmpty()) {
+                    com.bumptech.glide.Glide.with(SubscriptionActivity.this)
+                            .load(selected.scannerUrl)
+                            .placeholder(R.drawable.ic_gallery_modern)
+                            .error(R.drawable.ic_gallery_modern)
+                            .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.NONE)
+                            .skipMemoryCache(true)
+                            .into(qrImage);
+                } else {
+                    qrImage.setImageResource(R.drawable.ic_gallery_modern);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {}
+        });
     }
 
     private void setupActivityResultLaunchers() {
@@ -149,10 +224,13 @@ public class SubscriptionActivity extends AppCompatActivity {
             proofUri = null;
             return;
         }
-        // ✅ Only show preview locally — NO VPS upload here
+
+        // ✅ Show full preview locally
         proofPreview.setImageURI(proofUri);
         if (proofCard != null) proofCard.setVisibility(View.VISIBLE);
         else proofPreview.setVisibility(View.VISIBLE);
+
+        Toast.makeText(this, "Proof image selected", Toast.LENGTH_SHORT).show();
     }
 
     // ---------------------------
@@ -165,17 +243,17 @@ public class SubscriptionActivity extends AppCompatActivity {
 
                         Boolean sub =
                                 s.child("subscribed")
-                                        .getValue(Boolean.class);
+                                         .getValue(Boolean.class);
 
                         String status =
                                 s.child("subscriptionStatus")
-                                        .getValue(String.class);
+                                         .getValue(String.class);
 
                         if(sub!=null && sub){
                             statusTxt.setText(R.string.status_subscribed);
                             uploadBtn.setVisibility(View.GONE);
                             submitBtn.setVisibility(View.GONE);
-                            planSpinner.setEnabled(false);
+                            if (plansRecycler != null) plansRecycler.setVisibility(View.GONE);
                             if (proofCard != null) proofCard.setVisibility(View.GONE);
                             if (sectionPlanChooser != null) sectionPlanChooser.setVisibility(View.GONE);
                             if (sectionQrPayment != null) sectionQrPayment.setVisibility(View.GONE);
@@ -192,18 +270,19 @@ public class SubscriptionActivity extends AppCompatActivity {
                             if (expiry != null) {
                                 String dateStr = new java.text.SimpleDateFormat("dd-MM-yyyy", java.util.Locale.US)
                                         .format(new java.util.Date(expiry));
-                                expiryTxt.setText(getString(R.string.label_expires_on, dateStr));
-                                expiryTxt.setVisibility(View.VISIBLE);
+                                expiryTxt.setText("EXPIRES: " + dateStr);
+                                expiryContainer.setVisibility(View.VISIBLE);
+                            } else {
+                                expiryContainer.setVisibility(View.GONE);
                             }
                         }
                         else if(status!=null && status.equals("pending")){
                             statusTxt.setText(R.string.status_pending);
                             uploadBtn.setEnabled(false);
                             submitBtn.setEnabled(false);
-                            planSpinner.setEnabled(false);
                             submitBtn.setText(R.string.status_pending);
                             planTxt.setVisibility(View.GONE);
-                            expiryTxt.setVisibility(View.GONE);
+                            expiryContainer.setVisibility(View.GONE);
                             
                             // Hide QR/Plan chooser while pending to avoid confusion
                             if (sectionPlanChooser != null) sectionPlanChooser.setVisibility(View.GONE);
@@ -213,14 +292,14 @@ public class SubscriptionActivity extends AppCompatActivity {
                             statusTxt.setText(R.string.status_rejected_retry);
                             uploadBtn.setEnabled(true);
                             submitBtn.setEnabled(true);
-                            planSpinner.setEnabled(true);
+                            if (plansRecycler != null) plansRecycler.setVisibility(View.VISIBLE);
                             submitBtn.setText(R.string.btn_submit_request);
                         }
                         else{
                             statusTxt.setText(R.string.status_not_subscribed);
                             uploadBtn.setEnabled(true);
                             submitBtn.setEnabled(true);
-                            planSpinner.setEnabled(true);
+                            if (plansRecycler != null) plansRecycler.setVisibility(View.VISIBLE);
                             submitBtn.setText(R.string.btn_submit_request);
                         }
                     }
@@ -238,11 +317,9 @@ public class SubscriptionActivity extends AppCompatActivity {
 
     // ---------------------------
 
-    void pickImage(){
-        Intent i=new Intent(Intent.ACTION_GET_CONTENT);
-        i.setType("image/*");
-        String[] mimeTypes = {"image/jpeg", "image/jpg", "image/png"};
-        i.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
+    void pickImage() {
+        // Using ACTION_PICK with MediaStore for better stability (fixes PickerSyncController errors)
+        Intent i = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         imagePickerLauncher.launch(i);
     }
 
@@ -326,8 +403,12 @@ public class SubscriptionActivity extends AppCompatActivity {
             return;
         }
 
-        // ✅ Always save English canonical plan name (not localized display text)
-        String plan = plansEn[planSpinner.getSelectedItemPosition()];
+        if (dynamicPlans.isEmpty() || planAdapter == null) {
+            Toast.makeText(this, "Plans not loaded yet", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        com.example.rmplus.models.SubscriptionPlan selectedPlan = dynamicPlans.get(planAdapter.getSelectedPosition());
 
         // ✅ Upload to VPS only NOW (on submit)
         setSubmitting(true);
@@ -346,7 +427,9 @@ public class SubscriptionActivity extends AppCompatActivity {
                                 map.put("name",   u.child("name").getValue(String.class));
                                 map.put("email",  u.child("email").getValue(String.class));
                                 map.put("mobile", u.child("mobile").getValue(String.class));
-                                map.put("plan",   plan);
+                                map.put("plan",   selectedPlan.duration);
+                                map.put("amount", selectedPlan.amount);
+                                map.put("discountPrice", selectedPlan.discountPrice);
                                 map.put("proofPath", proofUrl);
                                 map.put("status", "pending");
                                 map.put("time",   System.currentTimeMillis());

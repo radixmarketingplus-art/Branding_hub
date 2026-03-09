@@ -12,109 +12,431 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <!-- HEADER -->
-        <com.google.android.material.appbar.AppBarLayout
+        <!-- PREMIUM HEADER -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="72dp"
+            android:paddingHorizontal="16dp">
+
+            <ImageButton
+                android:id="@+id/btnBack"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_centerVertical="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_back"
+                app:tint="?attr/colorOnSurface"
+                android:contentDescription="Back" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="Subscription Hub"
+                android:textSize="20sp"
+                android:fontFamily="sans-serif-black"
+                android:textColor="?attr/colorOnSurface"
+                android:letterSpacing="-0.02" />
+
+            
+        </RelativeLayout>
+
+        <!-- MAIN NAVIGATION SWITCH (Crazy 3D Style) -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/screen_bg"
-            app:elevation="0dp"
-            android:outlineProvider="none">
+            android:paddingHorizontal="24dp"
+            android:paddingBottom="16dp">
 
-            <RelativeLayout
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="64dp"
-                android:paddingHorizontal="16dp">
+                android:layout_height="56dp"
+                android:background="@drawable/bg_tabs_surface"
+                android:padding="6dp">
 
-                <ImageView
-                    android:id="@+id/btnBack"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_centerVertical="true"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:padding="8dp"
-                    android:src="@drawable/ic_back"
-                    app:tint="?android:textColorPrimary" />
+                <View
+                    android:id="@+id/mainSelectionIndicator"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/bg_tab_active" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:text="@string/title_subscription_requests"
-                    android:textSize="18sp"
-                    android:fontFamily="sans-serif-black"
-                    android:textColor="?android:textColorPrimary" />
-            </RelativeLayout>
-        </com.google.android.material.appbar.AppBarLayout>
-
-        <!-- TABS -->
-        <LinearLayout
-            android:id="@+id/tabContainer"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:orientation="horizontal"
-            android:paddingHorizontal="16dp"
-            android:layout_marginTop="8dp">
-
-            <TextView
-                android:id="@+id/pendingBtn"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="@string/tab_pending"
-                android:textSize="14sp"
-                android:fontFamily="sans-serif-bold"
-                android:textColor="@color/primary"
-                android:clickable="true"
-                android:focusable="true"
-                android:background="@android:color/transparent"/>
-
-            <TextView
-                android:id="@+id/approvedBtn"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="@string/tab_accepted"
-                android:textSize="14sp"
-                android:fontFamily="sans-serif-bold"
-                android:textColor="?attr/colorOnSurface"
-                android:clickable="true"
-                android:focusable="true"
-                android:background="@android:color/transparent"/>
-
-            <TextView
-                android:id="@+id/rejectedBtn"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="@string/tab_rejected"
-                android:textSize="14sp"
-                android:fontFamily="sans-serif-bold"
-                android:textColor="?attr/colorOnSurface"
-                android:clickable="true"
-                android:focusable="true"
-                android:background="@android:color/transparent"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:id="@+id/tabRequests"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="Requests"
+                        android:textAllCaps="true"
+                        android:textSize="12sp"
+                        android:letterSpacing="0.1"
+                        android:fontFamily="sans-serif-black"
+                        android:textColor="@color/white" />
+                    <TextView
+                        android:id="@+id/tabManage"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="Plan Setup"
+                        android:textAllCaps="true"
+                        android:textSize="12sp"
+                        android:letterSpacing="0.1"
+                        android:fontFamily="sans-serif-bold"
+                        android:textColor="?attr/colorOnSurfaceVariant" />
+                </LinearLayout>
+            </FrameLayout>
         </LinearLayout>
 
-        <!-- UNDERLINE INDICATOR -->
-        <View
-            android:id="@+id/tabUnderline"
-            android:layout_width="0dp"
-            android:layout_height="3dp"
-            android:background="@color/primary"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginBottom="12dp"/>
-
-        <!-- LIST SECTION -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/requestRecycler"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clipToPadding="false"
-            android:paddingBottom="80dp" />
+            android:layout_height="match_parent">
 
+            <!-- PAGE 1: REQUESTS LIST -->
+            <LinearLayout
+                android:id="@+id/layoutRequests"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:visibility="visible">
+
+                <!-- SUB TABS (Pending | Accepted | Rejected) -->
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:scrollbars="none"
+                    android:paddingHorizontal="16dp"
+                    android:layout_marginBottom="8dp">
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingVertical="8dp">
+
+                        <TextView
+                            android:id="@+id/pendingBtn"
+                            android:layout_width="wrap_content"
+                            android:layout_height="40dp"
+                            android:background="@drawable/bg_filter_chip_selected"
+                            android:text="@string/tab_pending"
+                            android:gravity="center"
+                            android:paddingHorizontal="20dp"
+                            android:textColor="@color/white"
+                            android:textSize="13sp"
+                            android:fontFamily="sans-serif-bold"
+                            android:layout_marginEnd="8dp"/>
+
+                        <TextView
+                            android:id="@+id/approvedBtn"
+                            android:layout_width="wrap_content"
+                            android:layout_height="40dp"
+                            android:background="@drawable/bg_filter_chip"
+                            android:text="@string/tab_accepted"
+                            android:gravity="center"
+                            android:paddingHorizontal="20dp"
+                            android:textColor="?attr/colorOnSurface"
+                            android:textSize="13sp"
+                            android:fontFamily="sans-serif-medium"
+                            android:layout_marginEnd="8dp"/>
+
+                        <TextView
+                            android:id="@+id/rejectedBtn"
+                            android:layout_width="wrap_content"
+                            android:layout_height="40dp"
+                            android:background="@drawable/bg_filter_chip"
+                            android:text="@string/tab_rejected"
+                            android:gravity="center"
+                            android:paddingHorizontal="20dp"
+                            android:textColor="?attr/colorOnSurface"
+                            android:textSize="13sp"
+                            android:fontFamily="sans-serif-medium" />
+
+                    </LinearLayout>
+                </HorizontalScrollView>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/requestRecycler"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:clipToPadding="false"
+                    android:padding="16dp" />
+            </LinearLayout>
+
+            <!-- PAGE 2: MANAGE PLANS -->
+            <androidx.core.widget.NestedScrollView
+                android:id="@+id/layoutManage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="invisible">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <!-- PLAN CREATION CARD -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:cardCornerRadius="24dp"
+                        app:cardElevation="0dp"
+                        app:strokeWidth="1dp"
+                        app:strokeColor="#0D000000"
+                        app:cardBackgroundColor="@color/surface_light"
+                        android:layout_marginBottom="24dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="20dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Build Dynamic Plan"
+                                android:textSize="18sp"
+                                android:fontFamily="sans-serif-black"
+                                android:textColor="?attr/colorOnSurface"
+                                android:layout_marginBottom="20dp"/>
+
+                            <!-- Duration Input -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="64dp"
+                                android:background="@drawable/bg_input_2"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical"
+                                android:paddingHorizontal="16dp"
+                                android:layout_marginBottom="12dp">
+                                <ImageView
+                                    android:layout_width="24dp"
+                                    android:layout_height="24dp"
+                                    android:src="@drawable/ic_calendar"
+                                    app:tint="@color/primary"/>
+                                <EditText
+                                    android:id="@+id/etDuration"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:background="@null"
+                                    android:hint="Duration (e.g. 1 Month)"
+                                    android:textSize="15sp"
+                                    android:fontFamily="sans-serif-medium"
+                                    android:paddingStart="12dp"
+                                    android:inputType="text"/>
+                            </LinearLayout>
+
+                            <!-- Amount -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="64dp"
+                                android:background="@drawable/bg_input_2"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical"
+                                android:paddingHorizontal="16dp"
+                                android:layout_marginBottom="12dp">
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="₹"
+                                    android:textSize="18sp"
+                                    android:fontFamily="sans-serif-black"
+                                    android:textColor="@color/primary"/>
+                                <EditText
+                                    android:id="@+id/etAmount"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:background="@null"
+                                    android:hint="Base Amount"
+                                    android:textSize="15sp"
+                                    android:fontFamily="sans-serif-medium"
+                                    android:paddingStart="12dp"
+                                    android:inputType="number"/>
+                            </LinearLayout>
+
+                            <!-- Discount -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="64dp"
+                                android:background="@drawable/bg_input_2"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical"
+                                android:paddingHorizontal="16dp"
+                                android:layout_marginBottom="12dp">
+                                <ImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:src="@drawable/ic_onboard_designs"
+                                    app:tint="#F59E0B"/>
+                                <EditText
+                                    android:id="@+id/etDiscount"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:background="@null"
+                                    android:hint="Discount Price (optional)"
+                                    android:textSize="15sp"
+                                    android:fontFamily="sans-serif-medium"
+                                    android:paddingStart="12dp"
+                                    android:inputType="number"/>
+                            </LinearLayout>
+
+                            <!-- UPI ID -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="64dp"
+                                android:background="@drawable/bg_input_2"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical"
+                                android:paddingHorizontal="16dp"
+                                android:layout_marginBottom="16dp">
+                                <ImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:src="@drawable/ic_settings_profile"
+                                    app:tint="@color/primary"/>
+                                <EditText
+                                    android:id="@+id/etUpiId"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:background="@null"
+                                    android:hint="UPI ID (e.g. user@bank)"
+                                    android:textSize="15sp"
+                                    android:fontFamily="sans-serif-medium"
+                                    android:paddingStart="12dp"
+                                    android:inputType="text"/>
+                            </LinearLayout>
+
+                            <!-- Date Picker Option -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:layout_marginBottom="20dp">
+                                <CheckBox
+                                    android:id="@+id/cbSpecificDay"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Active on Specific Date Only"
+                                    android:fontFamily="sans-serif-bold"
+                                    android:textSize="14sp"/>
+                            <LinearLayout
+                                android:id="@+id/cardSpecificDate"
+                                android:layout_width="match_parent"
+                                android:layout_height="64dp"
+                                android:background="@drawable/bg_input_2"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical"
+                                android:paddingHorizontal="16dp"
+                                android:layout_marginTop="8dp"
+                                android:visibility="gone">
+                                <ImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:src="@drawable/ic_calendar"
+                                    app:tint="@color/primary"/>
+                                <EditText
+                                    android:id="@+id/etSpecificDate"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:background="@null"
+                                    android:hint="Select Specific Day"
+                                    android:textSize="15sp"
+                                    android:fontFamily="sans-serif-medium"
+                                    android:paddingStart="12dp"
+                                    android:focusable="false"
+                                    android:clickable="true"
+                                    android:textColor="?attr/colorOnSurface"/>
+                            </LinearLayout>
+                            </LinearLayout>
+
+                            <!-- Scanner Image Selector -->
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Scanner QR Label"
+                                android:textSize="14sp"
+                                android:fontFamily="sans-serif-black"
+                                android:textColor="?attr/colorOnSurface"
+                                android:layout_marginBottom="12dp"/>
+
+                            <FrameLayout
+                                android:id="@+id/btnPickScanner"
+                                android:layout_width="match_parent"
+                                android:layout_height="180dp"
+                                android:background="@drawable/bg_upload_zone_dashed"
+                                android:layout_marginBottom="24dp">
+                                <LinearLayout
+                                    android:id="@+id/layoutUploadPrompt"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:gravity="center"
+                                    android:layout_gravity="center">
+                                    <ImageView
+                                        android:layout_width="48dp"
+                                        android:layout_height="48dp"
+                                        android:src="@drawable/ic_gallery_modern"
+                                        app:tint="?attr/colorOnSurfaceVariant"/>
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Tap to Select QR Code"
+                                        android:textSize="12sp"
+                                        android:textColor="?attr/colorOnSurfaceVariant"
+                                        android:layout_marginTop="8dp"/>
+                                </LinearLayout>
+                                <ImageView
+                                    android:id="@+id/ivScannerPreview"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:scaleType="centerInside"
+                                    android:padding="2dp"
+                                    android:visibility="gone"/>
+                            </FrameLayout>
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnUploadPlan"
+                                android:layout_width="match_parent"
+                                android:layout_height="64dp"
+                                android:text="PUBLISH DYNAMIC PLAN"
+                                android:textAllCaps="true"
+                                android:fontFamily="sans-serif-black"
+                                android:textSize="15sp"
+                                android:letterSpacing="0.1"
+                                app:cornerRadius="16dp"
+                                android:background="@drawable/bg_admin_button_3d"
+                                app:backgroundTint="@null"
+                                android:textColor="@color/white"
+                                app:elevation="8dp"/>
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- EXISTING PLANS LIST -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Active Inventory"
+                        android:textSize="18sp"
+                        android:fontFamily="sans-serif-black"
+                        android:textColor="?attr/colorOnSurface"
+                        android:layout_marginBottom="16dp"/>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/plansRecycler"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:nestedScrollingEnabled="false"
+                        android:layout_marginBottom="100dp"/>
+
+                </LinearLayout>
+            </androidx.core.widget.NestedScrollView>
+
+        </FrameLayout>
     </LinearLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

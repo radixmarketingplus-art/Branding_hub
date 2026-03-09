@@ -136,7 +136,6 @@
                     android:gravity="center_vertical"
                     android:padding="20dp">
 
-                    <!-- ICON CIRCLE -->
                     <ImageView
                         android:layout_width="48dp"
                         android:layout_height="48dp"
@@ -146,7 +145,6 @@
                         android:padding="12dp"
                         android:layout_marginEnd="16dp" />
 
-                    <!-- TEXT -->
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -156,7 +154,73 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/btn_contact_admin"
+                            android:text="Contact Admin"
+                            android:textSize="15sp"
+                            android:fontFamily="sans-serif-black"
+                            android:textColor="?attr/colorOnSurface" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Call or Email for Support"
+                            android:textSize="12sp"
+                            android:fontFamily="sans-serif-medium"
+                            android:textColor="?attr/colorOnSurfaceVariant"
+                            android:layout_marginTop="2dp" />
+                    </LinearLayout>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnContactSupport"
+                        android:layout_width="100dp"
+                        android:layout_height="48dp"
+                        android:text="Contact"
+                        android:textAllCaps="false"
+                        android:fontFamily="sans-serif-bold"
+                        android:textColor="@color/white"
+                        android:textSize="13sp"
+                        app:cornerRadius="12dp"
+                        app:backgroundTint="@null"
+                        android:background="@drawable/bg_admin_button_3d" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- INQUIRY ADMIN CARD -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="18dp"
+                android:layout_marginHorizontal="2dp"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="8dp"
+                app:strokeWidth="0dp"
+                app:cardBackgroundColor="@color/surface_light">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:padding="20dp">
+
+                    <ImageView
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:src="@android:drawable/ic_dialog_email"
+                        app:tint="?attr/colorPrimary"
+                        android:background="@drawable/bg_support_icon"
+                        android:padding="12dp"
+                        android:layout_marginEnd="16dp" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Inquiry Admin"
                             android:textSize="15sp"
                             android:fontFamily="sans-serif-black"
                             android:textColor="?attr/colorOnSurface" />
@@ -171,12 +235,11 @@
                             android:layout_marginTop="2dp" />
                     </LinearLayout>
 
-                    <!-- BUTTON -->
                     <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnContact"
+                        android:id="@+id/btnInquiry"
                         android:layout_width="100dp"
                         android:layout_height="48dp"
-                        android:text="Contact"
+                        android:text="Inquiry"
                         android:textAllCaps="false"
                         android:fontFamily="sans-serif-bold"
                         android:textColor="@color/white"

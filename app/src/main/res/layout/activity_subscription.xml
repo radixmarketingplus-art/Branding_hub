@@ -7,37 +7,36 @@
     android:background="@color/screen_bg"
     android:fitsSystemWindows="true">
 
-    <!-- HEADER SECTION -->
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/screen_bg"
-        app:elevation="0dp"
-        android:outlineProvider="none">
+        android:background="#00000000"
+        app:elevation="0dp">
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="64dp"
+            android:layout_height="72dp"
             android:paddingHorizontal="16dp">
 
             <ImageView
                 android:id="@+id/btnBack"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:layout_centerVertical="true"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:padding="8dp"
+                android:padding="12dp"
                 android:src="@drawable/ic_back"
-                app:tint="?android:textColorPrimary" />
+                app:tint="?attr/colorOnSurface" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                android:text="@string/menu_subscription"
-                android:textSize="18sp"
+                android:text="Premium Plans"
+                android:textSize="20sp"
                 android:fontFamily="sans-serif-black"
-                android:textColor="?android:textColorPrimary" />
+                android:textColor="?attr/colorOnSurface"
+                android:letterSpacing="-0.02" />
         </RelativeLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -52,18 +51,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingHorizontal="24dp"
-            android:paddingTop="16dp"
+            android:paddingHorizontal="20dp"
             android:paddingBottom="40dp">
 
-            <!-- HERO STATUS CARD -->
+            <!-- STATUS HERO AREA -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
-                app:cardCornerRadius="24dp"
-                app:cardElevation="8dp"
+                app:cardCornerRadius="28dp"
+                app:cardElevation="6dp"
                 app:strokeWidth="0dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="24dp"
                 app:cardBackgroundColor="@color/surface_light">
 
                 <LinearLayout
@@ -71,26 +70,35 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:gravity="center"
-                    android:padding="28dp">
+                    android:paddingTop="32dp"
+                    android:paddingBottom="32dp"
+                    android:paddingHorizontal="24dp">
 
-                    <ImageView
-                        android:layout_width="72dp"
-                        android:layout_height="72dp"
-                        android:src="@drawable/ic_subscription_profile"
-                        app:tint="?attr/colorPrimary"
-                        android:layout_marginBottom="20dp"
-                        android:background="@drawable/bg_support_icon"
-                        android:padding="18dp" />
+                    <FrameLayout
+                        android:layout_width="88dp"
+                        android:layout_height="88dp"
+                        android:layout_marginBottom="16dp">
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/bg_support_icon"
+                            android:alpha="0.15"/>
+                        <ImageView
+                            android:layout_width="44dp"
+                            android:layout_height="44dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_subscription_profile"
+                            app:tint="@color/primary" />
+                    </FrameLayout>
 
                     <TextView
                         android:id="@+id/statusTxt"
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/status_checking"
-                        android:textSize="22sp"
+                        android:text="Checking Status..."
+                        android:textSize="24sp"
                         android:fontFamily="sans-serif-black"
                         android:textColor="?attr/colorOnSurface"
-                        android:gravity="center"
                         android:layout_marginBottom="4dp" />
 
                     <TextView
@@ -100,179 +108,270 @@
                         android:textSize="14sp"
                         android:fontFamily="sans-serif-medium"
                         android:textColor="?attr/colorOnSurfaceVariant"
-                        android:gravity="center" />
+                        android:alpha="0.8" />
 
-                    <TextView
-                        android:id="@+id/expiryTxt"
+                    <LinearLayout
+                        android:id="@+id/expiryContainer"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="13sp"
-                        android:fontFamily="sans-serif-bold"
-                        android:textColor="?attr/colorPrimary"
-                        android:layout_marginTop="4dp"
-                        android:gravity="center" />
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/bg_tab_active"
+                        android:paddingHorizontal="16dp"
+                        android:paddingVertical="6dp"
+                        android:visibility="gone">
+                        <TextView
+                            android:id="@+id/expiryTxt"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="12sp"
+                            android:fontFamily="sans-serif-black"
+                            android:textColor="@color/white"
+                            android:textAllCaps="true"
+                            android:letterSpacing="0.05" />
+                    </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- PLAN CHOOSER -->
-            <com.google.android.material.card.MaterialCardView
+            <!-- PLAN CHOOSER SECTION -->
+            <LinearLayout
                 android:id="@+id/sectionPlanChooser"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:cardCornerRadius="24dp"
-                app:cardElevation="2dp"
-                app:strokeWidth="1dp"
-                app:strokeColor="#0D000000"
-                app:cardBackgroundColor="@color/surface_light">
+                android:orientation="vertical"
+                android:layout_marginBottom="24dp">
 
-                <LinearLayout
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Select Membership"
+                    android:textSize="13sp"
+                    android:fontFamily="sans-serif-black"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textAllCaps="true"
+                    android:letterSpacing="0.1"
+                    android:layout_marginBottom="12dp"
+                    android:layout_marginStart="4dp"/>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/plansRecycler"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="20dp">
+                    android:orientation="horizontal"
+                    android:clipToPadding="false"
+                    android:paddingHorizontal="4dp"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+            </LinearLayout>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/label_choose_plan"
-                        android:textSize="12sp"
-                        android:fontFamily="sans-serif-black"
-                        android:textColor="?attr/colorOnSurfaceVariant"
-                        android:textAllCaps="true"
-                        android:letterSpacing="0.1"
-                        android:layout_marginBottom="12dp" />
-
-                    <Spinner
-                        android:id="@+id/planSpinner"
-                        android:layout_width="match_parent"
-                        android:layout_height="56dp"
-                        android:paddingHorizontal="12dp"
-                        android:background="@drawable/bg_spinner_modern" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- QR PAYMENT -->
-            <com.google.android.material.card.MaterialCardView
+            <!-- PAYMENT SECTION -->
+            <LinearLayout
                 android:id="@+id/sectionQrPayment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp"
-                app:cardCornerRadius="24dp"
-                app:cardElevation="4dp"
-                app:strokeWidth="1dp"
-                app:strokeColor="#0D000000"
-                app:cardBackgroundColor="@color/surface_light">
+                android:orientation="vertical">
 
-                <LinearLayout
+                <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="24dp"
-                    android:gravity="center">
+                    app:cardCornerRadius="32dp"
+                    app:cardElevation="4dp"
+                    app:strokeWidth="1.5dp"
+                    app:strokeColor="#10000000"
+                    app:cardBackgroundColor="@color/surface_light">
 
-                    <TextView
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/label_scan_qr"
-                        android:textSize="16sp"
-                        android:fontFamily="sans-serif-black"
-                        android:textColor="?attr/colorOnSurface"
-                        android:layout_marginBottom="16dp" />
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:padding="28dp">
 
-                    <TextView
-                        android:id="@+id/upiIdTxt"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/upi_id_value"
-                        android:textSize="16sp"
-                        android:fontFamily="sans-serif-bold"
-                        android:textColor="?attr/colorPrimary"
-                        android:layout_marginBottom="4dp" />
+                        <!-- HEADER: BLUE TRUST THEME -->
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center"
+                            android:layout_marginBottom="16dp">
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:src="@drawable/ic_admin"
+                                app:tint="#2563EB"
+                                android:layout_marginEnd="8dp"/>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Secure Payment via QR"
+                                android:textSize="18sp"
+                                android:fontFamily="sans-serif-black"
+                                android:textColor="#1E3A8A" />
+                        </LinearLayout>
 
-                    <TextView
-                        android:id="@+id/amountTxt"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Amount: ₹0"
-                        android:textSize="22sp"
-                        android:fontFamily="sans-serif-black"
-                        android:textColor="?attr/colorOnSurface"
-                        android:layout_marginBottom="24dp" />
+                        <!-- UPI ID: SUCCESS GREEN THEME -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_upi_pill"
+                            android:paddingHorizontal="20dp"
+                            android:paddingVertical="12dp"
+                            android:gravity="center"
+                            android:layout_marginBottom="20dp">
+                            <ImageView
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:src="@drawable/ic_admin"
+                                app:tint="#166534"
+                                android:layout_marginEnd="8dp"/>
+                            <TextView
+                                android:id="@+id/upiIdTxt"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="upi@verified"
+                                android:textSize="14sp"
+                                android:fontFamily="sans-serif-black"
+                                android:textColor="#166534"
+                                android:letterSpacing="0.02" />
+                        </LinearLayout>
 
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:cardCornerRadius="20dp"
-                        app:cardElevation="6dp"
-                        app:strokeWidth="4dp"
-                        app:strokeColor="@color/white">
-                        <ImageView
-                            android:id="@+id/qrImage"
-                            android:layout_width="220dp"
-                            android:layout_height="220dp"
-                            android:scaleType="fitCenter"
-                            android:src="@drawable/qr_1month" />
-                    </com.google.android.material.card.MaterialCardView>
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
+                        <!-- AMOUNT: GOLDEN / VIBRANT THEME -->
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:gravity="center"
+                            android:layout_marginBottom="28dp">
+                            <TextView
+                                android:id="@+id/originalAmountTxt"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textSize="15sp"
+                                android:fontFamily="sans-serif-medium"
+                                android:textColor="#94A3B8"
+                                android:layout_marginBottom="2dp"
+                                android:visibility="gone" />
+                            <TextView
+                                android:id="@+id/amountTxt"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="₹0"
+                                android:textSize="36sp"
+                                android:fontFamily="sans-serif-black"
+                                android:textColor="#10B981"
+                                android:letterSpacing="-0.03" />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="TOTAL TO PAY"
+                                android:textSize="10sp"
+                                android:fontFamily="sans-serif-black"
+                                android:textColor="#64748B"
+                                android:letterSpacing="0.1" />
 
-            <!-- ACTIONS -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/uploadBtn"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:text="@string/btn_upload_proof"
-                android:textAllCaps="false"
-                android:fontFamily="sans-serif-black"
-                android:textSize="16sp"
-                android:textColor="@color/white"
-                app:icon="@android:drawable/ic_menu_upload"
-                app:iconTint="@color/white"
-                app:cornerRadius="16dp"
-                android:background="@drawable/bg_admin_button_3d"
-                app:backgroundTint="@null"
-                android:layout_marginBottom="16dp" />
+                            <TextView
+                                android:id="@+id/savingsDetailTxt"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:background="@drawable/bg_upi_pill"
+                                android:paddingHorizontal="12dp"
+                                android:paddingVertical="4dp"
+                                android:text="You save ₹0"
+                                android:textSize="11sp"
+                                android:fontFamily="sans-serif-bold"
+                                android:textColor="#166534"
+                                android:visibility="gone" />
+                        </LinearLayout>
 
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/proofCard"
-                android:layout_width="match_parent"
-                android:layout_height="260dp"
-                android:layout_marginBottom="24dp"
-                android:visibility="gone"
-                app:cardCornerRadius="20dp"
-                app:cardElevation="4dp"
-                app:strokeWidth="1dp"
-                app:strokeColor="#0D000000">
-                <ImageView
-                    android:id="@+id/proofPreview"
+                        <!-- QR CODE: THE FINAL DESTINATION -->
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:cardCornerRadius="24dp"
+                            app:cardElevation="6dp"
+                            app:strokeWidth="5dp"
+                            app:strokeColor="#F8FAFC">
+                            <ImageView
+                                android:id="@+id/qrImage"
+                                android:layout_width="210dp"
+                                android:layout_height="210dp"
+                                android:padding="16dp"
+                                android:scaleType="fitCenter" />
+                        </com.google.android.material.card.MaterialCardView>
+
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- PROOF UPLOAD -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Payment Confirmation"
+                    android:textSize="13sp"
+                    android:fontFamily="sans-serif-black"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textAllCaps="true"
+                    android:letterSpacing="0.1"
+                    android:layout_marginTop="24dp"
+                    android:layout_marginBottom="12dp"
+                    android:layout_marginStart="4dp"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/uploadBtn"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
-                    android:background="#1A000000" />
-            </com.google.android.material.card.MaterialCardView>
+                    android:layout_height="64dp"
+                    android:text="Upload Payment Screenshot"
+                    android:textAllCaps="false"
+                    android:fontFamily="sans-serif-black"
+                    android:textSize="15sp"
+                    android:textColor="@color/white"
+                    app:icon="@drawable/ic_gallery_modern"
+                    app:iconTint="@color/white"
+                    app:iconSize="20dp"
+                    app:cornerRadius="18dp"
+                    android:background="@drawable/bg_admin_button_3d"
+                    app:backgroundTint="@null"
+                    android:layout_marginBottom="16dp" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/submitBtn"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:text="@string/btn_submit_request"
-                android:textAllCaps="false"
-                android:fontFamily="sans-serif-black"
-                android:textSize="18sp"
-                android:textColor="@color/white"
-                app:cornerRadius="18dp"
-                android:background="@drawable/bg_admin_button_3d"
-                app:backgroundTint="@null" />
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/proofCard"
+                    android:layout_width="match_parent"
+                    android:layout_height="280dp"
+                    android:layout_marginBottom="24dp"
+                    android:visibility="gone"
+                    app:cardCornerRadius="24dp"
+                    app:cardElevation="4dp"
+                    app:strokeWidth="0dp">
+                    <ImageView
+                        android:id="@+id/proofPreview"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop" />
+                </com.google.android.material.card.MaterialCardView>
 
-            <ProgressBar
-                android:id="@+id/progressBar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="20dp"
-                android:visibility="gone"
-                android:indeterminateTint="?attr/colorPrimary" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/submitBtn"
+                    android:layout_width="match_parent"
+                    android:layout_height="64dp"
+                    android:text="Confirm Subscription"
+                    android:textAllCaps="false"
+                    android:fontFamily="sans-serif-black"
+                    android:textSize="17sp"
+                    android:textColor="@color/white"
+                    app:cornerRadius="20dp"
+                    android:background="@drawable/bg_admin_button_3d"
+                    app:backgroundTint="@null"
+                    app:elevation="8dp"/>
+
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="16dp"
+                    android:visibility="gone"
+                    android:indeterminateTint="@color/primary" />
+
+            </LinearLayout>
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

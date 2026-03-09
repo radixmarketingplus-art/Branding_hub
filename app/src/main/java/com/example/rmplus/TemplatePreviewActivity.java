@@ -34,11 +34,12 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
 public class TemplatePreviewActivity extends AppCompatActivity {
 
     ImageView img;
-    View btnLike, btnShare, btnSave, btnFav;
+    View btnLike, btnEditBottom, btnSave, btnFav;
     com.google.android.material.button.MaterialButton btnEdit;
     ImageView btnSearch, btnBack;
     ImageView imgLike, imgFav;
@@ -46,6 +47,7 @@ public class TemplatePreviewActivity extends AppCompatActivity {
     android.widget.VideoView videoView;
     RecyclerView rvSimilar;
     TextView txtCategory;
+    View bottomSheetSimilar;
     ViewGroup.LayoutParams params;
 
     FrameLayout progressOverlay;
@@ -70,7 +72,7 @@ public class TemplatePreviewActivity extends AppCompatActivity {
 
         img = findViewById(R.id.imgPreview);
         btnLike = findViewById(R.id.btnLike);
-        btnShare = findViewById(R.id.btnShare);
+        btnEditBottom = findViewById(R.id.btnEditBottom);
         btnEdit = findViewById(R.id.btnEdit);
         btnSearch = findViewById(R.id.btnSearch);
         btnFav = findViewById(R.id.btnFav);
@@ -83,6 +85,7 @@ public class TemplatePreviewActivity extends AppCompatActivity {
         rvSimilar = findViewById(R.id.rvSimilar);
         previewContainer = findViewById(R.id.previewContainer);
         txtCategory = findViewById(R.id.txtCategory);
+        bottomSheetSimilar = findViewById(R.id.bottomSheetSimilar);
         btnBack = findViewById(R.id.btnBack);
         params = previewContainer.getLayoutParams();
 
@@ -215,19 +218,39 @@ public class TemplatePreviewActivity extends AppCompatActivity {
         if (isVideo) {
             layPlay.setVisibility(android.view.View.VISIBLE);
             previewBottomShadow.setVisibility(android.view.View.VISIBLE);
-            // btnEdit.setVisibility(android.view.View.GONE); // 🚫 HIDE EDIT OPTION FOR
-            // VIDEOS
-            btnShare.setVisibility(android.view.View.GONE); // 🚫 HIDE SHARE OPTION FOR VIDEOS
-            // 🎬 Fixed height for Video
-            params.height = (int) android.util.TypedValue.applyDimension(android.util.TypedValue.COMPLEX_UNIT_DIP, 380,
+            // btnEdit.setVisibility(android.view.View.GONE); 
+            // 🎬 Fixed height for Video to show 9:16 Reels correctly
+            params.height = (int) android.util.TypedValue.applyDimension(android.util.TypedValue.COMPLEX_UNIT_DIP, 480,
                     getResources().getDisplayMetrics());
+            
+            // OPTIONAL: Reduce horizontal margin for video to look more like a phone screen/reel
+            if (previewContainer.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
+                ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) previewContainer.getLayoutParams();
+                lp.setMarginStart((int) android.util.TypedValue.applyDimension(android.util.TypedValue.COMPLEX_UNIT_DIP, 60, getResources().getDisplayMetrics()));
+                lp.setMarginEnd((int) android.util.TypedValue.applyDimension(android.util.TypedValue.COMPLEX_UNIT_DIP, 60, getResources().getDisplayMetrics()));
+                previewContainer.setLayoutParams(lp);
+            }
+
+            // Standard peek height for video
+            BottomSheetBehavior.from(bottomSheetSimilar).setPeekHeight((int) android.util.TypedValue.applyDimension(android.util.TypedValue.COMPLEX_UNIT_DIP, 140, getResources().getDisplayMetrics()));
+
         } else {
             layPlay.setVisibility(android.view.View.GONE);
             previewBottomShadow.setVisibility(android.view.View.GONE);
-            btnEdit.setVisibility(android.view.View.VISIBLE); // ✅ SHOW EDIT OPTION FOR IMAGES
-            btnShare.setVisibility(android.view.View.VISIBLE); // ✅ SHOW SHARE OPTION FOR IMAGES
+            // btnEdit.setVisibility(android.view.View.VISIBLE); // ✅ SHOW EDIT OPTION FOR IMAGES
+            // btnShare.setVisibility(android.view.View.VISIBLE); // ✅ SHOW SHARE OPTION FOR IMAGES
             // 🖼️ Dynamic height for Image
             params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+            // Restore default margin for images
+            if (previewContainer.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
+                ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) previewContainer.getLayoutParams();
+                lp.setMarginStart((int) android.util.TypedValue.applyDimension(android.util.TypedValue.COMPLEX_UNIT_DIP, 20, getResources().getDisplayMetrics()));
+                lp.setMarginEnd((int) android.util.TypedValue.applyDimension(android.util.TypedValue.COMPLEX_UNIT_DIP, 20, getResources().getDisplayMetrics()));
+                previewContainer.setLayoutParams(lp);
+            }
+
+            // Increase peek height for images so there is no huge gap between the 1:1 image and the sheet
+            BottomSheetBehavior.from(bottomSheetSimilar).setPeekHeight((int) android.util.TypedValue.applyDimension(android.util.TypedValue.COMPLEX_UNIT_DIP, 240, getResources().getDisplayMetrics()));
         }
         previewContainer.setLayoutParams(params);
 
@@ -268,28 +291,10 @@ public class TemplatePreviewActivity extends AppCompatActivity {
         btnFav.setOnClickListener(v -> toggleFavorite());
 
         // EDIT
-        btnEdit.setOnClickListener(v -> {
-            rootRef.child("template_activity")
-                    .child(templateId)
-                    .child("edits")
-                    .push()
-                    .setValue(uid);
+        btnEdit.setOnClickListener(v -> performEditAction());
 
-            rootRef.child("user_activity")
-                    .child(uid)
-                    .child("edits")
-                    .child(templateId)
-                    .setValue(path);
-
-            Intent i = new Intent(this, ManageTemplatesActivity.class);
-            i.putExtra("uri", path);
-            i.putExtra("category", category);
-            i.putExtra("isVideo", isVideo());
-            startActivity(i);
-        });
-
-        // SHARE
-        btnShare.setOnClickListener(v -> shareImage());
+        // EDIT (Bottom)
+        btnEditBottom.setOnClickListener(v -> performEditAction());
 
         // SAVE
         btnSave.setOnClickListener(v -> new AlertDialog.Builder(this)
@@ -465,48 +470,24 @@ public class TemplatePreviewActivity extends AppCompatActivity {
 
     // =====================================================
 
-    void shareImage() {
-        // Record Share Activity
+    void performEditAction() {
         rootRef.child("template_activity")
                 .child(templateId)
-                .child("shares")
+                .child("edits")
                 .push()
                 .setValue(uid);
-        if (isVideo()) {
-            toast(getString(R.string.msg_sharing_video_link));
-            Intent s = new Intent(Intent.ACTION_SEND);
-            s.setType("text/plain");
-            s.putExtra(Intent.EXTRA_TEXT,
-                    getString(R.string.share_msg_body, getString(R.string.app_name), getPackageName()) + "\n\n" + path);
-            startActivity(Intent.createChooser(s, getString(R.string.title_share_video)));
-            return;
-        }
 
-        Bitmap bitmap = Bitmap.createBitmap(previewContainer.getWidth(), previewContainer.getHeight(),
-                Bitmap.Config.ARGB_8888);
-        android.graphics.Canvas canvas = new android.graphics.Canvas(bitmap);
-        previewContainer.draw(canvas);
+        rootRef.child("user_activity")
+                .child(uid)
+                .child("edits")
+                .child(templateId)
+                .setValue(path);
 
-        new Thread(() -> {
-            try {
-                File file = new File(getCacheDir(), "share_" + System.currentTimeMillis() + ".jpg");
-                java.io.FileOutputStream out = new java.io.FileOutputStream(file);
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
-                out.close();
-
-                Uri uri = FileProvider.getUriForFile(this, getPackageName() + ".provider", file);
-
-                runOnUiThread(() -> {
-                    Intent s = new Intent(Intent.ACTION_SEND);
-                    s.setType("image/*");
-                    s.putExtra(Intent.EXTRA_STREAM, uri);
-                    s.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                    startActivity(Intent.createChooser(s, getString(R.string.content_desc_share)));
-                });
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }).start();
+        Intent i = new Intent(this, ManageTemplatesActivity.class);
+        i.putExtra("uri", path);
+        i.putExtra("category", category);
+        i.putExtra("isVideo", isVideo());
+        startActivity(i);
     }
 
     // =====================================================

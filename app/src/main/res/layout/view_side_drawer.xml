@@ -256,22 +256,7 @@
                             android:fontFamily="sans-serif-bold" />
                     </LinearLayout>
 
-                    <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginHorizontal="16dp" android:background="#0D000000" />
 
-                    <LinearLayout
-                        android:id="@+id/drawerSupport"
-                        style="@style/SettingsItemStyle"
-                        android:layout_width="match_parent"
-                        android:layout_height="56dp">
-                        <ImageView
-                            style="@style/SettingsIconStyle"
-                            android:src="@drawable/ic_support_profile"
-                            app:tint="?attr/colorPrimary" />
-                        <TextView
-                            style="@style/SettingsTextStyle"
-                            android:text="@string/menu_support"
-                            android:fontFamily="sans-serif-bold" />
-                    </LinearLayout>
 
                     <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginHorizontal="16dp" android:background="#0D000000" />
 

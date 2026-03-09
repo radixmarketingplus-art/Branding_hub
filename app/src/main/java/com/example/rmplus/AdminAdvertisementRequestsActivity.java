@@ -1,6 +1,7 @@
 package com.example.rmplus;
 
 import android.os.Bundle;
+import android.content.Intent;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 import com.google.android.material.tabs.*;
@@ -13,6 +14,11 @@ public class AdminAdvertisementRequestsActivity
         setContentView(R.layout.activity_admin_advertisement_requests);
 
         findViewById(R.id.btnBack).setOnClickListener(v -> finish());
+        
+        android.view.View btnEditScanner = findViewById(R.id.btnEditScanner);
+        if (btnEditScanner != null) {
+            btnEditScanner.setOnClickListener(v -> startActivity(new Intent(this, AdminAdRequestScannerActivity.class)));
+        }
 
         TabLayout tab = findViewById(R.id.tabLayout);
         ViewPager2 pager = findViewById(R.id.viewPager);

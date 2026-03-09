@@ -32,6 +32,7 @@ public class AdminPanelActivity extends BaseActivity {
                 advertisementRequestBtn = findViewById(R.id.advertisementRequestBtn);
                 contactRequestsBtn = findViewById(R.id.contactRequestsBtn);
                 userInfoBtn = findViewById(R.id.userInfoBtn);
+                Button appOpenOfferBtn = findViewById(R.id.appOpenOfferBtn);
 
                 findViewById(R.id.btnBack).setOnClickListener(v -> finish());
 
@@ -46,6 +47,9 @@ public class AdminPanelActivity extends BaseActivity {
 
                         return insets;
                 });
+
+                appOpenOfferBtn.setOnClickListener(v -> startActivity(new Intent(this,
+                                AdminAppOpenOfferActivity.class)));
 
                 uploadTemplatesBtn.setOnClickListener(v -> startActivity(new Intent(this,
                                 UploadManagerActivity.class)));

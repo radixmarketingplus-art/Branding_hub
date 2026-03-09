@@ -258,24 +258,7 @@
                         android:fontFamily="sans-serif-bold" />
                 </LinearLayout>
 
-                <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginHorizontal="16dp" android:background="#0D000000" />
 
-                <LinearLayout
-                    android:id="@+id/supportBtn"
-                    android:layout_width="match_parent"
-                    android:layout_height="64dp"
-                    style="@style/SettingsItemStyle">
-                    <ImageView
-                        android:src="@drawable/ic_support_profile"
-                        style="@style/SettingsIconStyle"
-                        app:tint="?attr/colorPrimary" />
-                    <TextView
-                        android:text="@string/menu_support"
-                        style="@style/SettingsTextStyle"
-                        android:fontFamily="sans-serif-bold" />
-                </LinearLayout>
-
-                <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginHorizontal="16dp" android:background="#0D000000" />
 
                 <LinearLayout
                     android:id="@+id/shareBtn"

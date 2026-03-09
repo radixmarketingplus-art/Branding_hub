@@ -36,8 +36,12 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import com.bumptech.glide.Glide;
+import android.widget.Toast;
 
 public class HomeActivity extends BaseActivity {
+
+    private static boolean appOpenOfferShown = false;
 
     RecyclerView rvTrending, rvFestivalCards;
     androidx.core.widget.NestedScrollView mainScroll;
@@ -187,6 +191,10 @@ public class HomeActivity extends BaseActivity {
         // CHECK FOR EXPIRED TEMPLATES
         ExpiryCleanupHelper.checkAndClean(this);
 
+        if (!appOpenOfferShown) {
+            checkAndShowAppOpenOffer();
+        }
+
         // ✅ SHOW LOGIN SUCCESS POPUP (If just logged in)
         boolean showOnboarding = getIntent().getBooleanExtra("show_onboarding", false);
         if (showOnboarding) {
@@ -199,6 +207,79 @@ public class HomeActivity extends BaseActivity {
             // If only onboarding (no success popup), start directly
             new Handler().postDelayed(this::startSpotlightOnboarding, 800);
         }
+    }
+
+    private void checkAndShowAppOpenOffer() {
+        FirebaseDatabase.getInstance().getReference("admin_settings").child("app_open_offer")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot snapshot) {
+                        try {
+                            if (!isFinishing() && !isDestroyed() && snapshot.exists()) {
+                                Boolean isEnabled = snapshot.child("enabled").getValue(Boolean.class);
+                                String imgUrl = snapshot.child("imageUrl").getValue(String.class);
+                                String actionLink = snapshot.child("actionLink").getValue(String.class);
+
+                                if (isEnabled != null && isEnabled && imgUrl != null && !imgUrl.isEmpty()) {
+                                    appOpenOfferShown = true;
+                                    showAppOpenOfferDialog(imgUrl, actionLink);
+                                }
+                            }
+                        } catch (Exception e) { e.printStackTrace(); }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError error) {
+                    }
+                });
+    }
+
+    private void showAppOpenOfferDialog(String imageUrl, String actionLink) {
+        Dialog dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.dialog_app_open_offer);
+        dialog.setCancelable(true);
+
+        Window window = dialog.getWindow();
+        if (window != null) {
+            window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+            window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            window.setDimAmount(0.7f);
+        }
+
+        ImageView imgOffer = dialog.findViewById(R.id.imgOffer);
+        ImageView btnCloseOffer = dialog.findViewById(R.id.btnCloseOffer);
+
+        Glide.with(this).load(imageUrl).into(imgOffer);
+
+        btnCloseOffer.setOnClickListener(v -> dialog.dismiss());
+
+        if (actionLink != null && !actionLink.trim().isEmpty()) {
+            imgOffer.setOnClickListener(v -> {
+                dialog.dismiss();
+                try {
+                    String link = actionLink.trim().toLowerCase();
+                    if (link.equals("app://subscription")) {
+                        startActivity(new Intent(HomeActivity.this, SubscriptionActivity.class));
+                    } else if (link.equals("app://gallery")) {
+                        Intent intent = new Intent(HomeActivity.this, TemplateGalleryActivity.class);
+                        intent.putExtra("category", "Festival Cards");
+                        startActivity(intent);
+                    } else if (link.equals("app://contact")) {
+                        startActivity(new Intent(HomeActivity.this, CreateRequestActivity.class));
+                    } else if (link.equals("app://profile")) {
+                        startActivity(new Intent(HomeActivity.this, ProfileActivity.class));
+                    } else {
+                        Intent intent = new Intent(Intent.ACTION_VIEW, android.net.Uri.parse(actionLink));
+                        startActivity(intent);
+                    }
+                } catch (Exception e) {
+                    Toast.makeText(HomeActivity.this, "Invalid Link", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
+        dialog.show();
     }
 
     private boolean pendingOnboarding = false;

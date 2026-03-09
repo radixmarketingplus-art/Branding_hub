@@ -134,20 +134,6 @@
                     android:text="@string/menu_settings" />
             </LinearLayout>
 
-            <!-- SUPPORT -->
-            <LinearLayout
-                android:id="@+id/menuSupport"
-                style="@style/SettingsItemStyle"
-                android:layout_width="match_parent"
-                android:layout_height="56dp">
-                <ImageView
-                    style="@style/SettingsIconStyle"
-                    android:src="@drawable/ic_support_profile"
-                    app:tint="?attr/colorPrimary" />
-                <TextView
-                    style="@style/SettingsTextStyle"
-                    android:text="@string/menu_support" />
-            </LinearLayout>
 
             <!-- RATE APP -->
             <LinearLayout

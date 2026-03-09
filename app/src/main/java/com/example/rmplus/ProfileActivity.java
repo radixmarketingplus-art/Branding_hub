@@ -27,7 +27,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         TextView nameTxt, emailTxt, mobileTxt;
         LinearLayout editBtn, subscriptionBtn, languageBtn,
-                        settingsBtn, rateBtn, supportBtn, shareBtn,
+                        settingsBtn, rateBtn, shareBtn,
                         logoutBtn, deleteBtn;
 
         MaterialSwitch darkSwitch;
@@ -50,7 +50,6 @@ public class ProfileActivity extends AppCompatActivity {
                 languageBtn = findViewById(R.id.languageBtn);
                 settingsBtn = findViewById(R.id.settingsBtn);
                 rateBtn = findViewById(R.id.rateBtn);
-                supportBtn = findViewById(R.id.supportBtn);
                 shareBtn = findViewById(R.id.shareBtn);
                 logoutBtn = findViewById(R.id.logoutBtn);
                 deleteBtn = findViewById(R.id.deleteBtn);
@@ -108,8 +107,6 @@ public class ProfileActivity extends AppCompatActivity {
                                                                 + getPackageName())));
                         }
                 });
-
-                supportBtn.setOnClickListener(v -> showContactSupportDialog());
 
                 // logoutBtn.setOnClickListener(v->{
                 // auth.signOut();
@@ -255,27 +252,4 @@ public class ProfileActivity extends AppCompatActivity {
                                 .show();
         }
 
-        void showContactSupportDialog() {
-                View dialogView = getLayoutInflater().inflate(R.layout.dialog_contact_support, null);
-                AlertDialog dialog = new AlertDialog.Builder(this)
-                                .setView(dialogView)
-                                .create();
-
-                dialogView.findViewById(R.id.btnCallSupport).setOnClickListener(v -> {
-                        dialog.dismiss();
-                        Intent callIntent = new Intent(Intent.ACTION_DIAL);
-                        callIntent.setData(Uri.parse("tel:+917089927270"));
-                        startActivity(callIntent);
-                });
-
-                dialogView.findViewById(R.id.btnEmailSupport).setOnClickListener(v -> {
-                        dialog.dismiss();
-                        Intent email = new Intent(Intent.ACTION_SENDTO);
-                        email.setData(Uri.parse("mailto:prikhush332@gmail.com"));
-                        email.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.support_email_subject));
-                        startActivity(email);
-                });
-
-                dialog.show();
-        }
 }

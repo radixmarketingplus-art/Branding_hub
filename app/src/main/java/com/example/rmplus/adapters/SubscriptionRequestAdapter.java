@@ -45,8 +45,11 @@ public class SubscriptionRequestAdapter extends RecyclerView.Adapter<Subscriptio
         h.imgIcon.setImageResource(R.drawable.ic_profile); // Or a subscription specific icon if available
         h.imgIcon.setBackgroundTintList(android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#E8F5E9"))); // Light Green tint
 
-        // 2. SET NAME & PLAN
-        h.title.setText(r.name + " - " + r.plan);
+        // 2. SET NAME & DETAILS
+        String details = r.name + " - " + r.plan;
+        if (r.amount != null) details += "\nAmount: ₹" + r.amount;
+        if (r.discountPrice != null && !r.discountPrice.equals("0")) details += " (Disc: ₹" + r.discountPrice + ")";
+        h.title.setText(details);
 
         // 3. SET DATE/TIME
         String timeStr = new SimpleDateFormat("hh:mm a", Locale.getDefault()).format(new Date(r.time));

@@ -326,12 +326,7 @@ public class BaseActivity extends AppCompatActivity {
                             Uri.parse("https://play.google.com/store/apps/details?id=" + getPackageName())));
                 }
             });
-        View support = findViewById(R.id.drawerSupport);
-        if (support != null)
-            support.setOnClickListener(v -> {
-                drawer.closeDrawer(Gravity.START);
-                showContactSupportDialog();
-            });
+
         View share = findViewById(R.id.drawerShare);
         if (share != null)
             share.setOnClickListener(v -> {
@@ -427,10 +422,7 @@ public class BaseActivity extends AppCompatActivity {
                         Uri.parse("https://play.google.com/store/apps/details?id=" + getPackageName())));
             }
         });
-        view.findViewById(R.id.menuSupport).setOnClickListener(v -> {
-            sheet.dismiss();
-            showContactSupportDialog();
-        });
+
         view.findViewById(R.id.menuShare).setOnClickListener(v -> {
             sheet.dismiss();
             shareApp();
@@ -505,15 +497,41 @@ public class BaseActivity extends AppCompatActivity {
                 .setView(dialogView)
                 .create();
 
+        android.widget.TextView tvCall = dialogView.findViewById(R.id.tvCallNumber);
+        android.widget.TextView tvEmail = dialogView.findViewById(R.id.tvEmailAddress);
+
+        final String[] finalPhone = {"+917089927270"};
+        final String[] finalEmail = {"prikhush332@gmail.com"};
+
+        FirebaseDatabase.getInstance().getReference("admin_settings").child("support_contact")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot s) {
+                        if(s.exists()) {
+                            String dbPhone = s.child("phone").getValue(String.class);
+                            String dbEmail = s.child("email").getValue(String.class);
+                            if(dbPhone != null && !dbPhone.isEmpty()) {
+                                finalPhone[0] = dbPhone;
+                                tvCall.setText(dbPhone);
+                            }
+                            if(dbEmail != null && !dbEmail.isEmpty()) {
+                                finalEmail[0] = dbEmail;
+                                tvEmail.setText(dbEmail);
+                            }
+                        }
+                    }
+                    @Override public void onCancelled(DatabaseError e) {}
+                });
+
         dialogView.findViewById(R.id.btnCallSupport).setOnClickListener(v -> {
             dialog.dismiss();
-            startActivity(new Intent(Intent.ACTION_DIAL, Uri.parse("tel:+917089927270")));
+            startActivity(new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + finalPhone[0])));
         });
 
         dialogView.findViewById(R.id.btnEmailSupport).setOnClickListener(v -> {
             dialog.dismiss();
             Intent email = new Intent(Intent.ACTION_SENDTO);
-            email.setData(Uri.parse("mailto:prikhush332@gmail.com"));
+            email.setData(Uri.parse("mailto:" + finalEmail[0]));
             email.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.support_email_subject));
             startActivity(email);
         });

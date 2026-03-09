@@ -158,6 +158,33 @@ public class AdRequestActivity extends BaseActivity {
 
         // ✅ Submit: validate → upload both → save to Firebase
         btnSubmit.setOnClickListener(v -> validateAndSubmit());
+
+        loadAdScanner();
+    }
+
+    private void loadAdScanner() {
+        ImageView imgAdScanner = findViewById(R.id.imgAdScanner);
+        if (imgAdScanner == null) return;
+
+        FirebaseDatabase.getInstance().getReference("admin_settings").child("ad_request_scanner")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        try {
+                            if (!isFinishing() && !isDestroyed() && snapshot.exists() && snapshot.hasChild("imageUrl")) {
+                                String imgUrl = snapshot.child("imageUrl").getValue(String.class);
+                                if (imgUrl != null && !imgUrl.isEmpty()) {
+                                    com.bumptech.glide.Glide.with(AdRequestActivity.this)
+                                            .load(imgUrl)
+                                            .into(imgAdScanner);
+                                }
+                            }
+                        } catch (Exception e) { e.printStackTrace(); }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {}
+                });
     }
 
     // ─── Pick Images ───────────────────────────────────────────────────────────

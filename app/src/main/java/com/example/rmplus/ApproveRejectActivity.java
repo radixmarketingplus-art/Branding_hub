@@ -87,7 +87,14 @@ public class ApproveRejectActivity extends AppCompatActivity {
                                         public void onDataChange(DataSnapshot s) {
 
                                                 userRequestedPlan = s.child("plan").getValue(String.class);
-                                                planTxt.setText(userRequestedPlan); // Showing plain plan text for modern look
+                                                String amt = s.child("amount").getValue(String.class);
+                                                String disc = s.child("discountPrice").getValue(String.class);
+
+                                                String fullPlanDetails = userRequestedPlan;
+                                                if (amt != null) fullPlanDetails += "\nAmount: ₹" + amt;
+                                                if (disc != null && !disc.equals("0")) fullPlanDetails += " (Disc: ₹" + disc + ")";
+                                                
+                                                planTxt.setText(fullPlanDetails);
 
                                                 // Load User Info from request node
                                                 String name = s.child("name").getValue(String.class);
