@@ -87,7 +87,10 @@ public class SearchActivity extends AppCompatActivity {
     // --------------------------------------
 
     void performSearch() {
-        String q = edtSearch.getText().toString().trim().toLowerCase();
+        String rawQ = edtSearch.getText().toString().trim().toLowerCase();
+        String translatedQ = translateHindiToEnglish(rawQ);
+        String q = rawQ; // original
+        String altQ = translatedQ; // translated
 
         if (q.isEmpty()) {
             adapter.setData(new ArrayList<>());
@@ -99,13 +102,18 @@ public class SearchActivity extends AppCompatActivity {
         ArrayList<TemplateModel> result = new ArrayList<>();
 
         for (TemplateSearchItem item : allTemplates) {
-            if (item.title.contains(q)
+            boolean matchMain = item.title.contains(q)
                     || item.category.toLowerCase().contains(q)
-                    || (item.keywords != null && item.keywords.contains(q))) {
-                // Determine ID (extracting from path or using item.title if ID is not available
-                // in TemplateSearchItem)
-                // Actually, let's just use the path as the "url" and some generated ID if
-                // missing
+                    || (item.keywords != null && item.keywords.contains(q));
+            
+            boolean matchAlt = false;
+            if (!altQ.equals(q)) {
+                matchAlt = item.title.contains(altQ)
+                        || item.category.toLowerCase().contains(altQ)
+                        || (item.keywords != null && item.keywords.contains(altQ));
+            }
+
+            if (matchMain || matchAlt) {
                 result.add(new TemplateModel(makeSafeKey(item.path), item.path, item.category));
             }
         }
@@ -118,6 +126,33 @@ public class SearchActivity extends AppCompatActivity {
             emptyView.setVisibility(View.GONE);
             recycler.setVisibility(View.VISIBLE);
         }
+    }
+
+    private String translateHindiToEnglish(String q) {
+        if (q == null || q.isEmpty()) return q;
+        String res = q;
+        
+        // Category Mappings
+        if (q.contains("व्यापार") || q.contains("बिज़नेस")) res += " business";
+        if (q.contains("राजनीति") || q.contains("राजनीतिक") || q.contains("चुनाव")) res += " political";
+        if (q.contains("त्योहार") || q.contains("उत्सव")) res += " festival";
+        if (q.contains("विज्ञापन")) res += " advertisement";
+        if (q.contains("प्रेरणा") || q.contains("प्रेरक")) res += " motivation";
+        if (q.contains("शुभकामनाएं") || q.contains("बधाई")) res += " wishes greeting";
+        if (q.contains("जन्मदिन") || q.contains("सालगिरह")) res += " birthday";
+        if (q.contains("शिक्षा")) res += " education";
+        if (q.contains("स्वास्थ") || q.contains("अस्पताल")) res += " health hospital";
+        if (q.contains("भक्ति") || q.contains("भगवान")) res += " devotional god";
+        if (q.contains("मजदूरी") || q.contains("श्रमिक")) res += " labor worker";
+        if (q.contains("खेल") || q.contains("क्रिकेट")) res += " sports cricket";
+        
+        // General term mappings
+        if (q.contains("पोस्टर")) res += " poster";
+        if (q.contains("डिजाइन")) res += " design";
+        if (q.contains("फोटो") || q.contains("चित्र")) res += " photo image";
+        if (q.contains("वीडियो")) res += " video";
+        
+        return res;
     }
 
     private String makeSafeKey(String s) {
@@ -167,6 +202,12 @@ public class SearchActivity extends AppCompatActivity {
         i.putExtra(
                 RecognizerIntent.EXTRA_LANGUAGE_MODEL,
                 RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        i.putExtra(
+                RecognizerIntent.EXTRA_LANGUAGE,
+                Locale.getDefault());
+        i.putExtra(
+                RecognizerIntent.EXTRA_PROMPT,
+                getString(R.string.hint_speak_now));
         voiceLauncher.launch(i);
     }
 
