@@ -24,10 +24,6 @@
     <string name="label_grant_plan">प्लान प्रदान करें (वैधता निर्धारित करता है)</string>
     <string name="label_expires_on">समाप्ति तिथि: %1$s</string>
     <string name="btn_update_expiry">वैधता अपडेट करें</string>
-    <string name="plan_silver">सिल्वर प्लान (1 महीना)</string>
-    <string name="plan_gold">गोल्ड प्लान (6 महीने)</string>
-    <string name="plan_diamond">डायमंड प्लान (1 साल)</string>
-    <string name="plan_custom">कस्टम (7 दिन)</string>
     <string name="msg_select_duration_first">कृपया पहले अवधि चुनें</string>
     <string name="dur_select">अवधि चुनें</string>
     <string name="dur_7_days">7 दिन</string>
@@ -437,10 +433,6 @@
     <string name="share_msg_body">%1$s - अपने व्यवसाय को डिजिटल रूप से बढ़ाएं! \n\nडाउनलोड लिंक: https://play.google.com/store/apps/details?id=%2$s</string>
     <string name="user_not_logged_in">यूज़र लॉग इन नहीं है</string>
     <string name="support_email_subject">RM Ads Maker सपोर्ट</string>
-    <string name="plan_1_month">1 महीना</string>
-    <string name="plan_3_month">3 महीना</string>
-    <string name="plan_6_month">6 महीना</string>
-    <string name="plan_1_year">1 साल</string>
     <string-array name="india_states">
         <item>आंध्र प्रदेश</item>
         <item>अरुणाचल प्रदेश</item>
