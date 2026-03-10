@@ -272,7 +272,7 @@ public class TemplatePreviewActivity extends AppCompatActivity {
                 .into(img);
 
         btnBack.setOnClickListener(v -> finish());
-        txtCategory.setText(category != null ? category : "Visual Design");
+        txtCategory.setText(category != null ? getLocalizedCategory(category) : "Visual Design");
 
         // FULL SCREEN PREVIEW / VIDEO PLAY
         img.setOnClickListener(v -> {
@@ -664,5 +664,25 @@ public class TemplatePreviewActivity extends AppCompatActivity {
 
     private void toast(String m) {
         Toast.makeText(this, m, Toast.LENGTH_SHORT).show();
+    }
+
+    private String getLocalizedCategory(String key) {
+        if (key == null) return "Visual Design";
+        String lowerKey = key.toLowerCase();
+        
+        if (lowerKey.contains("advertisement")) return getString(R.string.section_advertisement);
+        if (lowerKey.contains("festival cards")) return getString(R.string.section_festival_cards);
+        if (lowerKey.contains("latest update")) return getString(R.string.section_latest_update);
+        if (lowerKey.contains("business special")) return getString(R.string.section_business_special);
+        if (lowerKey.contains("reel maker")) return getString(R.string.section_reel_maker);
+        if (lowerKey.contains("business frame")) return getString(R.string.section_business_frame);
+        if (lowerKey.contains("motivation")) return getString(R.string.section_motivation);
+        if (lowerKey.contains("greetings")) return getString(R.string.section_greetings);
+        if (lowerKey.contains("business ethics")) return getString(R.string.section_business_ethics);
+        if (lowerKey.contains("political")) return getString(R.string.cat_political);
+        if (lowerKey.contains("ngo")) return getString(R.string.cat_ngo);
+        if (lowerKey.contains("business") && !lowerKey.contains("special") && !lowerKey.contains("ethics") && !lowerKey.contains("frame")) return getString(R.string.cat_business);
+        
+        return key;
     }
 }
