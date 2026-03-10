@@ -903,4 +903,16 @@
         <item>Agatti</item>
         <item>Minicoy</item>
     </string-array>
+    <!-- ================================================== -->
+    <!-- 16. TEMPLATE EDITOR & MANAGE -->
+    <!-- ================================================== -->
+    <string name="msg_failed_save_image">Failed to save image!</string>
+    <string name="msg_generating_video">Generating video, please wait...</string>
+    <string name="msg_failed_capture_overlay">Failed to capture overlay</string>
+    <string name="msg_video_saved_success">Video saved successfully to Movies folder!</string>
+    <string name="msg_failed_save_video_error">Failed to save video. Error code: %1$d</string>
+    <string name="title_choose_font">Choose Font</string>
+    <string name="label_rotate">Rotate</string>
+    <string name="label_font">Font</string>
+
 </resources>

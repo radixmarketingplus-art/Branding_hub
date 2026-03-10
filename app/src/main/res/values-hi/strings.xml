@@ -802,4 +802,14 @@
     <string name="title_notif_new_message">नया मैसेज</string>
     <string name="msg_notif_new_message_user">सपोर्ट एजेंट का नया मैसेज।</string>
     <string name="msg_notif_new_message_admin">यूजर का नया मैसेज।</string>
+    <!-- Template Editor -->
+    <string name="msg_failed_save_image">इमेज सेव करने में विफल!</string>
+    <string name="msg_generating_video">वीडियो जनरेट हो रहा है, कृपया प्रतीक्षा करें...</string>
+    <string name="msg_failed_capture_overlay">ओवरले कैप्चर करने में विफल</string>
+    <string name="msg_video_saved_success">वीडियो सफलतापूर्वक मूवीज फोल्डर में सेव हो गया!</string>
+    <string name="msg_failed_save_video_error">वीडियो सेव करने में विफल। त्रुटि कोड: %1$d</string>
+    <string name="title_choose_font">फ़ॉन्ट चुनें</string>
+    <string name="label_rotate">घुमाएं</string>
+    <string name="label_font">फ़ॉन्ट</string>
+
 </resources>

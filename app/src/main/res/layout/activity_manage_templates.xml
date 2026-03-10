@@ -162,7 +162,7 @@
                         android:orientation="horizontal"
                         android:gravity="center">
                         <TextView
-                            android:text="Rotate"
+                            android:text="@string/label_rotate"
                             android:fontFamily="sans-serif-bold"
                             android:textColor="?attr/colorOnSurface"
                             android:layout_width="wrap_content"
@@ -191,7 +191,7 @@
                             android:layout_width="0dp"
                             android:layout_weight="1"
                             android:layout_height="wrap_content"
-                            android:text="Font"
+                            android:text="@string/label_font"
                             android:insetTop="0dp"
                             android:insetBottom="0dp"
                             app:cornerRadius="12dp"
@@ -320,7 +320,7 @@
                         android:orientation="horizontal"
                         android:gravity="center">
                         <TextView
-                            android:text="Rotate"
+                            android:text="@string/label_rotate"
                             android:fontFamily="sans-serif-bold"
                             android:textColor="?attr/colorOnSurface"
                             android:layout_width="wrap_content"

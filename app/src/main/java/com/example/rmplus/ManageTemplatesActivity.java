@@ -717,7 +717,7 @@ public class ManageTemplatesActivity extends AppCompatActivity {
                     .child(safeId)
                     .setValue(savedPath);
         } else {
-            Toast.makeText(this, "Failed to save image!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.msg_failed_save_image, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -731,7 +731,7 @@ public class ManageTemplatesActivity extends AppCompatActivity {
         layout.setPadding(60, 40, 60, 40);
 
         TextView tv = new TextView(this);
-        tv.setText("Generating video, please wait...");
+        tv.setText(R.string.msg_generating_video);
         tv.setTextSize(16);
         tv.setPadding(0, 0, 0, 30);
         layout.addView(tv);
@@ -805,7 +805,7 @@ public class ManageTemplatesActivity extends AppCompatActivity {
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
             } catch (Exception e) {
                 dialog.dismiss();
-                Toast.makeText(this, "Failed to capture overlay", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.msg_failed_capture_overlay, Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -844,7 +844,7 @@ public class ManageTemplatesActivity extends AppCompatActivity {
                         dialog.dismiss();
                         com.arthenica.mobileffmpeg.Config.enableStatisticsCallback(null); // clear callback
                         if (returnCode == com.arthenica.mobileffmpeg.Config.RETURN_CODE_SUCCESS) {
-                            Toast.makeText(ManageTemplatesActivity.this, "Video saved successfully to Movies folder!",
+                            Toast.makeText(ManageTemplatesActivity.this, R.string.msg_video_saved_success,
                                     Toast.LENGTH_LONG).show();
 
                             android.content.Intent mediaScanIntent = new android.content.Intent(
@@ -858,7 +858,7 @@ public class ManageTemplatesActivity extends AppCompatActivity {
                                     .setValue(outputFile.getAbsolutePath());
                         } else {
                             Toast.makeText(ManageTemplatesActivity.this,
-                                    "Failed to save video. Error code: " + returnCode, Toast.LENGTH_LONG).show();
+                                    getString(R.string.msg_failed_save_video_error, returnCode), Toast.LENGTH_LONG).show();
                         }
                     });
                 }
@@ -921,7 +921,7 @@ public class ManageTemplatesActivity extends AppCompatActivity {
         };
 
         new AlertDialog.Builder(this)
-                .setTitle("Choose Font")
+                .setTitle(R.string.title_choose_font)
                 .setItems(fontNames, (dialog, which) -> {
                     android.graphics.Typeface tf = null;
                     try {
