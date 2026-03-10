@@ -272,6 +272,7 @@ public class TemplatePreviewActivity extends AppCompatActivity {
                 .into(img);
 
         btnBack.setOnClickListener(v -> finish());
+        // txtCategory.setText(category != null ? category : "Visual Design");
         txtCategory.setText(category != null ? getLocalizedCategory(category) : getString(R.string.label_visual_design));
 
         // FULL SCREEN PREVIEW / VIDEO PLAY

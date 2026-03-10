@@ -56,10 +56,10 @@ public class UserSubscriptionPlanAdapter extends RecyclerView.Adapter<UserSubscr
                 holder.originalPrice.setPaintFlags(holder.originalPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
                 holder.originalPrice.setVisibility(View.VISIBLE);
 
-                holder.badge.setText("SAVE " + percent + "%");
+                holder.badge.setText(holder.itemView.getContext().getString(R.string.label_save_percent_tag, percent));
                 holder.badge.setVisibility(View.VISIBLE);
 
-                holder.savings.setText("Save ₹" + (int)discount);
+                holder.savings.setText(holder.itemView.getContext().getString(R.string.label_save_amount_tag, (int)discount));
                 holder.savings.setVisibility(View.VISIBLE);
             } else {
                 holder.originalPrice.setVisibility(View.GONE);

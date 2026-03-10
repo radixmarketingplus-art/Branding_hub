@@ -131,6 +131,7 @@
     <string name="hint_search_users">Search name, email or mobile</string>
     <string name="search_hint">Search Posts by Topics</string>
     <string name="msg_voice_search_soon">Voice search coming soon...</string>
+    <string name="hint_speak_now">Speak now...</string>
     <string name="label_ad_link">Ad Link : %1$s</string>
     <string name="label_ad_prefix">Ad : %1$s</string>
     <string name="label_ad_request_desc">Advertisement Request</string>
@@ -350,6 +351,23 @@
     <string name="title_notif_adv_expired">Advertisement Expired</string>
     <string name="title_notif_sub_expired">Subscription Expired</string>
     <string name="upi_id_value">RMPlus@upi</string>
+    <string name="title_premium_plans">Premium Plans</string>
+    <string name="label_select_membership">Select Membership</string>
+    <string name="label_secure_payment">Secure Payment via QR</string>
+    <string name="label_total_to_pay">TOTAL TO PAY</string>
+    <string name="label_you_save_simple">You save ₹%1$d</string>
+    <string name="label_you_save_percent">You save ₹%1$d (%2$d%%)</string>
+    <string name="label_payment_confirmation">Payment Confirmation</string>
+    <string name="btn_upload_screenshot">Upload Payment Screenshot</string>
+    <string name="btn_confirm_subscription">Confirm Subscription</string>
+    <string name="label_expires_tag">EXPIRES: %1$s</string>
+    <string name="msg_proof_selected">Proof image selected</string>
+    <string name="msg_plans_not_loaded">Plans not loaded yet</string>
+    <string name="msg_no_active_plans">No active plans available</string>
+    <string name="label_save_percent_tag">SAVE %1$d%%</string>
+    <string name="label_save_amount_tag">Save ₹%1$d</string>
+    <string name="title_sub_request_sent">Subscription Request Sent</string>
+    <string name="msg_sub_request_sent_user">Your subscription request has been submitted for review.</string>
 
     <!-- ================================================== -->
     <!-- 10. SUPPORT & CONTACT -->

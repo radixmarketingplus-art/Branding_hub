@@ -136,7 +136,7 @@ public class SubscriptionActivity extends AppCompatActivity {
                 }
 
                 if (dynamicPlans.isEmpty()) {
-                    amountTxt.setText("No active plans available");
+                    amountTxt.setText(R.string.msg_no_active_plans);
                     qrImage.setImageResource(R.drawable.ic_gallery_modern);
                 } else {
                     planAdapter = new UserSubscriptionPlanAdapter(dynamicPlans, plan -> {
@@ -165,7 +165,7 @@ public class SubscriptionActivity extends AppCompatActivity {
                         originalAmountTxt.setPaintFlags(originalAmountTxt.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
                         originalAmountTxt.setVisibility(View.VISIBLE);
 
-                        savingsDetailTxt.setText("You save ₹" + (int)discount + " (" + percent + "%)");
+                        savingsDetailTxt.setText(getString(R.string.label_you_save_percent, (int)discount, percent));
                         savingsDetailTxt.setVisibility(View.VISIBLE);
 
                         String detail = String.format(Locale.US, "₹%d", (int)amount);
@@ -232,7 +232,7 @@ public class SubscriptionActivity extends AppCompatActivity {
         if (proofCard != null) proofCard.setVisibility(View.VISIBLE);
         else proofPreview.setVisibility(View.VISIBLE);
 
-        Toast.makeText(this, "Proof image selected", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, R.string.msg_proof_selected, Toast.LENGTH_SHORT).show();
     }
 
     // ---------------------------
@@ -272,7 +272,7 @@ public class SubscriptionActivity extends AppCompatActivity {
                             if (expiry != null) {
                                 String dateStr = new java.text.SimpleDateFormat("dd-MM-yyyy", java.util.Locale.US)
                                         .format(new java.util.Date(expiry));
-                                expiryTxt.setText("EXPIRES: " + dateStr);
+                                expiryTxt.setText(getString(R.string.label_expires_tag, dateStr));
                                 expiryContainer.setVisibility(View.VISIBLE);
                             } else {
                                 expiryContainer.setVisibility(View.GONE);
@@ -406,7 +406,7 @@ public class SubscriptionActivity extends AppCompatActivity {
         }
 
         if (dynamicPlans.isEmpty() || planAdapter == null) {
-            Toast.makeText(this, "Plans not loaded yet", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.msg_plans_not_loaded, Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -444,8 +444,8 @@ public class SubscriptionActivity extends AppCompatActivity {
                                             NotificationHelper.send(
                                                     SubscriptionActivity.this,
                                                     auth.getUid(),
-                                                    "Subscription Request Sent",
-                                                    "Your subscription request has been submitted for review.");
+                                                    getString(R.string.title_sub_request_sent),
+                                                    getString(R.string.msg_sub_request_sent_user));
 
                                             // 📢 Notify ADMINS
                                             NotificationHelper.notifyAdmins(
