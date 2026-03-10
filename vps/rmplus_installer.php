@@ -3,9 +3,10 @@
  * RMPLUS NOTIFICATION INSTALLER
  * 
  * HOW TO USE:
- * 1. Upload ONLY this file to /var/www/html/rmplus_installer.php
- * 2. Open in browser: http://187.77.184.84/rmplus_installer.php
- * 3. It will create send_notification.php and service-account.json automatically
+ * 1. Upload `service-account.json` to /var/www/html/
+ * 2. Upload ONLY this file to /var/www/html/rmplus_installer.php
+ * 3. Open in browser: http://187.77.184.84/rmplus_installer.php
+ * 4. It will create send_notification.php automatically
  * 4. DELETE this installer file after setup!
  */
 
@@ -16,28 +17,17 @@ if ($_GET['key'] ?? '' !== $INSTALL_KEY) {
 }
 
 $results = [];
+$allGood = true; // Flag to track overall success
 
 // ══════════════════════════════════════════════════
 // FILE 1: service-account.json
 // ══════════════════════════════════════════════════
-$serviceAccount = '{
-  "type": "service_account",
-  "project_id": "YOUR_PROJECT_ID",
-  "private_key_id": "YOUR_PRIVATE_KEY_ID",
-  "private_key": "-----BEGIN PRIVATE KEY-----\\nYOUR_PRIVATE_KEY\\n-----END PRIVATE KEY-----\\n",
-  "client_email": "YOUR_CLIENT_EMAIL",
-  "client_id": "YOUR_CLIENT_ID",
-  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-  "token_uri": "https://oauth2.googleapis.com/token",
-  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-  "client_x509_cert_url": "YOUR_CLIENT_CERT_URL",
-  "universe_domain": "googleapis.com"
-}';
-
-$r1 = file_put_contents(__DIR__ . '/service-account.json', $serviceAccount);
-$results[] = $r1 !== false
-    ? '✅ service-account.json created successfully'
-    : '❌ Failed to create service-account.json (check folder permissions)';
+if (!file_exists(__DIR__ . '/service-account.json')) {
+    $results[] = '❌ service-account.json is MISSING. Please upload your service-account.json file to this directory first.';
+    $allGood = false;
+} else {
+    $results[] = '✅ service-account.json found successfully';
+}
 
 // ══════════════════════════════════════════════════
 // FILE 2: send_notification.php
