@@ -272,7 +272,7 @@ public class TemplatePreviewActivity extends AppCompatActivity {
                 .into(img);
 
         btnBack.setOnClickListener(v -> finish());
-        txtCategory.setText(category != null ? getLocalizedCategory(category) : "Visual Design");
+        txtCategory.setText(category != null ? getLocalizedCategory(category) : getString(R.string.label_visual_design));
 
         // FULL SCREEN PREVIEW / VIDEO PLAY
         img.setOnClickListener(v -> {
@@ -568,7 +568,7 @@ public class TemplatePreviewActivity extends AppCompatActivity {
             return;
 
         progressOverlay.setVisibility(View.VISIBLE);
-        txtProgressTitle.setText(isShare ? "Preparing Video..." : "Downloading Video...");
+        txtProgressTitle.setText(isShare ? getString(R.string.msg_preparing_video) : getString(R.string.msg_downloading_video));
         txtProgressSub.setText("0%");
         progressBarHorizontal.setProgress(0);
 
@@ -613,7 +613,7 @@ public class TemplatePreviewActivity extends AppCompatActivity {
                 e.printStackTrace();
                 runOnUiThread(() -> {
                     progressOverlay.setVisibility(View.GONE);
-                    Toast.makeText(this, "Action failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, getString(R.string.msg_action_failed, e.getMessage()), Toast.LENGTH_SHORT).show();
                 });
             }
         }).start();
@@ -667,7 +667,7 @@ public class TemplatePreviewActivity extends AppCompatActivity {
     }
 
     private String getLocalizedCategory(String key) {
-        if (key == null) return "Visual Design";
+        if (key == null) return getString(R.string.label_visual_design);
         String lowerKey = key.toLowerCase();
         
         if (lowerKey.contains("advertisement")) return getString(R.string.section_advertisement);

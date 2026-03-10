@@ -255,7 +255,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Edit"
+                        android:text="@string/btn_edit_bottom"
                         android:textSize="12sp"
                         android:fontFamily="sans-serif-bold"
                         android:textColor="@color/text_secondary"

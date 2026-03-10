@@ -175,6 +175,7 @@
     <!-- 6. TEMPLATE MANAGEMENT & EDITOR -->
     <!-- ================================================== -->
     <string name="btn_color">Color</string>
+    <string name="btn_edit_bottom">Edit</string>
     <string name="btn_edit_now">Edit &amp; Customize Now</string>
     <string name="btn_gallery">Gallery</string>
     <string name="btn_save">Save</string>
@@ -230,6 +231,8 @@
     <string name="msg_saved_to_gallery">Saved to Gallery</string>
     <string name="msg_select_valid_img">Please select a valid image (JPG, PNG)</string>
     <string name="msg_select_valid_video">Please select a valid video</string>
+    <string name="msg_preparing_video">Preparing Video...</string>
+    <string name="msg_downloading_video">Downloading Video...</string>
     <string name="msg_sharing_video_link">Sharing video link...</string>
     <string name="msg_template_deleted">This template has been deleted by the admin</string>
     <string name="msg_template_loaded">Template data loaded correctly</string>
@@ -494,6 +497,7 @@
     <string name="label_status">Status : %1$s</string>
     <string name="label_time">Time : %1$s</string>
     <string name="label_type">Type : %1$s</string>
+    <string name="label_visual_design">Visual Design</string>
     <string name="label_unknown_cat">Unknown Category</string>
     <string name="label_user_id">ID: %1$s</string>
     <string name="msg_advertisement">Advertisement</string>
@@ -521,6 +525,7 @@
     <string name="msg_select_duration_first">Please select a duration first</string>
     <string name="msg_select_fest_date">Please select festival date</string>
     <string name="msg_updated">Updated</string>
+    <string name="msg_action_failed">Action failed: %1$s</string>
     <string name="msg_wrong_credentials">Wrong Credentials</string>
     <string name="no">No</string>
     <string name="ok">OK</string>
