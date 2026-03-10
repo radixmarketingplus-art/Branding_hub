@@ -41,7 +41,7 @@ public class UserSubscriptionPlanAdapter extends RecyclerView.Adapter<UserSubscr
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         SubscriptionPlan p = list.get(position);
 
-        holder.duration.setText(p.duration);
+        holder.duration.setText(getLocalizedDuration(p.duration, holder.itemView.getContext()));
         holder.finalPrice.setText("₹" + p.amount);
 
         try {
@@ -99,6 +99,17 @@ public class UserSubscriptionPlanAdapter extends RecyclerView.Adapter<UserSubscr
 
     public int getSelectedPosition() {
         return selectedPos;
+    }
+
+    private String getLocalizedDuration(String duration, android.content.Context context) {
+        if (duration == null) return "";
+        String d = duration.toLowerCase();
+        if (d.contains("1 month")) return context.getString(R.string.plan_1_month);
+        if (d.contains("3 month")) return context.getString(R.string.plan_3_month);
+        if (d.contains("6 month")) return context.getString(R.string.plan_6_month);
+        if (d.contains("1 year")) return context.getString(R.string.plan_1_year);
+        if (d.contains("7 days") || d.contains("custom")) return context.getString(R.string.plan_custom);
+        return duration; // Fallback to DB value if no match
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {

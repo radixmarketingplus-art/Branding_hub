@@ -364,7 +364,7 @@
     <string name="status_pending">अनुरोध लंबित है</string>
     <string name="label_choose_plan">प्लान चुनें</string>
     <string name="label_scan_qr">पेमेंट के लिए QR स्कैन करें</string>
-    <string name="label_upi_id">UPI ID: %1$s</string>
+    <string name="label_upi_id">UPI आईडी: %1$s</string>
     <string name="upi_id_value">RMPlus@upi</string>
     <string name="title_premium_plans">प्रीमियम प्लान</string>
     <string name="label_select_membership">मैम्बरशिप चुनें</string>
@@ -383,6 +383,14 @@
     <string name="label_save_amount_tag">₹%1$d की बचत</string>
     <string name="title_sub_request_sent">सब्सक्रिप्शन अनुरोध भेजा गया</string>
     <string name="msg_sub_request_sent_user">आपका सब्सक्रिप्शन अनुरोध समीक्षा के लिए भेज दिया गया है।</string>
+    <string name="plan_1_month">1 महीना</string>
+    <string name="plan_3_month">3 महीने</string>
+    <string name="plan_6_month">6 महीने</string>
+    <string name="plan_1_year">1 साल</string>
+    <string name="plan_custom">कस्टम (7 दिन)</string>
+    <string name="plan_silver">सिल्वर प्लान (1 महीना)</string>
+    <string name="plan_gold">गोल्ड प्लान (6 महीने)</string>
+    <string name="plan_diamond">डायमंड प्लान (1 साल)</string>
     <string name="label_amount">राशि: %1$s</string>
     <string name="btn_upload_proof">पेमेंट का प्रमाण अपलोड करें</string>
     <string name="btn_submit_request">अनुरोध भेजें</string>

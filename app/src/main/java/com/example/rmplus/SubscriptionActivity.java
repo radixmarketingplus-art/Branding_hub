@@ -310,10 +310,16 @@ public class SubscriptionActivity extends AppCompatActivity {
     }
 
     private String getLocalizedPlanName(String canonical) {
-        if ("Silver".equalsIgnoreCase(canonical)) return getString(R.string.plan_silver);
-        if ("Gold".equalsIgnoreCase(canonical)) return getString(R.string.plan_gold);
-        if ("Diamond".equalsIgnoreCase(canonical)) return getString(R.string.plan_diamond);
-        if ("Custom".equalsIgnoreCase(canonical)) return getString(R.string.plan_custom);
+        if (canonical == null) return "";
+        String c = canonical.toLowerCase();
+        if (c.contains("silver")) return getString(R.string.plan_silver);
+        if (c.contains("gold")) return getString(R.string.plan_gold);
+        if (c.contains("diamond")) return getString(R.string.plan_diamond);
+        if (c.contains("custom") || c.contains("7 days")) return getString(R.string.plan_custom);
+        if (c.contains("1 month")) return getString(R.string.plan_1_month);
+        if (c.contains("3 month")) return getString(R.string.plan_3_month);
+        if (c.contains("6 month")) return getString(R.string.plan_6_month);
+        if (c.contains("1 year")) return getString(R.string.plan_1_year);
         return canonical;
     }
 
