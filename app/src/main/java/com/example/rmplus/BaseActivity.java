@@ -66,7 +66,7 @@ public class BaseActivity extends AppCompatActivity {
 
             if (btnMic != null) {
                 btnMic.setOnClickListener(v -> {
-                    Toast.makeText(this, "Voice search coming soon...", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, getString(R.string.msg_voice_search_soon), Toast.LENGTH_SHORT).show();
                     // Implement SpeechRecognizer here if needed
                 });
             }

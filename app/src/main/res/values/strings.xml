@@ -129,6 +129,8 @@
     <string name="desc_search">Search</string>
     <string name="hint_adv_link">Advertisement Website / Link</string>
     <string name="hint_search_users">Search name, email or mobile</string>
+    <string name="search_hint">Search Posts by Topics</string>
+    <string name="msg_voice_search_soon">Voice search coming soon...</string>
     <string name="label_ad_link">Ad Link : %1$s</string>
     <string name="label_ad_prefix">Ad : %1$s</string>
     <string name="label_ad_request_desc">Advertisement Request</string>

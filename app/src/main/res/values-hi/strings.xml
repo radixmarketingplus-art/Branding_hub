@@ -110,7 +110,8 @@
     <string name="btn_view">देखें</string>
     <string name="btn_check">चेक करें</string>
     <string name="nav_search">सर्च</string>
-    <string name="search_hint">टेम्पलेट्स सर्च करें...</string>
+    <string name="search_hint">विषयों के आधार पर पोस्ट सर्च करें</string>
+    <string name="msg_voice_search_soon">वॉयस सर्च जल्द ही आ रहा है...</string>
     <string name="hint_search_users">नाम, ईमेल, फ़ोन या UID सर्च करें...</string>
     <string name="msg_no_templates">कोई टेम्पलेट नहीं मिला 😕</string>
     <string name="msg_video_edit_not_supported">वीडियो एडिटिंग अभी सपोर्टेड नहीं है।</string>
