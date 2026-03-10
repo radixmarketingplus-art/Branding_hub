@@ -202,7 +202,18 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.UCrop"/>
 
+
+        <!-- 🔥 FCM: Background & Killed state notifications -->
+        <service
+            android:name=".MyFirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
         <provider
+
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"
             android:exported="false"

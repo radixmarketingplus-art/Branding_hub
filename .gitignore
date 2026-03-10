@@ -13,3 +13,6 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# 🔐 NEVER commit Firebase private key
+vps/service-account.json

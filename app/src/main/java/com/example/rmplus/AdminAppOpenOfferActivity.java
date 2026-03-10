@@ -160,6 +160,20 @@ public class AdminAppOpenOfferActivity extends AppCompatActivity {
             runOnUiThread(() -> {
                 setSaving(false);
                 Toast.makeText(AdminAppOpenOfferActivity.this, "Offer Saved Successfully!", Toast.LENGTH_SHORT).show();
+
+                // ✅ BROADCAST NOTIFICATION: If offer is enabled, notify all users
+                if (isEnabled) {
+                    NotificationHelper.sendBroadcast(
+                            AdminAppOpenOfferActivity.this,
+                            "offer_" + System.currentTimeMillis(),
+                            getString(R.string.title_notif_new_offer),
+                            getString(R.string.msg_notif_new_offer),
+                            "OPEN_OFFER",
+                            "",
+                            0
+                    );
+                }
+
                 finish();
             });
         }).addOnFailureListener(e -> {

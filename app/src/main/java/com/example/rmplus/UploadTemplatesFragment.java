@@ -548,31 +548,27 @@ public class UploadTemplatesFragment extends Fragment {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        } else {
-            // Image Validation: Check MIME OR check if it's a cropped file/web URL ending
-            // in jpg/png
-            boolean isImage = (mimeType != null && mimeType.startsWith("image/"));
-            boolean isCroppedJpg = uriString.contains("cropped_") && uriString.endsWith(".jpg");
-            boolean isRemoteImage = uriString.startsWith("http")
-                    && (uriString.contains(".jpg") || uriString.contains(".png") || uriString.contains(".jpeg"));
+            // Image Validation: Check MIME OR check URI path
+            String uriStr = selectedImageUri.toString().toLowerCase();
+            boolean isImage = (mimeType != null && mimeType.startsWith("image/"))
+                    || uriStr.contains(".jpg") || uriStr.contains(".jpeg") || uriStr.contains(".png");
 
-            if (!isImage && !isCroppedJpg && !isRemoteImage) {
+            if (!isImage) {
                 toast(R.string.msg_select_valid_img);
                 return;
             }
 
             if (sectionKey.equalsIgnoreCase("Business Frame")) {
-                // Strictly PNG for both Frame sections
-                if ((mimeType != null && !mimeType.contains("png"))
-                        || (mimeType == null && !uriString.toLowerCase().contains(".png"))) {
+                // Strictly PNG for Frame sections
+                boolean isPng = (mimeType != null && mimeType.contains("png")) || uriStr.contains(".png");
+                if (!isPng) {
                     toast(R.string.msg_only_png_frames);
                     return;
                 }
             } else {
                 // For other sections, allow JPG/JPEG/PNG
-                boolean validFormat = (mimeType != null
-                        && (mimeType.contains("jpeg") || mimeType.contains("jpg") || mimeType.contains("png")))
-                        || isCroppedJpg || isRemoteImage;
+                boolean validFormat = (mimeType != null && (mimeType.contains("jpeg") || mimeType.contains("jpg") || mimeType.contains("png")))
+                        || uriStr.contains(".jpg") || uriStr.contains(".jpeg") || uriStr.contains(".png");
 
                 if (!validFormat) {
                     toast(R.string.msg_format_supported);

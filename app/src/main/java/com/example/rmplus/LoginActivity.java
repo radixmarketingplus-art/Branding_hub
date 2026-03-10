@@ -339,6 +339,15 @@ public class LoginActivity extends AppCompatActivity {
                                                             if (!onboardingDone) {
                                                                 intent.putExtra("show_onboarding", true);
                                                             }
+                                                            // ✅ Save FCM token and subscribe to topic for broadcast notifications
+                                                            com.google.firebase.messaging.FirebaseMessaging.getInstance()
+                                                                    .getToken()
+                                                                    .addOnSuccessListener(token -> {
+                                                                            MyFirebaseMessagingService.saveFcmTokenToFirebase(token);
+                                                                            com.google.firebase.messaging.FirebaseMessaging.getInstance()
+                                                                                .subscribeToTopic("all_users");
+                                                                    });
+
                                                             startActivity(intent);
                                                             finish();
                                                         }

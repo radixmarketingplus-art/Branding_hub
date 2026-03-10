@@ -93,6 +93,8 @@ public class SubscriptionActivity extends AppCompatActivity {
 
         checkSubscriptionStatus();
 
+        findViewById(R.id.btnBack).setOnClickListener(v -> onBackPressed());
+
         uploadBtn.setOnClickListener(v->pickImage());
         submitBtn.setOnClickListener(v->submitRequest());
 

@@ -6,7 +6,7 @@ import android.os.Handler;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
-import android.widget.TextView;
+
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -19,7 +19,7 @@ import com.google.firebase.database.FirebaseDatabase;
 public class MainActivity extends AppCompatActivity {
 
     ImageView logoImg;
-    TextView appName, tagline;
+    // TextView appName;
 
     DatabaseReference db;
 
@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
 
         logoImg = findViewById(R.id.logoImg);
 //        appName = findViewById(R.id.appName);
-        tagline = findViewById(R.id.tagline);
+
 
         // ✅ Initialize Auth
         auth = FirebaseAuth.getInstance();
@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
                 AnimationUtils.loadAnimation(this, R.anim.text_slide_fade);
 
         logoImg.startAnimation(logoAnim);
-        tagline.postDelayed(() -> tagline.startAnimation(textAnim), 900);
+
 
         // ❌ OLD CODE — always opened Login
         /*

@@ -51,6 +51,50 @@ public class NotificationHelper {
         String localizedMessage = getLocalized(context, message);
 
         showPhoneNotification(context, uid, localizedTitle, localizedMessage);
+
+        // ✅ Also send FCM push so notification arrives even when app is CLOSED/KILLED
+        sendFcmPush(context, uid, localizedTitle, localizedMessage);
+    }
+
+    // ✅ Send FCM push via VPS PHP (works even when app is CLOSED/KILLED)
+    private static void sendFcmPush(Context context, String uid, String title, String message) {
+        FirebaseDatabase.getInstance().getReference("users").child(uid).child("fcmToken")
+                .addListenerForSingleValueEvent(new com.google.firebase.database.ValueEventListener() {
+                    @Override
+                    public void onDataChange(com.google.firebase.database.DataSnapshot snapshot) {
+                        String token = snapshot.getValue(String.class);
+                        if (token == null || token.isEmpty()) return;
+
+                        new Thread(() -> {
+                            try {
+                                java.net.URL url = new java.net.URL("http://187.77.184.84/uploads/send_notification.php");
+                                java.net.HttpURLConnection conn = (java.net.HttpURLConnection) url.openConnection();
+                                conn.setRequestMethod("POST");
+                                conn.setDoOutput(true);
+                                conn.setConnectTimeout(10000);
+                                conn.setReadTimeout(10000);
+
+                                String params = "secret=rmplus_notif_secret_2024"
+                                        + "&token=" + java.net.URLEncoder.encode(token, "UTF-8")
+                                        + "&title=" + java.net.URLEncoder.encode(title, "UTF-8")
+                                        + "&message=" + java.net.URLEncoder.encode(message, "UTF-8");
+
+                                java.io.OutputStream os = conn.getOutputStream();
+                                os.write(params.getBytes("UTF-8"));
+                                os.close();
+
+                                int code = conn.getResponseCode();
+                                android.util.Log.d("FCMPush", "VPS response: " + code);
+                                conn.disconnect();
+
+                            } catch (Exception e) {
+                                android.util.Log.e("FCMPush", "Error: " + e.getMessage());
+                            }
+                        }).start();
+                    }
+                    @Override
+                    public void onCancelled(com.google.firebase.database.DatabaseError e) {}
+                });
     }
 
     // NEW: Overloaded send with action and expiry support
@@ -109,10 +153,43 @@ public class NotificationHelper {
 
         ref.setValue(map);
 
+        // ✅ Also send FCM Broadcase push so notification arrives even when app is CLOSED/KILLED
+        sendBroadcastPush(context, title, message);
+
         // ✅ Also show tray notification for the current admin (optional but good for feedback)
         String localizedTitle = getLocalized(context, title);
         String localizedMessage = getLocalized(context, message);
         showPhoneNotification(context, null, localizedTitle, localizedMessage);
+    }
+
+    // ✅ Send FCM broadcast push via VPS PHP (targeted at 'all_users' topic)
+    private static void sendBroadcastPush(Context context, String title, String message) {
+        new Thread(() -> {
+            try {
+                java.net.URL url = new java.net.URL("http://187.77.184.84/uploads/send_notification.php");
+                java.net.HttpURLConnection conn = (java.net.HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("POST");
+                conn.setDoOutput(true);
+                conn.setConnectTimeout(10000);
+                conn.setReadTimeout(10000);
+
+                String params = "secret=rmplus_notif_secret_2024"
+                        + "&topic=all_users"
+                        + "&title=" + java.net.URLEncoder.encode(title, "UTF-8")
+                        + "&message=" + java.net.URLEncoder.encode(message, "UTF-8");
+
+                java.io.OutputStream os = conn.getOutputStream();
+                os.write(params.getBytes("UTF-8"));
+                os.close();
+
+                int code = conn.getResponseCode();
+                android.util.Log.d("FCMPush", "VPS Broadcast response: " + code);
+                conn.disconnect();
+
+            } catch (Exception e) {
+                android.util.Log.e("FCMPush", "Broadcast Error: " + e.getMessage());
+            }
+        }).start();
     }
 
     // NEW: Delete broadcast notification from ALL users (when item is deleted)

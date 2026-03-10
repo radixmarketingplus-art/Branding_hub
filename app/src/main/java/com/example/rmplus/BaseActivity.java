@@ -28,6 +28,7 @@ import android.widget.Toast;
 public class BaseActivity extends AppCompatActivity {
 
     protected BottomNavigationView bottomNav;
+    private int currentNavItemId = -1;
     TextView headerBadge;
 
     protected void setupBase(String role, int selectedItemId) {
@@ -108,42 +109,15 @@ public class BaseActivity extends AppCompatActivity {
 
             // ================= HEADER BADGE =================
             if (uid != null && headerBadge != null) {
-                DatabaseReference badgeRef = FirebaseDatabase.getInstance()
-                        .getReference("notifications")
-                        .child(uid);
-
-                badgeRef.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot snapshot) {
-                        int count = 0;
-                        long now = System.currentTimeMillis();
-                        for (DataSnapshot d : snapshot.getChildren()) {
-                            Boolean read = d.child("read").getValue(Boolean.class);
-                            Long expiry = d.child("expiryDate").getValue(Long.class);
-
-                            // Only count if not read AND not expired
-                            if (read != null && !read) {
-                                if (expiry == null || expiry == 0 || expiry > now) {
-                                    count++;
-                                }
-                            }
-                        }
-                        if (count == 0) {
-                            headerBadge.setVisibility(View.GONE);
-                            me.leolin.shortcutbadger.ShortcutBadger.removeCount(BaseActivity.this);
-                        } else {
-                            headerBadge.setText(String.valueOf(count));
-                            headerBadge.setVisibility(View.VISIBLE);
-                            me.leolin.shortcutbadger.ShortcutBadger.applyCount(BaseActivity.this, count);
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError error) {
-                    }
-                });
+                refreshNotificationBadge(uid);
+                
+                // ✅ Ensure user is subscribed for background broadcast push
+                com.google.firebase.messaging.FirebaseMessaging.getInstance()
+                        .subscribeToTopic("all_users");
             }
         }
+
+
 
         // ================= BOTTOM NAV =================
         bottomNav = findViewById(R.id.bottomNav);
@@ -155,6 +129,7 @@ public class BaseActivity extends AppCompatActivity {
                 bottomNav.inflateMenu(R.menu.bottom_menu_user);
             }
 
+            currentNavItemId = selectedItemId;
             bottomNav.setSelectedItemId(selectedItemId);
 
             bottomNav.setOnItemSelectedListener(item -> {
@@ -539,12 +514,87 @@ public class BaseActivity extends AppCompatActivity {
         dialog.show();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (bottomNav != null && currentNavItemId != -1) {
+            bottomNav.setSelectedItemId(currentNavItemId);
+        }
+    }
+
     @SuppressWarnings("deprecation")
     protected void applyTransition() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             overrideActivityTransition(OVERRIDE_TRANSITION_OPEN, R.anim.nav_fade_in, R.anim.nav_fade_out);
         } else {
             overridePendingTransition(R.anim.nav_fade_in, R.anim.nav_fade_out);
+        }
+    }
+
+    private void refreshNotificationBadge(String uid) {
+        DatabaseReference personalRef = FirebaseDatabase.getInstance().getReference("notifications").child(uid);
+        DatabaseReference broadcastRef = FirebaseDatabase.getInstance().getReference("broadcast_notifications");
+        DatabaseReference readBroadcastRef = FirebaseDatabase.getInstance().getReference("read_broadcasts").child(uid);
+
+        ValueEventListener badgeListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                readBroadcastRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot readShot) {
+                        java.util.HashSet<String> readIds = new java.util.HashSet<>();
+                        for (DataSnapshot d : readShot.getChildren()) readIds.add(d.getKey());
+
+                        broadcastRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot broadcastShot) {
+                                int count = 0;
+                                long now = System.currentTimeMillis();
+                                for (DataSnapshot d : broadcastShot.getChildren()) {
+                                    if (!readIds.contains(d.getKey())) {
+                                        Long expiry = d.child("expiryDate").getValue(Long.class);
+                                        if (expiry == null || expiry == 0 || expiry > now) count++;
+                                    }
+                                }
+                                final int broadcastCount = count;
+                                personalRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot personalShot) {
+                                        int totalCount = broadcastCount;
+                                        for (DataSnapshot d : personalShot.getChildren()) {
+                                            Boolean r = d.child("read").getValue(Boolean.class);
+                                            Long expiry = d.child("expiryDate").getValue(Long.class);
+                                            if (r != null && !r) {
+                                                if (expiry == null || expiry == 0 || expiry > now) totalCount++;
+                                            }
+                                        }
+                                        updateBadgeUI(totalCount);
+                                    }
+                                    @Override public void onCancelled(DatabaseError error) {}
+                                });
+                            }
+                            @Override public void onCancelled(DatabaseError error) {}
+                        });
+                    }
+                    @Override public void onCancelled(DatabaseError error) {}
+                });
+            }
+            @Override public void onCancelled(DatabaseError error) {}
+        };
+        personalRef.addValueEventListener(badgeListener);
+        broadcastRef.addValueEventListener(badgeListener);
+        readBroadcastRef.addValueEventListener(badgeListener);
+    }
+
+    private void updateBadgeUI(int count) {
+        if (headerBadge == null) return;
+        if (count == 0) {
+            headerBadge.setVisibility(View.GONE);
+            me.leolin.shortcutbadger.ShortcutBadger.removeCount(this);
+        } else {
+            headerBadge.setText(String.valueOf(count));
+            headerBadge.setVisibility(View.VISIBLE);
+            me.leolin.shortcutbadger.ShortcutBadger.applyCount(this, count);
         }
     }
 }

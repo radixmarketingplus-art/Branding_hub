@@ -85,6 +85,13 @@ public class HomeActivity extends BaseActivity {
         startPulse(skTrending);
         startPulse(skFestival);
 
+        // ✅ REQUEST NOTIFICATION PERMISSION (Android 13+)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (androidx.core.content.ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                androidx.core.app.ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, 101);
+            }
+        }
+
         // wherenever i will have need to remove the data of trending now section then
         // just remove that below comments
         // SharedPreferences sp =
