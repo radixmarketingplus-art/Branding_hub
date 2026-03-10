@@ -450,8 +450,8 @@ public class SubscriptionActivity extends AppCompatActivity {
                                             NotificationHelper.send(
                                                     SubscriptionActivity.this,
                                                     auth.getUid(),
-                                                    getString(R.string.title_sub_request_sent),
-                                                    getString(R.string.msg_sub_request_sent_user));
+                                                    "Subscription Request Sent",
+                                                    "Your subscription request has been submitted for review.");
 
                                             // 📢 Notify ADMINS
                                             NotificationHelper.notifyAdmins(

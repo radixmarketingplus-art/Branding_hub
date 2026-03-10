@@ -332,8 +332,8 @@ public class AdRequestDetailActivity extends AppCompatActivity {
         NotificationHelper.sendBroadcast(
                 this,
                 templateId,
-                getString(R.string.title_notif_new_ad),
-                getString(R.string.msg_notif_new_ad),
+                "New Premium Advertisement",
+                "Check out our latest sponsored ad!",
                 "OPEN_AD",
                 templateId,
                 expiryTime

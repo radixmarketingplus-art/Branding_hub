@@ -309,9 +309,9 @@ public class NotificationHelper {
         if (text.equalsIgnoreCase("Your plan request was rejected.") || 
             text.equalsIgnoreCase("Your subscription has been rejected")) return context.getString(R.string.desc_sub_rejected);
             
-        if (text.equalsIgnoreCase("Subscription Request Sent")) return context.getString(R.string.msg_sub_request_sent);
+        if (text.equalsIgnoreCase("Subscription Request Sent")) return context.getString(R.string.title_sub_request_sent);
         if (text.equalsIgnoreCase("Your subscription request has been sent for review.") || 
-            text.equalsIgnoreCase("Your subscription request has been submitted for review.")) return context.getString(R.string.msg_sub_request_sent_desc);
+            text.equalsIgnoreCase("Your subscription request has been submitted for review.")) return context.getString(R.string.msg_sub_request_sent_user);
 
         if (text.equalsIgnoreCase("Subscription Expired")) return context.getString(R.string.title_notif_sub_expired);
         if (text.equalsIgnoreCase("Your premium subscription has expired. Renew now to continue enjoying benefits.")) return context.getString(R.string.msg_notif_sub_expired);
@@ -332,6 +332,9 @@ public class NotificationHelper {
 
         if (text.equalsIgnoreCase("Advertisement Expired")) return context.getString(R.string.title_notif_adv_expired);
         if (text.equalsIgnoreCase("Your advertisement has expired. You can submit a new request to go live again.")) return context.getString(R.string.msg_notif_adv_expired);
+
+        if (text.equalsIgnoreCase("New Premium Advertisement")) return context.getString(R.string.title_notif_new_ad);
+        if (text.equalsIgnoreCase("Check out our latest sponsored ad!")) return context.getString(R.string.msg_notif_new_ad);
 
         // Advertisement (Admin)
         if (text.equalsIgnoreCase("New Advertisement Request")) return context.getString(R.string.title_notif_admin_new_adv);
@@ -363,8 +366,16 @@ public class NotificationHelper {
             return context.getString(R.string.msg_profile_updated_desc);
 
         // Latest Update
-        if (text.equalsIgnoreCase("New Latest Update")) return context.getString(R.string.section_latest_update);
+        if (text.equalsIgnoreCase("New Latest Update")) return context.getString(R.string.title_notif_latest_update);
         if (text.equalsIgnoreCase("Check out the new design in Latest Update section!")) return context.getString(R.string.msg_check_latest_update);
+
+        // Business Frame
+        if (text.equalsIgnoreCase("New Business Frame")) return context.getString(R.string.title_notif_business_frame);
+        if (text.equalsIgnoreCase("New premium frames added to Business section!")) return context.getString(R.string.msg_notif_business_frame);
+
+        // Offer
+        if (text.equalsIgnoreCase("New Special Offer!")) return context.getString(R.string.title_notif_new_offer);
+        if (text.equalsIgnoreCase("Check out the exclusive offer now!")) return context.getString(R.string.msg_notif_new_offer);
 
         // Support Request
         if (text.equalsIgnoreCase("New Support Request")) return context.getString(R.string.notif_new_request);

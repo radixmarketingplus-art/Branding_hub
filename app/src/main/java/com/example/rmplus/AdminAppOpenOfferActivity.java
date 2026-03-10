@@ -166,8 +166,8 @@ public class AdminAppOpenOfferActivity extends AppCompatActivity {
                     NotificationHelper.sendBroadcast(
                             AdminAppOpenOfferActivity.this,
                             "offer_" + System.currentTimeMillis(),
-                            getString(R.string.title_notif_new_offer),
-                            getString(R.string.msg_notif_new_offer),
+                            "New Special Offer!",
+                            "Check out the exclusive offer now!",
                             "OPEN_OFFER",
                             "",
                             0
