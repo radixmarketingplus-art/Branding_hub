@@ -19,7 +19,7 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import java.util.ArrayList;
 
-public class OnboardingActivity extends AppCompatActivity {
+public class OnboardingActivity extends BaseActivity {
 
     ViewPager2 viewPager;
     LinearLayout dotContainer;

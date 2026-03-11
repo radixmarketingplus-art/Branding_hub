@@ -36,7 +36,7 @@ import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
-public class TemplatePreviewActivity extends AppCompatActivity {
+public class TemplatePreviewActivity extends BaseActivity {
 
     ImageView img;
     View btnLike, btnEditBottom, btnSave, btnFav;
@@ -59,11 +59,13 @@ public class TemplatePreviewActivity extends AppCompatActivity {
     String templateId;
     String uid;
     FrameLayout previewContainer;
+    String originalUrl; // THE BASE TEMPLATE IMAGE
 
     DatabaseReference rootRef;
 
     boolean isLiked = false;
     boolean isFav = false;
+    String templateType = "image"; // Default to image
 
     @Override
     protected void onCreate(Bundle b) {
@@ -109,10 +111,11 @@ public class TemplatePreviewActivity extends AppCompatActivity {
             return;
         }
 
+        originalUrl = path; // Default
         rootRef = FirebaseDatabase.getInstance().getReference();
 
-        // If path is missing or category is "MyDesign", fetch details or find true
-        // category
+        // If category is "MyDesign", we must find the ORIGINAL template to get its raw
+        // image/video for the editor
         if (path == null || "MyDesign".equalsIgnoreCase(category)) {
             fetchTemplateDetails();
         } else {
@@ -132,10 +135,9 @@ public class TemplatePreviewActivity extends AppCompatActivity {
                             category = catSnap.getKey();
                             found = true;
                             DataSnapshot item = catSnap.child(templateId);
-                            if (path == null) {
-                                path = item.hasChild("imagePath") ? item.child("imagePath").getValue(String.class)
-                                        : item.child("url").getValue(String.class);
-                            }
+                            originalUrl = item.hasChild("imagePath") ? item.child("imagePath").getValue(String.class)
+                                    : item.child("url").getValue(String.class);
+                            if (path == null) path = originalUrl;
                         } else {
                             // Search sub-categories
                             for (DataSnapshot subSnap : catSnap.getChildren()) {
@@ -143,18 +145,17 @@ public class TemplatePreviewActivity extends AppCompatActivity {
                                     category = catSnap.getKey() + "/" + subSnap.getKey();
                                     found = true;
                                     DataSnapshot item = subSnap.child(templateId);
-                                    String type = item.child("type").getValue(String.class);
-                                    if (path == null) {
-                                        path = item.hasChild("imagePath")
-                                                ? item.child("imagePath").getValue(String.class)
-                                                : item.child("url").getValue(String.class);
-                                    }
+                                    templateType = item.child("type").getValue(String.class);
+                                    if (templateType == null) templateType = "image";
+                                    
+                                    originalUrl = item.hasChild("imagePath")
+                                            ? item.child("imagePath").getValue(String.class)
+                                            : item.child("url").getValue(String.class);
+                                    if (path == null) path = originalUrl;
                                     break;
                                 }
                             }
                         }
-                        if (found)
-                            break;
                     }
 
                     if (found || path != null) {
@@ -188,13 +189,14 @@ public class TemplatePreviewActivity extends AppCompatActivity {
                     .addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot s) {
-                            if (s.exists()) {
-                                if (path == null) {
-                                    path = s.hasChild("imagePath") ? s.child("imagePath").getValue(String.class)
-                                            : s.child("url").getValue(String.class);
-                                }
-                                initUI();
-                            } else {
+                    if (s.exists()) {
+                        originalUrl = s.hasChild("imagePath") ? s.child("imagePath").getValue(String.class)
+                                : s.child("url").getValue(String.class);
+                        if (path == null) path = originalUrl;
+                        templateType = s.child("type").getValue(String.class);
+                        if (templateType == null) templateType = "image";
+                        initUI();
+                    } else {
                                 finish();
                             }
                         }
@@ -277,7 +279,7 @@ public class TemplatePreviewActivity extends AppCompatActivity {
 
         // FULL SCREEN PREVIEW / VIDEO PLAY
         img.setOnClickListener(v -> {
-            if (isVideo) {
+            if (isVideo()) {
                 playVideo();
             } else {
                 Intent i = new Intent(this, ImagePreviewActivity.class);
@@ -308,12 +310,16 @@ public class TemplatePreviewActivity extends AppCompatActivity {
         btnEditBottom.setOnClickListener(v -> performEditAction());
 
         // SAVE
-        btnSave.setOnClickListener(v -> new AlertDialog.Builder(this)
-                .setTitle(R.string.title_save_template)
-                .setMessage(R.string.msg_save_confirm)
-                .setPositiveButton(R.string.yes, (d, w) -> saveImage())
-                .setNegativeButton(R.string.no, null)
-                .show());
+        btnSave.setOnClickListener(v -> checkSubscription(() -> {
+            checkDownloadLimit(() -> {
+                new AlertDialog.Builder(this)
+                        .setTitle(R.string.title_save_template)
+                        .setMessage(R.string.msg_save_confirm)
+                        .setPositiveButton(R.string.yes, (d, w) -> saveImage())
+                        .setNegativeButton(R.string.no, null)
+                        .show();
+            });
+        }));
     }
 
     // =====================================================
@@ -418,7 +424,7 @@ public class TemplatePreviewActivity extends AppCompatActivity {
                     .child(templateId)
                     .child("likes")
                     .child(uid)
-                    .setValue(true);
+                    .setValue(System.currentTimeMillis());
 
             rootRef.child("user_activity")
                     .child(uid)
@@ -454,7 +460,7 @@ public class TemplatePreviewActivity extends AppCompatActivity {
                     .child(templateId)
                     .child("favorites")
                     .child(uid)
-                    .setValue(true);
+                    .setValue(System.currentTimeMillis());
 
             rootRef.child("user_activity")
                     .child(uid)
@@ -482,20 +488,9 @@ public class TemplatePreviewActivity extends AppCompatActivity {
     // =====================================================
 
     void performEditAction() {
-        rootRef.child("template_activity")
-                .child(templateId)
-                .child("edits")
-                .push()
-                .setValue(uid);
-
-        rootRef.child("user_activity")
-                .child(uid)
-                .child("edits")
-                .child(templateId)
-                .setValue(path);
-
         Intent i = new Intent(this, ManageTemplatesActivity.class);
-        i.putExtra("uri", path);
+        i.putExtra("uri", originalUrl != null ? originalUrl : path);
+        i.putExtra("id", templateId);
         i.putExtra("category", category);
         i.putExtra("isVideo", isVideo());
         startActivity(i);
@@ -522,11 +517,12 @@ public class TemplatePreviewActivity extends AppCompatActivity {
                 runOnUiThread(() -> {
                     if (saved != null) {
                         toast(getString(R.string.msg_saved_to_gallery));
+                        incrementDownloadCount(); // Track the save
                         rootRef.child("template_activity")
                                 .child(templateId)
                                 .child("saves")
-                                .push()
-                                .setValue(uid);
+                                .child(uid)
+                                .setValue(System.currentTimeMillis());
                         rootRef.child("user_activity").child(uid).child("saves").child(templateId).setValue(path);
                     }
                 });
@@ -537,12 +533,6 @@ public class TemplatePreviewActivity extends AppCompatActivity {
     }
 
     // =====================================================
-
-    private String makeSafeKey(String path) {
-        return Base64.encodeToString(
-                path.getBytes(),
-                Base64.NO_WRAP);
-    }
 
     private void playVideo() {
         if (path == null)
@@ -560,8 +550,9 @@ public class TemplatePreviewActivity extends AppCompatActivity {
     }
 
     private boolean isVideo() {
+        if ("video".equalsIgnoreCase(templateType)) return true;
         return "Reel Maker".equalsIgnoreCase(category) ||
-                (path != null && (path.toLowerCase().endsWith(".mp4") || path.toLowerCase().endsWith(".webm")));
+                (path != null && (path.toLowerCase().endsWith(".mp4") || path.toLowerCase().endsWith(".webm") || path.toLowerCase().contains("video")));
     }
 
     void handleVideoAction(boolean isShare) {
@@ -660,6 +651,7 @@ public class TemplatePreviewActivity extends AppCompatActivity {
                 getContentResolver().update(itemUri, updateValues, null, null);
             }
             Toast.makeText(this, R.string.msg_saved_to_gallery, Toast.LENGTH_SHORT).show();
+            incrementDownloadCount(); // Track video download too
         }
     }
 

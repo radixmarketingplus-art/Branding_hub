@@ -110,7 +110,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Requester Information"
+                        android:text="@string/label_requester_info"
                         android:textSize="11sp"
                         android:fontFamily="sans-serif-black"
                         android:textColor="?attr/colorOnSurfaceVariant"
@@ -191,7 +191,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Ad Details"
+                        android:text="@string/label_ad_details"
                         android:textSize="11sp"
                         android:fontFamily="sans-serif-black"
                         android:textColor="?attr/colorOnSurfaceVariant"
@@ -223,7 +223,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Template Preview"
+                        android:text="@string/label_template_preview"
                         android:textSize="11sp"
                         android:fontFamily="sans-serif-black"
                         android:textColor="?attr/colorOnSurfaceVariant"
@@ -252,7 +252,7 @@
                         android:id="@+id/lblProof"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Payment Proof"
+                        android:text="@string/label_payment_proof"
                         android:textSize="11sp"
                         android:fontFamily="sans-serif-black"
                         android:textColor="?attr/colorOnSurfaceVariant"
@@ -290,7 +290,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Approval Duration"
+                    android:text="@string/label_approval_duration"
                     android:textSize="11sp"
                     android:fontFamily="sans-serif-black"
                     android:textColor="?attr/colorOnSurfaceVariant"

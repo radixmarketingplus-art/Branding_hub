@@ -5,7 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 import com.google.android.material.tabs.*;
 
-public class MyRequestsActivity extends AppCompatActivity {
+public class MyRequestsActivity extends BaseActivity {
 
     protected void onCreate(Bundle b) {
         super.onCreate(b);

@@ -86,7 +86,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Select Category"
+                        android:text="@string/label_select_category"
                         android:textSize="12sp"
                         android:fontFamily="sans-serif-black"
                         android:textColor="?attr/colorPrimary"
@@ -139,7 +139,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Request Title"
+                        android:text="@string/label_request_title"
                         android:textSize="12sp"
                         android:fontFamily="sans-serif-black"
                         android:textColor="?attr/colorPrimary"
@@ -164,7 +164,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Description"
+                        android:text="@string/label_description_plain"
                         android:textSize="12sp"
                         android:fontFamily="sans-serif-black"
                         android:textColor="?attr/colorPrimary"
@@ -208,7 +208,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Attachment"
+                        android:text="@string/label_attachment"
                         android:textSize="12sp"
                         android:fontFamily="sans-serif-black"
                         android:textColor="?attr/colorPrimary"

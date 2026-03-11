@@ -14,7 +14,7 @@ import com.google.firebase.database.*;
 
 import java.util.ArrayList;
 
-public class StatsDetailActivity extends AppCompatActivity {
+public class StatsDetailActivity extends BaseActivity {
 
     RecyclerView recycler;
     StatUserAdapter adapter;
@@ -126,7 +126,12 @@ public class StatsDetailActivity extends AppCompatActivity {
                         for (DataSnapshot d : s.getChildren()) {
                             String uid = d.getKey();
                             if (uid != null) {
-                                loadUser(uid);
+                                Object val = d.getValue();
+                                long time = 0;
+                                if (val instanceof Long) time = (Long) val;
+                                else if (val instanceof Integer) time = ((Integer) val).longValue();
+                                
+                                loadUser(uid, time);
                             }
                         }
                     }
@@ -136,7 +141,7 @@ public class StatsDetailActivity extends AppCompatActivity {
                 });
     }
 
-    void loadUser(String uid) {
+    void loadUser(String uid, long engagementTime) {
 
         FirebaseDatabase.getInstance()
                 .getReference("users")
@@ -151,8 +156,7 @@ public class StatsDetailActivity extends AppCompatActivity {
                                 item.name = s.child("name").getValue(String.class);
                                 item.email = s.child("email").getValue(String.class);
 
-                                Long t = s.child("lastLogin").getValue(Long.class);
-                                item.time = t == null ? 0 : t;
+                                item.time = engagementTime;
 
                                 list.add(item);
                                 adapter.notifyDataSetChanged();

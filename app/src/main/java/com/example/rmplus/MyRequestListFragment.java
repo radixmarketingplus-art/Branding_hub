@@ -5,7 +5,8 @@ import android.view.*;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.*;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.rmplus.adapters.CommonRequestAdapter;
 import com.example.rmplus.models.CommonRequest;
@@ -21,17 +22,20 @@ public class MyRequestListFragment extends Fragment {
     private static final String ARG_STATUS = "status";
 
     String status;
+    RecyclerView rv;
+    View txtEmpty;
 
-    public MyRequestListFragment(){}
+    // ✅ Keep both lists separately to avoid race condition
+    ArrayList<CommonRequest> contactList = new ArrayList<>();
+    ArrayList<CommonRequest> adList = new ArrayList<>();
 
-    public static MyRequestListFragment newInstance(String status){
+    public MyRequestListFragment() {}
 
+    public static MyRequestListFragment newInstance(String status) {
         MyRequestListFragment f = new MyRequestListFragment();
-
         Bundle b = new Bundle();
         b.putString(ARG_STATUS, status);
         f.setArguments(b);
-
         return f;
     }
 
@@ -39,129 +43,110 @@ public class MyRequestListFragment extends Fragment {
     public View onCreateView(
             LayoutInflater inflater,
             ViewGroup container,
-            Bundle savedInstanceState){
+            Bundle savedInstanceState) {
 
-        View v = inflater.inflate(
-                R.layout.fragment_requests,
-                container,
-                false);
+        View v = inflater.inflate(R.layout.fragment_requests, container, false);
 
-        RecyclerView rv = v.findViewById(R.id.recycler);
-        rv.setLayoutManager(
-                new LinearLayoutManager(getContext()));
+        rv = v.findViewById(R.id.recycler);
+        rv.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        status = getArguments().getString(ARG_STATUS);
+        // Empty state view (optional — only shown if fragment_requests has it)
+        txtEmpty = v.findViewById(R.id.txtEmpty);
 
-        ArrayList<CommonRequest> list = new ArrayList<>();
+        status = getArguments() != null ? getArguments().getString(ARG_STATUS, "") : "";
 
         String uid = FirebaseAuth.getInstance().getUid();
+        if (uid == null) return v;
 
-        // ---------------- CONTACT REQUESTS ----------------
-
+        // ──────────────────────────────────────────
+        // 1. CONTACT / SUPPORT REQUESTS
+        // ──────────────────────────────────────────
         DatabaseReference contactRef =
-                FirebaseDatabase.getInstance()
-                        .getReference("customer_requests");
+                FirebaseDatabase.getInstance().getReference("customer_requests");
 
-        contactRef.addValueEventListener(
-                new ValueEventListener() {
+        contactRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                    @Override
-                    public void onDataChange(
-                            @NonNull DataSnapshot snapshot) {
+                contactList.clear(); // ✅ clear only contact list
 
-                        list.clear();
+                for (DataSnapshot d : snapshot.getChildren()) {
+                    CustomerRequest r = d.getValue(CustomerRequest.class);
+                    if (r == null || r.uid == null) continue;
+                    if (!r.uid.equals(uid)) continue;
+                    if (r.status == null || !r.status.equalsIgnoreCase(status)) continue;
 
-                        for (DataSnapshot d : snapshot.getChildren()) {
+                    CommonRequest cr = new CommonRequest();
+                    cr.requestId = r.requestId;
+                    cr.uid = r.uid;
+                    cr.title = r.title;
+                    cr.status = r.status;
+                    cr.time = r.time;
+                    cr.requestType = "contact";
+                    contactList.add(cr);
+                }
+                refreshAdapter(); // ✅ merge & show
+            }
 
-                            CustomerRequest r =
-                                    d.getValue(CustomerRequest.class);
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {}
+        });
 
-                            if (r == null) continue;
+        // ──────────────────────────────────────────
+        // 2. ADVERTISEMENT REQUESTS
+        // ──────────────────────────────────────────
+        DatabaseReference adRef =
+                FirebaseDatabase.getInstance().getReference("advertisement_requests");
 
-                            if (!r.uid.equals(uid)) continue;
+        adRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                            if (r.status != null &&
-                                    r.status.equals(status)) {
+                adList.clear(); // ✅ clear only ad list
 
-                                CommonRequest cr = new CommonRequest();
+                for (DataSnapshot d : snapshot.getChildren()) {
+                    AdvertisementRequest r = d.getValue(AdvertisementRequest.class);
+                    if (r == null || r.uid == null) continue;
+                    if (!r.uid.equals(uid)) continue;
+                    if (r.status == null || !r.status.equalsIgnoreCase(status)) continue;
 
-                                cr.requestId = r.requestId;
-                                cr.uid = r.uid;
-                                cr.title = r.title;
-                                cr.status = r.status;
-                                cr.time = r.time;
-                                cr.requestType = "contact";
+                    CommonRequest cr = new CommonRequest();
+                    cr.requestId = r.requestId;
+                    cr.uid = r.uid;
+                    cr.title = r.adLink != null && !r.adLink.isEmpty()
+                            ? r.adLink
+                            : getString(R.string.msg_advertisement);
+                    cr.status = r.status;
+                    cr.time = r.time;
+                    cr.requestType = "advertisement";
+                    adList.add(cr);
+                }
+                refreshAdapter(); // ✅ merge & show
+            }
 
-                                list.add(cr);
-                            }
-                        }
-
-                        loadAdvertisementRequests(list, rv);
-                    }
-
-                    @Override
-                    public void onCancelled(
-                            @NonNull DatabaseError error) {}
-                });
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {}
+        });
 
         return v;
     }
 
-    // ---------------- LOAD ADS ----------------
+    // ✅ Merge both lists → sort by time → set adapter
+    private void refreshAdapter() {
+        if (rv == null) return;
 
-    void loadAdvertisementRequests(
-            ArrayList<CommonRequest> list,
-            RecyclerView rv){
+        ArrayList<CommonRequest> merged = new ArrayList<>();
+        merged.addAll(contactList);
+        merged.addAll(adList);
 
-        String uid = FirebaseAuth.getInstance().getUid();
+        // Sort by time descending (newest first)
+        merged.sort((a, b) -> Long.compare(b.time, a.time));
 
-        DatabaseReference adRef =
-                FirebaseDatabase.getInstance()
-                        .getReference("advertisement_requests");
+        // Show/hide empty state if view exists
+        if (txtEmpty != null) {
+            txtEmpty.setVisibility(merged.isEmpty() ? View.VISIBLE : View.GONE);
+        }
 
-        adRef.addValueEventListener(
-                new ValueEventListener() {
-
-                    @Override
-                    public void onDataChange(
-                            @NonNull DataSnapshot snapshot) {
-
-                        for (DataSnapshot d : snapshot.getChildren()) {
-
-                            AdvertisementRequest r =
-                                    d.getValue(AdvertisementRequest.class);
-
-                            if (r == null) continue;
-
-                            if (!r.uid.equals(uid)) continue;
-
-                            if (r.status != null &&
-                                    r.status.equals(status)) {
-
-                                CommonRequest cr = new CommonRequest();
-
-                                cr.requestId = r.requestId;
-                                cr.uid = r.uid;
-                                cr.title = r.adLink;
-                                cr.status = r.status;
-                                cr.time = r.time;
-                                cr.requestType = "advertisement";
-
-                                list.add(cr);
-                            }
-                        }
-
-                        rv.setAdapter(
-                                new CommonRequestAdapter(
-                                        list,
-                                        getContext()
-                                )
-                        );
-                    }
-
-                    @Override
-                    public void onCancelled(
-                            @NonNull DatabaseError error) {}
-                });
+        rv.setAdapter(new CommonRequestAdapter(merged, getContext()));
     }
 }

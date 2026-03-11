@@ -362,7 +362,7 @@ public class UploadTemplatesActivity extends BaseActivity {
                         // width / height should be ~ 0.5625 (9/16)
                         float ratio = (float) width / height;
                         if (ratio > 0.6f) { // it is wider than 9:16 (e.g., 1:1 is 1.0, 16:9 is 1.77)
-                            Toast.makeText(this, "Video must be in vertical ratio (like 9:16) for Reel Maker", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(this, R.string.msg_video_ratio_error, Toast.LENGTH_SHORT).show();
                             return;
                         }
                     }
@@ -545,7 +545,7 @@ public class UploadTemplatesActivity extends BaseActivity {
                         AdvertisementItem adItem = new AdvertisementItem(imageUrl, link, expiryTime, "Admin", System.currentTimeMillis());
                         adItem.id = templateId;
                         dbRef.child(templateId).setValue(adItem);
-                        NotificationHelper.sendBroadcast(UploadTemplatesActivity.this, templateId, "New Premium Advertisement", "Check out our latest sponsored ad!", "OPEN_AD", templateId, expiryTime);
+                        NotificationHelper.sendBroadcast(UploadTemplatesActivity.this, templateId, getString(R.string.title_notif_new_ad), getString(R.string.msg_notif_new_ad), "OPEN_AD", templateId, expiryTime);
                         Type t = new TypeToken<ArrayList<AdvertisementItem>>() {}.getType();
                         ArrayList<AdvertisementItem> list = gson.fromJson(sp.getString("Advertisement", "[]"), t);
                         if (list == null) list = new ArrayList<>();
@@ -577,10 +577,10 @@ public class UploadTemplatesActivity extends BaseActivity {
                     dbRef.child(templateId).setValue(normalItem);
 
                     if (section.equalsIgnoreCase("Latest Update")) {
-                        NotificationHelper.sendBroadcast(UploadTemplatesActivity.this, templateId, "New Latest Update", "Check out the new design in Latest Update section!", "OPEN_TEMPLATE", templateId, expiryTime);
+                        NotificationHelper.sendBroadcast(UploadTemplatesActivity.this, templateId, getString(R.string.title_notif_latest_update), getString(R.string.msg_check_latest_update), "OPEN_TEMPLATE", templateId, expiryTime);
                     }
                     if (section.equalsIgnoreCase("Business Frame")) {
-                        NotificationHelper.sendBroadcast(UploadTemplatesActivity.this, templateId, "New Business Frame", "New premium frames added to Business section!", "OPEN_BUSINESS_FRAME", templateId, expiryTime);
+                        NotificationHelper.sendBroadcast(UploadTemplatesActivity.this, templateId, getString(R.string.title_notif_business_frame), getString(R.string.msg_notif_business_frame), "OPEN_BUSINESS_FRAME", templateId, expiryTime);
                     }
 
                     Type type = new TypeToken<ArrayList<String>>() {}.getType();

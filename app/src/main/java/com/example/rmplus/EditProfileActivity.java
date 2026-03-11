@@ -32,7 +32,7 @@ import com.example.rmplus.NotificationHelper;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 
-public class EditProfileActivity extends AppCompatActivity {
+public class EditProfileActivity extends BaseActivity {
 
     EditText name, designation, dob, email, mobile;
     Spinner stateSpinner, citySpinner;
@@ -525,12 +525,13 @@ public class EditProfileActivity extends AppCompatActivity {
         Toast.makeText(this, R.string.msg_profile_updated, Toast.LENGTH_SHORT).show();
         
         // 📢 SEND PERSONAL NOTIFICATION (2 Days Expiry + Redirect to Profile)
+        // ✅ Always use English literals — getLocalized() will translate on display
         long expiry2Days = System.currentTimeMillis() + (2 * 24 * 60 * 60 * 1000L);
         NotificationHelper.send(
                 EditProfileActivity.this,
                 FirebaseAuth.getInstance().getUid(),
-                getString(R.string.title_notif_profile_updated),
-                getString(R.string.msg_notif_profile_updated),
+                "Profile Updated",
+                "Your profile information has been successfully updated.",
                 "OPEN_PROFILE",
                 "", 
                 expiry2Days);

@@ -14,7 +14,7 @@ import android.widget.ImageView;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.DatabaseReference;
 
-public class RegisterActivity extends AppCompatActivity {
+public class RegisterActivity extends BaseActivity {
 
     EditText name, mobile, email, password;
     Button registerBtn;

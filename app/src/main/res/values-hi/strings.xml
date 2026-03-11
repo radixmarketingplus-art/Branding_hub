@@ -49,6 +49,9 @@
     <string name="label_status">स्थिति : %1$s</string>
     <string name="label_time">समय : %1$s</string>
     <string name="btn_approve">स्वीकार करें</string>
+    <string name="title_action_required">कार्रवाई आवश्यक है</string>
+    <string name="msg_choose_proceed">कृपया चुनें कि आप इस अनुरोध के साथ कैसे आगे बढ़ना चाहते हैं</string>
+    <string name="btn_accept">स्वीकार करें</string>
     <string name="btn_reject">अस्वीकार करें</string>
     <string name="btn_open_chat">चैट खोलें</string>
     <string name="hint_type_message">संदेश टाइप करें</string>
@@ -58,6 +61,10 @@
     <string name="title_support_center">सपोर्ट सेंटर</string>
     <string name="desc_support_center">अपने अनुरोधों को प्रबंधित करें या व्यवस्थापक से संपर्क करें</string>
     <string name="btn_contact_admin">एडमिन से संपर्क करें</string>
+    <string name="btn_inquiry_admin">पूछताछ एडमिन</string>
+    <string name="btn_contact_short">संपर्क</string>
+    <string name="btn_inquiry_short">पूछताछ</string>
+    <string name="btn_request_short">अनुरोध</string>
     <string name="btn_my_requests">मेरे अनुरोध</string>
     <string name="btn_request_adv">विज्ञापन के लिए अनुरोध करें</string>
     <string name="label_contact_prefix">संपर्क : %1$s</string>
@@ -81,12 +88,40 @@
     <string name="filter_all">सभी</string>
     <string name="cat_political">राजनैतिक</string>
     <string name="cat_ngo">एनजीओ</string>
-    <string name="cat_business">बिज़नेस</string>
+    <string name="cat_business">बिزيनेस</string>
     <string name="title_sponsored_ads">प्रायोजित विज्ञापन</string>
     <string name="title_festival_calendar">त्योहार कैलेंडर</string>
     <string name="btn_see_all">सभी देखें</string>
     <string name="title_admin_panel">एडमिन पैनल</string>
+    <string name="title_support_settings">सहायता सेटिंग्स</string>
+    <string name="label_support_phone">सहायता फ़ोन नंबर</string>
+    <string name="label_support_email">सहायता ईमेल पता</string>
+    <string name="btn_save_contact">संपर्क सेव करें</string>
+    <string name="msg_fill_details">कृपया सभी विवरण भरें</string>
+    <string name="msg_settings_saved">सहायता सेटिंग्स सेव हो गईं!</string>
     <string name="desc_admin_panel">एप्लिकेशन कंटेंट और यूज़र्स को मैनेज करें</string>
+    <string name="label_select_category">श्रेणी चुनें</string>
+    <string name="label_request_title">अनुरोध का शीर्षक</string>
+    <string name="label_attachment">संलग्नक</string>
+    <string name="label_description_plain">विवरण</string>
+    <string name="label_requester_info">अनुरोधकर्ता की जानकारी</string>
+    <string name="msg_call_email_support">सहायता के लिए कॉल या ईमेल करें</string>
+    <string name="msg_send_message_admin">एडमिन को संदेश भेजें</string>
+    <string name="msg_request_ads_placement">विज्ञापनों के लिए अनुरोध करें</string>
+    <string name="msg_track_all_requests">अपने सभी अनुरोधों को ट्रैक करें</string>
+    
+    <!-- SUPPORT NOTIFICATIONS -->
+    <string name="title_app_open_offer">ऐप ओपन ऑफर</string>
+    <string name="desc_app_open_offer">ऐप लॉन्च पर दिखाए जाने वाले पॉपअप ऑफर को मैनेज करें</string>
+    <string name="title_notif_support_sent">सहायता अनुरोध भेजा गया</string>
+    <string name="msg_notif_support_sent">आपका सहायता अनुरोध सफलतापूर्वक जमा कर दिया गया है।</string>
+    <string name="title_notif_new_support">नया सहायता अनुरोध</string>
+    <string name="msg_notif_new_support">एक यूज़र ने नया सहायता/संपर्क अनुरोध भेजा है।</string>
+    <string name="title_notif_support_approved">सहायता अनुरोध स्वीकृत</string>
+    <string name="msg_notif_support_approved">आपका सहायता अनुरोध स्वीकृत हो गया है। अब आप हमारे एजेंट के साथ चैट कर सकते हैं।</string>
+    <string name="title_notif_support_rejected">सहायता अनुरोध अस्वीकृत</string>
+    <string name="msg_notif_support_rejected">आपका सहायता अनुरोध अस्वीकृत कर दिया गया है।</string>
+    
     <string name="title_upload_templates">टेम्पलेट्स अपलोड करें</string>
     <string name="desc_upload_templates">होम पेज सेक्शन में इमेजेज जोड़ें</string>
     <string name="title_subscription_requests">सब्सक्रिप्शन रिक्वेस्ट्स</string>
@@ -95,6 +130,7 @@
     <string name="desc_adv_requests">यूज़र्स द्वारा भेजी गई विज्ञापन रिक्वेस्ट्स चेक करें</string>
     <string name="title_contact_requests">कॉन्टैक्ट रिक्वेस्ट्स</string>
     <string name="desc_contact_requests">यूज़र्स द्वारा भेजे गए मैसेज देखें</string>
+    <string name="label_edit_contact">कॉन्टैक्ट संपादित करें</string>
     <string name="title_user_info">यूज़र इंफॉर्मेशन</string>
     <string name="desc_user_info">यूज़र्स का विवरण देखें और मैनेज करें</string>
     <string name="title_user_details">यूज़र विवरण</string>
@@ -178,6 +214,19 @@
     <string name="desc_manage_home_content">मुख्य पेज के कंटेंट को मैनेज करें</string>
     <string name="msg_crop_success">इमेज क्रॉप और सिलेक्ट की गई</string>
     <string name="msg_video_selected">वीडियो सिलेक्ट की गई</string>
+    <string name="label_template_view">टेम्पलेट व्यू</string>
+    <string name="msg_loading">लोड हो रहा है…</string>
+    <string name="label_engagement_overview">एंगेजमेंट ओवरव्यू</string>
+    <string name="label_user_engagement">यूज़र एंगेजमेंट</string>
+    <string name="label_media_preview">मीडिया प्रीव्यू</string>
+    <string name="btn_change_media">मीडिया बदलें</string>
+    <string name="btn_select_media">मीडिया चुनें</string>
+    <string name="title_subscription_required">सदस्यता आवश्यक है</string>
+    <string name="msg_subscription_required">टेम्पलेट्स को एडिट करने या सेव करने के लिए आपके पास एक्टिव सदस्यता होनी चाहिए। कृपया पूर्ण उपयोग के लिए सब्सक्राइब करें।</string>
+    <string name="btn_subscribe_now">अभी सब्सक्राइब करें</string>
+    <string name="title_save_draft">ड्राफ्ट में सेव करें?</string>
+    <string name="msg_save_draft">क्या आप इस कार्य को सेव करना चाहते हैं? यदि हाँ, तो यह "My Edit" सेक्शन में दिखाई देगा।</string>
+    <string name="msg_video_ratio_error">रील मेकर के लिए वीडियो वर्टिकल अनुपात (जैसे 9:16) में होना चाहिए</string>
     <string name="msg_file_size_limit">फ़ाइल का आकार %1$s से कम होना चाहिए</string>
     <string name="label_likes">❤ लाइक</string>
     <string name="label_favorites">★ पसंदीदा</string>
@@ -191,6 +240,8 @@
     <string name="btn_open_ad">विज्ञापन खोलें</string>
     <string name="msg_fetching_info">अभी भी टेम्पलेट जानकारी प्राप्त की जा रही है...</string>
     <string name="msg_preparing_edit">एडिट के लिए तैयार किया जा रहा है...</string>
+    <string name="msg_download_limit_reached">आज की सीमा समाप्त! आप एक दिन में अधिकतम 10 टेम्पलेट ही सेव कर सकते हैं।</string>
+    <string name="msg_downloads_remaining">आज की सीमा: %1$d/10 उपयोग की गई</string>
     <string name="msg_no_expiry">कोई एक्सपायरी सेट नहीं है</string>
     <string name="label_external_content">बाहरी कंटेंट</string>
     <string name="label_visual_design">विजुअल डिजाइन</string>
@@ -208,6 +259,8 @@
     <string name="label_festival_date">त्योहार की तारीख</string>
     <string name="label_expiry_date_desc">एक्सपायरी डेट (डिफ़ॉल्ट 7 दिन)</string>
     <string name="label_upload_media">टेम्पलेट इमेज/वीडियो अपलोड करें</string>
+    <string name="no_media_selected">कोई मीडिया नहीं चुना गया</string>
+    <string name="image_video_doc">इमेज, वीडियो या डॉक्युमेंट</string>
     <string name="msg_select_cat_first">चयन सक्षम करने के लिए पहले एक कैटेगरी चुनें</string>
     <string name="btn_select_item">आइटम चुनें</string>
     <string name="btn_save_continue">सेव करें और जारी रखें</string>
@@ -411,6 +464,89 @@
     <string name="btn_upload_payment_proof">भुगतान प्रमाण अपलोड करें</string>
     <string name="btn_submit_adv_request">विज्ञापन अनुरोध जमा करें</string>
     <string name="msg_adv_request_sent">विज्ञापन अनुरोध भेज दिया गया है</string>
+    <!-- Advertisement Request Page Strings - Hindi -->
+    <string name="title_service_requests">विज्ञापन अनुरोध</string>
+    <string name="label_website_redirect_link">वेबसाइट / रीडायरेक्ट लिंक</string>
+    <string name="label_aspect_ratio_16_9">16:9 अनुपात</string>
+    <string name="label_upload_proof_step">भुगतान प्रमाण अपलोड करें</string>
+    <string name="label_optional_payment_desc">वैकल्पिक — भुगतान का स्क्रीनशॉट संलग्न करें</string>
+    <string name="msg_payment_screenshot">भुगतान स्क्रीनशॉट</string>
+    <string name="label_scanner_text">स्कैनर</string>
+    <string name="label_ad_details">विज्ञापन विवरण</string>
+    <string name="label_template_preview">टेम्पलेट पूर्वावलोकन</string>
+    <string name="label_approval_duration">अनुमोदन अवधि</string>
+    <!-- My Requests Page - Hindi -->
+    <string name="title_my_requests">मेरे अनुरोध</string>
+    <string name="msg_no_requests_yet">अभी कोई अनुरोध नहीं</string>
+    <string name="msg_no_requests_desc">आपने अभी तक कोई अनुरोध नहीं भेजा है</string>
+    <!-- Date/Time formatting - Hindi -->
+    <string name="label_at_time">को</string>
+    <string name="date_time_format">dd MMM yyyy</string>
+
+    <!-- Admin Ad Request Scanner Page - Hindi -->
+    <string name="title_ad_request_scanner">एड रिक्वेस्ट स्कैनर</string>
+    <string name="label_scanner_qr">स्कैनर QR कोड इमेज</string>
+    <string name="label_tap_to_add_qr">QR कोड जोड़ने के लिए टैप करें</string>
+    <string name="btn_save_scanner">स्कैनर सेव करें</string>
+    <string name="msg_saving">सेव हो रहा है…</string>
+    <string name="msg_scanner_saved">स्कैनर QR कोड सेव हो गया!</string>
+    <string name="msg_select_image_first">कृपया पहले एक इमेज चुनें और फिर से प्रयास करें।</string>
+    <string name="msg_failed_to_load">डेटा लोड करने में विफल।</string>
+
+    <!-- Admin App Open Offer Page -->
+    <string name="label_offer_visibility">ऑफर विजिबिलिटी</string>
+    <string name="desc_offer_visibility">ऐप शुरू होने पर इस ऑफर को दिखाएं/छिपाएं</string>
+    <string name="label_offer_image">ऑफर इमेज</string>
+    <string name="label_tap_to_add_image">इमेज जोड़ने के लिए टैप करें</string>
+    <string name="hint_action_link">एक्शन लिंक (जैसे app://subscription या https://…)</string>
+    <string name="btn_save_offer">ऑफर सेव करें</string>
+    <string name="msg_error_loading_offer">ऑफर लोड करने में त्रुटि</string>
+    <string name="msg_select_offer_image">कृपया सक्षम करने के लिए एक ऑफर इमेज चुनें।</string>
+    <string name="msg_offer_saved">ऑफर सफलतापूर्वक सेव हो गया!</string>
+    <string name="msg_failed_to_save_offer">ऑफर सेव करने में विफल।</string>
+
+    <string name="title_notif_new_offer">नया विशेष ऑफ़र!</string>
+    <string name="msg_notif_new_offer">अभी एक्सक्लूसिव ऑफ़र देखें!</string>
+
+    <!-- Admin Subscription Hub -->
+    <string name="title_subscription_hub">सब्सक्रिप्शन हब</string>
+    <string name="tab_requests">अनुरोध</string>
+    <string name="tab_plan_setup">प्लान सेटअप</string>
+    <string name="title_build_plan">डायनेमिक प्लान बनाएं</string>
+    <string name="hint_plan_duration">अवधि (उदा. 1 महीना)</string>
+    <string name="hint_base_amount">मूल राशि</string>
+    <string name="hint_discount_price">छूट मूल्य (वैकल्पिक)</string>
+    <string name="hint_upi_id">UPI ID (उदा. user@bank)</string>
+    <string name="label_active_specific_date">केवल विशिष्ट तिथि पर सक्रिय</string>
+    <string name="hint_select_specific_day">विशिष्ट दिन चुनें</string>
+    <string name="label_scanner_qr_label">स्कैनर QR लेबल</string>
+    <string name="label_tap_select_qr">QR कोड चुनने के लिए टैप करें</string>
+    <string name="btn_publish_plan">डायनेमिक प्लान प्रकाशित करें</string>
+    <string name="btn_update_plan">डायनेमिक प्लान अपडेट करें</string>
+    <string name="label_active_inventory">सक्रिय इन्वेंटरी</string>
+    <string name="title_delete_plan">प्लान हटाएं</string>
+    <string name="msg_confirm_delete_plan">क्या सच में %1$s प्लान हटाना चाहते हैं?</string>
+    <string name="title_select_specific_day">विशिष्ट दिन चुनें</string>
+    <string name="title_crop_qr_scanner">QR स्कैनर क्रॉप करें</string>
+    <string name="msg_scanner_ready">स्कैनर तैयार है</string>
+    <string name="msg_crop_error">क्रॉप त्रुटि: %1$s</string>
+    <string name="msg_check_duration_amount">कृपया अवधि और राशि की जांच करें</string>
+    <string name="msg_plan_already_exists">%1$s प्लान पहले से मौजूद है। कृपया इसे नीचे संपादित करें।</string>
+    <string name="msg_select_scanner_first">पहले एक स्कैनर इमेज चुनें</string>
+    <string name="msg_uploading_scanner">हाई-रेस स्कैनर अपलोड हो रहा है…</string>
+    <string name="msg_server_rejected_image">सर्वर ने छवि अस्वीकार कर दी</string>
+    <string name="msg_plan_synchronized">प्लान सिंक्रोनाइज़ हो गया</string>
+    <string name="label_amount_format">राशि: ₹%1$s</string>
+    <string name="label_disc_format">(छूट: ₹%1$s)</string>
+    <string name="label_discount_value">छूट: ₹%1$s</string>
+    <string name="title_requester_info">अनुरोधकर्ता की जानकारी</string>
+    <string name="title_subscription_details">सब्सक्रिप्शन विवरण</string>
+    <string name="label_subscription_details">सब्सक्रिप्शन विवरण</string>
+    <string name="title_payment_proof">भुगतान प्रमाण</string>
+    <string name="label_at">को</string>
+    <string name="msg_sub_approved_desc">आपका सब्सक्रिप्शन स्वीकृत कर दिया गया है</string>
+    <string name="msg_sub_rejected_desc">आपका सब्सक्रिप्शन अस्वीकृत कर दिया गया है</string>
+
     <string name="hint_tap_to_recrop">इमेज पर टैप करें और दोबारा क्रॉप करें</string>
     <string name="cat_issue">समस्या (Issue)</string>
     <string name="cat_order">ऑर्डर (Order)</string>
@@ -794,10 +930,6 @@
     <string name="msg_adv_request_sent_desc">आपका विज्ञापन अनुरोध समीक्षा के लिए सबमिट कर दिया गया है।</string>
     <string name="title_notif_admin_new_support">नया सहायता अनुरोध</string>
     <string name="msg_notif_admin_new_support">एक यूजर ने नया सहायता/संपर्क अनुरोध भेजा है।</string>
-    <string name="title_notif_support_approved">सहायता अनुरोध स्वीकृत</string>
-    <string name="msg_notif_support_approved">आपका सहायता अनुरोध स्वीकृत हो गया है। अब आप हमारे एजेंट से चैट कर सकते हैं।</string>
-    <string name="title_notif_support_rejected">सहायता अनुरोध अस्वीकृत</string>
-    <string name="msg_notif_support_rejected">आपका सहायता अनुरोध अस्वीकृत कर दिया गया है।</string>
     <string name="msg_support_request_sent_desc">आपका सहायता अनुरोध सफलतापूर्वक सबमिट कर दिया गया है।</string>
     <string name="title_notif_new_message">नया मैसेज</string>
     <string name="msg_notif_new_message_user">सपोर्ट एजेंट का नया मैसेज।</string>

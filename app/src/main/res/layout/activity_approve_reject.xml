@@ -49,7 +49,7 @@
                         android:id="@+id/txtHeaderTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Subscription"
+                        android:text="@string/menu_subscription"
                         android:textSize="24sp"
                         android:fontFamily="sans-serif-black"
                         android:textColor="?attr/colorOnSurface"
@@ -112,7 +112,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Requester Information"
+                        android:text="@string/title_requester_info"
                         android:textSize="11sp"
                         android:fontFamily="sans-serif-black"
                         android:textColor="?attr/colorOnSurfaceVariant"
@@ -193,7 +193,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Subscription Details"
+                        android:text="@string/title_subscription_details"
                         android:textSize="11sp"
                         android:fontFamily="sans-serif-black"
                         android:textColor="?attr/colorOnSurfaceVariant"
@@ -215,7 +215,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Payment Proof"
+                        android:text="@string/title_payment_proof"
                         android:textSize="13sp"
                         android:fontFamily="sans-serif-bold"
                         android:textColor="?attr/colorOnSurfaceVariant"
@@ -283,11 +283,12 @@
                         android:letterSpacing="0.1"
                         android:layout_marginBottom="12dp" />
 
-                    <Spinner
-                        android:id="@+id/spinnerPlan"
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/plansRecycler"
                         android:layout_width="match_parent"
-                        android:layout_height="56dp"
-                        android:background="@drawable/bg_spinner_state" />
+                        android:layout_height="wrap_content"
+                        android:clipToPadding="false"
+                        android:paddingBottom="8dp" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 

@@ -23,7 +23,7 @@ import java.io.File;
 
 import java.util.Locale;
 
-public class ProfileActivity extends AppCompatActivity {
+public class ProfileActivity extends BaseActivity {
 
         TextView nameTxt, emailTxt, mobileTxt;
         LinearLayout editBtn, subscriptionBtn, languageBtn,

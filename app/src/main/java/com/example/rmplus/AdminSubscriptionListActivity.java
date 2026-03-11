@@ -8,7 +8,7 @@ import com.google.firebase.database.*;
 
 import java.util.ArrayList;
 
-public class AdminSubscriptionListActivity extends AppCompatActivity {
+public class AdminSubscriptionListActivity extends BaseActivity {
 
     ListView listView;
     ArrayList<String> userIds = new ArrayList<>();

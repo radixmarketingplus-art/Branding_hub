@@ -44,7 +44,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerInParent="true"
-                        android:text="App Open Offer"
+                        android:text="@string/title_app_open_offer"
                         android:textSize="18sp"
                         android:fontFamily="sans-serif-black"
                         android:textColor="?android:textColorPrimary" />
@@ -88,7 +88,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Offer Visibility"
+                                android:text="@string/label_offer_visibility"
                                 android:textSize="16sp"
                                 android:fontFamily="sans-serif-black"
                                 android:textColor="?attr/colorOnSurface"/>
@@ -96,7 +96,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Show/Hide this offer on app start"
+                                android:text="@string/desc_offer_visibility"
                                 android:textSize="12sp"
                                 android:fontFamily="sans-serif-medium"
                                 android:textColor="?attr/colorOnSurfaceVariant"
@@ -117,7 +117,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Offer Image"
+                    android:text="@string/label_offer_image"
                     android:textSize="14sp"
                     android:fontFamily="sans-serif-bold"
                     android:textColor="?attr/colorOnSurface"
@@ -156,7 +156,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Tap to Add Image"
+                            android:text="@string/label_tap_to_add_image"
                             android:layout_marginTop="8dp"
                             android:textColor="@color/text_secondary"/>
                     </LinearLayout>
@@ -167,7 +167,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:hint="Action Link (e.g. app://subscription or https://...)"
+                    android:hint="@string/hint_action_link"
                     android:layout_marginBottom="24dp">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -181,7 +181,7 @@
                     android:id="@+id/btnSave"
                     android:layout_width="match_parent"
                     android:layout_height="64dp"
-                    android:text="Save Offer"
+                    android:text="@string/btn_save_offer"
                     android:textSize="17sp"
                     android:fontFamily="sans-serif-black"
                     app:cornerRadius="16dp"

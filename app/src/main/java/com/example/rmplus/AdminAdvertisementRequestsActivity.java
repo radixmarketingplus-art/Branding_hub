@@ -7,7 +7,7 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.google.android.material.tabs.*;
 
 public class AdminAdvertisementRequestsActivity
-        extends AppCompatActivity {
+        extends BaseActivity {
 
     protected void onCreate(Bundle b) {
         super.onCreate(b);

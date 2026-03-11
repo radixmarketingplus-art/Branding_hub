@@ -6,7 +6,7 @@ import android.view.View;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-public class TermsActivity extends AppCompatActivity {
+public class TermsActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

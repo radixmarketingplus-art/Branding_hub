@@ -179,7 +179,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Media Preview"
+                    android:text="@string/label_media_preview"
                     android:textSize="14sp"
                     android:textColor="@color/text_secondary"
                     android:layout_marginHorizontal="12dp"
@@ -244,7 +244,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="6dp"
-                            android:text="Change Media"
+                            android:text="@string/btn_change_media"
                             android:textColor="@color/primary"
                             android:textSize="12sp"
                             android:fontFamily="sans-serif-bold"/>
@@ -315,7 +315,7 @@
                         style="@style/Widget.Material3.Button.OutlinedButton"
                         android:layout_width="wrap_content"
                         android:layout_height="48dp"
-                        android:text="Select Media"
+                        android:text="@string/btn_select_media"
                         android:textAllCaps="false"
                         app:cornerRadius="12dp"
                         app:icon="@drawable/ic_select"

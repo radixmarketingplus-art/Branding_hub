@@ -347,12 +347,12 @@ public class NotificationHelper {
         if (text.equalsIgnoreCase("Support Request Rejected")) return context.getString(R.string.title_notif_support_rejected);
         if (text.equalsIgnoreCase("Your support request has been rejected.")) return context.getString(R.string.msg_notif_support_rejected);
 
-        if (text.equalsIgnoreCase("Support Request Sent")) return context.getString(R.string.msg_request_sent);
-        if (text.equalsIgnoreCase("Your support request has been submitted successfully.")) return context.getString(R.string.msg_support_request_sent_desc);
+        if (text.equalsIgnoreCase("Support Request Sent")) return context.getString(R.string.title_notif_support_sent);
+        if (text.equalsIgnoreCase("Your support request has been submitted successfully.")) return context.getString(R.string.msg_notif_support_sent);
 
         // Support (Admin)
-        if (text.equalsIgnoreCase("New Support Request")) return context.getString(R.string.title_notif_admin_new_support);
-        if (text.equalsIgnoreCase("A user has submitted a new support/contact request.")) return context.getString(R.string.msg_notif_admin_new_support);
+        if (text.equalsIgnoreCase("New Support Request")) return context.getString(R.string.title_notif_new_support);
+        if (text.equalsIgnoreCase("A user has submitted a new support/contact request.")) return context.getString(R.string.msg_notif_new_support);
 
         // Chat
         if (text.equalsIgnoreCase("New Message")) return context.getString(R.string.title_notif_new_message);
@@ -362,7 +362,8 @@ public class NotificationHelper {
         // Profile
         if (text.equalsIgnoreCase("Profile Updated")) return context.getString(R.string.msg_profile_updated);
         if (text.equalsIgnoreCase("Your profile information has been successfully updated.") || 
-            text.equalsIgnoreCase("Your profile updated successfully")) 
+            text.equalsIgnoreCase("Your profile updated successfully") ||
+            text.equalsIgnoreCase("Your profile has been updated by an administrator.")) 
             return context.getString(R.string.msg_profile_updated_desc);
 
         // Latest Update

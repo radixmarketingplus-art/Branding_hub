@@ -46,9 +46,10 @@ public class SubscriptionRequestAdapter extends RecyclerView.Adapter<Subscriptio
         h.imgIcon.setBackgroundTintList(android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#E8F5E9"))); // Light Green tint
 
         // 2. SET NAME & DETAILS
-        String details = r.name + " - " + r.plan;
-        if (r.amount != null) details += "\nAmount: ₹" + r.amount;
-        if (r.discountPrice != null && !r.discountPrice.equals("0")) details += " (Disc: ₹" + r.discountPrice + ")";
+        String localizedPlan = getLocalizedPlanName(r.plan, context);
+        String details = r.name + " - " + localizedPlan;
+        if (r.amount != null) details += "\n" + context.getString(R.string.label_amount_format, r.amount);
+        if (r.discountPrice != null && !r.discountPrice.equals("0")) details += " " + context.getString(R.string.label_disc_format, r.discountPrice);
         h.title.setText(details);
 
         // 3. SET DATE/TIME
@@ -83,6 +84,20 @@ public class SubscriptionRequestAdapter extends RecyclerView.Adapter<Subscriptio
     @Override
     public int getItemCount() {
         return list.size();
+    }
+
+    private String getLocalizedPlanName(String canonical, Context context) {
+        if (canonical == null) return "";
+        String c = canonical.toLowerCase();
+        if (c.contains("silver")) return context.getString(R.string.plan_silver);
+        if (c.contains("gold")) return context.getString(R.string.plan_gold);
+        if (c.contains("diamond")) return context.getString(R.string.plan_diamond);
+        if (c.contains("custom") || c.contains("7 days")) return context.getString(R.string.plan_custom);
+        if (c.contains("1 month")) return context.getString(R.string.plan_1_month);
+        if (c.contains("3 month")) return context.getString(R.string.plan_3_month);
+        if (c.contains("6 month")) return context.getString(R.string.plan_6_month);
+        if (c.contains("1 year")) return context.getString(R.string.plan_1_year);
+        return canonical;
     }
 
     static class Holder extends RecyclerView.ViewHolder {

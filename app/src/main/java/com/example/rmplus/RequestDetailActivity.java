@@ -14,7 +14,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public class RequestDetailActivity extends AppCompatActivity {
+public class RequestDetailActivity extends BaseActivity {
 
     TextView txtUserName, txtEmail, txtMobile;
     TextView txtTitle, txtType, txtDesc, txtStatus, txtTime;
@@ -71,7 +71,8 @@ public class RequestDetailActivity extends AppCompatActivity {
                                 r = s.getValue(CustomerRequest.class);
 
                                 txtTitle.setText(r.title);
-                                txtType.setText(r.type);
+                                // ✅ Localize request type — backend stores English, UI shows translated
+                                txtType.setText(getLocalizedType(r.type));
                                 txtDesc.setText(r.description);
 
                                 String displayStatus = r.status;
@@ -91,12 +92,17 @@ public class RequestDetailActivity extends AppCompatActivity {
                                 txtStatus.setText(displayStatus);
                                 txtStatus.setTextColor(statusColor);
 
-                                String time = new SimpleDateFormat(
-                                        "dd MMM yyyy 'at' hh:mm a",
-                                        Locale.getDefault())
+                                // ✅ Use Locale.ENGLISH for month name, localized "at" word
+                                String datePart = new SimpleDateFormat(
+                                        "dd MMM yyyy",
+                                        Locale.ENGLISH)
                                         .format(new Date(r.time));
-
-                                txtTime.setText(time);
+                                String timePart = new SimpleDateFormat(
+                                        "hh:mm a",
+                                        Locale.ENGLISH)
+                                        .format(new Date(r.time));
+                                String atWord = getString(R.string.label_at_time);
+                                txtTime.setText(datePart + " " + atWord + " " + timePart);
 
                                 if (isAdmin) {
                                     findViewById(R.id.userCard).setVisibility(View.VISIBLE);
@@ -209,5 +215,20 @@ public class RequestDetailActivity extends AppCompatActivity {
                 Toast.LENGTH_SHORT).show();
 
         finish();
+    }
+
+    // ✅ Maps backend English type → localized string resource
+    private String getLocalizedType(String type) {
+        if (type == null) return "";
+        switch (type.trim()) {
+            case "Issue":           return getString(R.string.cat_issue);
+            case "Order":           return getString(R.string.cat_order);
+            case "Custom Template": return getString(R.string.cat_custom_template);
+            case "Other":           return getString(R.string.cat_other);
+            case "Business":        return getString(R.string.cat_business);
+            case "Political":       return getString(R.string.cat_political);
+            case "NGO":             return getString(R.string.cat_ngo);
+            default:                return type; // Unknown type → show as-is
+        }
     }
 }

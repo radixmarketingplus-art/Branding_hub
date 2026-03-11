@@ -154,7 +154,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Contact Admin"
+                            android:text="@string/btn_contact_admin"
                             android:textSize="15sp"
                             android:fontFamily="sans-serif-black"
                             android:textColor="?attr/colorOnSurface" />
@@ -162,18 +162,18 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Call or Email for Support"
+                            android:text="@string/msg_call_email_support"
                             android:textSize="12sp"
                             android:fontFamily="sans-serif-medium"
                             android:textColor="?attr/colorOnSurfaceVariant"
                             android:layout_marginTop="2dp" />
                     </LinearLayout>
 
-                    <com.google.android.material.button.MaterialButton
+                        <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnContactSupport"
                         android:layout_width="100dp"
                         android:layout_height="48dp"
-                        android:text="Contact"
+                        android:text="@string/btn_contact_short"
                         android:textAllCaps="false"
                         android:fontFamily="sans-serif-bold"
                         android:textColor="@color/white"
@@ -220,7 +220,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Inquiry Admin"
+                            android:text="@string/btn_inquiry_admin"
                             android:textSize="15sp"
                             android:fontFamily="sans-serif-black"
                             android:textColor="?attr/colorOnSurface" />
@@ -228,18 +228,18 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Send a message to Admin"
+                            android:text="@string/msg_send_message_admin"
                             android:textSize="12sp"
                             android:fontFamily="sans-serif-medium"
                             android:textColor="?attr/colorOnSurfaceVariant"
                             android:layout_marginTop="2dp" />
                     </LinearLayout>
 
-                    <com.google.android.material.button.MaterialButton
+                        <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnInquiry"
                         android:layout_width="100dp"
                         android:layout_height="48dp"
-                        android:text="Inquiry"
+                        android:text="@string/btn_inquiry_short"
                         android:textAllCaps="false"
                         android:fontFamily="sans-serif-bold"
                         android:textColor="@color/white"
@@ -296,7 +296,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Request for Ads placement"
+                            android:text="@string/msg_request_ads_placement"
                             android:textSize="12sp"
                             android:fontFamily="sans-serif-medium"
                             android:textColor="?attr/colorOnSurfaceVariant"
@@ -308,7 +308,7 @@
                         android:id="@+id/btnAdRequest"
                         android:layout_width="100dp"
                         android:layout_height="48dp"
-                        android:text="Request"
+                        android:text="@string/btn_request_short"
                         android:textAllCaps="false"
                         android:fontFamily="sans-serif-bold"
                         android:textColor="@color/white"
@@ -365,7 +365,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Track all your requests"
+                            android:text="@string/msg_track_all_requests"
                             android:textSize="12sp"
                             android:fontFamily="sans-serif-medium"
                             android:textColor="?attr/colorOnSurfaceVariant"

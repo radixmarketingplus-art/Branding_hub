@@ -15,7 +15,7 @@ import com.google.firebase.database.*;
 
 import java.io.InputStream;
 
-public class CreateRequestActivity extends AppCompatActivity {
+public class CreateRequestActivity extends BaseActivity {
 
     Spinner spType;
     EditText etTitle, etDesc;

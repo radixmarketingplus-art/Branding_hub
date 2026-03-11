@@ -36,7 +36,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class AdminAdRequestScannerActivity extends AppCompatActivity {
+public class AdminAdRequestScannerActivity extends BaseActivity {
 
     ImageView btnBack, imgPreview;
     LinearLayout placeholderLayout;
@@ -133,7 +133,7 @@ public class AdminAdRequestScannerActivity extends AppCompatActivity {
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 progressBar.setVisibility(View.GONE);
-                Toast.makeText(AdminAdRequestScannerActivity.this, "Failed to load data.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(AdminAdRequestScannerActivity.this, getString(R.string.msg_failed_to_load), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -146,7 +146,7 @@ public class AdminAdRequestScannerActivity extends AppCompatActivity {
             if (!existingImageUrl.isEmpty()) {
                 saveDataToFirebase(existingImageUrl);
             } else {
-                Toast.makeText(this, "Please select an image and try again.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.msg_select_image_first), Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -222,7 +222,7 @@ public class AdminAdRequestScannerActivity extends AppCompatActivity {
         dbRef.child("imageUrl").setValue(imageUrl)
                 .addOnSuccessListener(aVoid -> {
                     setLoading(false);
-                    Toast.makeText(AdminAdRequestScannerActivity.this, "Scanner QR code saved!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AdminAdRequestScannerActivity.this, getString(R.string.msg_scanner_saved), Toast.LENGTH_SHORT).show();
                     finish();
                 })
                 .addOnFailureListener(e -> {
@@ -236,12 +236,12 @@ public class AdminAdRequestScannerActivity extends AppCompatActivity {
             progressBar.setVisibility(View.VISIBLE);
             btnSave.setEnabled(false);
             imgPreviewCard.setEnabled(false);
-            btnSave.setText("Saving...");
+            btnSave.setText(R.string.msg_saving);
         } else {
             progressBar.setVisibility(View.GONE);
             btnSave.setEnabled(true);
             imgPreviewCard.setEnabled(true);
-            btnSave.setText("Save Scanner");
+            btnSave.setText(R.string.btn_save_scanner);
         }
     }
 }

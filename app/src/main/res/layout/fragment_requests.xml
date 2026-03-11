@@ -16,4 +16,44 @@
         android:clipToPadding="false"
         android:overScrollMode="never"/>
 
+    <!-- ✅ Empty State — shown when list is empty -->
+    <LinearLayout
+        android:id="@+id/txtEmpty"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:visibility="gone"
+        android:padding="32dp">
+
+        <ImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:src="@drawable/ic_clipboard_list"
+            android:alpha="0.25"
+            android:layout_marginBottom="16dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/msg_no_requests_yet"
+            android:textSize="17sp"
+            android:fontFamily="sans-serif-bold"
+            android:textColor="?attr/colorOnSurface"
+            android:alpha="0.5"
+            android:gravity="center" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/msg_no_requests_desc"
+            android:textSize="13sp"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:alpha="0.6"
+            android:gravity="center"
+            android:layout_marginTop="6dp" />
+
+    </LinearLayout>
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

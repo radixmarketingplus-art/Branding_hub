@@ -18,7 +18,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
-public class RequestChatActivity extends AppCompatActivity {
+public class RequestChatActivity extends BaseActivity {
 
     RecyclerView recycler;
     EditText etMsg;

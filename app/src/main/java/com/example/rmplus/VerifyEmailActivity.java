@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
 
-public class VerifyEmailActivity extends AppCompatActivity {
+public class VerifyEmailActivity extends BaseActivity {
 
     Button checkBtn,resendBtn;
     FirebaseAuth auth;

@@ -44,7 +44,7 @@ import com.google.android.material.datepicker.MaterialDatePicker;
 import java.util.Calendar;
 import java.util.TimeZone;
 
-public class SubscriptionRequestsActivity extends AppCompatActivity {
+public class SubscriptionRequestsActivity extends BaseActivity {
 
     RecyclerView requestRecycler, plansRecycler;
     TextView pendingBtn, approvedBtn, rejectedBtn;
@@ -216,7 +216,7 @@ public class SubscriptionRequestsActivity extends AppCompatActivity {
                     ivScannerPreview.setVisibility(View.VISIBLE);
                     layoutUploadPrompt.setVisibility(View.GONE);
                 }
-                btnUploadPlan.setText("UPDATE DYNAMIC PLAN");
+                btnUploadPlan.setText(R.string.btn_update_plan);
                 // Scroll to top of Manage section to see the form
                 findViewById(R.id.layoutManage).scrollTo(0,0);
             }
@@ -224,8 +224,8 @@ public class SubscriptionRequestsActivity extends AppCompatActivity {
             @Override
             public void onDelete(SubscriptionPlan p) {
                 new android.app.AlertDialog.Builder(SubscriptionRequestsActivity.this)
-                        .setTitle("Delete Plan")
-                        .setMessage("Really delete " + p.duration + " plan?")
+                        .setTitle(R.string.title_delete_plan)
+                        .setMessage(getString(R.string.msg_confirm_delete_plan, p.duration))
                         .setPositiveButton("Yes", (d, w) -> deletePlan(p))
                         .setNegativeButton("No", null)
                         .show();
@@ -240,7 +240,7 @@ public class SubscriptionRequestsActivity extends AppCompatActivity {
         // Material Date Picker for specific day
         etSpecificDate.setOnClickListener(v -> {
             MaterialDatePicker<Long> picker = MaterialDatePicker.Builder.datePicker()
-                    .setTitleText("Select Specific Day")
+                    .setTitleText(R.string.title_select_specific_day)
                     .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
                     // Use a more premium full-screen theme or a standard dark one
                     .setTheme(com.google.android.material.R.style.ThemeOverlay_MaterialComponents_MaterialCalendar_Fullscreen)
@@ -275,7 +275,7 @@ public class SubscriptionRequestsActivity extends AppCompatActivity {
         UCrop.Options options = new UCrop.Options();
         options.setCompressionFormat(android.graphics.Bitmap.CompressFormat.JPEG);
         options.setHideBottomControls(false);
-        options.setToolbarTitle("Crop QR Scanner");
+        options.setToolbarTitle(getString(R.string.title_crop_qr_scanner));
         options.setToolbarColor(android.graphics.Color.parseColor("#1B1B1B"));
         options.setStatusBarColor(android.graphics.Color.parseColor("#1B1B1B"));
         options.setToolbarWidgetColor(Color.WHITE);
@@ -302,12 +302,12 @@ public class SubscriptionRequestsActivity extends AppCompatActivity {
                 ivScannerPreview.setImageURI(scannerUri);
                 ivScannerPreview.setVisibility(View.VISIBLE);
                 layoutUploadPrompt.setVisibility(View.GONE);
-                Toast.makeText(this, "Scanner Ready", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.msg_scanner_ready, Toast.LENGTH_SHORT).show();
             }
         } else if (resultCode == UCrop.RESULT_ERROR) {
             final Throwable cropError = UCrop.getError(data);
             if (cropError != null)
-                Toast.makeText(this, "Crop Error: " + cropError.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.msg_crop_error, cropError.getMessage()), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -320,7 +320,7 @@ public class SubscriptionRequestsActivity extends AppCompatActivity {
         String specDate = etSpecificDate.getText().toString().trim();
 
         if (dur.isEmpty() || amt.isEmpty()) {
-            Toast.makeText(this, "Please check duration and amount", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.msg_check_duration_amount, Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -329,7 +329,7 @@ public class SubscriptionRequestsActivity extends AppCompatActivity {
         if (editingPlanId == null) {
             for (SubscriptionPlan p : planList) {
                 if (p.duration.equalsIgnoreCase(dur)) {
-                    Toast.makeText(this, dur + " plan already exists. Edit it below.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, getString(R.string.msg_plan_already_exists, dur), Toast.LENGTH_SHORT).show();
                     return;
                 }
             }
@@ -342,13 +342,13 @@ public class SubscriptionRequestsActivity extends AppCompatActivity {
             for(SubscriptionPlan p : planList) if(p.id.equals(editingPlanId)) existing = p;
             savePlanToFirebase(editingPlanId, dur, amt, disc, existing != null ? existing.scannerUrl : null, upi, isSpec, specDate);
         } else {
-            Toast.makeText(this, "Select a scanner image first", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.msg_select_scanner_first, Toast.LENGTH_SHORT).show();
         }
     }
 
     void uploadScannerAndSave(String dur, String amt, String disc, String upi, boolean isSpec, String specDate) {
         android.app.ProgressDialog pd = new android.app.ProgressDialog(this);
-        pd.setMessage("Uploading high-res scanner...");
+        pd.setMessage(getString(R.string.msg_uploading_scanner));
         pd.setCancelable(false);
         pd.show();
 
@@ -393,7 +393,7 @@ public class SubscriptionRequestsActivity extends AppCompatActivity {
                 } else {
                     runOnUiThread(() -> {
                         pd.dismiss();
-                        Toast.makeText(this, "Server rejected image", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, R.string.msg_server_rejected_image, Toast.LENGTH_SHORT).show();
                     });
                 }
             } catch (Exception e) {
@@ -417,7 +417,7 @@ public class SubscriptionRequestsActivity extends AppCompatActivity {
         map.put("specificDate", specDate);
 
         plansRef.child(id).setValue(map).addOnSuccessListener(aVoid -> {
-            Toast.makeText(this, "Plan Synchronized", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.msg_plan_synchronized, Toast.LENGTH_SHORT).show();
             clearPlanFields();
         });
     }
@@ -462,7 +462,7 @@ public class SubscriptionRequestsActivity extends AppCompatActivity {
         ivScannerPreview.setVisibility(View.GONE);
         layoutUploadPrompt.setVisibility(View.VISIBLE);
         scannerUri = null;
-        btnUploadPlan.setText("PUBLISH DYNAMIC PLAN");
+        btnUploadPlan.setText(R.string.btn_publish_plan);
     }
 
     void loadPlans() {

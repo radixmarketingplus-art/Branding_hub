@@ -27,7 +27,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.io.InputStream;
 import java.util.HashMap;
 
-public class AdminAppOpenOfferActivity extends AppCompatActivity {
+public class AdminAppOpenOfferActivity extends BaseActivity {
 
     private SwitchMaterial switchEnable;
     private View imgPreviewCard;
@@ -114,7 +114,7 @@ public class AdminAppOpenOfferActivity extends AppCompatActivity {
             @Override
             public void onCancelled(DatabaseError error) {
                 progressBar.setVisibility(View.GONE);
-                Toast.makeText(AdminAppOpenOfferActivity.this, "Error loading offer", Toast.LENGTH_SHORT).show();
+                Toast.makeText(AdminAppOpenOfferActivity.this, getString(R.string.msg_error_loading_offer), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -124,7 +124,7 @@ public class AdminAppOpenOfferActivity extends AppCompatActivity {
         String link = etActionLink.getText() != null ? etActionLink.getText().toString().trim() : "";
 
         if (isEnabled && selectedUri == null && currentImageUrl.isEmpty()) {
-            Toast.makeText(this, "Please select an offer image to enable.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.msg_select_offer_image), Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -159,7 +159,7 @@ public class AdminAppOpenOfferActivity extends AppCompatActivity {
         offerRef.setValue(data).addOnSuccessListener(unused -> {
             runOnUiThread(() -> {
                 setSaving(false);
-                Toast.makeText(AdminAppOpenOfferActivity.this, "Offer Saved Successfully!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(AdminAppOpenOfferActivity.this, getString(R.string.msg_offer_saved), Toast.LENGTH_SHORT).show();
 
                 // ✅ BROADCAST NOTIFICATION: If offer is enabled, notify all users
                 if (isEnabled) {
@@ -179,7 +179,7 @@ public class AdminAppOpenOfferActivity extends AppCompatActivity {
         }).addOnFailureListener(e -> {
             runOnUiThread(() -> {
                 setSaving(false);
-                Toast.makeText(AdminAppOpenOfferActivity.this, "Failed to save offer.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(AdminAppOpenOfferActivity.this, getString(R.string.msg_failed_to_save_offer), Toast.LENGTH_SHORT).show();
             });
         });
     }

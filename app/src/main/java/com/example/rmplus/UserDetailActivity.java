@@ -37,7 +37,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-public class UserDetailActivity extends AppCompatActivity {
+public class UserDetailActivity extends BaseActivity {
 
     private String uid;
     private DatabaseReference userRef;
@@ -411,7 +411,7 @@ public class UserDetailActivity extends AppCompatActivity {
         userRef.updateChildren(updates).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 Toast.makeText(UserDetailActivity.this, "User updated successfully", Toast.LENGTH_SHORT).show();
-                NotificationHelper.send(this, uid, "Profile Updated by Admin", "Your profile has been updated by an administrator.");
+                NotificationHelper.send(this, uid, "Profile Updated", "Your profile has been updated by an administrator.");
                 finish();
             } else {
                 Toast.makeText(UserDetailActivity.this, "Update failed", Toast.LENGTH_SHORT).show();

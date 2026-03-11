@@ -44,7 +44,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerInParent="true"
-                        android:text="Ad Request Scanner"
+                        android:text="@string/title_ad_request_scanner"
                         android:textSize="18sp"
                         android:fontFamily="sans-serif-black"
                         android:textColor="?android:textColorPrimary" />
@@ -65,7 +65,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Scanner QR Code image"
+                    android:text="@string/label_scanner_qr"
                     android:textSize="14sp"
                     android:fontFamily="sans-serif-bold"
                     android:textColor="?attr/colorOnSurface"
@@ -104,7 +104,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Tap to Add QR Code"
+                            android:text="@string/label_tap_to_add_qr"
                             android:layout_marginTop="8dp"
                             android:textColor="@color/text_secondary"/>
                     </LinearLayout>
@@ -115,7 +115,7 @@
                     android:id="@+id/btnSave"
                     android:layout_width="match_parent"
                     android:layout_height="64dp"
-                    android:text="Save Scanner"
+                    android:text="@string/btn_save_scanner"
                     android:textSize="17sp"
                     android:fontFamily="sans-serif-black"
                     app:cornerRadius="16dp"

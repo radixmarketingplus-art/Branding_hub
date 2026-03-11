@@ -22,7 +22,7 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.util.*;
 
-public class SearchActivity extends AppCompatActivity {
+public class SearchActivity extends BaseActivity {
 
     EditText edtSearch;
     ImageButton btnSearch, btnMic, btnClear;
@@ -131,10 +131,11 @@ public class SearchActivity extends AppCompatActivity {
     private String translateHindiToEnglish(String q) {
         if (q == null || q.isEmpty()) return q;
         String res = q;
-        
+
         // Category Mappings
         if (q.contains("व्यापार") || q.contains("बिज़नेस")) res += " business";
-        if (q.contains("राजनीति") || q.contains("राजनीतिक") || q.contains("चुनाव")) res += " political";
+        if (q.contains("राजनीति") || q.contains("राजनीतिक") || q.contains("चुनाव"))
+            res += " political";
         if (q.contains("त्योहार") || q.contains("उत्सव")) res += " festival";
         if (q.contains("विज्ञापन")) res += " advertisement";
         if (q.contains("प्रेरणा") || q.contains("प्रेरक")) res += " motivation";
@@ -145,20 +146,15 @@ public class SearchActivity extends AppCompatActivity {
         if (q.contains("भक्ति") || q.contains("भगवान")) res += " devotional god";
         if (q.contains("मजदूरी") || q.contains("श्रमिक")) res += " labor worker";
         if (q.contains("खेल") || q.contains("क्रिकेट")) res += " sports cricket";
-        
+
         // General term mappings
         if (q.contains("पोस्टर")) res += " poster";
         if (q.contains("डिजाइन")) res += " design";
         if (q.contains("फोटो") || q.contains("चित्र")) res += " photo image";
         if (q.contains("वीडियो")) res += " video";
-        
+
         return res;
     }
-
-    private String makeSafeKey(String s) {
-        return s.replaceAll("[^a-zA-Z0-9]", "");
-    }
-
     // --------------------------------------
 
     String extractTitle(String path) {

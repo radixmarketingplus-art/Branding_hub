@@ -6,7 +6,7 @@ import android.webkit.WebViewClient;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class WebPageActivity extends AppCompatActivity {
+public class WebPageActivity extends BaseActivity {
 
     WebView webView;
 

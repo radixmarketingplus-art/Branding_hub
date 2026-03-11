@@ -45,7 +45,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerInParent="true"
-                        android:text="Service Requests"
+                        android:text="@string/title_service_requests"
                         android:textSize="18sp"
                         android:fontFamily="sans-serif-black"
                         android:textColor="?android:textColorPrimary" />
@@ -73,7 +73,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="2dp"
-                            android:text="Scanner"
+                            android:text="@string/label_scanner_text"
                             android:textSize="10sp"
                             android:fontFamily="sans-serif-bold"
                             android:textColor="?attr/colorOnSurfaceVariant" />

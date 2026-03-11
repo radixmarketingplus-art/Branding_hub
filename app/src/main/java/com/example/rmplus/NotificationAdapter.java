@@ -48,7 +48,8 @@ public class NotificationAdapter extends BaseAdapter {
         message.setText(model.message);
 
         if (model.time > 0) {
-            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd MMM, hh:mm a", java.util.Locale.getDefault());
+            // ✅ Use Locale.ENGLISH for consistent month/time display (no Devanagari digits)
+            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd MMM, hh:mm a", java.util.Locale.ENGLISH);
             time.setText(sdf.format(new java.util.Date(model.time)));
             time.setVisibility(View.VISIBLE);
         } else {

@@ -12,7 +12,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-public class AdminSupportSettingsActivity extends AppCompatActivity {
+public class AdminSupportSettingsActivity extends BaseActivity {
 
     EditText etPhone, etEmail;
     DatabaseReference ref;
@@ -52,14 +52,14 @@ public class AdminSupportSettingsActivity extends AppCompatActivity {
             String email = etEmail.getText().toString().trim();
             
             if(phone.isEmpty() || email.isEmpty()) {
-                Toast.makeText(this, "Please fill in all details", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.msg_fill_details, Toast.LENGTH_SHORT).show();
                 return;
             }
             
             ref.child("phone").setValue(phone);
             ref.child("email").setValue(email)
                 .addOnSuccessListener(aVoid -> {
-                    Toast.makeText(this, "Support settings saved!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, R.string.msg_settings_saved, Toast.LENGTH_SHORT).show();
                     finish();
                 })
                 .addOnFailureListener(e -> {

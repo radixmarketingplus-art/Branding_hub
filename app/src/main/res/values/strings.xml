@@ -196,6 +196,10 @@
     <string name="desc_edited_template">Edited Template</string>
     <string name="desc_template_preview">Template Preview</string>
     <string name="desc_upload_templates">Add images to home page sections</string>
+    <string name="label_template_view">Template View</string>
+    <string name="msg_loading">Loading…</string>
+    <string name="label_engagement_overview">Engagement Overview</string>
+    <string name="label_user_engagement">User Engagement</string>
     <string name="greeting_format">Hi, %1$s</string>
     <string name="hint_designation">Designation</string>
     <string name="hint_tap_to_recrop">Tap image to re-crop</string>
@@ -236,11 +240,22 @@
     <string name="msg_preparing_video">Preparing Video...</string>
     <string name="msg_downloading_video">Downloading Video...</string>
     <string name="msg_sharing_video_link">Sharing video link...</string>
+    <string name="msg_download_limit_reached">Daily Limit Reached! You can save max 10 templates per day.</string>
+    <string name="msg_downloads_remaining">Daily limit: %1$d/10 used</string>
     <string name="msg_template_deleted">This template has been deleted by the admin</string>
     <string name="msg_template_loaded">Template data loaded correctly</string>
     <string name="msg_video_download_not_supported">Video download not supported yet</string>
     <string name="msg_video_edit_not_supported">Video editing is not supported yet.</string>
     <string name="msg_video_selected">Video Selected</string>
+    <string name="label_media_preview">Media Preview</string>
+    <string name="btn_change_media">Change Media</string>
+    <string name="btn_select_media">Select Media</string>
+    <string name="title_subscription_required">Subscription Required</string>
+    <string name="msg_subscription_required">You need an active subscription to edit or save templates. Please subscribe for full access.</string>
+    <string name="btn_subscribe_now">Subscribe Now</string>
+    <string name="title_save_draft">Save to Draft?</string>
+    <string name="msg_save_draft">Do you want to save this progress to your designs? If yes, it will appear in the Edits section.</string>
+    <string name="msg_video_ratio_error">Video must be in vertical ratio (like 9:16) for Reel Maker</string>
     <string name="no_media_selected">No Media Selected</string>
     <string name="ph_edit_text">Edit Text</string>
     <string name="section_business_frame">Business Frame</string>
@@ -386,13 +401,21 @@
     <string name="title_contact_requests">Contact Requests</string>
     <string name="title_customer_support">Customer Support</string>
     <string name="title_support_center">Support Center</string>
+    <string name="label_edit_contact">Edit Contact</string>
 
     <!-- ================================================== -->
-    <!-- 11. ADMIN PANEL -->
+    <!-- 11. ADMIN PANEL & SUPPORT -->
     <!-- ================================================== -->
     <string name="btn_approve">Approve</string>
     <string name="btn_check">Check</string>
     <string name="btn_contact_admin">Contact Admin</string>
+    <string name="btn_inquiry_admin">Inquiry Admin</string>
+    <string name="btn_contact_short">Contact</string>
+    <string name="btn_inquiry_short">Inquiry</string>
+    <string name="btn_request_short">Request</string>
+    <string name="title_action_required">Action Required</string>
+    <string name="msg_choose_proceed">Please choose how you want to proceed with this request</string>
+    <string name="btn_accept">Accept</string>
     <string name="btn_reject">Reject</string>
     <string name="btn_submit_adv_request">Submit Advertisement Request</string>
     <string name="btn_view">View</string>
@@ -401,6 +424,15 @@
     <string name="desc_sub_approved">Your subscription has been approved</string>
     <string name="desc_sub_rejected">Your subscription has been rejected</string>
     <string name="label_role">Role (admin/user)</string>
+    <string name="label_select_category">Select Category</string>
+    <string name="label_request_title">Request Title</string>
+    <string name="label_attachment">Attachment</string>
+    <string name="label_description_plain">Description</string>
+    <string name="label_requester_info">Requester Information</string>
+    <string name="msg_call_email_support">Call or Email for Support</string>
+    <string name="msg_send_message_admin">Send a message to Admin</string>
+    <string name="msg_request_ads_placement">Request for Ads placement</string>
+    <string name="msg_track_all_requests">Track all your requests</string>
     <string name="msg_adv_request_sent">Advertisement Request Sent</string>
     <string name="msg_adv_request_sent_desc">Your advertisement request has been submitted for review.</string>
     <string name="msg_approved">Approved</string>
@@ -410,25 +442,118 @@
     <string name="msg_notif_adv_approved">Your advertisement has been approved and is now live.</string>
     <string name="msg_notif_adv_rejected">Your advertisement request has been rejected.</string>
     <string name="msg_notif_new_message_admin">New message from user regarding support request.</string>
-    <string name="msg_notif_support_approved">Your support request has been approved. You can now chat with our agent.</string>
-    <string name="msg_notif_support_rejected">Your support request has been rejected.</string>
     <string name="msg_rejected">Rejected</string>
     <string name="msg_vps_delete_failed">VPS Deletion failed: %1$d</string>
     <string name="status_rejected_retry">Rejected - Try Again</string>
     <string name="terms_section_admin_desc">The Admin reserves the right to suspend or terminate accounts in case of any misuse or violation of these terms.</string>
     <string name="terms_section_admin_title">Account Management</string>
     <string name="title_admin_panel">Admin Panel</string>
+    <string name="title_support_settings">Support Settings</string>
+    <string name="label_support_phone">Support Phone Number</string>
+    <string name="label_support_email">Support Email Address</string>
+    <string name="btn_save_contact">Save Contact</string>
+    <string name="msg_fill_details">Please fill in all details</string>
+    <string name="msg_settings_saved">Support settings saved!</string>
+    
+    <!-- SUPPORT NOTIFICATIONS -->
+    <string name="title_app_open_offer">App Open Offer</string>
+    <string name="desc_app_open_offer">Manage the popup offer shown on app launch</string>
+    <string name="title_notif_support_sent">Support Request Sent</string>
+    <string name="msg_notif_support_sent">Your support request has been submitted successfully.</string>
+    <string name="title_notif_new_support">New Support Request</string>
+    <string name="msg_notif_new_support">A user has submitted a new support/contact request.</string>
+    <string name="title_notif_support_approved">Support Request Approved</string>
+    <string name="msg_notif_support_approved">Your support request has been approved. You can now chat with our agent.</string>
+    <string name="title_notif_support_rejected">Support Request Rejected</string>
+    <string name="msg_notif_support_rejected">Your support request has been rejected.</string>
     <string name="title_adv_request">Advertisement Request</string>
-    <string name="title_adv_requests">Advertisement Request</string>
+    <string name="title_adv_requests">Advertisement Requests</string>
     <string name="title_notif_admin_new_adv">New Advertisement Request</string>
     <string name="title_notif_admin_new_sub">New Subscription Request</string>
-    <string name="title_notif_admin_new_support">New Support Request</string>
     <string name="title_notif_adv_approved">Advertisement Approved</string>
     <string name="title_notif_adv_rejected">Advertisement Rejected</string>
-    <string name="title_notif_support_approved">Support Request Approved</string>
-    <string name="title_notif_support_rejected">Support Request Rejected</string>
     <string name="title_sub_approved">Subscription Approved</string>
     <string name="title_sub_rejected">Subscription Rejected</string>
+
+    <!-- Advertisement Request Page Strings -->
+    <string name="title_service_requests">Advertisement Requests</string>
+    <string name="label_website_redirect_link">Website / Redirect Link</string>
+    <string name="label_aspect_ratio_16_9">16:9 Aspect Ratio</string>
+    <string name="label_upload_proof_step">Upload Payment Proof</string>
+    <string name="label_optional_payment_desc">Optional — attach a screenshot of your payment</string>
+    <string name="msg_payment_screenshot">Payment screenshot</string>
+    <string name="label_scanner_text">Scanner</string>
+    <string name="label_ad_details">Ad Details</string>
+    <string name="label_template_preview">Template Preview</string>
+    <string name="label_approval_duration">Approval Duration</string>
+
+    <!-- My Requests Page -->
+    <string name="title_my_requests">My Requests</string>
+    <string name="msg_no_requests_yet">No requests yet</string>
+    <string name="msg_no_requests_desc">You haven\'t submitted any requests yet</string>
+    <!-- Date/Time formatting -->
+    <string name="label_at_time">at</string>
+    <string name="date_time_format">dd MMM yyyy</string>
+
+    <!-- Admin Ad Request Scanner Page -->
+    <string name="title_ad_request_scanner">Ad Request Scanner</string>
+    <string name="label_scanner_qr">Scanner QR Code Image</string>
+    <string name="label_tap_to_add_qr">Tap to Add QR Code</string>
+    <string name="btn_save_scanner">Save Scanner</string>
+    <string name="msg_saving">Saving…</string>
+    <string name="msg_scanner_saved">Scanner QR code saved!</string>
+    <string name="msg_select_image_first">Please select an image and try again.</string>
+    <string name="msg_failed_to_load">Failed to load data.</string>
+
+    <!-- Admin App Open Offer Page -->
+    <string name="label_offer_visibility">Offer Visibility</string>
+    <string name="desc_offer_visibility">Show/Hide this offer on app start</string>
+    <string name="label_offer_image">Offer Image</string>
+    <string name="label_tap_to_add_image">Tap to Add Image</string>
+    <string name="hint_action_link">Action Link (e.g. app://subscription or https://…)</string>
+    <string name="btn_save_offer">Save Offer</string>
+    <string name="msg_error_loading_offer">Error loading offer</string>
+    <string name="msg_select_offer_image">Please select an offer image to enable.</string>
+    <string name="msg_offer_saved">Offer Saved Successfully!</string>
+    <string name="msg_failed_to_save_offer">Failed to save offer.</string>
+
+    <!-- Admin Subscription Hub -->
+    <string name="title_subscription_hub">Subscription Hub</string>
+    <string name="tab_requests">Requests</string>
+    <string name="tab_plan_setup">Plan Setup</string>
+    <string name="title_build_plan">Build Dynamic Plan</string>
+    <string name="hint_plan_duration">Duration (e.g. 1 Month)</string>
+    <string name="hint_base_amount">Base Amount</string>
+    <string name="hint_discount_price">Discount Price (optional)</string>
+    <string name="hint_upi_id">UPI ID (e.g. user@bank)</string>
+    <string name="label_active_specific_date">Active on Specific Date Only</string>
+    <string name="hint_select_specific_day">Select Specific Day</string>
+    <string name="label_scanner_qr_label">Scanner QR Label</string>
+    <string name="label_tap_select_qr">Tap to Select QR Code</string>
+    <string name="btn_publish_plan">PUBLISH DYNAMIC PLAN</string>
+    <string name="btn_update_plan">UPDATE DYNAMIC PLAN</string>
+    <string name="label_active_inventory">Active Inventory</string>
+    <string name="title_delete_plan">Delete Plan</string>
+    <string name="msg_confirm_delete_plan">Really delete %1$s plan?</string>
+    <string name="title_select_specific_day">Select Specific Day</string>
+    <string name="title_crop_qr_scanner">Crop QR Scanner</string>
+    <string name="msg_scanner_ready">Scanner Ready</string>
+    <string name="msg_crop_error">Crop Error: %1$s</string>
+    <string name="msg_check_duration_amount">Please check duration and amount</string>
+    <string name="msg_plan_already_exists">%1$s plan already exists. Edit it below.</string>
+    <string name="msg_select_scanner_first">Select a scanner image first</string>
+    <string name="msg_uploading_scanner">Uploading high-res scanner…</string>
+    <string name="msg_server_rejected_image">Server rejected image</string>
+    <string name="msg_plan_synchronized">Plan Synchronized</string>
+    <string name="label_amount_format">Amount: ₹%1$s</string>
+    <string name="label_disc_format">(Disc: ₹%1$s)</string>
+    <string name="label_discount_value">Discount: ₹%1$s</string>
+    <string name="title_requester_info">Requester Information</string>
+    <string name="title_subscription_details">Subscription Details</string>
+    <string name="title_payment_proof">Payment Proof</string>
+    <string name="label_at">at</string>
+    <string name="msg_sub_approved_desc">Your subscription has been approved</string>
+    <string name="msg_sub_rejected_desc">Your subscription has been rejected</string>
 
     <!-- ================================================== -->
     <!-- 12. NOTIFICATIONS & ALERTS -->

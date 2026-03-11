@@ -40,10 +40,10 @@ public class SubscriptionPlanAdapter extends RecyclerView.Adapter<SubscriptionPl
     @Override
     public void onBindViewHolder(@NonNull PlanViewHolder holder, int position) {
         SubscriptionPlan p = list.get(position);
-        holder.duration.setText(p.duration);
+        holder.duration.setText(getLocalizedPlanName(p.duration, holder.itemView.getContext()));
         holder.amount.setText("₹" + p.amount);
         if (p.discountPrice != null && !p.discountPrice.equals("0")) {
-            holder.discount.setText("Discount: ₹" + p.discountPrice);
+            holder.discount.setText(holder.itemView.getContext().getString(R.string.label_discount_value, p.discountPrice));
             holder.discount.setVisibility(View.VISIBLE);
         } else {
             holder.discount.setVisibility(View.GONE);
@@ -65,6 +65,20 @@ public class SubscriptionPlanAdapter extends RecyclerView.Adapter<SubscriptionPl
     @Override
     public int getItemCount() {
         return list.size();
+    }
+
+    private String getLocalizedPlanName(String canonical, android.content.Context context) {
+        if (canonical == null) return "";
+        String c = canonical.toLowerCase();
+        if (c.contains("silver")) return context.getString(R.string.plan_silver);
+        if (c.contains("gold")) return context.getString(R.string.plan_gold);
+        if (c.contains("diamond")) return context.getString(R.string.plan_diamond);
+        if (c.contains("custom") || c.contains("7 days")) return context.getString(R.string.plan_custom);
+        if (c.contains("1 month")) return context.getString(R.string.plan_1_month);
+        if (c.contains("3 month")) return context.getString(R.string.plan_3_month);
+        if (c.contains("6 month")) return context.getString(R.string.plan_6_month);
+        if (c.contains("1 year")) return context.getString(R.string.plan_1_year);
+        return canonical;
     }
 
     static class PlanViewHolder extends RecyclerView.ViewHolder {

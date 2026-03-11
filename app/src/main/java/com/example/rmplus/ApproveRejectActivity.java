@@ -18,9 +18,15 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.OutputStream;
 import java.util.Date;
+import java.util.ArrayList;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import com.example.rmplus.adapters.UserSubscriptionPlanAdapter;
+import com.example.rmplus.models.SubscriptionPlan;
 import com.example.rmplus.NotificationHelper;
 
-public class ApproveRejectActivity extends AppCompatActivity {
+public class ApproveRejectActivity extends BaseActivity {
 
         TextView nameTxt, emailTxt, mobileTxt, planTxt, dateTxt;
         ImageView proofImage;
@@ -29,12 +35,16 @@ public class ApproveRejectActivity extends AppCompatActivity {
         DatabaseReference requestRef, userRef;
         String uid;
         String proofPath = "";
-        Spinner spinnerPlan;
+        RecyclerView plansRecycler;
+        UserSubscriptionPlanAdapter planAdapter;
         String userRequestedPlan = "";
         long currentExpiry = 0;
         Button btnUpdateExpiry;
         View planGrantContainer;
         TextView txtCurrentExpiry;
+
+        ArrayList<SubscriptionPlan> dynamicPlans = new ArrayList<>();
+        DatabaseReference dynamicPlansRef;
 
         @Override
         protected void onCreate(Bundle b) {
@@ -50,10 +60,12 @@ public class ApproveRejectActivity extends AppCompatActivity {
                 approveBtn = findViewById(R.id.approveBtn);
                 rejectBtn = findViewById(R.id.rejectBtn);
                 downloadBtn = findViewById(R.id.downloadBtn);
-                spinnerPlan = findViewById(R.id.spinnerPlan);
+                plansRecycler = findViewById(R.id.plansRecycler);
                 btnUpdateExpiry = findViewById(R.id.btnUpdateExpiry);
                 planGrantContainer = findViewById(R.id.planGrantContainer);
                 txtCurrentExpiry = findViewById(R.id.txtCurrentExpiry);
+
+                plansRecycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
                 findViewById(R.id.btnBack).setOnClickListener(v -> finish());
 
@@ -67,6 +79,10 @@ public class ApproveRejectActivity extends AppCompatActivity {
                                 .getReference("users")
                                 .child(uid);
 
+                dynamicPlansRef = FirebaseDatabase.getInstance()
+                                .getReference("dynamic_subscriptions");
+
+                loadDynamicPlans();
                 loadData();
 
                 approveBtn.setOnClickListener(v -> approve());
@@ -90,11 +106,12 @@ public class ApproveRejectActivity extends AppCompatActivity {
                                                 String amt = s.child("amount").getValue(String.class);
                                                 String disc = s.child("discountPrice").getValue(String.class);
 
-                                                String fullPlanDetails = userRequestedPlan;
+                                                String localizedPlan = getLocalizedPlanName(userRequestedPlan);
+                                                String fullPlanDetails = localizedPlan;
                                                 if (amt != null)
-                                                        fullPlanDetails += "\nAmount: ₹" + amt;
+                                                        fullPlanDetails += "\n" + getString(R.string.label_amount_format, amt);
                                                 if (disc != null && !disc.equals("0"))
-                                                        fullPlanDetails += " (Disc: ₹" + disc + ")";
+                                                        fullPlanDetails += " " + getString(R.string.label_disc_format, disc);
 
                                                 planTxt.setText(fullPlanDetails);
 
@@ -103,46 +120,16 @@ public class ApproveRejectActivity extends AppCompatActivity {
                                                 String email = s.child("email").getValue(String.class);
                                                 String mobile = s.child("mobile").getValue(String.class);
 
-                                                nameTxt.setText(name != null ? name : "User");
-                                                emailTxt.setText(email != null ? email : "No Email");
-                                                mobileTxt.setText(mobile != null ? mobile : "No Mobile");
+                                                nameTxt.setText(name != null ? name : getString(R.string.placeholder_name));
+                                                emailTxt.setText(email != null ? email : getString(R.string.placeholder_email));
+                                                mobileTxt.setText(mobile != null ? mobile : getString(R.string.hint_phone_number));
 
                                                 ((TextView) findViewById(R.id.txtHeaderTitle))
-                                                                .setText(name != null ? name : "Subscription");
+                                                                .setText(name != null ? name : getString(R.string.menu_subscription));
 
                                                 String status = s.child("status").getValue(String.class);
 
-                                                // ✅ Canonical English keys — always saved to Firebase
-                                                // (locale-independent)
-                                                String[] plansEn = { "Silver", "Gold", "Diamond", "Custom" };
-
-                                                // Localized display names — shown in spinner UI
-                                                String[] plans = {
-                                                                getString(R.string.plan_silver),
-                                                                getString(R.string.plan_gold),
-                                                                getString(R.string.plan_diamond),
-                                                                getString(R.string.plan_custom)
-                                                };
-                                                ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                                                                ApproveRejectActivity.this,
-                                                                android.R.layout.simple_spinner_item, plans);
-                                                adapter.setDropDownViewResource(
-                                                                android.R.layout.simple_spinner_dropdown_item);
-                                                spinnerPlan.setAdapter(adapter);
-
-                                                // Auto-select based on user request (match against English keys)
-                                                if (userRequestedPlan != null) {
-                                                        for (int i = 0; i < plansEn.length; i++) {
-                                                                if (plansEn[i].toLowerCase().contains(
-                                                                                userRequestedPlan.toLowerCase())
-                                                                                || userRequestedPlan.toLowerCase()
-                                                                                                .contains(plansEn[i]
-                                                                                                                .toLowerCase())) {
-                                                                        spinnerPlan.setSelection(i);
-                                                                        break;
-                                                                }
-                                                        }
-                                                }
+                                                checkAndSelectPlannedItem();
 
                                                 TextView txtStatus = findViewById(R.id.txtStatus);
                                                 int statusColor = android.graphics.Color.parseColor("#F59E0B"); // Pending
@@ -176,11 +163,12 @@ public class ApproveRejectActivity extends AppCompatActivity {
                                                                 .getValue(Long.class);
 
                                                 if (t != null) {
-                                                        String dateStr = new java.text.SimpleDateFormat(
-                                                                        "dd MMM yyyy 'at' hh:mm a",
-                                                                        java.util.Locale.getDefault())
-                                                                        .format(new java.util.Date(t));
-                                                        dateTxt.setText(dateStr);
+                                                        String pattern = "dd MMM yyyy '" + getString(R.string.label_at) + "' hh:mm a";
+                                                String dateStr = new java.text.SimpleDateFormat(
+                                                                pattern,
+                                                                java.util.Locale.getDefault())
+                                                                .format(new java.util.Date(t));
+                                                dateTxt.setText(dateStr);
                                                 }
 
                                                 proofPath = s.child("proofPath")
@@ -209,6 +197,64 @@ public class ApproveRejectActivity extends AppCompatActivity {
                                         public void onCancelled(DatabaseError e) {
                                         }
                                 });
+        }
+
+        void loadDynamicPlans() {
+                dynamicPlansRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                dynamicPlans.clear();
+                                ArrayList<String> displayNames = new ArrayList<>();
+
+                                for (DataSnapshot d : snapshot.getChildren()) {
+                                        SubscriptionPlan p = d.getValue(SubscriptionPlan.class);
+                                        if (p != null) {
+                                                dynamicPlans.add(p);
+                                                displayNames.add(getLocalizedPlanName(p.duration));
+                                        }
+                                }
+
+                                if (!dynamicPlans.isEmpty()) {
+                                        planAdapter = new UserSubscriptionPlanAdapter(dynamicPlans, plan -> {
+                                                // Handle plan selection if needed (auto-selection logic is separate)
+                                        });
+                                        plansRecycler.setAdapter(planAdapter);
+
+                                        checkAndSelectPlannedItem();
+                                }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {}
+                });
+        }
+
+        private void checkAndSelectPlannedItem() {
+                if (dynamicPlans.isEmpty() || userRequestedPlan == null || userRequestedPlan.isEmpty() || planAdapter == null) {
+                    android.util.Log.d("ApproveReject", "Skipping select: plans empty? " + dynamicPlans.isEmpty() + ", reqPlan: " + userRequestedPlan);
+                    return;
+                }
+                
+                String req = userRequestedPlan.toLowerCase();
+                int matchIndex = -1;
+
+                for (int i = 0; i < dynamicPlans.size(); i++) {
+                        String duration = dynamicPlans.get(i).duration.toLowerCase();
+                        // Flexible matching: either exact, or one contains the other
+                        if (duration.equals(req) || duration.contains(req) || req.contains(duration)) {
+                                matchIndex = i;
+                                break;
+                        }
+                }
+
+                if (matchIndex != -1) {
+                        android.util.Log.d("ApproveReject", "Found match for " + userRequestedPlan + " at index " + matchIndex);
+                        planAdapter.setSelectedPosition(matchIndex);
+                        plansRecycler.scrollToPosition(matchIndex);
+                } else {
+                        android.util.Log.d("ApproveReject", "No match found for " + userRequestedPlan + ", defaulting to index 0");
+                        planAdapter.setSelectedPosition(0); // Default to first plan if no match found
+                }
         }
 
         void loadExpiryFromUser() {
@@ -285,24 +331,17 @@ public class ApproveRejectActivity extends AppCompatActivity {
 
         void approve() {
 
-                // ✅ Use English canonical plan keys — locale-independent
-                String[] plansEn = { "Silver", "Gold", "Diamond", "Custom" };
-                String grantedPlan = plansEn[spinnerPlan.getSelectedItemPosition()];
+                if (dynamicPlans.isEmpty() || planAdapter == null) return;
+                SubscriptionPlan selected = dynamicPlans.get(planAdapter.getSelectedPosition());
+                String grantedPlan = selected.duration;
 
                 long now = System.currentTimeMillis();
-                long expiry = now + (7L * 24 * 60 * 60 * 1000); // Default 7 days
-
-                // ✅ Compare against English canonical keys (not localized strings)
-                if ("Silver".equals(grantedPlan))
-                        expiry = now + (30L * 24 * 60 * 60 * 1000);
-                else if ("Gold".equals(grantedPlan))
-                        expiry = now + (180L * 24 * 60 * 60 * 1000);
-                else if ("Diamond".equals(grantedPlan))
-                        expiry = now + (365L * 24 * 60 * 60 * 1000);
+                long expiry = calculateExpiry(now, grantedPlan);
 
                 requestRef.child("status").setValue("approved");
                 requestRef.child("plan").setValue(grantedPlan);
                 requestRef.child("expiryDate").setValue(expiry);
+                requestRef.child("amountApplied").setValue(selected.amount);
 
                 userRef.child("subscribed").setValue(true);
                 userRef.child("subscriptionStatus").setValue("approved");
@@ -314,11 +353,11 @@ public class ApproveRejectActivity extends AppCompatActivity {
                                 R.string.msg_approved,
                                 Toast.LENGTH_SHORT).show();
 
-                NotificationHelper.send(
+                                NotificationHelper.send(
                                 ApproveRejectActivity.this,
                                 uid,
-                                "Subscription Approved",
-                                "Your subscription has been approved");
+                                getString(R.string.title_sub_approved),
+                                getString(R.string.msg_sub_approved_desc));
 
                 finish();
         }
@@ -340,11 +379,11 @@ public class ApproveRejectActivity extends AppCompatActivity {
                                 R.string.msg_rejected,
                                 Toast.LENGTH_SHORT).show();
 
-                NotificationHelper.send(
+                                NotificationHelper.send(
                                 ApproveRejectActivity.this,
                                 uid,
-                                "Subscription Rejected",
-                                "Your subscription has been rejected");
+                                getString(R.string.title_sub_rejected),
+                                getString(R.string.msg_sub_rejected_desc));
 
                 finish();
         }
@@ -404,5 +443,42 @@ public class ApproveRejectActivity extends AppCompatActivity {
                                                 Toast.LENGTH_SHORT).show());
                         }
                 }).start();
+        }
+
+        private String getLocalizedPlanName(String canonical) {
+                if (canonical == null) return "";
+                String c = canonical.toLowerCase();
+                if (c.contains("silver")) return getString(R.string.plan_silver);
+                if (c.contains("gold")) return getString(R.string.plan_gold);
+                if (c.contains("diamond")) return getString(R.string.plan_diamond);
+                if (c.contains("custom") || c.contains("7 days")) return getString(R.string.plan_custom);
+                if (c.contains("1 month")) return getString(R.string.plan_1_month);
+                if (c.contains("3 month")) return getString(R.string.plan_3_month);
+                if (c.contains("6 month")) return getString(R.string.plan_6_month);
+                if (c.contains("1 year")) return getString(R.string.plan_1_year);
+                return canonical;
+        }
+
+        private long calculateExpiry(long startTime, String duration) {
+                if (duration == null) return startTime + (7L * 24 * 60 * 60 * 1000);
+                String d = duration.toLowerCase();
+                long day = 24L * 60 * 60 * 1000;
+                
+                if (d.contains("1 month") || d.contains("silver")) return startTime + (30 * day);
+                if (d.contains("3 month")) return startTime + (90 * day);
+                if (d.contains("6 month") || d.contains("gold")) return startTime + (180 * day);
+                if (d.contains("1 year") || d.contains("diamond")) return startTime + (365 * day);
+                if (d.contains("7 days")) return startTime + (7 * day);
+                
+                // Fallback: try to parse number of days if starts with digit
+                try {
+                    String firstPart = d.split(" ")[0];
+                    int num = Integer.parseInt(firstPart);
+                    if (d.contains("month")) return startTime + (num * 30L * day);
+                    if (d.contains("year")) return startTime + (num * 365L * day);
+                    if (d.contains("day")) return startTime + (num * day);
+                } catch (Exception ignored) {}
+
+                return startTime + (7L * 24 * 60 * 60 * 1000);
         }
 }

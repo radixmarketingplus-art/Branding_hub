@@ -77,11 +77,21 @@ public class MyDesignActivity extends BaseActivity {
         recycler.setLayoutManager(new GridLayoutManager(this, 3));
 
         adapter = new TemplateGridAdapter(list, R.layout.item_grid_square, t -> {
-            Intent i = new Intent(this, TemplatePreviewActivity.class);
-            i.putExtra("id", t.id);
-            i.putExtra("path", t.url);
-            i.putExtra("category", t.category);
-            startActivity(i);
+            if ("edits".equals(currentType)) {
+                // Open Editor Directly for Drafts/Edits
+                Intent i = new Intent(this, ManageTemplatesActivity.class);
+                i.putExtra("id", t.id);
+                i.putExtra("uri", t.url);
+                i.putExtra("category", t.category);
+                i.putExtra("isVideo", "VIDEO".equalsIgnoreCase(t.type));
+                startActivity(i);
+            } else {
+                Intent i = new Intent(this, TemplatePreviewActivity.class);
+                i.putExtra("id", t.id);
+                i.putExtra("path", t.url);
+                i.putExtra("category", t.category);
+                startActivity(i);
+            }
         });
 
         recycler.setAdapter(adapter);
@@ -172,9 +182,22 @@ public class MyDesignActivity extends BaseActivity {
                 list.clear();
                 for (DataSnapshot snap : snapshot.getChildren()) {
                     String templateId = snap.getKey();
-                    String url = snap.getValue(String.class);
+                    String url = null;
+                    
+                    Object val = snap.getValue();
+                    if (val instanceof String) {
+                        url = (String) val;
+                    } else if (val instanceof java.util.Map) {
+                        url = (String) ((java.util.Map) val).get("url");
+                    }
+                    
                     if (templateId != null && url != null) {
-                        list.add(new TemplateModel(templateId, url, "MyDesign"));
+                        String type = "IMAGE";
+                        String lowUrl = url.toLowerCase();
+                        if (lowUrl.endsWith(".mp4") || lowUrl.endsWith(".mkv") || lowUrl.endsWith(".mov")) {
+                            type = "VIDEO";
+                        }
+                        list.add(new TemplateModel(templateId, url, "MyDesign", null, type));
                     }
                 }
                 

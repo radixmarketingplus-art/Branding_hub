@@ -15,6 +15,9 @@ import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.widget.*;
 import android.graphics.Color;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import android.graphics.drawable.ColorDrawable;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.view.ViewGroup;
@@ -35,7 +38,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import yuku.ambilwarna.AmbilWarnaDialog;
 
-public class ManageTemplatesActivity extends AppCompatActivity {
+public class ManageTemplatesActivity extends BaseActivity {
 
     FrameLayout canvas;
     View activeOverlay;
@@ -65,6 +68,10 @@ public class ManageTemplatesActivity extends AppCompatActivity {
     boolean isBusinessFrame = false;
     boolean isVideo = false;
     DatabaseReference rootRef;
+
+    int selectedFrameLayoutId = -1;
+    String selectedFrameUrl = null;
+    int canvasBgColor = Color.TRANSPARENT;
 
     ScaleGestureDetector scaleGestureDetector;
     float lastPanX, lastPanY;
@@ -114,9 +121,12 @@ public class ManageTemplatesActivity extends AppCompatActivity {
 
         // ==== Load image ====
         originalPath = getIntent().getStringExtra("uri");
+        templateId = getIntent().getStringExtra("id"); // ✅ Try to get the real Firebase ID first
 
         if (originalPath != null) {
-            templateId = makeSafeKey(originalPath);
+            if (templateId == null || templateId.isEmpty()) {
+                templateId = makeSafeKey(originalPath); // fallback
+            }
 
             isVideo = getIntent().getBooleanExtra("isVideo", false);
             if (isVideo) {
@@ -142,7 +152,7 @@ public class ManageTemplatesActivity extends AppCompatActivity {
                 // Hide Business Frame tab for videos as requested
                 btnTabBusinessFrame.setVisibility(View.GONE);
             } else {
-                // 🖼️ Default Ratio for Image (1:1)
+                // 📸 1:1 for Business/Normal Frames
                 androidx.constraintlayout.widget.ConstraintLayout.LayoutParams lp = (androidx.constraintlayout.widget.ConstraintLayout.LayoutParams) canvasContainer
                         .getLayoutParams();
                 lp.dimensionRatio = "1:1";
@@ -151,6 +161,9 @@ public class ManageTemplatesActivity extends AppCompatActivity {
                 loadImageSmart(originalPath, imgTemplate);
             }
         }
+
+        // LOAD SAVED STATE IF ANY
+        loadSavedCanvasState();
 
         String category = getIntent().getStringExtra("category");
         isBusinessFrame = (category != null && category.contains("Business Frame"));
@@ -191,7 +204,7 @@ public class ManageTemplatesActivity extends AppCompatActivity {
             }
         });
 
-        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
+        findViewById(R.id.btnBack).setOnClickListener(v -> onBackPressed());
 
         // ==== FETCH USER DATA FOR DYNAMIC FRAMES ====
         loadUserData();
@@ -400,13 +413,15 @@ public class ManageTemplatesActivity extends AppCompatActivity {
         // Text size & Logo size seekbars removed
 
         // ==== SAVE ====
-        btnSave.setOnClickListener(v -> new AlertDialog.Builder(this)
-                .setTitle(R.string.title_save_template)
-                .setMessage(R.string.msg_save_confirm)
-                .setPositiveButton(R.string.btn_yes,
-                        (d, w) -> saveFinalImage())
-                .setNegativeButton(R.string.btn_no, null)
-                .show());
+        btnSave.setOnClickListener(v -> checkSubscription(() -> {
+            new AlertDialog.Builder(this)
+                    .setTitle(R.string.title_save_template)
+                    .setMessage(R.string.msg_save_confirm)
+                    .setPositiveButton(R.string.btn_yes,
+                            (d, w) -> saveFinalImage())
+                    .setNegativeButton(R.string.btn_no, null)
+                    .show();
+        }));
 
     }
 
@@ -482,6 +497,9 @@ public class ManageTemplatesActivity extends AppCompatActivity {
         iv.setAdjustViewBounds(true);
         iv.setPadding(30, 30, 30, 30);
         iv.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        
+        // Store path for state recovery
+        iv.setTag(R.id.tag_image_path, uri.toString());
 
         // Call addOverlay without inner click listener tracking inside addNewImage
         addOverlay(iv, true);
@@ -563,6 +581,7 @@ public class ManageTemplatesActivity extends AppCompatActivity {
             @Override
             public void onOk(AmbilWarnaDialog dialog, int color) {
                 canvas.setBackgroundColor(color);
+                canvasBgColor = color;
             }
         });
         dialog.show();
@@ -684,42 +703,37 @@ public class ManageTemplatesActivity extends AppCompatActivity {
 
     // ================= SAVE IMAGE =================
     void saveFinalImage() {
-        if (isVideo) {
-            saveFinalVideo();
-            return;
-        }
+        checkDownloadLimit(() -> {
+            if (isVideo) {
+                saveFinalVideo();
+                return;
+            }
 
-        deselectAll();
+            deselectAll();
 
-        canvas.setDrawingCacheEnabled(true);
-        Bitmap bitmap = Bitmap.createBitmap(canvas.getDrawingCache());
-        canvas.setDrawingCacheEnabled(false);
-        String savedPath = MediaStore.Images.Media.insertImage(
-                getContentResolver(),
-                bitmap,
-                "RMAdsMaker_Edit_" + System.currentTimeMillis(),
-                getString(R.string.desc_edited_template));
+            canvas.setDrawingCacheEnabled(true);
+            Bitmap bitmap = Bitmap.createBitmap(canvas.getDrawingCache());
+            canvas.setDrawingCacheEnabled(false);
+            String savedPath = MediaStore.Images.Media.insertImage(
+                    getContentResolver(),
+                    bitmap,
+                    "RMAdsMaker_Edit_" + System.currentTimeMillis(),
+                    getString(R.string.desc_edited_template));
 
-        if (savedPath != null) {
-            Toast.makeText(this, R.string.msg_saved_to_gallery, Toast.LENGTH_SHORT).show();
+            if (savedPath != null) {
+                Toast.makeText(this, R.string.msg_saved_to_gallery, Toast.LENGTH_SHORT).show();
+                incrementDownloadCount(); // Track the save
 
-            String safeId = makeSafeKey(originalPath);
-
-            rootRef.child("template_activity")
-                    .child(safeId)
-                    .child("edits")
-                    .child(uid)
-                    .setValue(true);
-
-            rootRef.child("user_activity")
-                    .child(uid)
-                    .child("edits")
-                    .child(safeId)
-                    .setValue(savedPath);
+                long now = System.currentTimeMillis();
+                
+                // Log as Save only (Final format)
+                rootRef.child("template_activity").child(templateId).child("saves").child(uid).setValue(now);
+                rootRef.child("user_activity").child(uid).child("saves").child(templateId).setValue(savedPath);
         } else {
             Toast.makeText(this, R.string.msg_failed_save_image, Toast.LENGTH_SHORT).show();
         }
-    }
+    });
+}
 
     private void saveFinalVideo() {
         deselectAll();
@@ -851,11 +865,13 @@ public class ManageTemplatesActivity extends AppCompatActivity {
                                     android.content.Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
                             android.net.Uri contentUri = android.net.Uri.fromFile(outputFile);
                             mediaScanIntent.setData(contentUri);
-                            sendBroadcast(mediaScanIntent);
-
-                            String safeId = makeSafeKey(originalPath);
-                            rootRef.child("user_activity").child(uid).child("edits").child(safeId)
-                                    .setValue(outputFile.getAbsolutePath());
+                            long now = System.currentTimeMillis();
+                            String vPath = outputFile.getAbsolutePath();
+                            // Log as Save only
+                            rootRef.child("template_activity").child(templateId).child("saves").child(uid).setValue(now);
+                            rootRef.child("user_activity").child(uid).child("saves").child(templateId).setValue(vPath);
+                            
+                            incrementDownloadCount(); // Track video edit save
                         } else {
                             Toast.makeText(ManageTemplatesActivity.this,
                                     getString(R.string.msg_failed_save_video_error, returnCode), Toast.LENGTH_LONG).show();
@@ -1109,6 +1125,9 @@ public class ManageTemplatesActivity extends AppCompatActivity {
 
                 holder.itemView.setOnClickListener(v -> {
                     dynamicFrameContainer.removeAllViews();
+                    selectedFrameLayoutId = item.layoutId;
+                    selectedFrameUrl = item.imageUrl;
+
                     if (item.layoutId != -1) {
                         if (item.imageUrl != null) {
                             // Overlay image frame
@@ -1247,13 +1266,6 @@ public class ManageTemplatesActivity extends AppCompatActivity {
         dynamicFrameContainer.addView(frameView);
     }
 
-    private String makeSafeKey(String value) {
-        if (value == null)
-            return "Unknown";
-        return android.util.Base64.encodeToString(value.getBytes(), android.util.Base64.NO_WRAP).replace(".", "_")
-                .replace("$", "_").replace("#", "_");
-    }
-
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
         if (scaleGestureDetector != null) {
@@ -1307,4 +1319,186 @@ public class ManageTemplatesActivity extends AppCompatActivity {
         }
     }
 
+    // ================= STATE PERSISTENCE =================
+
+    private String serializeCanvas() {
+        try {
+            JSONObject root = new JSONObject();
+            root.put("bgColor", canvasBgColor);
+            root.put("frameId", selectedFrameLayoutId);
+            root.put("frameUrl", selectedFrameUrl != null ? selectedFrameUrl : "");
+
+            JSONArray arr = new JSONArray();
+            int startIdx = 3; // 0:Img, 1:Vid, 2:DynamicContainer
+            for (int i = startIdx; i < canvas.getChildCount(); i++) {
+                View wrapper = canvas.getChildAt(i);
+                if (!(wrapper instanceof FrameLayout)) continue;
+                
+                View content = ((FrameLayout) wrapper).getChildAt(0);
+                JSONObject obj = new JSONObject();
+                
+                obj.put("x", wrapper.getX());
+                obj.put("y", wrapper.getY());
+                obj.put("rotation", wrapper.getRotation());
+                obj.put("scaleX", wrapper.getScaleX());
+                obj.put("scaleY", wrapper.getScaleY());
+                
+                if (content instanceof TextView) {
+                    TextView tv = (TextView) content;
+                    obj.put("type", "text");
+                    obj.put("text", tv.getText().toString());
+                    obj.put("color", tv.getCurrentTextColor());
+                    obj.put("size", tv.getTextSize());
+                    obj.put("style", tv.getTypeface() != null ? tv.getTypeface().getStyle() : 0);
+                } else if (content instanceof ImageView) {
+                    obj.put("type", "image");
+                    String path = (String) content.getTag(R.id.tag_image_path);
+                    obj.put("path", path);
+                    Object shape = content.getTag(); // Current shape (rect/circle)
+                    obj.put("shape", shape instanceof Integer ? (Integer) shape : 0);
+                }
+                arr.put(obj);
+            }
+            root.put("overlays", arr);
+            return root.toString();
+        } catch (Exception e) { e.printStackTrace(); }
+        return "{}";
+    }
+
+    private void loadSavedCanvasState() {
+        if (templateId == null || uid == null) return;
+        
+        rootRef.child("user_activity").child(uid).child("edits").child(templateId)
+            .child("state").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot s) {
+                    String json = s.getValue(String.class);
+                    if (json != null && !json.isEmpty()) {
+                        applyCanvasState(json);
+                    }
+                }
+                @Override public void onCancelled(@NonNull DatabaseError e) {}
+            });
+    }
+
+    private void applyCanvasState(String json) {
+        try {
+            JSONObject root = new JSONObject(json);
+            
+            // 1. BG Color
+            if (root.has("bgColor")) {
+                canvasBgColor = root.getInt("bgColor");
+                if (canvasBgColor != Color.TRANSPARENT) {
+                    canvas.setBackgroundColor(canvasBgColor);
+                }
+            }
+            
+            // 2. Frame
+            if (root.has("frameId")) {
+                selectedFrameLayoutId = root.getInt("frameId");
+                selectedFrameUrl = root.optString("frameUrl", "");
+                if (selectedFrameLayoutId != -1) {
+                    if (!selectedFrameUrl.isEmpty()) {
+                        ImageView iv = new ImageView(this);
+                        iv.setLayoutParams(new FrameLayout.LayoutParams(-1, -1));
+                        iv.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                        Glide.with(this).load(selectedFrameUrl).into(iv);
+                        dynamicFrameContainer.addView(iv);
+                    } else {
+                        applyDynamicFrame(selectedFrameLayoutId);
+                    }
+                }
+            }
+
+            // 3. Overlays
+            JSONArray arr = root.getJSONArray("overlays");
+            for (int i = 0; i < arr.length(); i++) {
+                JSONObject obj = arr.getJSONObject(i);
+                String type = obj.getString("type");
+                
+                if ("text".equals(type)) {
+                    TextView tv = new TextView(this);
+                    tv.setText(obj.getString("text"));
+                    tv.setTextColor(obj.getInt("color"));
+                    tv.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, (float) obj.getDouble("size"));
+                    int style = obj.optInt("style", 0);
+                    tv.setTypeface(android.graphics.Typeface.defaultFromStyle(style));
+                    tv.setPadding(30, 30, 30, 30);
+                    
+                    addOverlay(tv, false);
+                    View wrapper = activeOverlay;
+                    wrapper.setX((float) obj.getDouble("x"));
+                    wrapper.setY((float) obj.getDouble("y"));
+                    wrapper.setRotation((float) obj.getDouble("rotation"));
+                    wrapper.setScaleX((float) obj.getDouble("scaleX"));
+                    wrapper.setScaleY((float) obj.getDouble("scaleY"));
+                    
+                } else if ("image".equals(type)) {
+                    String path = obj.optString("path");
+                    if (path == null || path.isEmpty()) continue;
+                    
+                    com.google.android.material.imageview.ShapeableImageView iv = new com.google.android.material.imageview.ShapeableImageView(this);
+                    iv.setTag(R.id.tag_image_path, path);
+                    iv.setAdjustViewBounds(true);
+                    iv.setPadding(30, 30, 30, 30);
+                    iv.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                    
+                    Glide.with(this).load(path).into(iv);
+                    
+                    int shape = obj.optInt("shape", 0);
+                    iv.setTag(shape);
+                    applyShape(iv, shape);
+                    
+                    addOverlay(iv, true);
+                    View wrapper = activeOverlay;
+                    wrapper.setX((float) obj.getDouble("x"));
+                    wrapper.setY((float) obj.getDouble("y"));
+                    wrapper.setRotation((float) obj.getDouble("rotation"));
+                    wrapper.setScaleX((float) obj.getDouble("scaleX"));
+                    wrapper.setScaleY((float) obj.getDouble("scaleY"));
+                }
+            }
+            deselectAll();
+        } catch (Exception e) { e.printStackTrace(); }
+    }
+    @Override
+    public void onBackPressed() {
+        if (hasUnsavedChanges()) {
+            showDraftDialog();
+        } else {
+            finish();
+        }
+    }
+
+    private boolean hasUnsavedChanges() {
+        int startIdx = 3; // 0:Img, 1:Vid, 2:DynamicContainer
+        return canvas.getChildCount() > startIdx || canvasBgColor != Color.TRANSPARENT || selectedFrameLayoutId != -1;
+    }
+
+    private void showDraftDialog() {
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle(R.string.title_save_draft)
+                .setMessage(R.string.msg_save_draft)
+                .setPositiveButton(R.string.btn_yes, (d, w) -> saveAsDraftAndExit())
+                .setNegativeButton(R.string.btn_no, (d, w) -> finish())
+                .show();
+    }
+
+    private void saveAsDraftAndExit() {
+        long now = System.currentTimeMillis();
+        String state = serializeCanvas();
+        
+        // Log as edit in template stats
+        rootRef.child("template_activity").child(templateId).child("edits").child(uid).setValue(now);
+        
+        java.util.Map<String, Object> editData = new java.util.HashMap<>();
+        editData.put("url", originalPath); // Thumbnail for draft (base template)
+        editData.put("state", state);
+        editData.put("timestamp", now);
+        
+        rootRef.child("user_activity").child(uid).child("edits").child(templateId).setValue(editData)
+            .addOnCompleteListener(task -> {
+                finish();
+            });
+    }
 }

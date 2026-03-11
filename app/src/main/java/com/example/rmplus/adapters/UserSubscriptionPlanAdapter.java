@@ -18,7 +18,7 @@ import java.util.ArrayList;
 public class UserSubscriptionPlanAdapter extends RecyclerView.Adapter<UserSubscriptionPlanAdapter.ViewHolder> {
 
     private ArrayList<SubscriptionPlan> list;
-    private int selectedPos = 0;
+    private int selectedPos = -1;
     private OnPlanSelectedListener listener;
 
     public interface OnPlanSelectedListener {
@@ -99,6 +99,15 @@ public class UserSubscriptionPlanAdapter extends RecyclerView.Adapter<UserSubscr
 
     public int getSelectedPosition() {
         return selectedPos;
+    }
+
+    public void setSelectedPosition(int pos) {
+        if (pos >= 0 && pos < getItemCount()) {
+            int old = selectedPos;
+            selectedPos = pos;
+            notifyItemChanged(old);
+            notifyItemChanged(selectedPos);
+        }
     }
 
     private String getLocalizedDuration(String duration, android.content.Context context) {

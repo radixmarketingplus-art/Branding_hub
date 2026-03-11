@@ -361,13 +361,13 @@ public class UploadTemplatesFragment extends Fragment {
 
             String[] keysList = getSectionKeys();
             for (int i = 0; i < keysList.length; i++) {
-                // ✅ Match oldCategory (English from Firebase) against English section keys
                 if (keysList[i].equalsIgnoreCase(cat)) {
                     spinnerSection.setSelection(i);
                     final String finalSub = sub;
+                    
+                    // ✅ DELAY RESETTING isPopulating to ensure spinner events don't clear our data
                     spinnerSection.postDelayed(() -> {
                         if (!finalSub.isEmpty()) {
-                            // ✅ Match sub against English canonical keys
                             for (int j = 0; j < SUB_SECTION_KEYS.length; j++) {
                                 if (SUB_SECTION_KEYS[j].equalsIgnoreCase(finalSub)) {
                                     spinnerSubSection.setSelection(j);
@@ -377,14 +377,16 @@ public class UploadTemplatesFragment extends Fragment {
                         }
                         isPopulating = false;
                         toast(R.string.msg_template_loaded);
-                    }, 300);
+                    }, 500); // 500ms to be safe across all devices
                     break;
                 }
             }
-            // If not a section with sub-categories, we finish populating immediately
-            if (!cat.equalsIgnoreCase("Business Frame")) {
-                isPopulating = false;
-                toast(R.string.msg_template_loaded);
+
+            // Fallback for non-matching or external content
+            if (isPopulating && !cat.equalsIgnoreCase("Business Frame")) {
+                 spinnerSection.postDelayed(() -> {
+                     isPopulating = false;
+                 }, 500);
             }
         }
 
@@ -541,7 +543,7 @@ public class UploadTemplatesFragment extends Fragment {
                     // width / height should be ~ 0.5625 (9/16)
                     float ratio = (float) width / height;
                     if (ratio > 0.6f) { // it is wider than 9:16 (e.g., 1:1 is 1.0, 16:9 is 1.77)
-                        toast("Video must be in vertical ratio (like 9:16) for Reel Maker");
+                        toast(R.string.msg_video_ratio_error);
                         return;
                     }
                 }
@@ -596,9 +598,12 @@ public class UploadTemplatesFragment extends Fragment {
             }
         }
 
+        // For the dialog message, show the localized section name (UI-facing)
+        // but sectionKey (English) is passed to saveImage() for backend use
+        String localizedSectionName = getSectionDisplayName(sectionKey);
         new AlertDialog.Builder(requireContext())
                 .setTitle(R.string.title_confirm_upload)
-                .setMessage(getString(R.string.msg_confirm_upload_format, sectionKey))
+                .setMessage(getString(R.string.msg_confirm_upload_format, localizedSectionName))
                 .setPositiveButton(android.R.string.ok, (d, w) -> saveImage(sectionKey))
                 .setNegativeButton(android.R.string.cancel, null)
                 .show();
@@ -819,6 +824,21 @@ public class UploadTemplatesFragment extends Fragment {
     }
 
     // ---------------- HELPERS ----------------
+
+    /**
+     * Returns the localized display name for a section key.
+     * Used for UI dialogs — backend always uses the canonical English key.
+     */
+    String getSectionDisplayName(String key) {
+        String[] keys = getSectionKeys();
+        String[] displays = getSections();
+        for (int i = 0; i < keys.length; i++) {
+            if (keys[i].equalsIgnoreCase(key)) {
+                return displays[i];
+            }
+        }
+        return key; // fallback: return as-is
+    }
 
     void clearForm() {
         selectedImageUri = null;

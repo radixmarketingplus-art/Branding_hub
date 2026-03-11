@@ -16,7 +16,7 @@ import com.google.firebase.auth.FirebaseAuth;   // ✅ ADDED
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
 
     ImageView logoImg;
     // TextView appName;

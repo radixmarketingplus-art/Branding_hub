@@ -27,7 +27,7 @@ import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.Date;
 
-public class SubscriptionActivity extends AppCompatActivity {
+public class SubscriptionActivity extends BaseActivity {
 
     TextView statusTxt, amountTxt, originalAmountTxt, savingsDetailTxt, planTxt, expiryTxt;
     View sectionPlanChooser, sectionQrPayment;

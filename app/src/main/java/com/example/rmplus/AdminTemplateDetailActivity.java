@@ -59,6 +59,7 @@ public class AdminTemplateDetailActivity extends BaseActivity {
                 templatePath.getBytes(),
                 Base64.NO_WRAP
         );
+        safeKey = makeSafeKey(templatePath); // Key with _ replaces used in Editor/Preview
 
         imgPreview = findViewById(R.id.imgPreview);
         txtCategory = findViewById(R.id.txtCategory);
@@ -345,6 +346,8 @@ public class AdminTemplateDetailActivity extends BaseActivity {
         startActivity(i);
     }
 
+    String safeKey; // Global safe key (replaces ., $, #)
+
     // ---------------- LOAD COUNTS ----------------
 
     void loadStats() {
@@ -352,10 +355,10 @@ public class AdminTemplateDetailActivity extends BaseActivity {
 
         DatabaseReference activityRef = FirebaseDatabase.getInstance().getReference("template_activity");
         
-        // We check BOTH the Real ID and the Base64 key (templateKey) to combine results
-        // This ensures no legacy or differently-tagged stats are missed.
+        // We check THREE potential keys to combine results
+        // 1. Real ID, 2. Raw Base64, 3. SafeKey (Base64 with replaces)
         
-        String[] keysToCheck = {realTemplateId, templateKey};
+        String[] keysToCheck = {realTemplateId, templateKey, safeKey};
         String[] activityTypes = {"likes", "favorites", "edits", "saves"};
         TextView[] views = {txtLikeCount, txtFavCount, txtEditCount, txtSaveCount};
 
@@ -363,19 +366,27 @@ public class AdminTemplateDetailActivity extends BaseActivity {
             final String type = activityTypes[i];
             final TextView targetView = views[i];
             
-            activityRef.child(realTemplateId).child(type).get().addOnSuccessListener(snap1 -> {
-                long count = snap1.getChildrenCount();
-                
-                // If the real ID is different from Base64, check Base64 too and add
-                if (!realTemplateId.equals(templateKey)) {
-                    activityRef.child(templateKey).child(type).get().addOnSuccessListener(snap2 -> {
-                        long total = count + snap2.getChildrenCount();
-                        targetView.setText(String.valueOf(total));
-                    });
-                } else {
-                    targetView.setText(String.valueOf(count));
+            final long[] combinedTotal = {0};
+            final int[] pending = {keysToCheck.length};
+
+            for (String key : keysToCheck) {
+                if (key == null) {
+                    pending[0]--;
+                    continue;
                 }
-            });
+                activityRef.child(key).child(type).get().addOnSuccessListener(snap -> {
+                    combinedTotal[0] += snap.getChildrenCount();
+                    pending[0]--;
+                    if (pending[0] == 0) {
+                        targetView.setText(String.valueOf(combinedTotal[0]));
+                    }
+                }).addOnFailureListener(e -> {
+                    pending[0]--;
+                    if (pending[0] == 0) {
+                        targetView.setText(String.valueOf(combinedTotal[0]));
+                    }
+                });
+            }
         }
     }
 
@@ -411,10 +422,13 @@ public class AdminTemplateDetailActivity extends BaseActivity {
         // 📢 NEW: Also delete the corresponding broadcast notification
         NotificationHelper.deleteBroadcast(realTemplateId);
 
-        // 3. Clean up user_activity AND template_activity (Sequenced to avoid race condition)
+        // 3. Clean up user_activity AND template_activity for ALL known keys
         cleanUpActivityNodes(realTemplateId);
-        if (!realTemplateId.equals(templateKey)) {
+        if (templateKey != null && !templateKey.equals(realTemplateId)) {
             cleanUpActivityNodes(templateKey);
+        }
+        if (safeKey != null && !safeKey.equals(realTemplateId) && !safeKey.equals(templateKey)) {
+            cleanUpActivityNodes(safeKey);
         }
 
         // 4. Delete from VPS

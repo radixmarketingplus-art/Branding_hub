@@ -26,7 +26,7 @@ import com.example.rmplus.AdvertisementItem;
 import com.example.rmplus.NotificationHelper;
 
 
-public class AdRequestDetailActivity extends AppCompatActivity {
+public class AdRequestDetailActivity extends BaseActivity {
 
     TextView txtUserName, txtEmail, txtMobile;
     TextView txtTitle, txtDesc, txtStatus, txtTime;
@@ -109,13 +109,15 @@ public class AdRequestDetailActivity extends AppCompatActivity {
                                 txtStatus.setText(displayStatus);
                                 txtStatus.setTextColor(statusColor);
 
-                                String timeStr =
-                                        new SimpleDateFormat(
-                                                "dd MMM yyyy 'at' hh:mm a",
-                                                Locale.getDefault())
-                                                .format(new Date(r.time));
-
-                                txtTime.setText(timeStr);
+                                // ✅ Use Locale.ENGLISH for month name, localized "at" word
+                                String datePart = new SimpleDateFormat(
+                                        "dd MMM yyyy", Locale.ENGLISH)
+                                        .format(new Date(r.time));
+                                String timePart = new SimpleDateFormat(
+                                        "hh:mm a", Locale.ENGLISH)
+                                        .format(new Date(r.time));
+                                String atWord = getString(R.string.label_at_time);
+                                txtTime.setText(datePart + " " + atWord + " " + timePart);
 
                                 // USER INFO (Admin only)
                                 if (isAdmin) {

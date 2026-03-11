@@ -5,7 +5,7 @@ import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.database.FirebaseDatabase;
 
-public class AdminDecisionActivity extends AppCompatActivity {
+public class AdminDecisionActivity extends BaseActivity {
 
     Button accept,reject;
     String id;

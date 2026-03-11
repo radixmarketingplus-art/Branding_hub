@@ -1,6 +1,7 @@
 package com.example.rmplus;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -24,8 +25,19 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.os.LocaleListCompat;
 import android.net.Uri;
 import android.widget.Toast;
+import android.os.Bundle;
+import android.view.WindowManager;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public class BaseActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // Security: Prevent screenshots and screen recording across the app
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
+    }
 
     protected BottomNavigationView bottomNav;
     private int currentNavItemId = -1;
@@ -596,5 +608,124 @@ public class BaseActivity extends AppCompatActivity {
             headerBadge.setVisibility(View.VISIBLE);
             me.leolin.shortcutbadger.ShortcutBadger.applyCount(this, count);
         }
+    }
+
+    protected void checkSubscription(Runnable onSubscribed) {
+        String uid = FirebaseAuth.getInstance().getUid();
+        if (uid == null) return;
+
+        // Admins bypass subscription check
+        SharedPreferences sp = getSharedPreferences("APP_DATA", MODE_PRIVATE);
+        String role = sp.getString("role", "user");
+        if ("admin".equalsIgnoreCase(role)) {
+            onSubscribed.run();
+            return;
+        }
+
+        FirebaseDatabase.getInstance().getReference("users").child(uid)
+                .child("subscribed")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot snapshot) {
+                        Boolean isSubscribed = snapshot.getValue(Boolean.class);
+                        if (isSubscribed != null && isSubscribed) {
+                            onSubscribed.run();
+                        } else {
+                            showSubscriptionRequiredPopup();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError error) {
+                        Toast.makeText(BaseActivity.this, "Check failed: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void showSubscriptionRequiredPopup() {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.title_subscription_required)
+                .setMessage(R.string.msg_subscription_required)
+                .setPositiveButton(R.string.btn_subscribe_now, (d, w) -> {
+                    startActivity(new Intent(this, SubscriptionActivity.class));
+                })
+                .setNegativeButton(R.string.no, null)
+                .show();
+    }
+
+    protected void checkDownloadLimit(Runnable onAllowed) {
+        String uid = FirebaseAuth.getInstance().getUid();
+        if (uid == null) return;
+
+        // Admins bypass limit
+        SharedPreferences sp = getSharedPreferences("APP_DATA", MODE_PRIVATE);
+        if ("admin".equalsIgnoreCase(sp.getString("role", "user"))) {
+            onAllowed.run();
+            return;
+        }
+
+        String today = new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US).format(new java.util.Date());
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("user_activity")
+                .child(uid).child("saves_count").child(today);
+
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                long count = snapshot.exists() ? snapshot.getValue(Long.class) : 0;
+                if (count < 10) {
+                    onAllowed.run();
+                } else {
+                    Toast.makeText(BaseActivity.this, R.string.msg_download_limit_reached, Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {}
+        });
+    }
+
+    protected void incrementDownloadCount() {
+        String uid = FirebaseAuth.getInstance().getUid();
+        if (uid == null) return;
+
+        // Admins bypass limit tracking and UI
+        SharedPreferences sp = getSharedPreferences("APP_DATA", MODE_PRIVATE);
+        if ("admin".equalsIgnoreCase(sp.getString("role", "user"))) {
+            return;
+        }
+
+        String today = new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US).format(new java.util.Date());
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("user_activity")
+                .child(uid).child("saves_count").child(today);
+
+        ref.runTransaction(new Transaction.Handler() {
+            @NonNull
+            @Override
+            public Transaction.Result doTransaction(@NonNull MutableData currentData) {
+                long count = currentData.getValue() == null ? 0 : currentData.getValue(Long.class);
+                currentData.setValue(count + 1);
+                return Transaction.success(currentData);
+            }
+
+            @Override
+            public void onComplete(@Nullable DatabaseError error, boolean committed, @Nullable DataSnapshot currentData) {
+                if (committed && currentData != null) {
+                    Long count = currentData.getValue(Long.class);
+                    if (count != null) {
+                        runOnUiThread(() -> {
+                            Toast.makeText(BaseActivity.this, getString(R.string.msg_downloads_remaining, count.intValue()), Toast.LENGTH_SHORT).show();
+                        });
+                    }
+                }
+            }
+        });
+    }
+
+    protected String makeSafeKey(String value) {
+        if (value == null) return "Unknown";
+        return android.util.Base64.encodeToString(value.getBytes(), android.util.Base64.NO_WRAP)
+                .replace(".", "_")
+                .replace("$", "_")
+                .replace("#", "_");
     }
 }
