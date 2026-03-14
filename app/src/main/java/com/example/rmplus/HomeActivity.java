@@ -54,7 +54,8 @@ public class HomeActivity extends BaseActivity {
 
     int trendingOriginalSize = 0;
     int trendingPos = 0;
-    int trendingResetPoint = 0;
+    long doubleBackToExitPressedOnce = 0;
+    PagerSnapHelper trendingSnapHelper;
 
     ArrayList<Integer> fallback;
     View skTrending, skFestival;
@@ -146,8 +147,8 @@ public class HomeActivity extends BaseActivity {
         loadFestivalCardsLive();
         loadHeroSectionLive();
 
-        PagerSnapHelper snapHelper = new PagerSnapHelper();
-        snapHelper.attachToRecyclerView(rvTrending);
+        trendingSnapHelper = new PagerSnapHelper();
+        trendingSnapHelper.attachToRecyclerView(rvTrending);
 
         trendingHandler = new Handler();
         trendingRunnable = () -> autoScrollTrending();
@@ -555,6 +556,19 @@ public class HomeActivity extends BaseActivity {
                                 infiniteList.add(adList.get(i % size));
                             trendingOriginalSize = size;
                             rvTrending.setAdapter(new AdvertisementAdapter(infiniteList));
+                            
+                            // 🚀 START FROM MIDDLE TO SHOW INFINITE CAROUSEL PROPERLY FROM LAUNCH
+                            int startPos = (500 / size) * size;
+                            rvTrending.scrollToPosition(startPos);
+                            rvTrending.post(() -> {
+                                View view = rvTrending.getLayoutManager().findViewByPosition(startPos);
+                                if (view != null) {
+                                    int[] snapDistance = trendingSnapHelper.calculateDistanceToFinalSnap(rvTrending.getLayoutManager(), view);
+                                    if (snapDistance != null && (snapDistance[0] != 0 || snapDistance[1] != 0)) {
+                                        rvTrending.scrollBy(snapDistance[0], snapDistance[1]);
+                                    }
+                                }
+                            });
 
                             // ✨ HIGHLIGHT & SCROLL IF TARGET AD ID MATCHES
                             if (targetAdId != null) {
@@ -613,8 +627,18 @@ public class HomeActivity extends BaseActivity {
                                 startActivity(i);
                             }));
                         }
-                        trendingPos = 500; // Start at middle
+                        // 🚀 START CAROUSEL FROM MIDDLE WITH PERFECT CENTERING
+                        trendingPos = 500;
                         rvTrending.scrollToPosition(trendingPos);
+                        rvTrending.post(() -> {
+                            View view = rvTrending.getLayoutManager().findViewByPosition(trendingPos);
+                            if (view != null) {
+                                int[] snapDistance = trendingSnapHelper.calculateDistanceToFinalSnap(rvTrending.getLayoutManager(), view);
+                                if (snapDistance != null && (snapDistance[0] != 0 || snapDistance[1] != 0)) {
+                                    rvTrending.scrollBy(snapDistance[0], snapDistance[1]);
+                                }
+                            }
+                        });
                     }
 
                     @Override
