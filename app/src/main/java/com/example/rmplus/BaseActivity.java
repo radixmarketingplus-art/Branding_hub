@@ -64,7 +64,7 @@ public class BaseActivity extends AppCompatActivity {
             // SEARCH BAR LOGIC
             View searchContainer = findViewById(R.id.searchContainer);
             EditText searchBox = findViewById(R.id.searchBox);
-            ImageView btnMic = findViewById(R.id.btnMic);
+//            ImageView btnMic = findViewById(R.id.btnMic);
 
             if (searchBox != null) {
                 searchBox.setOnClickListener(v -> startActivity(new Intent(this, SearchActivity.class)));
@@ -76,31 +76,39 @@ public class BaseActivity extends AppCompatActivity {
                 });
             }
 
-            if (btnMic != null) {
+/*            if (btnMic != null) {
                 btnMic.setOnClickListener(v -> {
                     Toast.makeText(this, getString(R.string.msg_voice_search_soon), Toast.LENGTH_SHORT).show();
                     // Implement SpeechRecognizer here if needed
                 });
-            }
+            }*/
 
             if (uid != null) {
+                // 🚀 LAG REDUCTION: Use cached name first
+                SharedPreferences sp = getSharedPreferences("APP_DATA", MODE_PRIVATE);
+                String cachedName = sp.getString("user_name", "");
+                if (!cachedName.isEmpty()) {
+                    txtGreeting.setText(cachedName);
+                }
+
                 FirebaseDatabase.getInstance()
                         .getReference("users")
                         .child(uid)
                         .addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot snapshot) {
-                                // 1. Set Greeting Name
                                 String name = snapshot.child("name").getValue(String.class);
                                 String displayName = (name != null && !name.isEmpty()) ? name
                                         : getString(R.string.default_user);
-                                txtGreeting.setText(displayName);
+                                
+                                if (!displayName.equals(cachedName)) {
+                                    txtGreeting.setText(displayName);
+                                    sp.edit().putString("user_name", displayName).apply();
+                                }
                             }
 
                             @Override
-                            public void onCancelled(DatabaseError error) {
-                                txtGreeting.setText(getString(R.string.default_user));
-                            }
+                            public void onCancelled(DatabaseError error) {}
                         });
             }
 
@@ -268,11 +276,13 @@ public class BaseActivity extends AppCompatActivity {
         }
 
         if (darkSwitch != null) {
-            int currentMode = AppCompatDelegate.getDefaultNightMode();
+            SharedPreferences sp = getSharedPreferences("APP_DATA", MODE_PRIVATE);
+            int currentMode = sp.getInt("night_mode", AppCompatDelegate.MODE_NIGHT_NO);
             darkSwitch.setChecked(currentMode == AppCompatDelegate.MODE_NIGHT_YES);
             darkSwitch.setOnCheckedChangeListener((v, isChecked) -> {
-                AppCompatDelegate.setDefaultNightMode(
-                        isChecked ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
+                int newMode = isChecked ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO;
+                sp.edit().putInt("night_mode", newMode).apply();
+                AppCompatDelegate.setDefaultNightMode(newMode);
                 drawer.closeDrawer(Gravity.START);
             });
         }
@@ -334,12 +344,7 @@ public class BaseActivity extends AppCompatActivity {
                 startActivity(intent);
                 finishAffinity();
             });
-        View delete = findViewById(R.id.drawerDelete);
-        if (delete != null)
-            delete.setOnClickListener(v -> {
-                drawer.closeDrawer(Gravity.START);
-                deleteAccount();
-            });
+        // Drawer Item Listeners removed: drawerDelete handled in Settings
     }
 
     private void showMenuSheet() {
@@ -376,11 +381,13 @@ public class BaseActivity extends AppCompatActivity {
                     });
         }
 
-        int currentMode = AppCompatDelegate.getDefaultNightMode();
+        SharedPreferences sp = getSharedPreferences("APP_DATA", MODE_PRIVATE);
+        int currentMode = sp.getInt("night_mode", AppCompatDelegate.MODE_NIGHT_NO);
         darkSwitch.setChecked(currentMode == AppCompatDelegate.MODE_NIGHT_YES);
         darkSwitch.setOnCheckedChangeListener((v, isChecked) -> {
-            AppCompatDelegate.setDefaultNightMode(
-                    isChecked ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
+            int newMode = isChecked ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO;
+            sp.edit().putInt("night_mode", newMode).apply();
+            AppCompatDelegate.setDefaultNightMode(newMode);
             sheet.dismiss();
         });
 
@@ -426,10 +433,6 @@ public class BaseActivity extends AppCompatActivity {
             startActivity(intent);
             finishAffinity();
         });
-        view.findViewById(R.id.menuDelete).setOnClickListener(v -> {
-            sheet.dismiss();
-            deleteAccount();
-        });
 
         sheet.show();
     }
@@ -459,7 +462,7 @@ public class BaseActivity extends AppCompatActivity {
         startActivity(Intent.createChooser(i, getString(R.string.title_share_using)));
     }
 
-    private void deleteAccount() {
+    protected void deleteAccount() {
         new AlertDialog.Builder(this)
                 .setTitle(R.string.menu_delete_account)
                 .setMessage(R.string.msg_delete_confirm)

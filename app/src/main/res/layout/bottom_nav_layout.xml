@@ -11,7 +11,7 @@
     android:fitsSystemWindows="false"
     android:clipToPadding="false"
     android:clipChildren="false"
-    app:itemIconSize="22dp"
+    app:itemIconSize="25dp"
     app:labelVisibilityMode="unlabeled"
     app:itemHorizontalTranslationEnabled="false"
     app:itemIconTint="@color/bottom_nav_selector"

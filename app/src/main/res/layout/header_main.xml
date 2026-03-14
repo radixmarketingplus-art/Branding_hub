@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:paddingTop="2dp"
-    android:paddingBottom="4dp">
+    android:paddingBottom="0dp">
 
     <!-- FIRST ROW: MENU, USER NAME , NOTIFICATION -->
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -120,12 +120,12 @@
                 android:maxLines="1"
                 android:inputType="text" />
 
-            <ImageView
+<!--            <ImageView
                 android:id="@+id/btnMic"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:src="@android:drawable/ic_btn_speak_now"
-                app:tint="?attr/colorOnSurfaceVariant" />
+                app:tint="?attr/colorOnSurfaceVariant" />-->
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 

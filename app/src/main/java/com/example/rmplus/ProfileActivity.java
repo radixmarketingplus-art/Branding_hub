@@ -234,7 +234,7 @@ public class ProfileActivity extends BaseActivity {
                 startActivity(Intent.createChooser(i, getString(R.string.title_share_using)));
         }
 
-        void deleteAccount() {
+        protected void deleteAccount() {
                 new AlertDialog.Builder(this)
                                 .setTitle(R.string.menu_delete_account)
                                 .setMessage(R.string.msg_delete_confirm)

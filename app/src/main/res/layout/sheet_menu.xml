@@ -207,21 +207,7 @@
                     android:textColor="#64748B" />
             </LinearLayout>
 
-            <!-- DELETE ACCOUNT -->
-            <LinearLayout
-                android:id="@+id/menuDelete"
-                style="@style/SettingsItemStyle"
-                android:layout_width="match_parent"
-                android:layout_height="56dp">
-                <ImageView
-                    style="@style/SettingsIconStyle"
-                    android:src="@drawable/ic_delete"
-                    app:tint="#EF4444" />
-                <TextView
-                    style="@style/SettingsTextStyle"
-                    android:text="@string/menu_delete_account"
-                    android:textColor="#EF4444" />
-            </LinearLayout>
+
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

@@ -29,7 +29,6 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        FirebaseApp.initializeApp(this);   // 🔥 ADD THIS
         
         // 🔥 Initialize Google Ads (Fixes missing QPL/Tigon background logs)
         new Thread(() -> {

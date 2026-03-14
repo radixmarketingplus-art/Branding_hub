@@ -192,11 +192,15 @@
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottomNav"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="66dp"
             android:layout_gravity="bottom"
             app:backgroundTint="?attr/colorSurface"
+            app:itemIconSize="25dp"
+            app:labelVisibilityMode="unlabeled"
+            app:itemHorizontalTranslationEnabled="false"
             app:itemIconTint="@color/primary"
-            app:itemTextColor="@color/primary" />
+            app:itemTextColor="@color/primary"
+            app:itemActiveIndicatorStyle="@style/App.Custom.Indicator" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

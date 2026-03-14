@@ -327,17 +327,14 @@ public class UploadTemplatesActivity extends BaseActivity {
 
             if (sectionKey.equalsIgnoreCase("Reel Maker")) {
                 // Video Validation
-                if (mimeType == null || !mimeType.startsWith("video/")) {
+                String uriString = selectedImageUri.toString().toLowerCase();
+                if (mimeType == null && !uriString.contains(".mp4") && !uriString.contains(".mkv")
+                        && !uriString.contains(".mov") && !uriString.contains(".webm")) {
                     Toast.makeText(this, R.string.msg_select_valid_video, Toast.LENGTH_SHORT).show();
                     return;
                 }
-                if (!mimeType.contains("mp4") && !mimeType.contains("webm") && !mimeType.contains("quicktime")
-                        && !mimeType.contains("x-matroska")) {
-                    Toast.makeText(this, R.string.msg_format_supported, Toast.LENGTH_SHORT).show();
-                    return;
-                }
                 
-                // Size check is now handled inside uploadImageToServer with better detection
+                // Size check is handled inside uploadImageToServer
                 
                 // Check if Reel Maker video is 9:16 (vertical reel) or something similar.
                 try {
@@ -419,15 +416,7 @@ public class UploadTemplatesActivity extends BaseActivity {
             }
 
             if (sectionKey.equalsIgnoreCase("Advertisement")) {
-
-                String link = editAdLink.getText().toString().trim();
-
-                if (link.isEmpty()) {
-                    Toast.makeText(this,
-                            R.string.msg_enter_ad_link,
-                            Toast.LENGTH_SHORT).show();
-                    return;
-                }
+                // Link is now optional
             }
 
             new AlertDialog.Builder(this)
@@ -495,7 +484,7 @@ public class UploadTemplatesActivity extends BaseActivity {
         UCrop uCrop = UCrop.of(uri, Uri.fromFile(new File(getCacheDir(), destinationFileName)));
 
         if (sectionKey.equalsIgnoreCase("Advertisement")) {
-            uCrop.withAspectRatio(16, 9);
+            uCrop.withAspectRatio(380, 160);
         } else {
             uCrop.withAspectRatio(1, 1);
         }

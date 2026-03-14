@@ -24,6 +24,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import com.yalantis.ucrop.UCrop;
+import android.graphics.Color;
+import java.io.File;
 import java.io.InputStream;
 import java.util.HashMap;
 
@@ -40,6 +43,7 @@ public class AdminAppOpenOfferActivity extends BaseActivity {
     private Uri selectedUri;
     private String currentImageUrl = "";
     private ActivityResultLauncher<Intent> imagePickerLauncher;
+    private ActivityResultLauncher<Intent> cropLauncher;
     private DatabaseReference offerRef;
 
     @Override
@@ -71,9 +75,23 @@ public class AdminAppOpenOfferActivity extends BaseActivity {
                             Toast.makeText(this, R.string.msg_invalid_img_format, Toast.LENGTH_SHORT).show();
                             return;
                         }
-                        selectedUri = uri;
-                        imgPreview.setImageURI(selectedUri);
-                        placeholderLayout.setVisibility(View.GONE);
+                        startCrop(uri);
+                    }
+                });
+
+        cropLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                        Uri resultUri = UCrop.getOutput(result.getData());
+                        if (resultUri != null) {
+                            selectedUri = resultUri;
+                            imgPreview.setImageURI(selectedUri);
+                            placeholderLayout.setVisibility(View.GONE);
+                        }
+                    } else if (result.getResultCode() == UCrop.RESULT_ERROR && result.getData() != null) {
+                        Throwable err = UCrop.getError(result.getData());
+                        if (err != null) Toast.makeText(this, "Crop Error: " + err.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
 
@@ -88,6 +106,25 @@ public class AdminAppOpenOfferActivity extends BaseActivity {
         i.setType("image/*");
         i.putExtra(Intent.EXTRA_MIME_TYPES, new String[]{"image/jpeg", "image/jpg", "image/png"});
         imagePickerLauncher.launch(i);
+    }
+
+    private void startCrop(Uri uri) {
+        String dest = "cropped_offer_" + System.currentTimeMillis() + ".jpg";
+        UCrop uCrop = UCrop.of(uri, Uri.fromFile(new File(getCacheDir(), dest)));
+        uCrop.withAspectRatio(9, 16);
+
+        UCrop.Options options = new UCrop.Options();
+        options.setCompressionFormat(android.graphics.Bitmap.CompressFormat.JPEG);
+        options.setCompressionQuality(90);
+        options.setHideBottomControls(false);
+        options.setToolbarTitle("Crop Offer Image");
+        options.setToolbarColor(Color.parseColor("#1B1B1B"));
+        options.setStatusBarColor(Color.parseColor("#1B1B1B"));
+        options.setToolbarWidgetColor(Color.WHITE);
+        options.setActiveControlsWidgetColor(Color.parseColor("#4A6CF7"));
+        
+        uCrop.withOptions(options);
+        cropLauncher.launch(uCrop.getIntent(this));
     }
 
     private void loadCurrentOffer() {

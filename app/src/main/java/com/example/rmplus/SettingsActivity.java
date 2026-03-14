@@ -172,8 +172,10 @@ public class SettingsActivity extends BaseActivity {
                         TermsActivity.class)));
 
         // ================= SUPPORT =================
-
         supportBtn.setOnClickListener(v -> showContactSupportDialog());
+
+        // ================= DELETE ACCOUNT =================
+        findViewById(R.id.btnDeleteAccount).setOnClickListener(v -> deleteAccount());
     }
 
     // ================= CACHE DELETE =================

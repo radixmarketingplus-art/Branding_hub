@@ -158,7 +158,7 @@ public class UploadTemplatesFragment extends Fragment {
         UCrop uCrop = UCrop.of(uri, Uri.fromFile(new File(requireContext().getCacheDir(), destinationFileName)));
 
         if (sectionKey.equalsIgnoreCase("Advertisement")) {
-            uCrop.withAspectRatio(16, 9);
+            uCrop.withAspectRatio(380, 160);
         } else {
             uCrop.withAspectRatio(1, 1);
         }
@@ -494,13 +494,7 @@ public class UploadTemplatesFragment extends Fragment {
         }
 
         if (sectionKey.equalsIgnoreCase("Advertisement")) {
-
-            String link = editAdLink.getText().toString().trim();
-
-            if (link.isEmpty()) {
-                toast(R.string.msg_enter_ad_link);
-                return;
-            }
+            // Link is now optional
         }
 
         if (sectionKey.equalsIgnoreCase("Festival Cards") && selectedDate.isEmpty()) {
@@ -515,7 +509,7 @@ public class UploadTemplatesFragment extends Fragment {
         if (sectionKey.equalsIgnoreCase("Reel Maker")) {
             // Video Validation
             if (mimeType == null && !uriString.contains(".mp4") && !uriString.contains(".mkv")
-                    && !uriString.contains(".mov")) {
+                    && !uriString.contains(".mov") && !uriString.contains(".webm")) {
                 toast(R.string.msg_select_valid_video);
                 return;
             }
@@ -540,9 +534,8 @@ public class UploadTemplatesFragment extends Fragment {
                     }
                     
                     // Allow 9:16 strictly (or very close to it)
-                    // width / height should be ~ 0.5625 (9/16)
                     float ratio = (float) width / height;
-                    if (ratio > 0.6f) { // it is wider than 9:16 (e.g., 1:1 is 1.0, 16:9 is 1.77)
+                    if (ratio > 0.62f) { // slightly relaxed to allow 1080x1920 (0.56) and similar
                         toast(R.string.msg_video_ratio_error);
                         return;
                     }
@@ -550,7 +543,8 @@ public class UploadTemplatesFragment extends Fragment {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            // Image Validation: Check MIME OR check URI path
+        } else {
+            // Image Validation
             String uriStr = selectedImageUri.toString().toLowerCase();
             boolean isImage = (mimeType != null && mimeType.startsWith("image/"))
                     || uriStr.contains(".jpg") || uriStr.contains(".jpeg") || uriStr.contains(".png");
@@ -579,7 +573,7 @@ public class UploadTemplatesFragment extends Fragment {
             }
 
             // 📏 SQUARE ASPECT RATIO CHECK (For all except Ad and Video)
-            if (!sectionKey.equalsIgnoreCase("Advertisement") && !sectionKey.equalsIgnoreCase("Reel Maker")) {
+            if (!sectionKey.equalsIgnoreCase("Advertisement")) {
                 try {
                     InputStream is = requireContext().getContentResolver().openInputStream(selectedImageUri);
                     android.graphics.BitmapFactory.Options opts = new android.graphics.BitmapFactory.Options();

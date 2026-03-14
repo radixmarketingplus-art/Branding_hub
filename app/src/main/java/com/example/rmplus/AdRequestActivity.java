@@ -208,7 +208,7 @@ public class AdRequestActivity extends BaseActivity {
     private void startCropForTemplate(@NonNull Uri uri) {
         String destName = "cropped_ad_" + System.currentTimeMillis() + ".jpg";
         UCrop uCrop = UCrop.of(uri, Uri.fromFile(new File(getCacheDir(), destName)));
-        uCrop.withAspectRatio(16, 9); // Advertisement: always 16:9
+        uCrop.withAspectRatio(380, 160); // Advertisement: now wider (approx 2.37:1)
 
         UCrop.Options options = new UCrop.Options();
         options.setCompressionFormat(android.graphics.Bitmap.CompressFormat.JPEG);
@@ -236,11 +236,7 @@ public class AdRequestActivity extends BaseActivity {
     private void validateAndSubmit() {
 
         String link = etLink.getText().toString().trim();
-
-        if (link.isEmpty()) {
-            etLink.setError(getString(R.string.hint_adv_link));
-            return;
-        }
+        // Link is now optional
 
         if (templateUri == null) {
             toast(R.string.msg_please_select_img);

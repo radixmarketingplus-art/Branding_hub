@@ -127,7 +127,7 @@
     <string name="desc_fill_adv_details">Fill details to publish your advertisement</string>
     <string name="desc_manage_home_content">Manage home page content</string>
     <string name="desc_search">Search</string>
-    <string name="hint_adv_link">Advertisement Website / Link</string>
+    <string name="hint_adv_link">Advertisement Website / Link (Optional)</string>
     <string name="hint_search_users">Search name, email or mobile</string>
     <string name="search_hint">Search Posts by Topics</string>
     <string name="msg_voice_search_soon">Voice search coming soon...</string>
@@ -137,7 +137,7 @@
     <string name="label_ad_request_desc">Advertisement Request</string>
     <string name="label_festival_date">Festival Date</string>
     <string name="msg_adv_notif_title">Advertisement %1$s</string>
-    <string name="msg_enter_ad_link">Enter advertisement link</string>
+    <string name="msg_enter_ad_link">Enter advertisement link (Optional)</string>
     <string name="msg_select_cat_first">Select a category first to enable selection</string>
     <string name="msg_upload_failed">Upload Failed</string>
     <string name="msg_upload_success">Upload Success</string>
@@ -477,8 +477,8 @@
 
     <!-- Advertisement Request Page Strings -->
     <string name="title_service_requests">Advertisement Requests</string>
-    <string name="label_website_redirect_link">Website / Redirect Link</string>
-    <string name="label_aspect_ratio_16_9">16:9 Aspect Ratio</string>
+    <string name="label_website_redirect_link">Website / Redirect Link (Optional)</string>
+    <string name="label_aspect_ratio_16_9">Wide Banner Ratio</string>
     <string name="label_upload_proof_step">Upload Payment Proof</string>
     <string name="label_optional_payment_desc">Optional — attach a screenshot of your payment</string>
     <string name="msg_payment_screenshot">Payment screenshot</string>
@@ -508,8 +508,8 @@
     <!-- Admin App Open Offer Page -->
     <string name="label_offer_visibility">Offer Visibility</string>
     <string name="desc_offer_visibility">Show/Hide this offer on app start</string>
-    <string name="label_offer_image">Offer Image</string>
-    <string name="label_tap_to_add_image">Tap to Add Image</string>
+    <string name="label_offer_image">Offer Image (Ratio 9:16)</string>
+    <string name="label_tap_to_add_image">Tap to Add Image (9:16)</string>
     <string name="hint_action_link">Action Link (e.g. app://subscription or https://…)</string>
     <string name="btn_save_offer">Save Offer</string>
     <string name="msg_error_loading_offer">Error loading offer</string>
@@ -676,7 +676,7 @@
     <string name="placeholder_email">Email</string>
     <string name="placeholder_name">Name</string>
     <string name="title_request_details">Request Details</string>
-    <string name="title_sponsored_ads">Sponsored Ads</string>
+    <string name="title_sponsored_ads">Advertisement</string>
     <string name="title_submit_request">Submit Request</string>
     <string name="title_subscription_requests">Subscription Requests</string>
     <string name="title_user_details">User Details</string>
