@@ -576,7 +576,8 @@ public class HomeActivity extends BaseActivity {
                                 if (trendingHandler != null)
                                     trendingHandler.removeCallbacks(trendingRunnable);
 
-                                for (int i = 0; i < infiniteList.size(); i++) {
+                                int searchStart = (500 / size) * size;
+                                for (int i = searchStart; i < infiniteList.size(); i++) {
                                     if (infiniteList.get(i).id != null && infiniteList.get(i).id.equals(targetAdId)) {
                                         final int finalPos = i;
                                         if (rvTrending.getAdapter() instanceof AdvertisementAdapter) {
@@ -586,6 +587,15 @@ public class HomeActivity extends BaseActivity {
                                             mainScroll.smoothScrollTo(0, 0); // Ads are at the top
                                             rvTrending.postDelayed(() -> {
                                                 rvTrending.scrollToPosition(finalPos);
+                                                rvTrending.post(() -> {
+                                                    View view = rvTrending.getLayoutManager().findViewByPosition(finalPos);
+                                                    if (view != null) {
+                                                        int[] snapDistance = trendingSnapHelper.calculateDistanceToFinalSnap(rvTrending.getLayoutManager(), view);
+                                                        if (snapDistance != null && (snapDistance[0] != 0 || snapDistance[1] != 0)) {
+                                                            rvTrending.scrollBy(snapDistance[0], snapDistance[1]);
+                                                        }
+                                                    }
+                                                });
 
                                                 new Handler().postDelayed(() -> {
                                                     adp.setHighlightPos(-1);
