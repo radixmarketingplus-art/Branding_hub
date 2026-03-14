@@ -10,17 +10,20 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:layout_alignParentBottom="true"
             android:background="#99000000"
             android:orientation="horizontal"
-            android:padding="12dp"
+            android:paddingRight="1dp"
+            android:paddingBottom="1dp"
+            android:paddingTop="1dp"
+            android:paddingLeft="16dp"
             android:gravity="center_vertical">
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/frame_logo"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
                 android:scaleType="centerCrop"
                 app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Full"
                 android:src="@drawable/ic_profile"
@@ -40,7 +43,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/placeholder_name"
                     android:textColor="@color/white"
-                    android:textSize="16sp"
+                    android:textSize="12sp"
                     android:textStyle="bold" />
 
                 <TextView
@@ -49,7 +52,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/placeholder_mobile"
                     android:textColor="#E0E0E0"
-                    android:textSize="13sp" />
+                    android:textSize="10sp" />
 
                 <TextView
                     android:id="@+id/frame_email"
@@ -57,7 +60,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/placeholder_email"
                     android:textColor="#E0E0E0"
-                    android:textSize="13sp" />
+                    android:textSize="10sp" />
             </LinearLayout>
 
         </LinearLayout>

@@ -1,0 +1,10 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="250dp"
+    android:height="45dp"
+    android:viewportWidth="250"
+    android:viewportHeight="45">
+    <!-- Yellow Footer Bar with Top-Left curve -->
+    <path
+        android:pathData="M30,0 Q0,0 0,30 L0,45 L250,45 L250,0 Z"
+        android:fillColor="#FFCB2B" />
+</vector>

@@ -1,0 +1,14 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="200dp"
+    android:height="30dp"
+    android:viewportWidth="200"
+    android:viewportHeight="30">
+    <!-- Main Green Bar -->
+    <path
+        android:pathData="M0,0 L180,0 L200,30 L0,30 Z"
+        android:fillColor="#6AB04C" />
+    <!-- Thin Gold Line -->
+    <path
+        android:pathData="M0,28 L198,28 L200,30 L0,30 Z"
+        android:fillColor="#B8860B" />
+</vector>

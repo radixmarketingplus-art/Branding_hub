@@ -18,7 +18,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="40dp"
                 android:layout_centerVertical="true"
                 android:layout_marginStart="40dp"
                 android:background="@drawable/bg_pill_accent"
@@ -69,8 +69,8 @@
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/frame_logo"
-                android:layout_width="64dp"
-                android:layout_height="64dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:layout_centerVertical="true"
                 android:scaleType="centerCrop"
                 app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Full"

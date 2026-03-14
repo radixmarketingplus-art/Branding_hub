@@ -8,54 +8,96 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <LinearLayout
-            android:layout_width="160dp"
-            android:layout_height="match_parent"
-            android:layout_alignParentLeft="true"
-            android:background="#DD000000"
-            android:orientation="vertical"
-            android:padding="16dp"
-            android:gravity="center_horizontal">
+        <!-- Top Slanted Bar (Reduced Height) -->
+        <RelativeLayout
+            android:layout_width="200dp"
+            android:layout_height="32dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true">
 
-            <com.google.android.material.imageview.ShapeableImageView
-                android:id="@+id/frame_logo"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:scaleType="centerCrop"
-                app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Full"
-                android:src="@drawable/ic_profile"
-                android:background="@color/white"
-                android:padding="4dp" />
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitXY"
+                android:src="@drawable/frame_2_header_new" />
 
             <TextView
                 android:id="@+id/frame_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:text="@string/placeholder_name"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingStart="12dp"
+                android:paddingEnd="30dp"
+                android:gravity="center_vertical"
+                android:text="BUSINESS NAME"
                 android:textColor="@color/white"
-                android:textAlignment="center"
-                android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textSize="10.5sp"
+                android:textStyle="bold"
+                android:maxLines="1"
+                android:ellipsize="end" />
+        </RelativeLayout>
 
-            <TextView
-                android:id="@+id/frame_mobile"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="@string/placeholder_mobile"
-                android:textColor="#E0E0E0"
-                android:textSize="14sp" />
+        <!-- Logo Top Right (ShapeableImageView for dynamic visibility) -->
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/frame_logo"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="16dp"
+            android:padding="1dp"
+            android:background="@android:color/transparent"
+            app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Full"
+            app:strokeColor="#DDDDDD"
+            app:strokeWidth="1dp"
+            android:src="@drawable/ic_profile" />
 
-            <TextView
-                android:id="@+id/frame_email"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="@string/placeholder_email"
-                android:textColor="#E0E0E0"
-                android:textSize="12sp" />
+        <!-- Bottom Curved Bar (Landscape Optimized) -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_alignParentBottom="true">
 
-        </LinearLayout>
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitXY"
+                android:src="@drawable/frame_2_footer_new" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <!-- Phone Number in the curved/elevated part -->
+                <TextView
+                    android:id="@+id/frame_mobile"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginStart="16dp"
+                    android:text="+91 00000 00000"
+                    android:textColor="@color/white"
+                    android:textSize="10.5sp"
+                    android:textStyle="bold" />
+
+                <!-- Email in the full-width bottom part (Left Aligned) -->
+                <TextView
+                    android:id="@+id/frame_email"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginStart="16dp"
+                    android:text="info@example.com"
+                    android:textColor="@color/white"
+                    android:textSize="9.5sp"
+                    android:alpha="0.95" />
+
+            </RelativeLayout>
+        </RelativeLayout>
+
     </RelativeLayout>
 </FrameLayout>

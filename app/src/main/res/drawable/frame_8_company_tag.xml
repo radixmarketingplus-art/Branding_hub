@@ -1,0 +1,19 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="180dp"
+    android:height="70dp"
+    android:viewportWidth="180"
+    android:viewportHeight="70">
+    <!-- Main Yellow Tag Body -->
+    <path
+        android:pathData="M10,5 L170,5 L140,65 L10,65 Z"
+        android:fillColor="#FFCB2B" />
+    <!-- Top Fold Effect (Left Corner) -->
+    <path
+        android:pathData="M10,5 L20,0 L20,5 Z"
+        android:fillColor="#F0AD00" />
+    <!-- Bottom Right Curve Effect -->
+    <path
+        android:pathData="M140,65 Q130,65 130,55"
+        android:strokeWidth="0"
+        android:fillColor="#FFCB2B"/>
+</vector>

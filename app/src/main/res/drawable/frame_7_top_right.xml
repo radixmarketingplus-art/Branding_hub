@@ -1,0 +1,10 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="250dp"
+    android:height="65dp"
+    android:viewportWidth="250"
+    android:viewportHeight="65">
+    <!-- Top Right Saffron Slanted Bar -->
+    <path
+        android:pathData="M50,0 L250,0 L250,65 L0,65 Z"
+        android:fillColor="#FF9933" />
+</vector>

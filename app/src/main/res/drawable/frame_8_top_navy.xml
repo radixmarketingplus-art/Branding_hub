@@ -1,0 +1,10 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="400dp"
+    android:height="40dp"
+    android:viewportWidth="400"
+    android:viewportHeight="40">
+    <!-- Navy Blue Horizontal Bar with right slant -->
+    <path
+        android:pathData="M0,10 L380,10 L360,35 L0,35 Z"
+        android:fillColor="#001F3F" />
+</vector>
