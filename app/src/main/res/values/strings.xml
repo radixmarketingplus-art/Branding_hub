@@ -522,7 +522,11 @@
     <string name="tab_requests">Requests</string>
     <string name="tab_plan_setup">Plan Setup</string>
     <string name="title_build_plan">Build Dynamic Plan</string>
-    <string name="hint_plan_duration">Duration (e.g. 1 Month)</string>
+    <string name="hint_plan_duration">Unit Count (e.g. 1, 12)</string>
+    <string name="hint_duration_unit">Select Unit</string>
+    <string name="label_unit_day">Day(s)</string>
+    <string name="label_unit_month">Month(s)</string>
+    <string name="label_unit_year">Year(s)</string>
     <string name="hint_base_amount">Base Amount</string>
     <string name="hint_discount_price">Discount Price (optional)</string>
     <string name="hint_upi_id">UPI ID (e.g. user@bank)</string>

@@ -513,7 +513,11 @@
     <string name="tab_requests">अनुरोध</string>
     <string name="tab_plan_setup">प्लान सेटअप</string>
     <string name="title_build_plan">डायनेमिक प्लान बनाएं</string>
-    <string name="hint_plan_duration">अवधि (उदा. 1 महीना)</string>
+    <string name="hint_plan_duration">इकाई संख्या (उदा. 1, 12)</string>
+    <string name="hint_duration_unit">इकाई चुनें</string>
+    <string name="label_unit_day">दिन</string>
+    <string name="label_unit_month">महीने</string>
+    <string name="label_unit_year">साल</string>
     <string name="hint_base_amount">मूल राशि</string>
     <string name="hint_discount_price">छूट मूल्य (वैकल्पिक)</string>
     <string name="hint_upi_id">UPI ID (उदा. user@bank)</string>

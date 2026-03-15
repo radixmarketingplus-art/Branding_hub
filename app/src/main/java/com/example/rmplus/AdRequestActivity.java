@@ -109,6 +109,8 @@ public class AdRequestActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle b) {
         super.onCreate(b);
+        // Allow screenshots on the advertisement request page as requested by user
+        getWindow().clearFlags(android.view.WindowManager.LayoutParams.FLAG_SECURE);
         setContentView(R.layout.activity_ad_request);
 
         // This initializes the bottom nav from the layout

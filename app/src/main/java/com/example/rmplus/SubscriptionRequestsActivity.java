@@ -61,7 +61,8 @@ public class SubscriptionRequestsActivity extends BaseActivity {
     String currentStatus = "pending";
 
     // Dynamic Plan Upload Fields
-    EditText etDuration, etAmount, etDiscount, etUpiId;
+    EditText etDurationCount, etAmount, etDiscount, etUpiId;
+    android.widget.AutoCompleteTextView spinnerDurationUnit;
     CheckBox cbSpecificDay;
     EditText etSpecificDate;
     View cardSpecificDate;
@@ -180,10 +181,22 @@ public class SubscriptionRequestsActivity extends BaseActivity {
     }
 
     void initPlanManagement() {
-        etDuration = findViewById(R.id.etDuration);
+        etDurationCount = findViewById(R.id.etDurationCount);
+        spinnerDurationUnit = findViewById(R.id.spinnerDurationUnit);
         etAmount = findViewById(R.id.etAmount);
         etDiscount = findViewById(R.id.etDiscount);
         etUpiId = findViewById(R.id.etUpiId);
+        
+        // Setup Duration Unit Dropdown
+        String[] units = {
+                getString(R.string.label_unit_day),
+                getString(R.string.label_unit_month),
+                getString(R.string.label_unit_year)
+        };
+        android.widget.ArrayAdapter<String> unitAdapter = new android.widget.ArrayAdapter<>(this, 
+                android.R.layout.simple_dropdown_item_1line, units);
+        spinnerDurationUnit.setAdapter(unitAdapter);
+        spinnerDurationUnit.setText(units[1], false); // Default to Month(s)
         cbSpecificDay = findViewById(R.id.cbSpecificDay);
         etSpecificDate = findViewById(R.id.etSpecificDate);
         cardSpecificDate = findViewById(R.id.cardSpecificDate);
@@ -198,7 +211,16 @@ public class SubscriptionRequestsActivity extends BaseActivity {
             @Override
             public void onEdit(SubscriptionPlan p) {
                 editingPlanId = p.id;
-                etDuration.setText(p.duration);
+                
+                // Parse duration (e.g., "1 Month(s)")
+                if (p.duration != null && p.duration.contains(" ")) {
+                    String[] parts = p.duration.split(" ", 2);
+                    etDurationCount.setText(parts[0]);
+                    spinnerDurationUnit.setText(parts[1], false);
+                } else {
+                    etDurationCount.setText(p.duration);
+                }
+                
                 etAmount.setText(p.amount);
                 etDiscount.setText(p.discountPrice);
                 etUpiId.setText(p.upiId != null ? p.upiId : "");
@@ -312,14 +334,17 @@ public class SubscriptionRequestsActivity extends BaseActivity {
     }
 
     void uploadPlan() {
-        String dur = etDuration.getText().toString().trim();
+        String count = etDurationCount.getText().toString().trim();
+        String unit = spinnerDurationUnit.getText().toString().trim();
+        String dur = count + " " + unit;
+        
         String amt = etAmount.getText().toString().trim();
         String disc = etDiscount.getText().toString().trim();
         String upi = etUpiId.getText().toString().trim();
         boolean isSpec = cbSpecificDay.isChecked();
         String specDate = etSpecificDate.getText().toString().trim();
 
-        if (dur.isEmpty() || amt.isEmpty()) {
+        if (count.isEmpty() || amt.isEmpty()) {
             Toast.makeText(this, R.string.msg_check_duration_amount, Toast.LENGTH_SHORT).show();
             return;
         }
@@ -453,7 +478,7 @@ public class SubscriptionRequestsActivity extends BaseActivity {
 
     void clearPlanFields() {
         editingPlanId = null;
-        etDuration.setText("");
+        etDurationCount.setText("");
         etAmount.setText("");
         etDiscount.setText("0");
         etUpiId.setText("");

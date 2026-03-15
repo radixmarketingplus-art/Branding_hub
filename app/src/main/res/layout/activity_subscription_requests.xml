@@ -205,111 +205,109 @@
                                 android:textColor="?attr/colorOnSurface"
                                 android:layout_marginBottom="20dp"/>
 
-                            <!-- Duration Input -->
+                            <!-- Duration Input (Count + Unit Dropdown) -->
                             <LinearLayout
                                 android:layout_width="match_parent"
-                                android:layout_height="64dp"
-                                android:background="@drawable/bg_input_2"
+                                android:layout_height="wrap_content"
                                 android:orientation="horizontal"
-                                android:gravity="center_vertical"
-                                android:paddingHorizontal="16dp"
                                 android:layout_marginBottom="12dp">
-                                <ImageView
-                                    android:layout_width="24dp"
-                                    android:layout_height="24dp"
-                                    android:src="@drawable/ic_calendar"
-                                    app:tint="@color/primary"/>
-                                <EditText
-                                    android:id="@+id/etDuration"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:background="@null"
+
+                                <com.google.android.material.textfield.TextInputLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
                                     android:hint="@string/hint_plan_duration"
-                                    android:textSize="15sp"
-                                    android:fontFamily="sans-serif-medium"
-                                    android:paddingStart="12dp"
-                                    android:inputType="text"/>
+                                    app:startIconDrawable="@drawable/ic_calendar"
+                                    app:startIconTint="@color/primary"
+                                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                    <com.google.android.material.textfield.TextInputEditText
+                                        android:id="@+id/etDurationCount"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:inputType="number"
+                                        android:textSize="15sp"
+                                        android:fontFamily="sans-serif-medium"/>
+                                </com.google.android.material.textfield.TextInputLayout>
+
+                                <View
+                                    android:layout_width="12dp"
+                                    android:layout_height="0dp"/>
+
+                                <com.google.android.material.textfield.TextInputLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1.2"
+                                    android:hint="@string/hint_duration_unit"
+                                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+
+                                    <AutoCompleteTextView
+                                        android:id="@+id/spinnerDurationUnit"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:inputType="none"
+                                        android:textSize="15sp"
+                                        android:fontFamily="sans-serif-medium"/>
+                                </com.google.android.material.textfield.TextInputLayout>
                             </LinearLayout>
 
                             <!-- Amount -->
-                            <LinearLayout
+                            <com.google.android.material.textfield.TextInputLayout
                                 android:layout_width="match_parent"
-                                android:layout_height="64dp"
-                                android:background="@drawable/bg_input_2"
-                                android:orientation="horizontal"
-                                android:gravity="center_vertical"
-                                android:paddingHorizontal="16dp"
-                                android:layout_marginBottom="12dp">
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="₹"
-                                    android:textSize="18sp"
-                                    android:fontFamily="sans-serif-black"
-                                    android:textColor="@color/primary"/>
-                                <EditText
+                                android:layout_height="wrap_content"
+                                android:hint="@string/hint_base_amount"
+                                app:prefixText="₹"
+                                app:prefixTextColor="@color/primary"
+                                android:layout_marginBottom="12dp"
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                <com.google.android.material.textfield.TextInputEditText
                                     android:id="@+id/etAmount"
                                     android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:background="@null"
-                                    android:hint="@string/hint_base_amount"
+                                    android:layout_height="wrap_content"
+                                    android:inputType="number"
                                     android:textSize="15sp"
-                                    android:fontFamily="sans-serif-medium"
-                                    android:paddingStart="12dp"
-                                    android:inputType="number"/>
-                            </LinearLayout>
+                                    android:fontFamily="sans-serif-medium"/>
+                            </com.google.android.material.textfield.TextInputLayout>
 
                             <!-- Discount -->
-                            <LinearLayout
+                            <com.google.android.material.textfield.TextInputLayout
                                 android:layout_width="match_parent"
-                                android:layout_height="64dp"
-                                android:background="@drawable/bg_input_2"
-                                android:orientation="horizontal"
-                                android:gravity="center_vertical"
-                                android:paddingHorizontal="16dp"
-                                android:layout_marginBottom="12dp">
-                                <ImageView
-                                    android:layout_width="20dp"
-                                    android:layout_height="20dp"
-                                    android:src="@drawable/ic_onboard_designs"
-                                    app:tint="#F59E0B"/>
-                                <EditText
+                                android:layout_height="wrap_content"
+                                android:hint="@string/hint_discount_price"
+                                app:startIconDrawable="@drawable/ic_subscription_profile"
+                                app:startIconTint="#F59E0B"
+                                app:prefixText="₹"
+                                android:layout_marginBottom="12dp"
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                <com.google.android.material.textfield.TextInputEditText
                                     android:id="@+id/etDiscount"
                                     android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:background="@null"
-                                    android:hint="@string/hint_discount_price"
+                                    android:layout_height="wrap_content"
+                                    android:inputType="number"
                                     android:textSize="15sp"
-                                    android:fontFamily="sans-serif-medium"
-                                    android:paddingStart="12dp"
-                                    android:inputType="number"/>
-                            </LinearLayout>
+                                    android:fontFamily="sans-serif-medium"/>
+                            </com.google.android.material.textfield.TextInputLayout>
 
                             <!-- UPI ID -->
-                            <LinearLayout
+                            <com.google.android.material.textfield.TextInputLayout
                                 android:layout_width="match_parent"
-                                android:layout_height="64dp"
-                                android:background="@drawable/bg_input_2"
-                                android:orientation="horizontal"
-                                android:gravity="center_vertical"
-                                android:paddingHorizontal="16dp"
-                                android:layout_marginBottom="16dp">
-                                <ImageView
-                                    android:layout_width="20dp"
-                                    android:layout_height="20dp"
-                                    android:src="@drawable/ic_settings_profile"
-                                    app:tint="@color/primary"/>
-                                <EditText
+                                android:layout_height="wrap_content"
+                                android:hint="@string/hint_upi_id"
+                                app:startIconDrawable="@drawable/ic_qr_code"
+                                app:startIconTint="@color/primary"
+                                android:layout_marginBottom="16dp"
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                <com.google.android.material.textfield.TextInputEditText
                                     android:id="@+id/etUpiId"
                                     android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:background="@null"
-                                    android:hint="@string/hint_upi_id"
+                                    android:layout_height="wrap_content"
+                                    android:inputType="text"
                                     android:textSize="15sp"
-                                    android:fontFamily="sans-serif-medium"
-                                    android:paddingStart="12dp"
-                                    android:inputType="text"/>
-                            </LinearLayout>
+                                    android:fontFamily="sans-serif-medium"/>
+                            </com.google.android.material.textfield.TextInputLayout>
 
                             <!-- Date Picker Option -->
                             <LinearLayout

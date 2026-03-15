@@ -23,6 +23,7 @@ import com.google.firebase.database.ValueEventListener;
 public class SettingsActivity extends BaseActivity {
 
     View changePasswordBtn, clearCacheBtn, privacyBtn, termsBtn, supportBtn;
+    View whatsappBtn, instagramBtn, facebookBtn, twitterBtn;
     SwitchCompat notificationSwitch;
     TextView versionTxt;
 
@@ -176,6 +177,32 @@ public class SettingsActivity extends BaseActivity {
 
         // ================= DELETE ACCOUNT =================
         findViewById(R.id.btnDeleteAccount).setOnClickListener(v -> deleteAccount());
+
+        // ================= SOCIAL MEDIA =================
+        whatsappBtn = findViewById(R.id.whatsappBtn);
+        instagramBtn = findViewById(R.id.instagramBtn);
+        facebookBtn = findViewById(R.id.facebookBtn);
+        twitterBtn = findViewById(R.id.twitterBtn);
+
+        whatsappBtn.setOnClickListener(v -> {
+            String url = "https://wa.me/919981681068";
+            openWeb(url);
+        });
+
+        instagramBtn.setOnClickListener(v -> {
+            String url = "https://www.instagram.com/radixmarketingplus?igsh=OGsxbWxhdnNiZzhp&utm_source=ig_contact_invite";
+            openWeb(url);
+        });
+
+        facebookBtn.setOnClickListener(v -> {
+            String url = "https://www.facebook.com/share/1GasbS6E4P/?mibextid=wwXIfr";
+            openWeb(url);
+        });
+
+        twitterBtn.setOnClickListener(v -> {
+            String url = "https://x.com/radix_marketing?s=21";
+            openWeb(url);
+        });
     }
 
     // ================= CACHE DELETE =================
