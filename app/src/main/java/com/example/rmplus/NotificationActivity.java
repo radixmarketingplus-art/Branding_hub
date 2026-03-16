@@ -117,6 +117,9 @@ public class NotificationActivity extends BaseActivity {
 
         updateTabUI();
         newTab.post(() -> moveUnderline(newTab));
+
+        // 🔗 If launched from tray notification with a deep link, handle it immediately
+        handleLaunchIntent(getIntent());
     }
 
     // --------------------------------------
@@ -337,6 +340,22 @@ public class NotificationActivity extends BaseActivity {
                     startActivity(intent);
                     finish();
                 }
+            } else if (action.equals("OPEN_AD_REQUEST")) {
+                if (extraData != null && !extraData.isEmpty()) {
+                    android.content.Intent intent = new android.content.Intent(this, AdRequestDetailActivity.class);
+                    intent.putExtra("id", extraData);
+                    intent.putExtra("isAdmin", false);
+                    startActivity(intent);
+                    finish();
+                }
+            } else if (action.equals("OPEN_SUPPORT_REQUEST")) {
+                if (extraData != null && !extraData.isEmpty()) {
+                    android.content.Intent intent = new android.content.Intent(this, RequestDetailActivity.class);
+                    intent.putExtra("id", extraData);
+                    intent.putExtra("isAdmin", false);
+                    startActivity(intent);
+                    finish();
+                }
             } else if (action.equals("OPEN_ACTIVITY")) {
                 // Future use: Open specific activity based on extraData class name
                 // Class<?> cls = Class.forName("com.example.rmplus." + extraData);
@@ -362,5 +381,15 @@ public class NotificationActivity extends BaseActivity {
                     .setDuration(250)
                     .start();
         });
+    }
+
+    // Handle action from tray notification click (already in intent extras)
+    private void handleLaunchIntent(android.content.Intent intent) {
+        if (intent == null) return;
+        String action = intent.getStringExtra("action");
+        String extraData = intent.getStringExtra("extraData");
+        if (action != null && !action.isEmpty()) {
+            handleAction(action, extraData);
+        }
     }
 }

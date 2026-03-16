@@ -50,8 +50,8 @@ public class NotificationHelper {
         String localizedTitle = getLocalized(context, title);
         String localizedMessage = getLocalized(context, message);
 
-        showPhoneNotification(context, uid, localizedTitle, localizedMessage);
-
+        showPhoneNotification(context, uid, localizedTitle, localizedMessage, null, null);
+        
         // ✅ Also send FCM push so notification arrives even when app is CLOSED/KILLED
         sendFcmPush(context, uid, localizedTitle, localizedMessage);
     }
@@ -127,7 +127,7 @@ public class NotificationHelper {
 
         String localizedTitle = getLocalized(context, title);
         String localizedMessage = getLocalized(context, message);
-        showPhoneNotification(context, uid, localizedTitle, localizedMessage);
+        showPhoneNotification(context, uid, localizedTitle, localizedMessage, action, extraData);
     }
 
     // NEW: Send broadcast notification to ALL users
@@ -159,7 +159,7 @@ public class NotificationHelper {
         // ✅ Also show tray notification for the current admin (optional but good for feedback)
         String localizedTitle = getLocalized(context, title);
         String localizedMessage = getLocalized(context, message);
-        showPhoneNotification(context, null, localizedTitle, localizedMessage);
+        showPhoneNotification(context, null, localizedTitle, localizedMessage, action, extraData);
     }
 
     // ✅ Send FCM broadcast push via VPS PHP (targeted at 'all_users' topic)
@@ -219,7 +219,9 @@ public class NotificationHelper {
     private static void showPhoneNotification(Context context,
                                               String uid,
                                               String title,
-                                              String message){
+                                              String message,
+                                              String action,
+                                              String extraData){
 
         NotificationManager manager =
                 (NotificationManager)
@@ -250,19 +252,19 @@ public class NotificationHelper {
                             Boolean r = d.child("read").getValue(Boolean.class);
                             if (r != null && !r) count++;
                         }
-                        displayNotification(context, manager, title, message, count);
+                        displayNotification(context, manager, title, message, count, action, extraData);
                     }
                     @Override public void onCancelled(com.google.firebase.database.DatabaseError error) {
-                        displayNotification(context, manager, title, message, 0);
+                        displayNotification(context, manager, title, message, 0, action, extraData);
                     }
                 });
         } else {
             // Probably a broadcast, we don't fetch per-user count here for broadcast
-            displayNotification(context, manager, title, message, 0);
+            displayNotification(context, manager, title, message, 0, action, extraData);
         }
     }
 
-    private static void displayNotification(Context context, NotificationManager manager, String title, String message, int count) {
+    private static void displayNotification(Context context, NotificationManager manager, String title, String message, int count, String action, String extraData) {
         
         // 🚀 UPDATE LAUNCHER BADGE (Universal Support)
         if (count > 0) {
@@ -273,6 +275,9 @@ public class NotificationHelper {
 
         Intent intent = new Intent(context, NotificationActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        
+        if (action != null) intent.putExtra("action", action);
+        if (extraData != null) intent.putExtra("extraData", extraData);
 
         PendingIntent pendingIntent =
                 PendingIntent.getActivity(

@@ -9,6 +9,7 @@ public class AdvertisementItem {
     public String requestedBy;
     public long requestedAt;
     public String uid; // 🔥 Added to notify on expiry
+    public String requestId; // 🔥 Added to link back to original request
 
     public AdvertisementItem() {}
 

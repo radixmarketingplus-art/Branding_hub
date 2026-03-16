@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.*;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.rmplus.models.AdvertisementRequest;
@@ -29,7 +30,7 @@ import com.example.rmplus.NotificationHelper;
 public class AdRequestDetailActivity extends BaseActivity {
 
     TextView txtUserName, txtEmail, txtMobile;
-    TextView txtTitle, txtDesc, txtStatus, txtTime;
+    TextView txtTitle, txtDesc, txtStatus, txtTime, txtExpiryDate;
 
     ImageView imgTemplate, imgProof;
 
@@ -56,6 +57,7 @@ public class AdRequestDetailActivity extends BaseActivity {
         txtDesc = findViewById(R.id.txtDesc);
         txtStatus = findViewById(R.id.txtStatus);
         txtTime = findViewById(R.id.txtTime);
+        txtExpiryDate = findViewById(R.id.txtExpiryDate);
 
         imgTemplate = findViewById(R.id.imgTemplate);
         imgProof = findViewById(R.id.imgProof);
@@ -101,6 +103,16 @@ public class AdRequestDetailActivity extends BaseActivity {
                                 } else if ("accepted".equalsIgnoreCase(r.status)) {
                                     displayStatus = getString(R.string.tab_accepted);
                                     statusColor = android.graphics.Color.parseColor("#10B981");
+                                    
+                                    // ✅ SHOW EXPIRY DATE IF ACCEPTED
+                                    if (r.expiryTime > 0) {
+                                        String expDate = new SimpleDateFormat("dd MMM yyyy", Locale.ENGLISH).format(new Date(r.expiryTime));
+                                        txtExpiryDate.setVisibility(View.VISIBLE);
+                                        txtExpiryDate.setText(getString(R.string.label_expires_on, expDate));
+                                    } else {
+                                        // 🔄 FALLBACK FOR OLD DATA: Fetch from live Ad node
+                                        fetchExpiryFromLiveAd(r.templatePath);
+                                    }
                                 } else if ("rejected".equalsIgnoreCase(r.status)) {
                                     displayStatus = getString(R.string.tab_rejected);
                                     statusColor = android.graphics.Color.parseColor("#EF4444");
@@ -277,22 +289,29 @@ public class AdRequestDetailActivity extends BaseActivity {
         // ✅ IF ACCEPTED → ADD TO HOME PAGE
         // ==========================================
         if ("accepted".equals(s)) {
+            ref.child("expiryTime").setValue(expiryTime);
             saveToHomeAdvertisement();
 
-            // 📢 Notify USER (Approved)
+            // 📢 Notify USER (Approved) with deep link to request detail
             NotificationHelper.send(
                     this,
                     r.uid,
                     "Advertisement Approved",
-                    "Your advertisement has been approved and is now live."
+                    getString(R.string.msg_notif_adv_approved),
+                    "OPEN_AD_REQUEST",
+                    requestId,
+                    0
             );
         } else if ("rejected".equals(s)) {
-            // 📢 Notify USER (Rejected)
+            // 📢 Notify USER (Rejected) with deep link to request detail
             NotificationHelper.send(
                     this,
                     r.uid,
                     "Advertisement Rejected",
-                    "Your advertisement request has been rejected."
+                    "Your advertisement request has been rejected.",
+                    "OPEN_AD_REQUEST",
+                    requestId,
+                    0
             );
         }
 
@@ -326,6 +345,7 @@ public class AdRequestDetailActivity extends BaseActivity {
         );
         adItem.uid = r.uid; // Set UID for expiry notifications
         adItem.id = templateId; // Important for redirection highlight
+        adItem.requestId = r.requestId; // 🔥 Save the original request ID
 
         // 1. Firebase
         dbRef.child(templateId).setValue(adItem);
@@ -368,4 +388,31 @@ public class AdRequestDetailActivity extends BaseActivity {
                 .apply();
     }
 
+    private void fetchExpiryFromLiveAd(String path) {
+        if (path == null) return;
+        FirebaseDatabase.getInstance().getReference("templates").child("Advertisement")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        for (DataSnapshot ds : snapshot.getChildren()) {
+                            String imgPath = ds.child("imagePath").getValue(String.class);
+                            if (path.equals(imgPath)) {
+                                Object exp = ds.child("expiryDate").getValue();
+                                long time = (exp instanceof Long) ? (Long) exp : 
+                                           (exp instanceof Integer) ? ((Integer) exp).longValue() : 0;
+                                
+                                if (time > 0) {
+                                    String expDate = new SimpleDateFormat("dd MMM yyyy", Locale.ENGLISH).format(new Date(time));
+                                    txtExpiryDate.setVisibility(View.VISIBLE);
+                                    txtExpiryDate.setText(getString(R.string.label_expires_on, expDate));
+                                } else {
+                                    txtExpiryDate.setVisibility(View.GONE);
+                                }
+                                break;
+                            }
+                        }
+                    }
+                    @Override public void onCancelled(@NonNull DatabaseError e) {}
+                });
+    }
 }

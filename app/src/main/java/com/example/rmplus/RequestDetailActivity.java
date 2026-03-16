@@ -193,20 +193,26 @@ public class RequestDetailActivity extends BaseActivity {
                 .setValue(s);
 
         if ("accepted".equals(s)) {
-            // 📢 Notify USER (Approved)
+            // 📢 Notify USER (Approved) with deep link to request detail
             NotificationHelper.send(
                     this,
                     r.uid,
                     "Support Request Approved",
-                    "Your support request has been approved. You can now chat with our agent."
+                    "Your support request has been approved. You can now chat with our agent.",
+                    "OPEN_SUPPORT_REQUEST",
+                    requestId,
+                    0
             );
         } else if ("rejected".equals(s)) {
-            // 📢 Notify USER (Rejected)
+            // 📢 Notify USER (Rejected) with deep link to request detail
             NotificationHelper.send(
                     this,
                     r.uid,
                     "Support Request Rejected",
-                    "Your support request has been rejected."
+                    "Your support request has been rejected.",
+                    "OPEN_SUPPORT_REQUEST",
+                    requestId,
+                    0
             );
         }
 

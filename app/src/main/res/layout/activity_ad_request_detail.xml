@@ -207,6 +207,17 @@
                         android:textSize="14sp"
                         android:fontFamily="sans-serif-black"
                         android:textColor="?attr/colorPrimary"
+                        android:layout_marginBottom="2dp" />
+
+                    <TextView
+                        android:id="@+id/txtExpiryDate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Expires on: -"
+                        android:textSize="12sp"
+                        android:fontFamily="sans-serif-bold"
+                        android:textColor="#EF4444"
+                        android:visibility="gone"
                         android:layout_marginBottom="8dp" />
 
                     <TextView

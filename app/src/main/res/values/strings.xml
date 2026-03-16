@@ -440,6 +440,7 @@
     <string name="msg_notif_admin_new_sub">A user has submitted a new subscription request.</string>
     <string name="msg_notif_admin_new_support">A user has submitted a new support/contact request.</string>
     <string name="msg_notif_adv_approved">Your advertisement has been approved and is now live.</string>
+    <string name="msg_ad_approved_expiry">Your advertisement has been approved and is now live until %1$s.</string>
     <string name="msg_notif_adv_rejected">Your advertisement request has been rejected.</string>
     <string name="msg_notif_new_message_admin">New message from user regarding support request.</string>
     <string name="msg_rejected">Rejected</string>

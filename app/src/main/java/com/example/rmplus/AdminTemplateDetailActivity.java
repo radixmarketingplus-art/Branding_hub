@@ -263,8 +263,17 @@ public class AdminTemplateDetailActivity extends BaseActivity {
         if (category.contains("Advertisement")) {
             if (statsRow != null) statsRow.setVisibility(View.GONE);
             findViewById(R.id.btnOpenAd).setVisibility(View.VISIBLE);
+            
+            // ✅ HANDLE ORIGINAL REQUEST REDIRECTION
+            if (snap.hasChild("requestId")) {
+                setupViewRequestButton(snap.child("requestId").getValue(String.class));
+            } else {
+                // 🔄 FALLBACK FOR OLD DATA: Find request by image path
+                findOriginalRequestFallback(templatePath);
+            }
         } else {
             findViewById(R.id.btnOpenAd).setVisibility(View.GONE);
+            findViewById(R.id.btnViewRequest).setVisibility(View.GONE);
             if (statsRow != null) statsRow.setVisibility(View.VISIBLE);
             setupClicks();
             loadStats();
@@ -276,6 +285,37 @@ public class AdminTemplateDetailActivity extends BaseActivity {
             if (isVideo(type)) layPlay.setVisibility(View.VISIBLE);
             else layPlay.setVisibility(View.GONE);
         }
+    }
+
+    private void setupViewRequestButton(String reqId) {
+        View btnViewReq = findViewById(R.id.btnViewRequest);
+        if (btnViewReq != null && reqId != null) {
+            btnViewReq.setVisibility(View.VISIBLE);
+            btnViewReq.setOnClickListener(v -> {
+                Intent i = new Intent(this, AdRequestDetailActivity.class);
+                i.putExtra("id", reqId);
+                i.putExtra("isAdmin", true);
+                startActivity(i);
+            });
+        }
+    }
+
+    private void findOriginalRequestFallback(String path) {
+        FirebaseDatabase.getInstance().getReference("advertisement_requests")
+                .addListenerForSingleValueEvent(new com.google.firebase.database.ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull com.google.firebase.database.DataSnapshot snapshot) {
+                        for (com.google.firebase.database.DataSnapshot ds : snapshot.getChildren()) {
+                            String tPath = ds.child("templatePath").getValue(String.class);
+                            if (path != null && path.equals(tPath)) {
+                                String rid = ds.child("requestId").getValue(String.class);
+                                setupViewRequestButton(rid);
+                                break;
+                            }
+                        }
+                    }
+                    @Override public void onCancelled(@NonNull com.google.firebase.database.DatabaseError e) {}
+                });
     }
 
     private boolean isVideo(String type) {

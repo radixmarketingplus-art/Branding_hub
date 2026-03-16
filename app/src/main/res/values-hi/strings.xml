@@ -128,6 +128,7 @@
     <string name="desc_subscription_requests">सब्सक्रिप्शन प्लान्स को अप्रूव या रिजेक्ट करें</string>
     <string name="title_adv_requests">विज्ञापन रिक्वेस्ट्स</string>
     <string name="desc_adv_requests">यूज़र्स द्वारा भेजी गई विज्ञापन रिक्वेस्ट्स चेक करें</string>
+    <string name="msg_ad_approved_expiry">आपका विज्ञापन स्वीकृत हो गया है और अब %1$s तक लाइव है।</string>
     <string name="title_contact_requests">कॉन्टैक्ट रिक्वेस्ट्स</string>
     <string name="desc_contact_requests">यूज़र्स द्वारा भेजे गए मैसेज देखें</string>
     <string name="label_edit_contact">कॉन्टैक्ट संपादित करें</string>
