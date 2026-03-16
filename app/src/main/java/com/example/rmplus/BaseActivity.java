@@ -37,11 +37,62 @@ public class BaseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         // Security: Prevent screenshots and screen recording across the app
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
+        
+        // 🔥 Real-time Account Existence Check (for Global Logout on Deletion)
+        startAccountExistenceObserver();
+    }
+
+    private void startAccountExistenceObserver() {
+        String uid = FirebaseAuth.getInstance().getUid();
+        if (uid == null) return;
+
+        // Skip observer for login/register screens to avoid redundant logic
+        if (this instanceof LoginActivity || this instanceof RegisterActivity || this instanceof MainActivity) {
+            return;
+        }
+
+        accountExistenceRef = FirebaseDatabase.getInstance().getReference("users").child(uid);
+        accountExistenceListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                // If user node is removed from DB, it means account is deleted or disabled
+                if (!snapshot.exists() && !isFinishing()) {
+                    handleGlobalLogout();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // If permission is lost, treat it as account disabled/deleted
+                if (error.getCode() == DatabaseError.PERMISSION_DENIED) {
+                    handleGlobalLogout();
+                }
+            }
+        };
+        accountExistenceRef.addValueEventListener(accountExistenceListener);
+    }
+
+    private void handleGlobalLogout() {
+        // Clear local session and redirect
+        FirebaseAuth.getInstance().signOut();
+        getSharedPreferences("APP_DATA", MODE_PRIVATE).edit()
+                .remove("isLoggedIn")
+                .remove("role")
+                .remove("user_name")
+                .apply();
+
+        Intent intent = new Intent(this, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finishAffinity();
     }
 
     protected BottomNavigationView bottomNav;
     private int currentNavItemId = -1;
     TextView headerBadge;
+
+    private ValueEventListener accountExistenceListener;
+    private DatabaseReference accountExistenceRef;
 
     protected void setupBase(String role, int selectedItemId) {
 
@@ -469,10 +520,22 @@ public class BaseActivity extends AppCompatActivity {
                 .setPositiveButton(R.string.yes, (d, w) -> {
                     String uid = FirebaseAuth.getInstance().getUid();
                     if (uid != null) {
+                        // 1. Trigger deletion in DB (this will notify other devices)
                         FirebaseDatabase.getInstance().getReference("users").child(uid).removeValue();
+                        
+                        // 2. Delete Auth account
                         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
                             FirebaseAuth.getInstance().getCurrentUser().delete();
                         }
+
+                        // 3. Clear local session
+                        getSharedPreferences("APP_DATA", MODE_PRIVATE).edit()
+                                .remove("isLoggedIn")
+                                .remove("role")
+                                .remove("user_name")
+                                .apply();
+
+                        // 4. Redirect to login or register (Register seems better after full delete)
                         startActivity(new Intent(this, RegisterActivity.class));
                         finishAffinity();
                     }
@@ -730,5 +793,12 @@ public class BaseActivity extends AppCompatActivity {
                 .replace(".", "_")
                 .replace("$", "_")
                 .replace("#", "_");
+    }
+    @Override
+    protected void onDestroy() {
+        if (accountExistenceRef != null && accountExistenceListener != null) {
+            accountExistenceRef.removeEventListener(accountExistenceListener);
+        }
+        super.onDestroy();
     }
 }

@@ -234,22 +234,5 @@ public class ProfileActivity extends BaseActivity {
                 startActivity(Intent.createChooser(i, getString(R.string.title_share_using)));
         }
 
-        protected void deleteAccount() {
-                new AlertDialog.Builder(this)
-                                .setTitle(R.string.menu_delete_account)
-                                .setMessage(R.string.msg_delete_confirm)
-                                .setPositiveButton(R.string.yes, (d, w) -> {
-                                        userRef.removeValue();
-                                        // auth.getCurrentUser().delete();
-                                        if (auth.getCurrentUser() != null) {
-                                                auth.getCurrentUser().delete();
-                                        }
-                                        startActivity(new Intent(this,
-                                                        RegisterActivity.class));
-                                        finish();
-                                })
-                                .setNegativeButton(R.string.no, null)
-                                .show();
-        }
 
 }
