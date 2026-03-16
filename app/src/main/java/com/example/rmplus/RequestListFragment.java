@@ -96,6 +96,9 @@ public class RequestListFragment extends Fragment {
                     }
                 }
 
+                // ⬇️ Sort: newest first
+                list.sort((a, b) -> Long.compare(b.time, a.time));
+
                 rv.setAdapter(
                         new RequestAdapter(
                                 list,

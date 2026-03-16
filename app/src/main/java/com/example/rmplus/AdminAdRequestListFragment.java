@@ -99,6 +99,9 @@ public class AdminAdRequestListFragment extends Fragment {
                     }
                 }
 
+                // ⬇️ Sort: newest first
+                list.sort((a, b) -> Long.compare(b.time, a.time));
+
                 rv.setAdapter(
                         new AdRequestAdapter(
                                 list,
