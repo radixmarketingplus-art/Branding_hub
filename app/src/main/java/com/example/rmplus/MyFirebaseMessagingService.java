@@ -38,6 +38,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         String title = null;
         String body = null;
+        String action = null;
+        String extraData = null;
 
         // Notification payload (shown by system in background — but we also handle it manually)
         if (remoteMessage.getNotification() != null) {
@@ -51,19 +53,23 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 title = remoteMessage.getData().get("title");
             if (remoteMessage.getData().containsKey("message"))
                 body  = remoteMessage.getData().get("message");
+            if (remoteMessage.getData().containsKey("action"))
+                action = remoteMessage.getData().get("action");
+            if (remoteMessage.getData().containsKey("extraData"))
+                extraData = remoteMessage.getData().get("extraData");
         }
 
         if (title != null && body != null) {
             String uid = FirebaseAuth.getInstance().getUid();
             if (uid != null) {
-                fetchCountAndShow(title, body, uid);
+                fetchCountAndShow(title, body, uid, action, extraData);
             } else {
-                showNotification(title, body, 0);
+                showNotification(title, body, 0, action, extraData);
             }
         }
     }
 
-    private void fetchCountAndShow(String title, String body, String uid) {
+    private void fetchCountAndShow(String title, String body, String uid, String action, String extraData) {
         // 1. Fetch Personal Unread
         FirebaseDatabase.getInstance().getReference("notifications").child(uid)
             .addListenerForSingleValueEvent(new com.google.firebase.database.ValueEventListener() {
@@ -98,15 +104,15 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                                                 if (exp != null && exp < now) continue;
                                                 bCount++;
                                             }
-                                            showNotification(title, body, finalPCount + bCount);
+                                            showNotification(title, body, finalPCount + bCount, action, extraData);
                                         }
-                                        @Override public void onCancelled(@NonNull com.google.firebase.database.DatabaseError e) { showNotification(title, body, finalPCount); }
+                                        @Override public void onCancelled(@NonNull com.google.firebase.database.DatabaseError e) { showNotification(title, body, finalPCount, action, extraData); }
                                     });
                             }
-                            @Override public void onCancelled(@NonNull com.google.firebase.database.DatabaseError e) { showNotification(title, body, finalPCount); }
+                            @Override public void onCancelled(@NonNull com.google.firebase.database.DatabaseError e) { showNotification(title, body, finalPCount, action, extraData); }
                         });
                 }
-                @Override public void onCancelled(@NonNull com.google.firebase.database.DatabaseError e) { showNotification(title, body, 0); }
+                @Override public void onCancelled(@NonNull com.google.firebase.database.DatabaseError e) { showNotification(title, body, 0, action, extraData); }
             });
     }
 
@@ -124,7 +130,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 .setValue(token);
     }
 
-    private void showNotification(String title, String message, int count) {
+    private void showNotification(String title, String message, int count, String action, String extraData) {
         NotificationManager manager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -149,6 +155,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         Intent intent = new Intent(this, NotificationActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        if (action != null) intent.putExtra("action", action);
+        if (extraData != null) intent.putExtra("extraData", extraData);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(
                 this, 0, intent,
@@ -160,6 +168,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         NotificationCompat.Builder builder =
                 new NotificationCompat.Builder(this, CHANNEL_ID)
                         .setSmallIcon(R.mipmap.ic_launcher)
+                        .setLargeIcon(android.graphics.BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
+
                         .setContentTitle(title)
                         .setContentText(message)
                         .setAutoCancel(true)

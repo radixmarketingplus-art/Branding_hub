@@ -38,9 +38,9 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/logo"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@drawable/logo"
         android:supportsRtl="true"
         android:theme="@style/Theme.RMPlus"
         android:usesCleartextTraffic="true"
@@ -211,6 +211,19 @@
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
+            <!-- ✅ FCM: Default notification icon for background/killed state -->
+            <meta-data
+                android:name="com.google.firebase.messaging.default_notification_icon"
+                android:resource="@mipmap/ic_launcher" />
+
+
+
+
+
+            <!-- ✅ FCM: Default notification color -->
+            <meta-data
+                android:name="com.google.firebase.messaging.default_notification_color"
+                android:resource="@color/white" />
         </service>
 
         <provider

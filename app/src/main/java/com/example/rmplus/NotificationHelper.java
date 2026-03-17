@@ -290,7 +290,10 @@ public class NotificationHelper {
 
         NotificationCompat.Builder builder =
                 new NotificationCompat.Builder(context, CHANNEL_ID)
-                        .setSmallIcon(R.mipmap.ic_launcher) // Try to use original icon
+                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setLargeIcon(android.graphics.BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher))
+
+
                         .setContentTitle(title)
                         .setContentText(message)
                         .setAutoCancel(true)

@@ -320,6 +320,10 @@ public class NotificationActivity extends BaseActivity {
                 android.content.Intent intent = new android.content.Intent(this, ProfileActivity.class);
                 startActivity(intent);
                 finish();
+            } else if (action.equals("OPEN_EDIT_PROFILE")) {
+                android.content.Intent intent = new android.content.Intent(this, EditProfileActivity.class);
+                startActivity(intent);
+                finish();
             } else if (action.equals("OPEN_SUBSCRIPTION_REQUESTS")) {
                 android.content.Intent intent = new android.content.Intent(this, SubscriptionRequestsActivity.class);
                 startActivity(intent);

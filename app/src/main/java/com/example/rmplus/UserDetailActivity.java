@@ -411,7 +411,7 @@ public class UserDetailActivity extends BaseActivity {
         userRef.updateChildren(updates).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 Toast.makeText(UserDetailActivity.this, "User updated successfully", Toast.LENGTH_SHORT).show();
-                NotificationHelper.send(this, uid, "Profile Updated", "Your profile has been updated by an administrator.");
+                NotificationHelper.send(this, uid, "Profile Updated", "Your profile has been updated by an administrator.", "OPEN_EDIT_PROFILE", "", 0);
                 finish();
             } else {
                 Toast.makeText(UserDetailActivity.this, "Update failed", Toast.LENGTH_SHORT).show();

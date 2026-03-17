@@ -532,7 +532,7 @@ public class EditProfileActivity extends BaseActivity {
                 FirebaseAuth.getInstance().getUid(),
                 "Profile Updated",
                 "Your profile information has been successfully updated.",
-                "OPEN_PROFILE",
+                "OPEN_EDIT_PROFILE",
                 "", 
                 expiry2Days);
 
