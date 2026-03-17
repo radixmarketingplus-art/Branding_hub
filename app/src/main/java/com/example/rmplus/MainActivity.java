@@ -56,13 +56,18 @@ public class MainActivity extends BaseActivity {
 //        appName.startAnimation(fadeAnim);
 //        tagline.startAnimation(fadeAnim);
         // Animations
-        Animation logoAnim =
-                AnimationUtils.loadAnimation(this, R.anim.logo_intro);
-
-        Animation textAnim =
-                AnimationUtils.loadAnimation(this, R.anim.text_slide_fade);
+        Animation logoAnim = AnimationUtils.loadAnimation(this, R.anim.logo_intro);
+        Animation fadeAnim = android.view.animation.AnimationUtils.loadAnimation(this, android.R.anim.fade_in);
+        
+        // Staggered start times
+        fadeAnim.setDuration(1000);
+        fadeAnim.setStartOffset(600); // Progress bar fades in last
 
         logoImg.startAnimation(logoAnim);
+        
+        progressBar.setVisibility(android.view.View.VISIBLE);
+        progressBar.startAnimation(fadeAnim);
+
 
 
         // ❌ OLD CODE — always opened Login
