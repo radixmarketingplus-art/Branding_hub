@@ -38,6 +38,7 @@ public class MainActivity extends BaseActivity {
         setContentView(R.layout.activity_main);
 
         logoImg = findViewById(R.id.logoImg);
+        android.widget.ProgressBar progressBar = findViewById(R.id.progressBar);
 //        appName = findViewById(R.id.appName);
 
 
