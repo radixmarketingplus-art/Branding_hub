@@ -144,7 +144,7 @@ public class HomeActivity extends BaseActivity {
 
         // ================= DATA LOAD =================
         loadDynamicHomeSections();
-        loadFestivalCardsLive();
+        loadAllFestivalCardsLive();
         loadHeroSectionLive();
 
         trendingSnapHelper = new PagerSnapHelper();
@@ -725,7 +725,7 @@ public class HomeActivity extends BaseActivity {
     void filterFestivalByDate(String date) {
 
         if ("CLEAR".equals(date)) {
-            loadFestivalCardsLive();
+            loadAllFestivalCardsLive();
             return;
         }
 
@@ -1060,7 +1060,7 @@ public class HomeActivity extends BaseActivity {
     }
 
     void loadFestivalCardsLive() {
-        // Get today's date in dd-MM-yyyy format
+        // Load only TODAY's date for initial/onResume load
         String today = new SimpleDateFormat("dd-MM-yyyy", Locale.US).format(new Date());
 
         FirebaseDatabase.getInstance().getReference("templates")
@@ -1070,11 +1070,9 @@ public class HomeActivity extends BaseActivity {
                     @Override
                     public void onDataChange(DataSnapshot snapshot) {
                         safelyHideSkeleton(skFestival);
-                        // snapshot children = festival names (e.g. Holi, Eid)
                         ArrayList<FestivalCardItem> list = new ArrayList<>();
                         for (DataSnapshot festivalSnap : snapshot.getChildren()) {
                             String festivalName = festivalSnap.getKey();
-                            // Take FIRST template under this festival
                             DataSnapshot firstTemplate = null;
                             for (DataSnapshot t : festivalSnap.getChildren()) {
                                 firstTemplate = t;
@@ -1086,9 +1084,7 @@ public class HomeActivity extends BaseActivity {
                                     : firstTemplate.child("url").getValue(String.class);
                             if (url == null) continue;
 
-                            String fullCategory = "Festival Cards/" + today + "/" + festivalName;
                             String templateId = firstTemplate.getKey();
-
                             FestivalCardItem item = new FestivalCardItem(url, today, festivalName,
                                     System.currentTimeMillis() + (7L * 24 * 60 * 60 * 1000));
                             item.templateId = templateId;
@@ -1096,7 +1092,8 @@ public class HomeActivity extends BaseActivity {
                         }
 
                         if (list.isEmpty()) {
-                            rvFestivalCards.setAdapter(null);
+                            // If no festivals today, fall back to loading all dates
+                            loadAllFestivalCardsLive();
                             return;
                         }
 
@@ -1116,6 +1113,86 @@ public class HomeActivity extends BaseActivity {
                         safelyHideSkeleton(skFestival);
                     }
                 });
+    }
+
+    /**
+     * Loads festival cards from ALL dates in the next 7 days.
+     * Used when "All" date chip is selected — shows one card per festival per date.
+     */
+    void loadAllFestivalCardsLive() {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
+        ArrayList<String> next7Dates = new ArrayList<>();
+        Calendar cal = Calendar.getInstance();
+        for (int i = 0; i < 7; i++) {
+            Calendar c = (Calendar) cal.clone();
+            c.add(Calendar.DAY_OF_MONTH, i);
+            next7Dates.add(sdf.format(c.getTime()));
+        }
+
+        // We'll collect results from all dates; use an atomic counter to know when all are done
+        ArrayList<FestivalCardItem> combined = new ArrayList<>();
+        int[] remaining = {next7Dates.size()};
+
+        DatabaseReference festivalRef = FirebaseDatabase.getInstance()
+                .getReference("templates").child("Festival Cards");
+
+        for (String date : next7Dates) {
+            festivalRef.child(date).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot snapshot) {
+                    for (DataSnapshot festivalSnap : snapshot.getChildren()) {
+                        String festivalName = festivalSnap.getKey();
+                        DataSnapshot firstTemplate = null;
+                        for (DataSnapshot t : festivalSnap.getChildren()) {
+                            firstTemplate = t;
+                            break;
+                        }
+                        if (firstTemplate == null) continue;
+                        String url = firstTemplate.hasChild("imagePath")
+                                ? firstTemplate.child("imagePath").getValue(String.class)
+                                : firstTemplate.child("url").getValue(String.class);
+                        if (url == null) continue;
+
+                        String templateId = firstTemplate.getKey();
+                        FestivalCardItem item = new FestivalCardItem(url, date, festivalName,
+                                System.currentTimeMillis() + (7L * 24 * 60 * 60 * 1000));
+                        item.templateId = templateId;
+                        synchronized (combined) {
+                            combined.add(item);
+                        }
+                    }
+
+                    remaining[0]--;
+                    if (remaining[0] == 0) {
+                        // All dates loaded — update UI on main thread
+                        runOnUiThread(() -> {
+                            safelyHideSkeleton(skFestival);
+                            if (combined.isEmpty()) {
+                                rvFestivalCards.setAdapter(null);
+                                return;
+                            }
+                            FestivalCardAdapter adapter = new FestivalCardAdapter(combined, (item) -> {
+                                String fullCat = "Festival Cards/" + item.date + "/" + item.festivalName;
+                                Intent i = new Intent(HomeActivity.this, TemplatePreviewActivity.class);
+                                i.putExtra("id", item.templateId);
+                                i.putExtra("path", item.imagePath);
+                                i.putExtra("category", fullCat);
+                                startActivity(i);
+                            });
+                            rvFestivalCards.setAdapter(adapter);
+                        });
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError error) {
+                    remaining[0]--;
+                    if (remaining[0] == 0) {
+                        runOnUiThread(() -> safelyHideSkeleton(skFestival));
+                    }
+                }
+            });
+        }
     }
 
 
@@ -1162,7 +1239,7 @@ public class HomeActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
 
-        loadFestivalCardsLive(); // Always load live for consistency (Replaces loadFestivalCards)
+        loadAllFestivalCardsLive(); // "All" is selected by default — load all upcoming festivals
 
         loadHeroSectionLive(); // Merged loadAdvertisementLive and loadTrendingLive
 
