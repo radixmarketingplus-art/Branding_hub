@@ -151,7 +151,12 @@ public class ExpiryCleanupHelper {
 
         // 4. Remove from SharedPreferences
         // category for SP is the first part of the path (e.g., "Business Frame")
-        String rootCategory = path.contains("/") ? path.split("/")[0] : path;
+        String rootCategory = path;
+        if (path.startsWith("Festival Cards/")) {
+            rootCategory = "Festival Cards";
+        } else if (path.contains("/")) {
+            rootCategory = path.split("/")[0];
+        }
         removeFromLocal(context, rootCategory, url);
 
         // 5. Delete from VPS
@@ -165,7 +170,7 @@ public class ExpiryCleanupHelper {
         if (json == null) return;
 
         SharedPreferences.Editor editor = sp.edit();
-        if ("Festival Cards".equalsIgnoreCase(category)) {
+        if (category.toLowerCase().startsWith("festival cards")) {
             Type t = new TypeToken<ArrayList<FestivalCardItem>>(){}.getType();
             ArrayList<FestivalCardItem> list = gson.fromJson(json, t);
             if (list != null) {

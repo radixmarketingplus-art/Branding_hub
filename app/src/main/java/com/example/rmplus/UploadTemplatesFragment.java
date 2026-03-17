@@ -45,9 +45,17 @@ public class UploadTemplatesFragment extends Fragment {
 
     Uri selectedImageUri, originalImageUri;
     String selectedDate = "";
+    String selectedFestivalName = ""; // festival name selected from dropdown
     EditText editAdLink;
     MaterialButton btnPickExpiry;
     long expiryTime = System.currentTimeMillis() + (7L * 24 * 60 * 60 * 1000); // Default 7 days
+
+    // Festival name dropdown views
+    android.widget.Spinner spinnerFestivalName;
+    android.widget.LinearLayout festivalNameContainer;
+    ArrayList<String> festivalNameList = new ArrayList<>();
+    ArrayAdapter<String> festivalNameAdapter;
+
     // --- EDIT MODE FIELDS ---
     boolean isEditMode = false;
     String oldUrl = "";
@@ -207,6 +215,33 @@ public class UploadTemplatesFragment extends Fragment {
         placeholderLayout = v.findViewById(R.id.placeholderLayout);
         btnChangeMedia = v.findViewById(R.id.btnChangeMedia);
         icPlayVideo = v.findViewById(R.id.icPlayVideo);
+        spinnerFestivalName = v.findViewById(R.id.spinnerFestivalName);
+        festivalNameContainer = v.findViewById(R.id.festivalNameContainer);
+
+        // Setup festival name adapter
+        festivalNameList = new ArrayList<>();
+        festivalNameList.add(getString(R.string.festival_add_new)); // first item = + Add
+        festivalNameAdapter = new ArrayAdapter<>(requireContext(),
+                android.R.layout.simple_spinner_dropdown_item, festivalNameList);
+        spinnerFestivalName.setAdapter(festivalNameAdapter);
+
+        spinnerFestivalName.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String selected = festivalNameList.get(position);
+                if (selected.equals(getString(R.string.festival_add_new))) {
+                    // Show add dialog only if a date is already picked
+                    if (selectedDate.isEmpty()) {
+                        toast(R.string.msg_select_fest_date_first);
+                        return;
+                    }
+                    showAddFestivalNameDialog();
+                } else {
+                    selectedFestivalName = selected;
+                }
+            }
+            @Override public void onNothingSelected(AdapterView<?> parent) {}
+        });
 
         btnSelectImage.setAlpha(0.5f);
         updatePreviewVisibility();
@@ -353,10 +388,12 @@ public class UploadTemplatesFragment extends Fragment {
 
             String cat = args.getString("category", "");
             String sub = "";
+            String fest = "";
             if (cat.contains("/")) {
                 String[] parts = cat.split("/");
                 cat = parts[0];
                 sub = parts[1];
+                if (parts.length > 2) fest = parts[2];
             }
 
             String[] keysList = getSectionKeys();
@@ -364,17 +401,26 @@ public class UploadTemplatesFragment extends Fragment {
                 if (keysList[i].equalsIgnoreCase(cat)) {
                     spinnerSection.setSelection(i);
                     final String finalSub = sub;
+                    final String finalFest = fest;
                     
                     // ✅ DELAY RESETTING isPopulating to ensure spinner events don't clear our data
+                    final String finalCat = cat;
                     spinnerSection.postDelayed(() -> {
-                        if (!finalSub.isEmpty()) {
-                            for (int j = 0; j < SUB_SECTION_KEYS.length; j++) {
-                                if (SUB_SECTION_KEYS[j].equalsIgnoreCase(finalSub)) {
-                                    spinnerSubSection.setSelection(j);
-                                    break;
+                        if (finalCat.equalsIgnoreCase("Business Frame")) {
+                            if (!finalSub.isEmpty()) {
+                                for (int j = 0; j < SUB_SECTION_KEYS.length; j++) {
+                                    if (SUB_SECTION_KEYS[j].equalsIgnoreCase(finalSub)) {
+                                        spinnerSubSection.setSelection(j);
+                                        break;
+                                    }
                                 }
                             }
+                        } else if (finalCat.equalsIgnoreCase("Festival Cards")) {
+                            if (!selectedDate.isEmpty()) {
+                                loadFestivalNamesForDate(selectedDate, finalFest);
+                            }
                         }
+                        
                         isPopulating = false;
                         toast(R.string.msg_template_loaded);
                     }, 500); // 500ms to be safe across all devices
@@ -453,8 +499,10 @@ public class UploadTemplatesFragment extends Fragment {
                     requireContext(),
                     (view, year, month, day) -> {
                         month++;
-                        selectedDate = day + "-" + month + "-" + year;
+                        selectedDate = String.format(java.util.Locale.US, "%02d-%02d-%04d", day, month, year);
                         btnPickDate.setText(getString(R.string.label_selected, selectedDate));
+                        // Load festival names for this date from Firebase
+                        loadFestivalNamesForDate(selectedDate, null);
                     },
                     cal.get(Calendar.YEAR),
                     cal.get(Calendar.MONTH),
@@ -499,6 +547,11 @@ public class UploadTemplatesFragment extends Fragment {
 
         if (sectionKey.equalsIgnoreCase("Festival Cards") && selectedDate.isEmpty()) {
             toast(R.string.msg_select_fest_date);
+            return;
+        }
+
+        if (sectionKey.equalsIgnoreCase("Festival Cards") && selectedFestivalName.isEmpty()) {
+            toast(R.string.msg_select_festival_name);
             return;
         }
 
@@ -744,19 +797,28 @@ public class UploadTemplatesFragment extends Fragment {
             // 🎉 FESTIVAL
             // =============================
             if (section.equalsIgnoreCase("Festival Cards")) {
-                FestivalCardItem festItem = new FestivalCardItem(imageUrl, selectedDate, expiryTime);
+                // Firebase path: templates/Festival Cards/DATE/FESTIVAL_NAME/templateId
+                DatabaseReference festDbRef = com.google.firebase.database.FirebaseDatabase.getInstance()
+                        .getReference("templates")
+                        .child("Festival Cards")
+                        .child(selectedDate)
+                        .child(selectedFestivalName);
 
-                // 1. Save to Firebase
-                dbRef.child(templateId).setValue(festItem);
+                String festTemplateId = isEditMode && !oldRealId.isEmpty() ? oldRealId : festDbRef.push().getKey();
+                if (festTemplateId == null) festTemplateId = String.valueOf(System.currentTimeMillis());
 
-                // 2. Save to SharedPreferences
-                Type t = new TypeToken<ArrayList<FestivalCardItem>>() {
-                }.getType();
-                ArrayList<FestivalCardItem> list = gson.fromJson(sp.getString(section, "[]"), t);
-                if (list == null)
-                    list = new ArrayList<>();
-                list.add(0, festItem);
-                sp.edit().putString(section, gson.toJson(list)).apply();
+                FestivalCardItem festItem = new FestivalCardItem(imageUrl, selectedDate, selectedFestivalName, expiryTime);
+                festItem.templateId = festTemplateId;
+
+                // 1. Save to Firebase under date/festivalName path
+                festDbRef.child(festTemplateId).setValue(festItem);
+
+                // 2. Also ensure festival name is stored in festival_names node
+                com.google.firebase.database.FirebaseDatabase.getInstance()
+                        .getReference("festival_names")
+                        .child(selectedDate)
+                        .child(selectedFestivalName)
+                        .setValue(true);
 
                 toast(R.string.msg_upload_success);
                 clearForm();
@@ -817,6 +879,94 @@ public class UploadTemplatesFragment extends Fragment {
         });
     }
 
+    // ---------------- FESTIVAL NAME HELPERS ----------------
+
+    /**
+     * Loads festival names for the given date from Firebase (festival_names/DATE/)
+     * and populates the spinnerFestivalName dropdown.
+     */
+    void loadFestivalNamesForDate(String date, @Nullable String festivalToSelect) {
+        festivalNameList.clear();
+        festivalNameList.add(getString(R.string.festival_add_new)); // always first
+        festivalNameAdapter.notifyDataSetChanged();
+        selectedFestivalName = "";
+        if (festivalNameContainer != null)
+            festivalNameContainer.setVisibility(View.VISIBLE);
+
+        com.google.firebase.database.FirebaseDatabase.getInstance()
+                .getReference("festival_names")
+                .child(date)
+                .addListenerForSingleValueEvent(new com.google.firebase.database.ValueEventListener() {
+                    @Override
+                    public void onDataChange(@androidx.annotation.NonNull com.google.firebase.database.DataSnapshot snapshot) {
+                        for (com.google.firebase.database.DataSnapshot child : snapshot.getChildren()) {
+                            String name = child.getKey();
+                            if (name != null && !festivalNameList.contains(name)) {
+                                festivalNameList.add(name);
+                            }
+                        }
+                        festivalNameAdapter.notifyDataSetChanged();
+                        
+                        // IF target provided, select it
+                        if (festivalToSelect != null && !festivalToSelect.isEmpty()) {
+                            for (int k = 0; k < festivalNameList.size(); k++) {
+                                if (festivalNameList.get(k).equalsIgnoreCase(festivalToSelect)) {
+                                    spinnerFestivalName.setSelection(k);
+                                    selectedFestivalName = festivalNameList.get(k);
+                                    break;
+                                }
+                            }
+                        } else if (festivalNameList.size() > 1) {
+                            // Auto-select first real festival if any
+                            spinnerFestivalName.setSelection(1);
+                            selectedFestivalName = festivalNameList.get(1);
+                        }
+                    }
+                    @Override
+                    public void onCancelled(@androidx.annotation.NonNull com.google.firebase.database.DatabaseError error) {}
+                });
+    }
+
+    /**
+     * Shows a dialog to add a new festival name for the selected date.
+     * Saves to Firebase festival_names/DATE/NAME and updates the dropdown.
+     */
+    void showAddFestivalNameDialog() {
+        android.widget.EditText input = new android.widget.EditText(requireContext());
+        input.setHint(getString(R.string.hint_festival_name));
+        input.setInputType(android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_FLAG_CAP_WORDS);
+        int pad = (int) (16 * getResources().getDisplayMetrics().density);
+        input.setPadding(pad, pad, pad, pad);
+
+        new AlertDialog.Builder(requireContext())
+                .setTitle(getString(R.string.title_add_festival))
+                .setView(input)
+                .setPositiveButton(getString(R.string.btn_add), (d, w) -> {
+                    String name = input.getText().toString().trim();
+                    if (name.isEmpty()) {
+                        toast(R.string.msg_festival_name_empty);
+                        return;
+                    }
+                    // Save to Firebase
+                    com.google.firebase.database.FirebaseDatabase.getInstance()
+                            .getReference("festival_names")
+                            .child(selectedDate)
+                            .child(name)
+                            .setValue(true);
+
+                    // Add to dropdown and auto-select
+                    if (!festivalNameList.contains(name)) {
+                        festivalNameList.add(name);
+                        festivalNameAdapter.notifyDataSetChanged();
+                    }
+                    int pos = festivalNameList.indexOf(name);
+                    spinnerFestivalName.setSelection(pos);
+                    selectedFestivalName = name;
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
+    }
+
     // ---------------- HELPERS ----------------
 
     /**
@@ -838,9 +988,15 @@ public class UploadTemplatesFragment extends Fragment {
         selectedImageUri = null;
         updatePreviewVisibility();
         selectedDate = "";
+        selectedFestivalName = "";
         btnPickDate.setText(R.string.btn_pick_date);
         btnSelectImage.setEnabled(false);
         btnSelectImage.setAlpha(0.5f);
+
+        // Reset festival name dropdown
+        festivalNameList.clear();
+        festivalNameList.add(getString(R.string.festival_add_new));
+        festivalNameAdapter.notifyDataSetChanged();
 
         // RESET EDIT MODE
         isEditMode = false;

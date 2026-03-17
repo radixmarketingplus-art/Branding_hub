@@ -90,7 +90,6 @@ public class TemplatePreviewActivity extends BaseActivity {
         bottomSheetSimilar = findViewById(R.id.bottomSheetSimilar);
         btnBack = findViewById(R.id.btnBack);
         params = previewContainer.getLayoutParams();
-
         progressOverlay = findViewById(R.id.progressOverlay);
         txtProgressTitle = findViewById(R.id.txtProgressTitle);
         txtProgressSub = findViewById(R.id.txtProgressSub);
@@ -124,93 +123,92 @@ public class TemplatePreviewActivity extends BaseActivity {
     }
 
     void fetchTemplateDetails() {
-        if ("MyDesign".equalsIgnoreCase(category) || category == null) {
-            // SEARCH all categories for the template to find its true category
-            rootRef.child("templates").addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    boolean found = false;
-                    for (DataSnapshot catSnap : snapshot.getChildren()) {
-                        if (catSnap.hasChild(templateId)) {
-                            category = catSnap.getKey();
-                            found = true;
-                            DataSnapshot item = catSnap.child(templateId);
-                            originalUrl = item.hasChild("imagePath") ? item.child("imagePath").getValue(String.class)
-                                    : item.child("url").getValue(String.class);
-                            if (path == null) path = originalUrl;
-                        } else {
-                            // Search sub-categories
-                            for (DataSnapshot subSnap : catSnap.getChildren()) {
-                                if (subSnap.hasChild(templateId)) {
-                                    category = catSnap.getKey() + "/" + subSnap.getKey();
-                                    found = true;
-                                    DataSnapshot item = subSnap.child(templateId);
-                                    templateType = item.child("type").getValue(String.class);
-                                    if (templateType == null) templateType = "image";
-                                    
-                                    originalUrl = item.hasChild("imagePath")
-                                            ? item.child("imagePath").getValue(String.class)
-                                            : item.child("url").getValue(String.class);
-                                    if (path == null) path = originalUrl;
-                                    break;
-                                }
-                            }
+        // SEARCH all categories for the template to find its true category
+        rootRef.child("templates").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                TemplateDiscovery result = discoverTemplateRecursive(snapshot, "");
+                if (result != null) {
+                    category = result.categoryPath;
+                    templateId = result.id;
+                    originalUrl = result.url;
+                    templateType = result.type;
+                    if (path == null) path = originalUrl;
+                }
+                
+                if (path != null) {
+                    initUI();
+                } else {
+                    // 🧹 SELF-CLEANING: If template is deleted from main nodes,
+                    // remove it from user's history too to avoid "blank" items.
+                    if (uid != null) {
+                        String[] types = { "likes", "favorites", "edits", "saves" };
+                        for (String type : types) {
+                            rootRef.child("user_activity").child(uid).child(type).child(templateId).removeValue();
                         }
                     }
-
-                    if (found || path != null) {
-                        initUI();
-                    } else {
-                        // 🧹 SELF-CLEANING: If template is deleted from main nodes,
-                        // remove it from user's history too to avoid "blank" items.
-                        if (uid != null) {
-                            String[] types = { "likes", "favorites", "edits", "saves" };
-                            for (String type : types) {
-                                rootRef.child("user_activity").child(uid).child(type).child(templateId).removeValue();
-                            }
-                        }
-                        Toast.makeText(TemplatePreviewActivity.this, R.string.msg_template_deleted, Toast.LENGTH_SHORT)
-                                .show();
-                        finish();
-                    }
+                    Toast.makeText(TemplatePreviewActivity.this, R.string.msg_template_deleted, Toast.LENGTH_SHORT)
+                            .show();
+                    finish();
                 }
+            }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    if (path != null)
-                        initUI();
-                    else
-                        finish();
-                }
-            });
-        } else {
-            // Direct fetch if category is known
-            rootRef.child("templates").child(category).child(templateId)
-                    .addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot s) {
-                    if (s.exists()) {
-                        originalUrl = s.hasChild("imagePath") ? s.child("imagePath").getValue(String.class)
-                                : s.child("url").getValue(String.class);
-                        if (path == null) path = originalUrl;
-                        templateType = s.child("type").getValue(String.class);
-                        if (templateType == null) templateType = "image";
-                        initUI();
-                    } else {
-                                finish();
-                            }
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError e) {
-                            if (path != null)
-                                initUI();
-                            else
-                                finish();
-                        }
-                    });
-        }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                if (path != null) initUI();
+                else finish();
+            }
+        });
     }
+
+    private static class TemplateDiscovery {
+        String categoryPath;
+        String id;
+        String url;
+        String type;
+    }
+
+    private TemplateDiscovery discoverTemplateRecursive(DataSnapshot snapshot, String currentPath) {
+        if (snapshot.hasChild("imagePath") || snapshot.hasChild("url")) {
+            // Check if this specific node is the one we're looking for
+            if (snapshot.getKey().equals(templateId)) {
+                TemplateDiscovery td = new TemplateDiscovery();
+                td.id = snapshot.getKey();
+                td.categoryPath = currentPath;
+                td.url = snapshot.hasChild("imagePath") ? snapshot.child("imagePath").getValue(String.class) : snapshot.child("url").getValue(String.class);
+                td.type = snapshot.child("type").getValue(String.class);
+                if (td.type == null) td.type = "image";
+                return td;
+            }
+        }
+        
+        // Check children for the templateId
+        if (snapshot.hasChild(templateId)) {
+            DataSnapshot item = snapshot.child(templateId);
+            if (item.hasChild("imagePath") || item.hasChild("url")) {
+                TemplateDiscovery td = new TemplateDiscovery();
+                td.id = templateId;
+                td.categoryPath = currentPath;
+                td.url = item.hasChild("imagePath") ? item.child("imagePath").getValue(String.class) : item.child("url").getValue(String.class);
+                td.type = item.child("type").getValue(String.class);
+                if (td.type == null) td.type = "image";
+                return td;
+            }
+        }
+
+        // Search deeper
+        for (DataSnapshot child : snapshot.getChildren()) {
+            String key = child.getKey();
+            if (key != null && (key.equals("Trending Now") || key.equals("Advertisement") || key.equals("Frame")))
+                continue;
+
+            String nextPath = currentPath.isEmpty() ? key : currentPath + "/" + key;
+            TemplateDiscovery found = discoverTemplateRecursive(child, nextPath);
+            if (found != null) return found;
+        }
+        return null;
+    }
+
 
     void initUI() {
         // Detect Video
@@ -327,47 +325,58 @@ public class TemplatePreviewActivity extends BaseActivity {
     // =====================================================
 
     void loadSimilarTemplates() {
-
         if (category == null)
             return;
 
-        // Fetch directly from Firebase as requested
-        rootRef.child("templates").child(category)
+        loadSimilarTemplatesFromPath(category);
+    }
+
+    private void loadSimilarTemplatesFromPath(String path) {
+        rootRef.child("templates").child(path)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot snapshot) {
                         ArrayList<TemplateModel> list = new ArrayList<>();
-                        for (DataSnapshot d : snapshot.getChildren()) {
-                            String itemPath = null;
-                            if (d.hasChild("imagePath")) {
-                                itemPath = d.child("imagePath").getValue(String.class);
-                            } else if (d.hasChild("url")) {
-                                itemPath = d.child("url").getValue(String.class);
-                            }
+                        collectSimilarTemplates(snapshot, path, list);
 
-                            if (itemPath != null && !d.getKey().equals(templateId)) {
-                                String type = d.child("type").getValue(String.class);
-                                list.add(new TemplateModel(d.getKey(), itemPath, category, null, type));
-                            }
-                        }
+                        // ✅ No fallback — never mix templates from other festivals/categories
+                        // If empty, the Similar section will simply be empty (correct behavior)
 
                         rvSimilar.setLayoutManager(new GridLayoutManager(TemplatePreviewActivity.this, 3));
                         TemplateGridAdapter adapter = new TemplateGridAdapter(list, R.layout.item_grid_square, t -> {
                             Intent i = new Intent(TemplatePreviewActivity.this, TemplatePreviewActivity.class);
                             i.putExtra("id", t.id);
                             i.putExtra("path", t.url);
-                            i.putExtra("category", category);
+                            i.putExtra("category", t.category);
                             startActivity(i);
                             finish();
                         });
+                        adapter.setShowDate(false); // ✅ User requested: only show images in similar area
                         rvSimilar.setAdapter(adapter);
                     }
 
                     @Override
-                    public void onCancelled(DatabaseError error) {
-                    }
+                    public void onCancelled(DatabaseError error) {}
                 });
     }
+
+
+
+    private void collectSimilarTemplates(DataSnapshot snapshot, String rootCategory, ArrayList<TemplateModel> result) {
+        if (snapshot.hasChild("imagePath") || snapshot.hasChild("url")) {
+            String itemPath = snapshot.hasChild("imagePath") ? snapshot.child("imagePath").getValue(String.class) : snapshot.child("url").getValue(String.class);
+            if (itemPath != null && !snapshot.getKey().equals(templateId)) {
+                String type = snapshot.child("type").getValue(String.class);
+                result.add(new TemplateModel(snapshot.getKey(), itemPath, rootCategory, null, type));
+            }
+        } else {
+            for (DataSnapshot child : snapshot.getChildren()) {
+                collectSimilarTemplates(child, rootCategory, result);
+            }
+        }
+    }
+
+
 
     // =====================================================
     // LIKE STATUS

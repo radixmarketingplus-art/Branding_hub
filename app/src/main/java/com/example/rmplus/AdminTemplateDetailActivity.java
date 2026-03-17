@@ -191,48 +191,12 @@ public class AdminTemplateDetailActivity extends BaseActivity {
         FirebaseDatabase.getInstance().getReference("templates").addListenerForSingleValueEvent(new com.google.firebase.database.ValueEventListener() {
             @Override
             public void onDataChange(@NonNull com.google.firebase.database.DataSnapshot snapshot) {
-                boolean found = false;
-                com.google.firebase.database.DataSnapshot finalTemplateSnap = null;
-                String foundCat = "";
-                String foundId = "";
-
-                // 🔄 SEARCH ALL CATEGORIES
-                for (com.google.firebase.database.DataSnapshot catSnap : snapshot.getChildren()) {
-                    for (com.google.firebase.database.DataSnapshot itemSnap : catSnap.getChildren()) {
-                        
-                        if (itemSnap.hasChild("url") || itemSnap.hasChild("imagePath")) {
-                            String path = itemSnap.hasChild("url") ? 
-                                          itemSnap.child("url").getValue(String.class) : 
-                                          itemSnap.child("imagePath").getValue(String.class);
-                                          
-                            if (templatePath.equals(path)) {
-                                found = true; foundCat = catSnap.getKey(); foundId = itemSnap.getKey();
-                                finalTemplateSnap = itemSnap;
-                                break;
-                            }
-                        } else {
-                            for (com.google.firebase.database.DataSnapshot subItemSnap : itemSnap.getChildren()) {
-                                String path = subItemSnap.hasChild("url") ? 
-                                              subItemSnap.child("url").getValue(String.class) : 
-                                              subItemSnap.child("imagePath").getValue(String.class);
-                                              
-                                if (templatePath.equals(path)) {
-                                    found = true; foundCat = catSnap.getKey() + "/" + itemSnap.getKey(); foundId = subItemSnap.getKey();
-                                    finalTemplateSnap = subItemSnap;
-                                    break;
-                                }
-                            }
-                        }
-                        if (found) break;
-                    }
-                    if (found) break;
-                }
-
-                if (found) {
-                    category = foundCat;
-                    realTemplateId = foundId;
+                TemplateDiscovery result = discoverTemplateRecursive(snapshot, "");
+                if (result != null) {
+                    category = result.categoryPath;
+                    realTemplateId = result.id;
                     txtCategory.setText(getLocalizedCategory(category));
-                    processTemplateData(finalTemplateSnap);
+                    processTemplateData(result.snapshot);
                 } else {
                     txtCategory.setText(R.string.label_external_content);
                     realTemplateId = templateKey; // Fallback to Base64
@@ -243,6 +207,37 @@ public class AdminTemplateDetailActivity extends BaseActivity {
             @Override public void onCancelled(@NonNull com.google.firebase.database.DatabaseError error) {}
         });
     }
+
+    private static class TemplateDiscovery {
+        String categoryPath;
+        String id;
+        com.google.firebase.database.DataSnapshot snapshot;
+    }
+
+    private TemplateDiscovery discoverTemplateRecursive(com.google.firebase.database.DataSnapshot snapshot, String currentPath) {
+        if (snapshot.hasChild("imagePath") || snapshot.hasChild("url")) {
+            String url = snapshot.hasChild("imagePath") ? snapshot.child("imagePath").getValue(String.class) : snapshot.child("url").getValue(String.class);
+            if (templatePath.equals(url)) {
+                TemplateDiscovery td = new TemplateDiscovery();
+                td.id = snapshot.getKey();
+                td.categoryPath = currentPath;
+                td.snapshot = snapshot;
+                return td;
+            }
+        }
+        
+        for (com.google.firebase.database.DataSnapshot child : snapshot.getChildren()) {
+            String key = child.getKey();
+            if (key != null && (key.equals("Trending Now") || key.equals("Advertisement") || key.equals("Frame")))
+                continue;
+
+            String nextPath = currentPath.isEmpty() ? key : currentPath + "/" + key;
+            TemplateDiscovery found = discoverTemplateRecursive(child, nextPath);
+            if (found != null) return found;
+        }
+        return null;
+    }
+
 
     private void processTemplateData(com.google.firebase.database.DataSnapshot snap) {
         // 📅 LOAD DATES & LINKS FROM DB SNAPSHOT
@@ -521,7 +516,7 @@ public class AdminTemplateDetailActivity extends BaseActivity {
 
         SharedPreferences.Editor editor = sp.edit();
 
-        if ("Festival Cards".equalsIgnoreCase(category)) {
+        if (category.toLowerCase().startsWith("festival cards")) {
             Type t = new TypeToken<ArrayList<FestivalCardItem>>(){}.getType();
             ArrayList<FestivalCardItem> list = gson.fromJson(json, t);
             if (list != null) {
@@ -588,7 +583,10 @@ public class AdminTemplateDetailActivity extends BaseActivity {
         if (key == null) return "";
         if (key.contains("/")) {
             String[] parts = key.split("/");
-            if (parts.length > 1) {
+            if (parts.length >= 3) {
+                // Festival Cards/DATE/FESTIVAL_NAME
+                return getLocalizedSectionName(parts[0]) + " / " + parts[2];
+            } else if (parts.length == 2) {
                 return getLocalizedSectionName(parts[0]) + " / " + getLocalizedSubCatName(parts[1]);
             }
         }

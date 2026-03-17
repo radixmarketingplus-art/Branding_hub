@@ -1,8 +1,5 @@
 package com.example.rmplus;
 
-import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +11,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
-import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
@@ -22,10 +18,16 @@ import java.util.Locale;
 public class FestivalCardAdapter
         extends RecyclerView.Adapter<FestivalCardAdapter.VH> {
 
-    ArrayList<FestivalCardItem> list;
+    public interface OnFestivalClickListener {
+        void onClick(FestivalCardItem item);
+    }
 
-    public FestivalCardAdapter(ArrayList<FestivalCardItem> list) {
+    ArrayList<FestivalCardItem> list;
+    OnFestivalClickListener clickListener;
+
+    public FestivalCardAdapter(ArrayList<FestivalCardItem> list, OnFestivalClickListener clickListener) {
         this.list = list;
+        this.clickListener = clickListener;
     }
 
     @Override
@@ -42,12 +44,13 @@ public class FestivalCardAdapter
 
         if ("DUMMY".equals(item.imagePath)) {
             h.img.setImageResource(R.drawable.ic_add);
-            h.dateBadge.setVisibility(View.GONE);
+            if (h.dateBadge != null) h.dateBadge.setVisibility(View.GONE);
+
             h.itemView.setOnClickListener(null);
             return;
         }
 
-        // 🌐 LOAD FROM VPS URL OR LOCAL FILE (Glide handles both)
+        // 🌐 LOAD IMAGE
         Glide.with(h.img.getContext())
                 .load(item.imagePath)
                 .placeholder(android.R.drawable.ic_menu_gallery)
@@ -55,16 +58,19 @@ public class FestivalCardAdapter
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(h.img);
 
-        h.dateBadge.setVisibility(View.VISIBLE);
-        h.dateBadge.setText(format(item.date));
+        // DATE BADGE (Restored as per user request)
+        if (h.dateBadge != null) {
+            h.dateBadge.setVisibility(View.VISIBLE);
+            h.dateBadge.setText(formatDate(item.date));
+        }
 
-        // 🔥 PREVIEW CLICK
+
+
+
+
+        // 🔥 CLICK
         h.itemView.setOnClickListener(v -> {
-            Context ctx = v.getContext();
-            Intent i = new Intent(ctx, TemplatePreviewActivity.class);
-            i.putExtra("path", item.imagePath);
-            i.putExtra("category", "Festival Cards");
-            ctx.startActivity(i);
+            if (clickListener != null) clickListener.onClick(item);
         });
     }
 
@@ -85,15 +91,13 @@ public class FestivalCardAdapter
         }
     }
 
-    String format(String d) {
+    String formatDate(String d) {
         try {
-            SimpleDateFormat in =
-                    new SimpleDateFormat("dd-MM-yyyy", Locale.US); // ✅ parse stored ASCII dates reliably
-            SimpleDateFormat out =
-                    new SimpleDateFormat("d MMM", Locale.getDefault()); // display in user language
+            SimpleDateFormat in = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
+            SimpleDateFormat out = new SimpleDateFormat("d MMM", Locale.getDefault());
             return out.format(in.parse(d));
         } catch (Exception e) {
-            return d;
+            return d != null ? d : "";
         }
     }
 }

@@ -45,9 +45,7 @@
         android:textColor="?attr/colorOnPrimary"
         android:background="@drawable/bg_date_badge"
         android:elevation="8dp"
-        android:visibility="gone"/>
-
-    <!-- PLAY ICON FOR VIDEO -->
+        android:visibility="gone"/>    <!-- PLAY ICON FOR VIDEO -->
     <FrameLayout
         android:id="@+id/layPlay"
         android:layout_width="wrap_content"

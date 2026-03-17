@@ -46,6 +46,13 @@ public class TemplateGridAdapter
         notifyDataSetChanged();
     }
 
+    boolean showDate = true;
+
+    public void setShowDate(boolean show) {
+        this.showDate = show;
+        notifyDataSetChanged();
+    }
+
     @Override
     public Holder onCreateViewHolder(ViewGroup p, int v) {
         return new Holder(
@@ -67,7 +74,7 @@ public class TemplateGridAdapter
                 .into(h.img);
 
         // 📅 SHOW DATE IF AVAILABLE (For Festival Cards)
-        if (template.date != null && !template.date.isEmpty()) {
+        if (showDate && template.date != null && !template.date.isEmpty()) {
             h.txtDateBadge.setVisibility(View.VISIBLE);
             h.txtDateBadge.setText(formatDate(template.date));
         } else {

@@ -949,4 +949,13 @@
     <string name="label_rotate">घुमाएं</string>
     <string name="label_font">फ़ॉन्ट</string>
 
+    <!-- 17. FESTIVAL DROPDOWN -->
+    <string name="msg_select_fest_date_first">कृपया पहले एक तारीख चुनें</string>
+    <string name="msg_select_festival_name">कृपया त्योहार का नाम चुनें या जोड़ें</string>
+    <string name="festival_add_new">+ नया त्योहार जोड़ें</string>
+    <string name="hint_festival_name">त्योहार का नाम दर्ज करें</string>
+    <string name="title_add_festival">त्योहार जोड़ें</string>
+    <string name="msg_festival_name_empty">त्योहार का नाम खाली नहीं हो सकता</string>
+    <string name="btn_add">जोड़ें</string>
+
 </resources>

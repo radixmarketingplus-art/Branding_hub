@@ -171,54 +171,63 @@ public class CheckUploadsFragment extends Fragment {
                         String catName = catSnap.getKey();
                         if (catName == null || catName.equalsIgnoreCase("Frame"))
                             continue;
-                        if (catName.equalsIgnoreCase("Business Frame")) {
-                            for (DataSnapshot sub : catSnap.getChildren()) {
-                                processSnapshot(sub, catName + "/" + sub.getKey(), result);
-                            }
-                        } else {
-                            processSnapshot(catSnap, catName, result);
-                        }
+                        collectTemplatesRecursive(catSnap, catName, result);
                     }
                     adapter.setData(result);
                 }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    toast(error.getMessage());
-                }
+                @Override public void onCancelled(@NonNull DatabaseError error) { toast(error.getMessage()); }
             });
-            return;
-        }
-
-        dbRef.child(key).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                ArrayList<TemplateModel> result = new ArrayList<>();
-                if (key.equalsIgnoreCase("Business Frame")) {
-                    for (DataSnapshot sub : snapshot.getChildren()) {
-                        processSnapshot(sub, key + "/" + sub.getKey(), result);
-                    }
-                } else {
-                    processSnapshot(snapshot, key, result);
+        } else {
+            dbRef.child(key).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    ArrayList<TemplateModel> result = new ArrayList<>();
+                    collectTemplatesRecursive(snapshot, key, result);
+                    adapter.setData(result);
                 }
-                adapter.setData(result);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                toast(error.getMessage());
-            }
-        });
-    }
-
-    private void processSnapshot(DataSnapshot snapshot, String catName, ArrayList<TemplateModel> result) {
-        for (DataSnapshot d : snapshot.getChildren()) {
-            String url = d.hasChild("url") ? d.child("url").getValue(String.class)
-                    : d.hasChild("imagePath") ? d.child("imagePath").getValue(String.class) : null;
-            if (url != null)
-                result.add(0, new TemplateModel(d.getKey(), url, catName));
+                @Override public void onCancelled(@NonNull DatabaseError error) { toast(error.getMessage()); }
+            });
         }
     }
+
+    private void collectTemplatesRecursive(DataSnapshot snapshot, String rootCategory, ArrayList<TemplateModel> result) {
+        if (snapshot == null) return;
+        if (snapshot.hasChild("url") || snapshot.hasChild("imagePath")) {
+            String url = snapshot.hasChild("url") ? snapshot.child("url").getValue(String.class)
+                    : snapshot.child("imagePath").getValue(String.class);
+            String type = snapshot.child("type").getValue(String.class);
+            
+            // Get the full category path relative to "templates"
+            String fullPath = snapshot.getRef().getPath().toString(); 
+            String cat = rootCategory; 
+            String date = null;
+            
+            if (fullPath.contains("/templates/")) {
+                String relative = fullPath.substring(fullPath.indexOf("/templates/") + 11);
+                if (relative.contains("/")) {
+                    cat = relative.substring(0, relative.lastIndexOf("/"));
+                    
+                    // Specific logic for Festival Cards: extract Date
+                    if (cat.startsWith("Festival Cards")) {
+                        String[] parts = relative.split("/");
+                        if (parts.length > 1) {
+                            date = parts[1]; // Festival Cards/DD-MM-YYYY/AppName
+                        }
+                    }
+                }
+            }
+
+            if (url != null) {
+                result.add(0, new TemplateModel(snapshot.getKey(), url, cat, date, type));
+            }
+        } else {
+            for (DataSnapshot child : snapshot.getChildren()) {
+                collectTemplatesRecursive(child, rootCategory, result);
+            }
+        }
+    }
+
+
 
     private void toast(String msg) {
         if (isAdded())

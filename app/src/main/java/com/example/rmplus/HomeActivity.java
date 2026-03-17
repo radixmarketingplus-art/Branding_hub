@@ -720,92 +720,63 @@ public class HomeActivity extends BaseActivity {
 
     // ================= FESTIVAL =================
 
-    void loadFestivalCards() {
 
-        rvFestivalCards.setLayoutManager(
-                new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
-
-        SharedPreferences sp = getSharedPreferences("HOME_DATA", MODE_PRIVATE);
-        String json = sp.getString("Festival Cards", null);
-
-        if (json == null) {
-            setSmall(R.id.rvFestivalCards, "Festival Cards");
-            return;
-        }
-
-        Gson gson = new Gson();
-        Type type = new TypeToken<ArrayList<FestivalCardItem>>() {
-        }.getType();
-
-        ArrayList<FestivalCardItem> list = gson.fromJson(json, type);
-
-        if (list == null)
-            list = new ArrayList<>();
-
-        rvFestivalCards.setAdapter(
-                new FestivalCardAdapter(list));
-    }
 
     void filterFestivalByDate(String date) {
 
         if ("CLEAR".equals(date)) {
             loadFestivalCardsLive();
-            // Don't hide skFestival unnecessarily or hide btnAll
             return;
         }
 
         btnAll.setVisibility(View.VISIBLE);
 
-        // Fetching live data for filtering
-        FirebaseDatabase.getInstance().getReference("templates").child("Festival Cards")
+        // Fetching live data for the selected date
+        FirebaseDatabase.getInstance().getReference("templates")
+                .child("Festival Cards")
+                .child(date)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot snapshot) {
                         safelyHideSkeleton(skFestival);
-                        ArrayList<TemplateModel> all = new ArrayList<>();
-                        for (DataSnapshot d : snapshot.getChildren()) {
-                            String url = d.hasChild("imagePath") ? d.child("imagePath").getValue(String.class)
-                                    : d.child("url").getValue(String.class);
-                            String itemDate = d.child("date").getValue(String.class);
-                            String type = d.child("type").getValue(String.class);
-                            if (url != null) {
-                                all.add(new TemplateModel(d.getKey(), url, "Festival Cards", itemDate, type));
+                        
+                        ArrayList<FestivalCardItem> list = new ArrayList<>();
+                        for (DataSnapshot festivalSnap : snapshot.getChildren()) {
+                            String festivalName = festivalSnap.getKey();
+                            // Take FIRST template under this festival
+                            DataSnapshot firstTemplate = null;
+                            for (DataSnapshot t : festivalSnap.getChildren()) {
+                                firstTemplate = t;
+                                break;
                             }
+                            if (firstTemplate == null) continue;
+                            String url = firstTemplate.hasChild("imagePath")
+                                    ? firstTemplate.child("imagePath").getValue(String.class)
+                                    : firstTemplate.child("url").getValue(String.class);
+                            if (url == null) continue;
+
+                            String templateId = firstTemplate.getKey();
+
+                            FestivalCardItem item = new FestivalCardItem(url, date, festivalName,
+                                    System.currentTimeMillis() + (7L * 24 * 60 * 60 * 1000));
+                            item.templateId = templateId;
+                            list.add(item);
                         }
 
-                        ArrayList<TemplateModel> filtered = new ArrayList<>();
-                        // Standardize to "d-M-yyyy" to handle non-padded dates from Upload (1-2-2026)
-                        // and padded dates from Filter (01-02-2026)
-                        SimpleDateFormat sdf = new SimpleDateFormat("d-M-yyyy", Locale.US); // ✅ Locale.US: avoid Hindi
-                                                                                            // Devanagari digits
-
-                        try {
-                            Date selectedDateObj = sdf.parse(date);
-                            for (TemplateModel item : all) {
-                                if (item.date != null) {
-                                    try {
-                                        Date itemDateObj = sdf.parse(item.date);
-                                        if (selectedDateObj.equals(itemDateObj)) {
-                                            filtered.add(item);
-                                        }
-                                    } catch (Exception e) {
-                                        // fallback
-                                        if (item.date.equals(date))
-                                            filtered.add(item);
-                                    }
-                                }
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
+                        if (list.isEmpty()) {
+                            rvFestivalCards.setAdapter(null);
+                            return;
                         }
 
-                        rvFestivalCards.setAdapter(new TemplateGridAdapter(filtered, t -> {
+                        FestivalCardAdapter adapter = new FestivalCardAdapter(list, (item) -> {
+                            String fullCat = "Festival Cards/" + date + "/" + item.festivalName;
                             Intent i = new Intent(HomeActivity.this, TemplatePreviewActivity.class);
-                            i.putExtra("id", t.id);
-                            i.putExtra("path", t.url);
-                            i.putExtra("category", t.category);
+                            i.putExtra("id", item.templateId);
+                            i.putExtra("path", item.imagePath);
+                            i.putExtra("category", fullCat);
                             startActivity(i);
-                        }));
+                        });
+                        rvFestivalCards.setAdapter(adapter);
                     }
 
                     @Override
@@ -1089,35 +1060,64 @@ public class HomeActivity extends BaseActivity {
     }
 
     void loadFestivalCardsLive() {
-        FirebaseDatabase.getInstance().getReference("templates").child("Festival Cards")
+        // Get today's date in dd-MM-yyyy format
+        String today = new SimpleDateFormat("dd-MM-yyyy", Locale.US).format(new Date());
+
+        FirebaseDatabase.getInstance().getReference("templates")
+                .child("Festival Cards")
+                .child(today)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot snapshot) {
                         safelyHideSkeleton(skFestival);
-                        ArrayList<TemplateModel> list = new ArrayList<>();
-                        for (DataSnapshot d : snapshot.getChildren()) {
-                            String url = d.hasChild("imagePath") ? d.child("imagePath").getValue(String.class)
-                                    : d.child("url").getValue(String.class);
-                            String date = d.child("date").getValue(String.class);
-                            String type = d.child("type").getValue(String.class);
-                            if (url != null) {
-                                list.add(new TemplateModel(d.getKey(), url, "Festival Cards", date, type));
+                        // snapshot children = festival names (e.g. Holi, Eid)
+                        ArrayList<FestivalCardItem> list = new ArrayList<>();
+                        for (DataSnapshot festivalSnap : snapshot.getChildren()) {
+                            String festivalName = festivalSnap.getKey();
+                            // Take FIRST template under this festival
+                            DataSnapshot firstTemplate = null;
+                            for (DataSnapshot t : festivalSnap.getChildren()) {
+                                firstTemplate = t;
+                                break;
                             }
+                            if (firstTemplate == null) continue;
+                            String url = firstTemplate.hasChild("imagePath")
+                                    ? firstTemplate.child("imagePath").getValue(String.class)
+                                    : firstTemplate.child("url").getValue(String.class);
+                            if (url == null) continue;
+
+                            String fullCategory = "Festival Cards/" + today + "/" + festivalName;
+                            String templateId = firstTemplate.getKey();
+
+                            FestivalCardItem item = new FestivalCardItem(url, today, festivalName,
+                                    System.currentTimeMillis() + (7L * 24 * 60 * 60 * 1000));
+                            item.templateId = templateId;
+                            list.add(item);
                         }
-                        rvFestivalCards.setAdapter(new TemplateGridAdapter(list, t -> {
+
+                        if (list.isEmpty()) {
+                            rvFestivalCards.setAdapter(null);
+                            return;
+                        }
+
+                        FestivalCardAdapter adapter = new FestivalCardAdapter(list, (item) -> {
+                            String fullCat = "Festival Cards/" + today + "/" + item.festivalName;
                             Intent i = new Intent(HomeActivity.this, TemplatePreviewActivity.class);
-                            i.putExtra("id", t.id);
-                            i.putExtra("path", t.url);
-                            i.putExtra("category", "Festival Cards");
+                            i.putExtra("id", item.templateId);
+                            i.putExtra("path", item.imagePath);
+                            i.putExtra("category", fullCat);
                             startActivity(i);
-                        }));
+                        });
+                        rvFestivalCards.setAdapter(adapter);
                     }
 
                     @Override
                     public void onCancelled(DatabaseError error) {
+                        safelyHideSkeleton(skFestival);
                     }
                 });
     }
+
 
     // ================= DATA =================
 

@@ -90,8 +90,8 @@ public class TemplateGalleryActivity extends BaseActivity {
             startActivity(i);
 
         });
-
         recycler.setAdapter(adapter);
+
 
         loadDynamicCategories();
 
@@ -208,113 +208,75 @@ public class TemplateGalleryActivity extends BaseActivity {
         // Select 'All' by default
         ((TextView)subFilterContainer.getChildAt(0)).performClick();
     }
-
-    void loadBusinessSubCategory(String sub) {
-        DatabaseReference rootRef = com.google.firebase.database.FirebaseDatabase.getInstance().getReference("templates").child("Business Frame");
-
-        if (ALL_KEY.equalsIgnoreCase(sub)) {
-            rootRef.addListenerForSingleValueEvent(new com.google.firebase.database.ValueEventListener() {
-                @Override
-                public void onDataChange(com.google.firebase.database.DataSnapshot snapshot) {
-                    ArrayList<TemplateModel> result = new ArrayList<>();
-                    for (com.google.firebase.database.DataSnapshot subSnap : snapshot.getChildren()) {
-                        for (com.google.firebase.database.DataSnapshot itemSnap : subSnap.getChildren()) {
-                            String url = itemSnap.hasChild("imagePath") ? itemSnap.child("imagePath").getValue(String.class) : itemSnap.child("url").getValue(String.class);
-                            String type = itemSnap.child("type").getValue(String.class);
-                            if (url != null) result.add(new TemplateModel(itemSnap.getKey(), url, "Business Frame/" + subSnap.getKey(), null, type));
-                        }
-                    }
-                    adapter.setData(result);
-                }
-                @Override public void onCancelled(com.google.firebase.database.DatabaseError error) {}
-            });
-        } else {
-            rootRef.child(sub).addListenerForSingleValueEvent(new com.google.firebase.database.ValueEventListener() {
-                @Override
-                public void onDataChange(com.google.firebase.database.DataSnapshot snapshot) {
-                    ArrayList<TemplateModel> result = new ArrayList<>();
-                    for (com.google.firebase.database.DataSnapshot d : snapshot.getChildren()) {
-                        String url = d.hasChild("imagePath") ? d.child("imagePath").getValue(String.class) : d.child("url").getValue(String.class);
-                        String type = d.child("type").getValue(String.class);
-                        if (url != null) result.add(new TemplateModel(d.getKey(), url, "Business Frame/" + sub, null, type));
-                    }
-                    adapter.setData(result);
-                }
-                @Override
-                public void onCancelled(com.google.firebase.database.DatabaseError error) {}
-            });
-        }
-    }
-
-//    void animateUnderline(View tab) {
-//
-//        if (underline == null || tab == null) return;
-//
-//        TextView txt = (TextView) ((LinearLayout) tab).getChildAt(0);
-//
-//        tab.post(() -> {
-//
-//            int tabLeft = tab.getLeft();
-//            int tabWidth = tab.getWidth();
-//
-//            txt.measure(
-//                    View.MeasureSpec.UNSPECIFIED,
-//                    View.MeasureSpec.UNSPECIFIED
-//            );
-//
-//            int textWidth = txt.getMeasuredWidth();
-//
-//            int newLeftMargin =
-//                    tabLeft + (tabWidth - textWidth) / 2;
-//
-//            // ✅ FIX: FrameLayout.LayoutParams (NOT LinearLayout)
-//            FrameLayout.LayoutParams params =
-//                    (FrameLayout.LayoutParams) underline.getLayoutParams();
-//
-//            params.width = textWidth;
-//            params.leftMargin = newLeftMargin;
-//
-//            underline.setLayoutParams(params);
-//
-//            // Center tab smoothly
-//            tabScroll.smoothScrollTo(
-//                    tabLeft - tabScroll.getWidth() / 2 + tabWidth / 2,
-//                    0
-//            );
-//        });
-//    }
-
-
     void updateTabUI() {
-
         for (int i = 0; i < filterContainer.getChildCount(); i++) {
-
-            TextView chip =
-                    (TextView) filterContainer.getChildAt(i);
-            
+            TextView chip = (TextView) filterContainer.getChildAt(i);
             String chipKey = (String) chip.getTag();
-
             if (chipKey != null && chipKey.equals(currentCategory)) {
                 chip.setTypeface(null, android.graphics.Typeface.BOLD);
-                chip.setTextColor(getColorFromAttr(
-                        com.google.android.material.R.attr.colorOnSurface
-                ));
+                chip.setTextColor(getColorFromAttr(com.google.android.material.R.attr.colorOnSurface));
                 chip.setBackgroundResource(R.drawable.bg_filter_chip_selected);
             } else {
                 chip.setTypeface(null, android.graphics.Typeface.NORMAL);
-                chip.setTextColor(
-                        getResources().getColor(
-                                android.R.color.darker_gray, getTheme()
-                        )
-                );
+                chip.setTextColor(getResources().getColor(android.R.color.darker_gray, getTheme()));
                 chip.setBackgroundResource(R.drawable.bg_filter_chip);
             }
         }
     }
 
 
+    private java.util.Set<String> seenCategories = new java.util.HashSet<>();
+
+    private void collectTemplates(DataSnapshot snapshot, String rootCategory, ArrayList<TemplateModel> result) {
+        if (snapshot == null) return;
+        if (snapshot.hasChild("imagePath") || snapshot.hasChild("url")) {
+            String path = snapshot.hasChild("imagePath") ? 
+                    snapshot.child("imagePath").getValue(String.class) : 
+                    snapshot.child("url").getValue(String.class);
+            String type = snapshot.child("type").getValue(String.class);
+            
+            // Get the full category path relative to "templates"
+            String fullPath = snapshot.getRef().getPath().toString(); 
+            // e.g., /templates/Festival Cards/17-03-2026/Holi/ID -> we want "Festival Cards/17-03-2026/Holi"
+            String cat = rootCategory; 
+            String date = null;
+            if (fullPath.contains("/templates/")) {
+                String relative = fullPath.substring(fullPath.indexOf("/templates/") + 11);
+                if (relative.contains("/")) {
+                    cat = relative.substring(0, relative.lastIndexOf("/"));
+                    
+                    // Specific logic for Festival Cards: extract Date
+                    if (cat.startsWith("Festival Cards")) {
+                        String[] parts = relative.split("/");
+                        if (parts.length > 1) {
+                            date = parts[1]; // Festival Cards/DD-MM-YYYY/AppName
+                        }
+                    }
+                }
+            }
+
+            if (path != null) {
+                // 🛑 USER REQUEST: Show only one item per category for Festival Cards
+                if (cat.startsWith("Festival Cards")) {
+                    if (seenCategories.contains(cat)) return;
+                    seenCategories.add(cat);
+                }
+
+                // Add to start to show newest items first
+                result.add(0, new TemplateModel(snapshot.getKey(), path, cat, date, type));
+            }
+        } else {
+            for (DataSnapshot child : snapshot.getChildren()) {
+                collectTemplates(child, rootCategory, result);
+            }
+        }
+    }
+
+
+
     void loadCategory(String key) {
         currentCategory = key;
+        seenCategories.clear(); // 🔄 Reset filter for each load
         DatabaseReference templatesRef = com.google.firebase.database.FirebaseDatabase.getInstance().getReference("templates");
 
         if (key.equals(ALL_KEY)) {
@@ -324,73 +286,46 @@ public class TemplateGalleryActivity extends BaseActivity {
                     ArrayList<TemplateModel> result = new ArrayList<>();
                     for (com.google.firebase.database.DataSnapshot categorySnapshot : snapshot.getChildren()) {
                         String cat = categorySnapshot.getKey();
-
-                        // 🚫 EXCLUDE Advertisement and Frame from 'All'
                         if (cat == null || cat.equals("Advertisement") || cat.equals("Frame") || cat.equals("Trending Now")) {
                             continue;
                         }
-
-                        // Check if it's a nested node (like 'Business Frame')
-                        boolean isNested = categorySnapshot.getChildrenCount() > 0 && 
-                                           categorySnapshot.getChildren().iterator().next().hasChildren() &&
-                                           !categorySnapshot.getChildren().iterator().next().hasChild("url") &&
-                                           !categorySnapshot.getChildren().iterator().next().hasChild("imagePath");
-
-                        if (isNested) {
-                            for (com.google.firebase.database.DataSnapshot subSnapshot : categorySnapshot.getChildren()) {
-                                for (com.google.firebase.database.DataSnapshot itemSnapshot : subSnapshot.getChildren()) {
-                                    String path = itemSnapshot.hasChild("imagePath") ? 
-                                            itemSnapshot.child("imagePath").getValue(String.class) : 
-                                            itemSnapshot.child("url").getValue(String.class);
-                                    String type = itemSnapshot.child("type").getValue(String.class);
-                                    if (path != null) {
-                                        result.add(new TemplateModel(itemSnapshot.getKey(), path, cat + "/" + subSnapshot.getKey(), null, type));
-                                    }
-                                }
-                            }
-                        } else {
-                            for (com.google.firebase.database.DataSnapshot itemSnapshot : categorySnapshot.getChildren()) {
-                                String path = itemSnapshot.hasChild("imagePath") ? 
-                                        itemSnapshot.child("imagePath").getValue(String.class) : 
-                                        itemSnapshot.child("url").getValue(String.class);
-                                String type = itemSnapshot.child("type").getValue(String.class);
-                                if (path != null) {
-                                    result.add(new TemplateModel(itemSnapshot.getKey(), path, cat, null, type));
-                                }
-                            }
-                        }
+                        collectTemplates(categorySnapshot, cat, result);
                     }
                     adapter.setData(result);
                 }
-
-                @Override
-                public void onCancelled(com.google.firebase.database.DatabaseError error) {}
+                @Override public void onCancelled(com.google.firebase.database.DatabaseError error) {}
             });
         } else {
             templatesRef.child(key).addListenerForSingleValueEvent(new com.google.firebase.database.ValueEventListener() {
                 @Override
                 public void onDataChange(com.google.firebase.database.DataSnapshot snapshot) {
                     ArrayList<TemplateModel> result = new ArrayList<>();
-                    for (com.google.firebase.database.DataSnapshot itemSnapshot : snapshot.getChildren()) {
-                        String path = null;
-                        if (itemSnapshot.hasChild("imagePath")) {
-                            path = itemSnapshot.child("imagePath").getValue(String.class);
-                        } else if (itemSnapshot.hasChild("url")) {
-                            path = itemSnapshot.child("url").getValue(String.class);
-                        }
-                        String type = itemSnapshot.child("type").getValue(String.class);
-                        if (path != null) {
-                            result.add(new TemplateModel(itemSnapshot.getKey(), path, key, null, type));
-                        }
-                    }
+                    collectTemplates(snapshot, key, result);
                     adapter.setData(result);
                 }
-
-                @Override
-                public void onCancelled(com.google.firebase.database.DatabaseError error) {}
+                @Override public void onCancelled(com.google.firebase.database.DatabaseError error) {}
             });
         }
     }
+
+    void loadBusinessSubCategory(String sub) {
+        seenCategories.clear(); // 🔄 Reset filter for each load
+        DatabaseReference rootRef = com.google.firebase.database.FirebaseDatabase.getInstance().getReference("templates").child("Business Frame");
+        if (ALL_KEY.equalsIgnoreCase(sub)) {
+            loadCategory("Business Frame");
+        } else {
+            rootRef.child(sub).addListenerForSingleValueEvent(new com.google.firebase.database.ValueEventListener() {
+                @Override
+                public void onDataChange(com.google.firebase.database.DataSnapshot snapshot) {
+                    ArrayList<TemplateModel> result = new ArrayList<>();
+                    collectTemplates(snapshot, "Business Frame/" + sub, result);
+                    adapter.setData(result);
+                }
+                @Override public void onCancelled(com.google.firebase.database.DatabaseError error) {}
+            });
+        }
+    }
+
 
     private void findChipAndClick(String target) {
         for (int i = 0; i < filterContainer.getChildCount(); i++) {

@@ -51,8 +51,15 @@ public class UploadTemplatesActivity extends BaseActivity {
     TextView btnPickDate, btnPickExpiry; // Changed from Button to TextView, added btnPickExpiry
     long expiryTime = System.currentTimeMillis() + (7L * 24 * 60 * 60 * 1000); // Default 7 days
     String selectedDate = "";
+    String selectedFestivalName = ""; // festival name selected from dropdown
     EditText editAdLink; // NEW
     View placeholderLayout, previewWrapper, btnChangeMedia, icPlayVideo; // Added icPlayVideo
+
+    // Festival name dropdown views
+    android.widget.Spinner spinnerFestivalName;
+    android.widget.LinearLayout festivalNameContainer;
+    ArrayList<String> festivalNameList = new ArrayList<>();
+    ArrayAdapter<String> festivalNameAdapter;
 
     ArrayList<String> sections = new ArrayList<>();
     ArrayList<String> sectionKeys = new ArrayList<>();
@@ -154,8 +161,33 @@ public class UploadTemplatesActivity extends BaseActivity {
         placeholderLayout = findViewById(R.id.placeholderLayout);
         previewWrapper = findViewById(R.id.previewWrapper);
         btnChangeMedia = findViewById(R.id.btnChangeMedia);
-
         icPlayVideo = findViewById(R.id.icPlayVideo);
+        spinnerFestivalName = findViewById(R.id.spinnerFestivalName);
+        festivalNameContainer = findViewById(R.id.festivalNameContainer);
+
+        // Setup festival name adapter
+        festivalNameList = new ArrayList<>();
+        festivalNameList.add(getString(R.string.festival_add_new)); // first item = + Add
+        festivalNameAdapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_dropdown_item, festivalNameList);
+        spinnerFestivalName.setAdapter(festivalNameAdapter);
+
+        spinnerFestivalName.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String selected = festivalNameList.get(position);
+                if (selected.equals(getString(R.string.festival_add_new))) {
+                    if (selectedDate.isEmpty()) {
+                        toast(R.string.msg_select_fest_date_first);
+                        return;
+                    }
+                    showAddFestivalNameDialog();
+                } else {
+                    selectedFestivalName = selected;
+                }
+            }
+            @Override public void onNothingSelected(AdapterView<?> parent) {}
+        });
 
         findViewById(R.id.btnBack).setOnClickListener(v -> {
             startActivity(new Intent(this, HomeActivity.class));
@@ -195,11 +227,13 @@ public class UploadTemplatesActivity extends BaseActivity {
 
                 if (sectionKey.equalsIgnoreCase("Festival Cards")) {
                     dateContainer.setVisibility(View.VISIBLE);
+                    festivalNameContainer.setVisibility(View.VISIBLE);
                     editAdLink.setVisibility(View.GONE);
 
                 } else if (sectionKey.equalsIgnoreCase("Advertisement")) {
                     editAdLink.setVisibility(View.VISIBLE);
                     dateContainer.setVisibility(View.GONE);
+                    festivalNameContainer.setVisibility(View.GONE);
                     subSectionContainer.setVisibility(View.GONE);
                 } else if (sectionKey.equalsIgnoreCase("Business Frame")) {
                     subSectionContainer.setVisibility(View.VISIBLE);
@@ -219,6 +253,7 @@ public class UploadTemplatesActivity extends BaseActivity {
                             android.R.layout.simple_spinner_dropdown_item, subDisplays));
                 } else {
                     dateContainer.setVisibility(View.GONE);
+                    festivalNameContainer.setVisibility(View.GONE);
                     editAdLink.setVisibility(View.GONE);
                     subSectionContainer.setVisibility(View.GONE);
                     selectedDate = "";
@@ -278,8 +313,9 @@ public class UploadTemplatesActivity extends BaseActivity {
                     this,
                     (view, year, month, day) -> {
                         month++;
-                        selectedDate = day + "-" + month + "-" + year;
+                        selectedDate = String.format(java.util.Locale.US, "%02d-%02d-%04d", day, month, year);
                         btnPickDate.setText(getString(R.string.label_selected, selectedDate));
+                        loadFestivalNamesForDate(selectedDate);
                     },
                     cal.get(Calendar.YEAR),
                     cal.get(Calendar.MONTH),
@@ -317,9 +353,15 @@ public class UploadTemplatesActivity extends BaseActivity {
                 return;
             }
 
-            if (sectionKey.equalsIgnoreCase("Festival Cards") && selectedDate.isEmpty()) {
-                Toast.makeText(this, R.string.msg_select_fest_date, Toast.LENGTH_SHORT).show();
-                return;
+            if (sectionKey.equalsIgnoreCase("Festival Cards")) {
+                if (selectedDate.isEmpty()) {
+                    Toast.makeText(this, R.string.msg_select_fest_date, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (selectedFestivalName == null || selectedFestivalName.isEmpty() || selectedFestivalName.equals(getString(R.string.festival_add_new))) {
+                    toast(R.string.msg_select_festival_name);
+                    return;
+                }
             }
 
             // ---------- TYPE & SIZE VALIDATION ----------
@@ -546,14 +588,28 @@ public class UploadTemplatesActivity extends BaseActivity {
                     }
 
                     if (section.equalsIgnoreCase("Festival Cards")) {
-                        FestivalCardItem festItem = new FestivalCardItem(imageUrl, selectedDate, expiryTime);
-                        dbRef.child(templateId).setValue(festItem);
-                        Type t = new TypeToken<ArrayList<FestivalCardItem>>() {}.getType();
-                        ArrayList<FestivalCardItem> list = gson.fromJson(sp.getString(section, "[]"), t);
-                        if (list == null) list = new ArrayList<>();
-                        list.add(0, festItem);
-                        sp.edit().putString(section, gson.toJson(list)).apply();
+                        com.google.firebase.database.DatabaseReference festDbRef = com.google.firebase.database.FirebaseDatabase.getInstance()
+                                .getReference("templates")
+                                .child("Festival Cards")
+                                .child(selectedDate)
+                                .child(selectedFestivalName);
+
+                        String festTemplateId = festDbRef.push().getKey();
+                        if (festTemplateId == null) festTemplateId = String.valueOf(System.currentTimeMillis());
+
+                        FestivalCardItem festItem = new FestivalCardItem(imageUrl, selectedDate, selectedFestivalName, expiryTime);
+                        festItem.templateId = festTemplateId;
+
+                        festDbRef.child(festTemplateId).setValue(festItem);
+
+                        com.google.firebase.database.FirebaseDatabase.getInstance()
+                                .getReference("festival_names")
+                                .child(selectedDate)
+                                .child(selectedFestivalName)
+                                .setValue(true);
+
                         toast(R.string.msg_upload_success);
+                        setResult(RESULT_OK);
                         finish();
                         return;
                     }
@@ -738,6 +794,74 @@ public class UploadTemplatesActivity extends BaseActivity {
             i.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
         }
         imagePicker.launch(i);
+    }
+
+    void loadFestivalNamesForDate(String date) {
+        festivalNameList.clear();
+        festivalNameList.add(getString(R.string.festival_add_new)); // always first
+        festivalNameAdapter.notifyDataSetChanged();
+        selectedFestivalName = "";
+        if (festivalNameContainer != null)
+            festivalNameContainer.setVisibility(View.VISIBLE);
+
+        com.google.firebase.database.FirebaseDatabase.getInstance()
+                .getReference("festival_names")
+                .child(date)
+                .addListenerForSingleValueEvent(new com.google.firebase.database.ValueEventListener() {
+                    @Override
+                    public void onDataChange(@androidx.annotation.NonNull com.google.firebase.database.DataSnapshot snapshot) {
+                        for (com.google.firebase.database.DataSnapshot child : snapshot.getChildren()) {
+                            String name = child.getKey();
+                            if (name != null && !festivalNameList.contains(name)) {
+                                festivalNameList.add(name);
+                            }
+                        }
+                        festivalNameAdapter.notifyDataSetChanged();
+                        // Auto-select first real festival if any
+                        if (festivalNameList.size() > 1) {
+                            spinnerFestivalName.setSelection(1);
+                            selectedFestivalName = festivalNameList.get(1);
+                        }
+                    }
+                    @Override
+                    public void onCancelled(@androidx.annotation.NonNull com.google.firebase.database.DatabaseError error) {}
+                });
+    }
+
+    void showAddFestivalNameDialog() {
+        android.widget.EditText input = new android.widget.EditText(this);
+        input.setHint(getString(R.string.hint_festival_name));
+        input.setInputType(android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_FLAG_CAP_WORDS);
+        int pad = (int) (16 * getResources().getDisplayMetrics().density);
+        input.setPadding(pad, pad, pad, pad);
+
+        new AlertDialog.Builder(this)
+                .setTitle(getString(R.string.title_add_festival))
+                .setView(input)
+                .setPositiveButton(getString(R.string.btn_add), (d, w) -> {
+                    String name = input.getText().toString().trim();
+                    if (name.isEmpty()) {
+                        toast(R.string.msg_festival_name_empty);
+                        return;
+                    }
+                    // Save to Firebase
+                    com.google.firebase.database.FirebaseDatabase.getInstance()
+                            .getReference("festival_names")
+                            .child(selectedDate)
+                            .child(name)
+                            .setValue(true);
+
+                    // Add to dropdown and auto-select
+                    if (!festivalNameList.contains(name)) {
+                        festivalNameList.add(name);
+                        festivalNameAdapter.notifyDataSetChanged();
+                    }
+                    int pos = festivalNameList.indexOf(name);
+                    spinnerFestivalName.setSelection(pos);
+                    selectedFestivalName = name;
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
     }
 
     void toast(int resId) {

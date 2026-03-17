@@ -1045,4 +1045,13 @@
     <string name="label_rotate">Rotate</string>
     <string name="label_font">Font</string>
 
+    <!-- 17. FESTIVAL DROPDOWN -->
+    <string name="msg_select_fest_date_first">Please select a date first</string>
+    <string name="msg_select_festival_name">Please select or add a festival name</string>
+    <string name="festival_add_new">+ Add New Festival</string>
+    <string name="hint_festival_name">Enter Festival Name</string>
+    <string name="title_add_festival">Add Festival</string>
+    <string name="msg_festival_name_empty">Festival name cannot be empty</string>
+    <string name="btn_add">Add</string>
+
 </resources>
