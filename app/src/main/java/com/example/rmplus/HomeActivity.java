@@ -46,6 +46,7 @@ public class HomeActivity extends BaseActivity {
     RecyclerView rvTrending, rvFestivalCards;
     androidx.core.widget.NestedScrollView mainScroll;
     TextView btnAll;
+    FestivalDateAdapter festivalDateAdapter;
     String targetId = null;
     String targetAdId = null;
 
@@ -132,10 +133,10 @@ public class HomeActivity extends BaseActivity {
         rvDates.setLayoutManager(
                 new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
 
-        rvDates.setAdapter(
-                new FestivalDateAdapter(
-                        getNext7Days(),
-                        this::filterFestivalByDate));
+        festivalDateAdapter = new FestivalDateAdapter(
+                getNext7Days(),
+                this::filterFestivalByDate);
+        rvDates.setAdapter(festivalDateAdapter);
 
         // ================= FALLBACK =================
         fallback = new ArrayList<>();
@@ -1239,6 +1240,11 @@ public class HomeActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
 
+        // Reset date chip to "All" (position 0) so UI matches the data being loaded
+        if (festivalDateAdapter != null) {
+            festivalDateAdapter.selectedPosition = 0;
+            festivalDateAdapter.notifyDataSetChanged();
+        }
         loadAllFestivalCardsLive(); // "All" is selected by default — load all upcoming festivals
 
         loadHeroSectionLive(); // Merged loadAdvertisementLive and loadTrendingLive
