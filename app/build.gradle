@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace 'com.example.rmplus'
+    namespace 'com.rmads.maker'
     compileSdk 35
 
     defaultConfig {
-        applicationId "com.example.rmplus"
+        applicationId "com.rmads.maker"
         minSdk 24
         targetSdk 35
         versionCode 1
