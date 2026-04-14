@@ -13,7 +13,13 @@ public class TermsActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_terms);
 
-        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }
+        toolbar.setNavigationOnClickListener(v -> finish());
 
         // Apply animation to content
         View content = findViewById(android.R.id.content);
