@@ -780,8 +780,8 @@ public class ManageTemplatesActivity extends BaseActivity {
             totalDurationMs = 1; // safeguard
         final int finalDuration = totalDurationMs;
 
-        com.arthenica.mobileffmpeg.Config.enableStatisticsCallback(newStatistics -> {
-            int time = newStatistics.getTime();
+        com.arthenica.ffmpegkit.FFmpegKitConfig.enableStatisticsCallback(newStatistics -> {
+            int time = (int) newStatistics.getTime();
             int progress = (int) ((time * 100) / finalDuration);
             if (progress > 100)
                 progress = 100;
@@ -851,33 +851,31 @@ public class ManageTemplatesActivity extends BaseActivity {
                     originalPath, overlayFile.getAbsolutePath(), filterComplex, outputFile.getAbsolutePath());
 
             // 5. Execute
-            com.arthenica.mobileffmpeg.FFmpeg.executeAsync(command, new com.arthenica.mobileffmpeg.ExecuteCallback() {
-                @Override
-                public void apply(long executionId, int returnCode) {
-                    runOnUiThread(() -> {
-                        dialog.dismiss();
-                        com.arthenica.mobileffmpeg.Config.enableStatisticsCallback(null); // clear callback
-                        if (returnCode == com.arthenica.mobileffmpeg.Config.RETURN_CODE_SUCCESS) {
-                            Toast.makeText(ManageTemplatesActivity.this, R.string.msg_video_saved_success,
-                                    Toast.LENGTH_LONG).show();
+            com.arthenica.ffmpegkit.FFmpegKit.executeAsync(command, session -> {
+                com.arthenica.ffmpegkit.ReturnCode returnCode = session.getReturnCode();
+                runOnUiThread(() -> {
+                    dialog.dismiss();
+                    com.arthenica.ffmpegkit.FFmpegKitConfig.enableStatisticsCallback(null); // clear callback
+                    if (com.arthenica.ffmpegkit.ReturnCode.isSuccess(returnCode)) {
+                        Toast.makeText(ManageTemplatesActivity.this, R.string.msg_video_saved_success,
+                                Toast.LENGTH_LONG).show();
 
-                            android.content.Intent mediaScanIntent = new android.content.Intent(
-                                    android.content.Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-                            android.net.Uri contentUri = android.net.Uri.fromFile(outputFile);
-                            mediaScanIntent.setData(contentUri);
-                            long now = System.currentTimeMillis();
-                            String vPath = outputFile.getAbsolutePath();
-                            // Log as Save only
-                            rootRef.child("template_activity").child(templateId).child("saves").child(uid).setValue(now);
-                            rootRef.child("user_activity").child(uid).child("saves").child(templateId).setValue(vPath);
-                            
-                            incrementDownloadCount(); // Track video edit save
-                        } else {
-                            Toast.makeText(ManageTemplatesActivity.this,
-                                    getString(R.string.msg_failed_save_video_error, returnCode), Toast.LENGTH_LONG).show();
-                        }
-                    });
-                }
+                        android.content.Intent mediaScanIntent = new android.content.Intent(
+                                android.content.Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+                        android.net.Uri contentUri = android.net.Uri.fromFile(outputFile);
+                        mediaScanIntent.setData(contentUri);
+                        long now = System.currentTimeMillis();
+                        String vPath = outputFile.getAbsolutePath();
+                        // Log as Save only
+                        rootRef.child("template_activity").child(templateId).child("saves").child(uid).setValue(now);
+                        rootRef.child("user_activity").child(uid).child("saves").child(templateId).setValue(vPath);
+                        
+                        incrementDownloadCount(); // Track video edit save
+                    } else {
+                        Toast.makeText(ManageTemplatesActivity.this,
+                                getString(R.string.msg_failed_save_video_error, returnCode.getValue()), Toast.LENGTH_LONG).show();
+                    }
+                });
             });
         });
     }

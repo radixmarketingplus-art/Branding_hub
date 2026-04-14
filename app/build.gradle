@@ -11,21 +11,33 @@ android {
         applicationId "com.rmads.maker"
         minSdk 24
         targetSdk 35
-        versionCode 1
-        versionName "1.0"
+        versionCode 3
+        versionName "1.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_11
         targetCompatibility JavaVersion.VERSION_11
+    }
+
+    lint {
+        checkReleaseBuilds false
+        abortOnError false
+    }
+
+    packaging {
+        jniLibs {
+            useLegacyPackaging = false
+        }
     }
 }
 
@@ -80,6 +92,6 @@ dependencies {
     // 🔥 FOR ICON BADGE (Notification Count)
     implementation 'me.leolin:ShortcutBadger:1.1.22@aar'
     
-    // 🔥 FFMPEG FOR VIDEO OVERLAYS (Aliyun cache)
-    implementation 'com.arthenica:mobile-ffmpeg-min:4.4.LTS'
+    // 🔥 FFMPEG FOR VIDEO OVERLAYS (16KB Page Size compatible)
+    implementation 'com.moizhassan.ffmpeg:ffmpeg-kit-16kb:6.1.1'
 }

@@ -1,0 +1,91 @@
+{
+  "rules": {
+    // 👑 1. GLOBAL ADMIN PERMISSIONS
+    // Admins have full read/write access to everything.
+    ".read": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'admin'",
+    ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'admin'",
+    
+    // 👤 2. USER PROFILES
+    "users": {
+        "$uid": {
+            ".read": "auth != null && $uid === auth.uid",
+            // Allow user to edit their own profile EXCEPT for the 'role' field
+            ".write": "auth != null && $uid === auth.uid && (!newData.hasChild('role') || data.child('role').val() === newData.child('role').val())"
+        }
+    },
+    
+    // 📊 3. USER ACTIVITY & STATS
+    "user_activity": {
+        "$uid": {
+            ".read": "auth != null && $uid === auth.uid",
+            ".write": "auth != null && $uid === auth.uid"
+        }
+    },
+    
+    // 🔔 4. NOTIFICATIONS & BROADCASTS
+    "notifications": {
+        "$uid": {
+            ".read": "auth != null && $uid === auth.uid",
+            ".write": "auth != null && $uid === auth.uid"
+        }
+    },
+    "read_broadcasts": {
+        "$uid": {
+            ".read": "auth != null && $uid === auth.uid",
+            ".write": "auth != null && $uid === auth.uid"
+        }
+    },
+    "broadcast_notifications": {
+        ".read": "auth != null"
+    },
+    
+    // ⚙️ 5. APP SETTINGS & DATA
+    "admin_settings": {
+        ".read": "auth != null"
+    },
+    "festival_names": {
+        ".read": "auth != null"
+    },
+    "dynamic_subscriptions": {
+        ".read": "auth != null"
+    },
+    "templates": {
+        ".read": "auth != null"
+    },
+    "categories": {
+        ".read": "auth != null"
+    },
+    "advertisements": {
+        ".read": "auth != null"
+    },
+    
+    // 📋 6. REQUESTS & SUPPORT (Optimized with Indexing)
+    "customer_requests": {
+        ".read": "auth != null",
+        ".write": "auth != null",
+        ".indexOn": ["uid"]
+    },
+    "advertisement_requests": {
+        ".read": "auth != null",
+        ".write": "auth != null",
+        ".indexOn": ["uid"]
+    },
+    "subscription_requests": {
+        "$uid": {
+            ".read": "auth != null && $uid === auth.uid",
+            ".write": "auth != null && $uid === auth.uid"
+        },
+        ".indexOn": ["uid"]
+    },
+    
+    // 💬 7. CHATS & ACTIVITY
+    "request_chats": {
+        ".read": "auth != null",
+        ".write": "auth != null"
+    },
+    "template_activity": {
+        ".read": "auth != null",
+        ".write": "auth != null"
+    }
+  }
+}

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <!-- 🌐 Allow HTTP connection to the VPS IP for image uploads/downloads -->
+        <domain includeSubdomains="false">187.77.184.84</domain>
+    </domain-config>
+</network-security-config>

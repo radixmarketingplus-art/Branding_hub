@@ -368,10 +368,13 @@ public class BaseActivity extends AppCompatActivity {
             rate.setOnClickListener(v -> {
                 drawer.closeDrawer(Gravity.START);
                 try {
-                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + getPackageName())));
-                } catch (Exception e) {
-                    startActivity(new Intent(Intent.ACTION_VIEW,
-                            Uri.parse("https://play.google.com/store/apps/details?id=" + getPackageName())));
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + getPackageName()));
+                    intent.setPackage("com.android.vending"); // Force open in Google Play Store
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+                    startActivity(intent);
+                } catch (android.content.ActivityNotFoundException e) {
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + getPackageName()));
+                    startActivity(intent);
                 }
             });
 
@@ -461,10 +464,13 @@ public class BaseActivity extends AppCompatActivity {
         view.findViewById(R.id.menuRate).setOnClickListener(v -> {
             sheet.dismiss();
             try {
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + getPackageName())));
-            } catch (Exception e) {
-                startActivity(new Intent(Intent.ACTION_VIEW,
-                        Uri.parse("https://play.google.com/store/apps/details?id=" + getPackageName())));
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + getPackageName()));
+                intent.setPackage("com.android.vending"); // Force open in Google Play Store
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+                startActivity(intent);
+            } catch (android.content.ActivityNotFoundException e) {
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + getPackageName()));
+                startActivity(intent);
             }
         });
 
