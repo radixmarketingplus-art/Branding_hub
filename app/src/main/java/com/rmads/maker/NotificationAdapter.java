@@ -44,8 +44,8 @@ public class NotificationAdapter extends BaseAdapter {
 
         NotificationModel model = data.get(i);
 
-        title.setText(model.title);
-        message.setText(model.message);
+        title.setText(NotificationHelper.getLocalized(context, model.title));
+        message.setText(NotificationHelper.getLocalized(context, model.message));
 
         if (model.time > 0) {
             // ✅ Use Locale.ENGLISH for consistent month/time display (no Devanagari digits)

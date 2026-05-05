@@ -336,6 +336,10 @@ public class NotificationActivity extends BaseActivity {
                 android.content.Intent intent = new android.content.Intent(this, AdminContactRequestsActivity.class);
                 startActivity(intent);
                 finish();
+            } else if (action.equals("OPEN_CLIENT_INFO_REQUESTS")) {
+                android.content.Intent intent = new android.content.Intent(this, AdminClientInfoRequestsActivity.class);
+                startActivity(intent);
+                finish();
             } else if (action.equals("OPEN_CHAT")) {
                 if (extraData != null && !extraData.isEmpty()) {
                     android.content.Intent intent = new android.content.Intent(this, RequestChatActivity.class);

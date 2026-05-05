@@ -40,6 +40,7 @@ public class UploadTemplatesFragment extends Fragment {
     Spinner spinnerSection, spinnerSubSection;
     MaterialButton btnSelectImage, btnSave, btnPickDate;
     ImageView previewImage;
+    android.widget.VideoView videoPreview;
     LinearLayout dateContainer, subSectionContainer;
     View placeholderLayout, btnChangeMedia, icPlayVideo;
 
@@ -119,20 +120,29 @@ public class UploadTemplatesFragment extends Fragment {
                     if (sourceUri != null) {
                         // ✅ Use canonical key for logic comparison
                         String sectionKey = getSelectedSectionKey();
-                        if (sectionKey.equalsIgnoreCase("Reel Maker")) {
+                        String mimeType = requireContext().getContentResolver().getType(sourceUri);
+                        String uriStr = sourceUri.toString().toLowerCase();
+                        
+                        // 🎬 Aggressive Video Detection
+                        boolean isVideo = (mimeType != null && mimeType.startsWith("video/")) || 
+                                          uriStr.contains(".mp4") || uriStr.contains(".mkv") || uriStr.contains(".webm") || uriStr.contains(".mov") || uriStr.contains(".3gp");
+
+                        if (isVideo) {
+                            // 🎬 Skip crop for videos
                             selectedImageUri = sourceUri;
                             updatePreviewVisibility();
-                            // Use Glide to show a thumbnail for the video
-                            com.bumptech.glide.Glide.with(requireContext())
-                                .asBitmap()
-                                .load(selectedImageUri)
-                                .into(previewImage);
+                            
+                            if (sectionKey.equalsIgnoreCase("Reel Maker")) {
+                                toast(R.string.msg_video_selected);
+                            } else {
+                                toast("Video advertisement selected");
+                            }
                         } else if (sectionKey.equalsIgnoreCase("Business Frame")) {
-                            // 🚫 SKIPPING MANDATORY UCROP FOR THESE SECTIONS
+                            // 🚫 SKIP UCROP only for Business Frame
                             selectedImageUri = sourceUri;
                             updatePreviewVisibility();
-                            previewImage.setImageURI(selectedImageUri);
                         } else {
+                            // 🖼️ Restore crop for all other images (including Advertisement)
                             originalImageUri = sourceUri;
                             startCrop(sourceUri);
                         }
@@ -207,6 +217,7 @@ public class UploadTemplatesFragment extends Fragment {
         btnSave = v.findViewById(R.id.btnSave);
         btnPickDate = v.findViewById(R.id.btnPickDate);
         previewImage = v.findViewById(R.id.previewImage);
+        videoPreview = v.findViewById(R.id.videoPreview);
         dateContainer = v.findViewById(R.id.dateContainer);
         subSectionContainer = v.findViewById(R.id.subSectionContainer);
         spinnerSubSection = v.findViewById(R.id.spinnerSubSection);
@@ -445,6 +456,12 @@ public class UploadTemplatesFragment extends Fragment {
             if (sectionKey.equalsIgnoreCase("Reel Maker")) {
                 i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Video.Media.EXTERNAL_CONTENT_URI);
                 i.setType("video/*");
+            } else if (sectionKey.equalsIgnoreCase("Advertisement")) {
+                i = new Intent(Intent.ACTION_GET_CONTENT);
+                i.setType("*/*");
+                String[] mimeTypes = { "image/*", "video/*" };
+                i.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
+                i.addCategory(Intent.CATEGORY_OPENABLE);
             } else if (sectionKey.equalsIgnoreCase("Business Frame")) {
                 // 🛡️ ACTION_GET_CONTENT is more reliable for strict MIME filtering in the
                 // system picker
@@ -557,9 +574,11 @@ public class UploadTemplatesFragment extends Fragment {
 
         // ---------- TYPE & SIZE VALIDATION ----------
         String mimeType = requireContext().getContentResolver().getType(selectedImageUri);
-        String uriString = selectedImageUri.toString();
+        String uriString = selectedImageUri.toString().toLowerCase();
+        boolean isVideo = (mimeType != null && mimeType.startsWith("video/")) || 
+                          uriString.contains(".mp4") || uriString.contains(".mkv") || uriString.contains(".webm") || uriString.contains(".mov");
 
-        if (sectionKey.equalsIgnoreCase("Reel Maker")) {
+        if (sectionKey.equalsIgnoreCase("Reel Maker") || (sectionKey.equalsIgnoreCase("Advertisement") && isVideo)) {
             // Video Validation
             if (mimeType == null && !uriString.contains(".mp4") && !uriString.contains(".mkv")
                     && !uriString.contains(".mov") && !uriString.contains(".webm")) {
@@ -764,6 +783,15 @@ public class UploadTemplatesFragment extends Fragment {
                 AdvertisementItem adItem = new AdvertisementItem(imageUrl, link, expiryTime, "Admin",
                         System.currentTimeMillis());
                 adItem.id = templateId; // Important for redirection highlight
+
+                // ✅ Set type based on extension
+                String lowerUrl = imageUrl.toLowerCase();
+                if (lowerUrl.endsWith(".mp4") || lowerUrl.endsWith(".mkv") || lowerUrl.endsWith(".webm") || 
+                    lowerUrl.endsWith(".mov") || lowerUrl.endsWith(".3gp")) {
+                    adItem.type = "video";
+                } else {
+                    adItem.type = "image";
+                }
 
                 // 1. Save to Firebase
                 dbRef.child(templateId).setValue(adItem);
@@ -1008,20 +1036,67 @@ public class UploadTemplatesFragment extends Fragment {
     private void updatePreviewVisibility() {
         if (selectedImageUri != null) {
             placeholderLayout.setVisibility(View.GONE);
-            previewImage.setVisibility(View.VISIBLE);
             btnChangeMedia.setVisibility(View.VISIBLE);
 
             String sectionKey = getSelectedSectionKey();
-            if (sectionKey.equalsIgnoreCase("Reel Maker")) {
+            String mimeType = requireContext().getContentResolver().getType(selectedImageUri);
+            String uriStr = selectedImageUri.toString().toLowerCase();
+            boolean isVideo = (mimeType != null && mimeType.startsWith("video/")) || 
+                              uriStr.contains(".mp4") || uriStr.contains(".mkv") || uriStr.contains(".webm") || uriStr.contains(".mov") || uriStr.contains(".3gp");
+
+            if (isVideo) {
+                previewImage.setVisibility(View.VISIBLE);
+                videoPreview.setVisibility(View.GONE);
                 icPlayVideo.setVisibility(View.VISIBLE);
+
+                // Load a thumbnail frame from the local video URI
+                com.bumptech.glide.Glide.with(this)
+                        .asBitmap()
+                        .load(selectedImageUri)
+                        .frame(1000000) // 1 second in
+                        .into(previewImage);
+
+                // Set click listener to open Video Preview Activity
+                View.OnClickListener playListener = v -> {
+                    Intent i = new Intent(requireContext(), ImagePreviewActivity.class);
+                    i.putExtra("img", selectedImageUri.toString());
+                    i.putExtra("is_video", true);
+                    startActivity(i);
+                };
+                previewImage.setOnClickListener(playListener);
+                icPlayVideo.setOnClickListener(playListener);
             } else {
-                icPlayVideo.setVisibility(View.GONE);
+                previewImage.setVisibility(View.VISIBLE);
+                videoPreview.setVisibility(View.GONE);
+                previewImage.setOnClickListener(null); // Reset listener for images
+                
+                if (sectionKey.equalsIgnoreCase("Reel Maker")) {
+                    icPlayVideo.setVisibility(View.VISIBLE);
+                } else {
+                    icPlayVideo.setVisibility(View.GONE);
+                }
+                
+                if (!selectedImageUri.toString().startsWith("http")) {
+                    previewImage.setImageURI(selectedImageUri);
+                } else {
+                    com.bumptech.glide.Glide.with(this).load(selectedImageUri).into(previewImage);
+                }
             }
+
+            // Fix size for Reel Maker (9:16 aspect ratio look)
+            if (sectionKey.equalsIgnoreCase("Reel Maker")) {
+                previewImage.getLayoutParams().height = (int) (400 * getResources().getDisplayMetrics().density);
+            } else {
+                previewImage.getLayoutParams().height = (int) (200 * getResources().getDisplayMetrics().density);
+            }
+            previewImage.requestLayout();
         } else {
             placeholderLayout.setVisibility(View.VISIBLE);
             previewImage.setVisibility(View.GONE);
+            videoPreview.setVisibility(View.GONE);
             btnChangeMedia.setVisibility(View.GONE);
             icPlayVideo.setVisibility(View.GONE);
+            if (videoPreview != null) videoPreview.stopPlayback();
         }
     }
 
@@ -1094,8 +1169,8 @@ public class UploadTemplatesFragment extends Fragment {
     private void uploadImageToServer(Uri imageUri, UploadCallback callback) {
         android.content.ContentResolver resolver = requireContext().getContentResolver();
         String sectionKey = getSelectedSectionKey();
-        boolean isReel = sectionKey.equalsIgnoreCase("Reel Maker");
-        long limit = (isReel ? 50L : 15L) * 1024 * 1024; // 50MB for reels as requested
+        boolean isLargeMedia = sectionKey.equalsIgnoreCase("Reel Maker") || sectionKey.equalsIgnoreCase("Advertisement");
+        long limit = (isLargeMedia ? 50L : 15L) * 1024 * 1024; // 50MB for reels as requested
 
         new Thread(() -> {
             try {
@@ -1111,7 +1186,7 @@ public class UploadTemplatesFragment extends Fragment {
                 }
 
                 String mimeType = resolver.getType(imageUri);
-                if (mimeType == null) mimeType = isReel ? "video/mp4" : "image/jpeg";
+                if (mimeType == null) mimeType = isLargeMedia ? "video/mp4" : "image/jpeg";
 
                 // 2. Connection Settings
                 String boundary = "----RMPLUS" + System.currentTimeMillis();
@@ -1126,8 +1201,8 @@ public class UploadTemplatesFragment extends Fragment {
                 conn.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
 
                 // Multipart overhead calculation
-                String ext = ".jpg";
-                if (mimeType.contains("png")) ext = ".png";
+                String ext = isLargeMedia ? ".mp4" : ".jpg";
+                if (mimeType != null && mimeType.contains("png")) ext = ".png";
                 else if (mimeType.contains("mp4")) ext = ".mp4";
                 else if (mimeType.contains("webm")) ext = ".webm";
                 else if (mimeType.contains("mkv")) ext = ".mkv";

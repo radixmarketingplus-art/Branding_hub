@@ -26,20 +26,40 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
 
-        <TextView
-            android:id="@+id/txtGreeting"
+        <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:text="@string/app_name"
-            android:textSize="20sp"
-            android:fontFamily="sans-serif-black"
-            android:textColor="?attr/colorOnSurface"
-            android:letterSpacing="-0.01"
+            android:orientation="vertical"
             app:layout_constraintEnd_toStartOf="@+id/notifContainer"
             app:layout_constraintStart_toEndOf="@id/btnMenu"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <TextView
+                android:id="@+id/txtGreeting"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/app_name"
+                android:textSize="16sp"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:fontFamily="sans-serif-black"
+                android:textColor="?attr/colorOnSurface"
+                android:letterSpacing="-0.01" />
+
+            <TextView
+                android:id="@+id/txtWelcomeSub"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/welcome_rm_ads_maker"
+                android:textSize="10sp"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="@color/text_primary"
+                android:alpha="0.4"
+                android:maxLines="1"
+                android:ellipsize="end" />
+        </LinearLayout>
 
         <FrameLayout
             android:id="@+id/notifContainer"

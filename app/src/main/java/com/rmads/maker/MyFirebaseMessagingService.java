@@ -28,7 +28,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     @Override
     public void onNewToken(@NonNull String token) {
         super.onNewToken(token);
-        saveFcmTokenToFirebase(token);
+        saveFcmTokenToFirebase(this, token);
     }
 
     // ✅ Called when a message is received (both foreground & background data messages)
@@ -57,6 +57,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 action = remoteMessage.getData().get("action");
             if (remoteMessage.getData().containsKey("extraData"))
                 extraData = remoteMessage.getData().get("extraData");
+        }
+
+        // ✅ Check local preference before showing anything
+        android.content.SharedPreferences prefs = getSharedPreferences("APP_DATA", Context.MODE_PRIVATE);
+        if (!prefs.getBoolean("notifications", true)) {
+            return;
         }
 
         if (title != null && body != null) {
@@ -116,18 +122,27 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             });
     }
 
-    // ✅ Save FCM token... (existing code)
-    public static void saveFcmTokenToFirebase(String token) {
+    // ✅ Save FCM token to Firebase (Handles multiple devices)
+    public static void saveFcmTokenToFirebase(Context context, String token) {
         FirebaseAuth auth = FirebaseAuth.getInstance();
         if (auth.getCurrentUser() == null) return;
         String uid = auth.getUid();
         if (uid == null) return;
 
-        FirebaseDatabase.getInstance()
+        // Use Android ID as a unique key for this device
+        String deviceId = android.provider.Settings.Secure.getString(
+                context.getContentResolver(), 
+                android.provider.Settings.Secure.ANDROID_ID);
+
+        com.google.firebase.database.DatabaseReference userRef = FirebaseDatabase.getInstance()
                 .getReference("users")
-                .child(uid)
-                .child("fcmToken")
-                .setValue(token);
+                .child(uid);
+
+        // 1. Save to the multi-device map
+        userRef.child("fcmTokens").child(deviceId).setValue(token);
+
+        // 2. Keep the legacy single token for backward compatibility with simple scripts
+        userRef.child("fcmToken").setValue(token);
     }
 
     private void showNotification(String title, String message, int count, String action, String extraData) {

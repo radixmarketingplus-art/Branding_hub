@@ -29,7 +29,7 @@ public class AdminTemplateDetailActivity extends BaseActivity {
     ImageView imgPreview;
     TextView txtCategory;
 
-    TextView txtLikeCount, txtFavCount, txtEditCount, txtSaveCount;
+    TextView txtLikeCount, txtEditCount, txtSaveCount;
     TextView txtExpiryStatus;
     long currentExpiry = 0;
 
@@ -50,7 +50,6 @@ public class AdminTemplateDetailActivity extends BaseActivity {
         realTemplateId = getIntent().getStringExtra("id"); 
         
         txtLikeCount  = findViewById(R.id.txtLikeCount);
-        txtFavCount   = findViewById(R.id.txtFavCount);
         txtEditCount  = findViewById(R.id.txtEditCount);                         
         txtSaveCount  = findViewById(R.id.txtSaveCount);
 
@@ -66,7 +65,7 @@ public class AdminTemplateDetailActivity extends BaseActivity {
         txtExpiryStatus = findViewById(R.id.txtExpiryStatus);
 
         // Header
-        findViewById(R.id.btnBack).setOnClickListener(v -> onBackPressed());
+        findViewById(R.id.btnBack).setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
         findViewById(R.id.btnSearch).setOnClickListener(v -> {
             startActivity(new Intent(this, SearchActivity.class));
         });
@@ -142,13 +141,12 @@ public class AdminTemplateDetailActivity extends BaseActivity {
             discoverCategoryAndLoad();
         }
 
-        imgPreview.setOnClickListener(v -> {
-            if (templatePath != null) {
-                Intent i = new Intent(this, ImagePreviewActivity.class);
-                i.putExtra("img", templatePath);
-                startActivity(i);
-            }
-        });
+        imgPreview.setOnClickListener(v -> openMediaPreview());
+
+        // layPlay click also opens the video preview
+        if (layPlay != null) {
+            layPlay.setOnClickListener(v -> openMediaPreview());
+        }
 
         // 🟢 PREMIUM SCROLL BEHAVIOR
         com.google.android.material.appbar.AppBarLayout appBarLayout = findViewById(R.id.appBar);
@@ -316,13 +314,28 @@ public class AdminTemplateDetailActivity extends BaseActivity {
     private boolean isVideo(String type) {
         if ("video".equalsIgnoreCase(type)) return true;
         if (category != null && category.equalsIgnoreCase("Reel Maker")) return true;
-        
-        // Final check based on URL extension
+        // Check URL for common video extensions
         if (templatePath != null) {
-            String lower = templatePath.toLowerCase().split("\\?")[0];
-            return lower.endsWith(".mp4") || lower.endsWith(".webm") || lower.contains("/reel maker/") || lower.contains("/reel%20maker/");
+            String lower = templatePath.toLowerCase();
+            return lower.contains(".mp4") || lower.contains(".mov") || lower.contains(".mkv") ||
+                   lower.contains(".webm") || lower.contains(".3gp");
         }
         return false;
+    }
+
+    private void openMediaPreview() {
+        if (templatePath == null) return;
+        // Determine if this is a video based on type stored in DB or URL
+        String lowerPath = templatePath.toLowerCase();
+        boolean isVid = lowerPath.contains(".mp4") || lowerPath.contains(".mov") ||
+                        lowerPath.contains(".mkv") || lowerPath.contains(".webm") ||
+                        lowerPath.contains(".3gp") ||
+                        (category != null && category.equalsIgnoreCase("Reel Maker")) ||
+                        (layPlay != null && layPlay.getVisibility() == View.VISIBLE);
+        Intent i = new Intent(this, ImagePreviewActivity.class);
+        i.putExtra("img", templatePath);
+        i.putExtra("is_video", isVid);
+        startActivity(i);
     }
 
     void loadAdvertisementLink() {
@@ -358,12 +371,11 @@ public class AdminTemplateDetailActivity extends BaseActivity {
 
     void setupClicks() {
         View btnLike = findViewById(R.id.statLike);
-        View btnFav = findViewById(R.id.statFav);
         View btnEdit = findViewById(R.id.statEdit);
         View btnSave = findViewById(R.id.statSave);
 
         if (btnLike != null) btnLike.setOnClickListener(v -> openStats("likes"));
-        if (btnFav != null) btnFav.setOnClickListener(v -> openStats("favorites"));
+
         if (btnEdit != null) btnEdit.setOnClickListener(v -> openStats("edits"));
         if (btnSave != null) btnSave.setOnClickListener(v -> openStats("saves"));
     }
@@ -394,8 +406,8 @@ public class AdminTemplateDetailActivity extends BaseActivity {
         // 1. Real ID, 2. Raw Base64, 3. SafeKey (Base64 with replaces)
         
         String[] keysToCheck = {realTemplateId, templateKey, safeKey};
-        String[] activityTypes = {"likes", "favorites", "edits", "saves"};
-        TextView[] views = {txtLikeCount, txtFavCount, txtEditCount, txtSaveCount};
+        String[] activityTypes = {"likes", "edits", "saves"};
+        TextView[] views = {txtLikeCount, txtEditCount, txtSaveCount};
 
         for (int i = 0; i < activityTypes.length; i++) {
             final String type = activityTypes[i];
@@ -474,7 +486,7 @@ public class AdminTemplateDetailActivity extends BaseActivity {
         DatabaseReference activityRef = FirebaseDatabase.getInstance().getReference("template_activity").child(tid);
         DatabaseReference userActivityRef = FirebaseDatabase.getInstance().getReference("user_activity");
         
-        String[] types = {"likes", "favorites", "edits", "saves", "shares"};
+        String[] types = {"likes", "edits", "saves", "shares"};
         
         // 🔥 FIRST: READ the list of users who interacted with this template
         activityRef.addListenerForSingleValueEvent(new com.google.firebase.database.ValueEventListener() {

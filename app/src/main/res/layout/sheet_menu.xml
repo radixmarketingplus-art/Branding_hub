@@ -119,6 +119,36 @@
                     android:text="@string/menu_language" />
             </LinearLayout>
 
+            <!-- SERVICE REQUEST -->
+            <LinearLayout
+                android:id="@+id/menuClientInfo"
+                style="@style/SettingsItemStyle"
+                android:layout_width="match_parent"
+                android:layout_height="56dp">
+                <ImageView
+                    style="@style/SettingsIconStyle"
+                    android:src="@drawable/ic_edit"
+                    app:tint="?attr/colorPrimary" />
+                <TextView
+                    style="@style/SettingsTextStyle"
+                    android:text="Service Request" />
+            </LinearLayout>
+
+            <!-- MY SERVICE REQUESTS -->
+            <LinearLayout
+                android:id="@+id/menuMyServiceRequests"
+                style="@style/SettingsItemStyle"
+                android:layout_width="match_parent"
+                android:layout_height="56dp">
+                <ImageView
+                    style="@style/SettingsIconStyle"
+                    android:src="@drawable/ic_clipboard_list"
+                    app:tint="?attr/colorPrimary" />
+                <TextView
+                    style="@style/SettingsTextStyle"
+                    android:text="My Service Requests" />
+            </LinearLayout>
+
             <!-- SETTINGS -->
             <LinearLayout
                 android:id="@+id/menuSettings"

@@ -362,6 +362,10 @@ public class NotificationHelper {
         if (text.equalsIgnoreCase("New Support Request")) return context.getString(R.string.title_notif_new_support);
         if (text.equalsIgnoreCase("A user has submitted a new support/contact request.")) return context.getString(R.string.msg_notif_new_support);
 
+        // Client Info (Admin)
+        if (text.equalsIgnoreCase("New Client Info Request")) return context.getString(R.string.title_notif_client_info);
+        if (text.equalsIgnoreCase("A user has submitted a new client info request.")) return context.getString(R.string.msg_notif_client_info);
+
         // Chat
         if (text.equalsIgnoreCase("New Message")) return context.getString(R.string.title_notif_new_message);
         if (text.equalsIgnoreCase("New message from Support Agent.")) return context.getString(R.string.msg_notif_new_message_user);

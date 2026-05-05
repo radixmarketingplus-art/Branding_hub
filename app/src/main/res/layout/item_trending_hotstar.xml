@@ -6,9 +6,9 @@
     android:layout_width="380dp"
     android:layout_height="160dp"
     android:layout_margin="8dp"
-    card_view:cardCornerRadius="24dp"
-    card_view:cardElevation="8dp"
-    card_view:cardBackgroundColor="@color/card_dark"
+    card_view:cardCornerRadius="8dp"
+    card_view:cardElevation="4dp"
+    card_view:cardBackgroundColor="#1A1A1A"
     android:foreground="?attr/selectableItemBackground">
 
     <FrameLayout
@@ -23,12 +23,33 @@
             android:scaleType="centerCrop"
             android:contentDescription="Featured image"/>
  
-        <VideoView
-            android:id="@+id/videoView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:visibility="gone"/>
+            <androidx.media3.ui.PlayerView
+                android:id="@+id/videoPlayer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                card_view:use_controller="false"
+                card_view:surface_type="texture_view"
+                card_view:resize_mode="zoom"
+                android:visibility="gone"/>
+
+            <ProgressBar
+                android:id="@+id/pbLoading"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="center"
+                android:indeterminateTint="@color/white"
+                android:visibility="gone"/>
+
+            <ImageView
+                android:id="@+id/btnVolume"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="bottom|end"
+                android:layout_margin="12dp"
+                android:padding="6dp"
+                android:src="@drawable/ic_volume_off"
+                android:background="@drawable/bg_volume_btn"
+                android:visibility="gone" />
  
     </FrameLayout>
 

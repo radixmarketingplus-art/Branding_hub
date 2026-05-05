@@ -40,6 +40,7 @@
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:networkSecurityConfig="@xml/network_security_config"
+        android:usesCleartextTraffic="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
@@ -75,6 +76,18 @@
             android:exported="false" />
         <activity
             android:name=".AdminAdRequestScannerActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ClientInfoActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AdminClientInfoRequestsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".MyServiceRequestsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AdminManageServicesActivity"
             android:exported="false" />
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"

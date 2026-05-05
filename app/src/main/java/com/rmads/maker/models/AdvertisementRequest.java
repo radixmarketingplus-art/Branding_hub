@@ -15,6 +15,7 @@ public class AdvertisementRequest {
     public String status;
     public long time;
     public long expiryTime;
+    public String type; // "image" or "video"
 
     public AdvertisementRequest(){}
 

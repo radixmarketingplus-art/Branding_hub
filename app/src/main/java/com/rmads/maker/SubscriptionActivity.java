@@ -52,8 +52,6 @@ public class SubscriptionActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle b) {
         super.onCreate(b);
-        // Allow screenshots on the subscription page as requested by user
-        getWindow().clearFlags(android.view.WindowManager.LayoutParams.FLAG_SECURE);
         setContentView(R.layout.activity_subscription);
 
         statusTxt=findViewById(R.id.statusTxt);

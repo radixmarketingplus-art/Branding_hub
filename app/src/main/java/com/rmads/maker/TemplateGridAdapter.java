@@ -113,8 +113,11 @@ public class TemplateGridAdapter
                 card.setStrokeWidth(12); // Thick highlight
                 card.setCardElevation(dp20); // Extra shadow
             } else {
+                float dp2 = android.util.TypedValue.applyDimension(android.util.TypedValue.COMPLEX_UNIT_DIP, 2, h.itemView.getResources().getDisplayMetrics());
+                float dp5 = android.util.TypedValue.applyDimension(android.util.TypedValue.COMPLEX_UNIT_DIP, 5, h.itemView.getResources().getDisplayMetrics());
+                card.setStrokeColor(android.graphics.Color.TRANSPARENT);
                 card.setStrokeWidth(0);
-                card.setCardElevation(dp10);
+                card.setCardElevation(dp5); // 5dp default shadow
             }
         }
     }

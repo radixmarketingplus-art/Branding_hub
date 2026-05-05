@@ -77,6 +77,11 @@
         },
         ".indexOn": ["uid"]
     },
+    "client_info_requests": {
+        ".read": "auth != null",
+        ".write": "auth != null",
+        ".indexOn": ["uid"]
+    },
     
     // 💬 7. CHATS & ACTIVITY
     "request_chats": {

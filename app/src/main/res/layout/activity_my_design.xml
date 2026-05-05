@@ -73,16 +73,7 @@
                 android:textSize="14sp"
                 android:textColor="@color/primary"/>
 
-            <TextView
-                android:id="@+id/txtFav"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="@string/tab_favorite"
-                android:textStyle="bold"
-                android:textSize="14sp"
-                android:textColor="?attr/colorOnSurface"/>
+
 
             <TextView
                 android:id="@+id/txtEdits"

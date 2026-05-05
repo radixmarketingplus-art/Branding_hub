@@ -14,6 +14,7 @@ public class AdminPanelActivity extends BaseActivity {
                         subscriptionRequestsBtn,
                         advertisementRequestBtn,
                         contactRequestsBtn,
+                        clientInfoRequestsBtn,
                         userInfoBtn;
 
         @Override
@@ -31,6 +32,7 @@ public class AdminPanelActivity extends BaseActivity {
                 subscriptionRequestsBtn = findViewById(R.id.subscriptionRequestsBtn);
                 advertisementRequestBtn = findViewById(R.id.advertisementRequestBtn);
                 contactRequestsBtn = findViewById(R.id.contactRequestsBtn);
+                clientInfoRequestsBtn = findViewById(R.id.clientInfoRequestsBtn);
                 userInfoBtn = findViewById(R.id.userInfoBtn);
                 Button appOpenOfferBtn = findViewById(R.id.appOpenOfferBtn);
 
@@ -62,6 +64,9 @@ public class AdminPanelActivity extends BaseActivity {
 
                 contactRequestsBtn.setOnClickListener(v -> startActivity(new Intent(this,
                                 AdminContactRequestsActivity.class)));
+
+                clientInfoRequestsBtn.setOnClickListener(v -> startActivity(new Intent(this,
+                                AdminClientInfoRequestsActivity.class)));
 
                 userInfoBtn.setOnClickListener(v -> startActivity(new Intent(this,
                                 UserListActivity.class)));

@@ -26,7 +26,9 @@ public class AdRequestActivity extends BaseActivity {
     ImageView imgTemplate, imgProof;
     Button btnUploadTemplate, btnUploadProof, btnSubmit;
     TextView tvReCropHint;
-    ProgressBar progressBar; // Loading indicator during submit
+    ProgressBar progressBar; // Shows actual upload % for videos
+    TextView tvUploadPercent;  // "Uploading… 45%"
+    View uploadProgressContainer; // Wraps bar + percent label
 
     // ── Template (advertisement image) — crop → kept locally until submit ──
     Uri templateUri; // cropped local URI (not yet on VPS)
@@ -47,12 +49,21 @@ public class AdRequestActivity extends BaseActivity {
                         return;
 
                     String mimeType = getContentResolver().getType(sourceUri);
-                    if (!isValidImage(mimeType)) {
-                        toast(R.string.msg_invalid_img_format);
-                        return;
+                    String uriStr = sourceUri.toString().toLowerCase();
+                    boolean isVideo = (mimeType != null && mimeType.startsWith("video/")) || 
+                                      uriStr.contains(".mp4") || uriStr.contains(".mkv") || uriStr.contains(".webm") || uriStr.contains(".mov") || uriStr.contains(".3gp");
+
+                    if (isVideo) {
+                        // 🎬 Skip crop for videos
+                        templateOriginalUri = sourceUri;
+                        templateUri = sourceUri; // local URI
+                        showTemplatePreview(true);
+                        toast(R.string.msg_video_selected);
+                    } else {
+                        // 🖼️ Proceed with crop for images
+                        templateOriginalUri = sourceUri;
+                        startCropForTemplate(sourceUri);
                     }
-                    templateOriginalUri = sourceUri;
-                    startCropForTemplate(sourceUri);
                 }
             });
 
@@ -65,12 +76,7 @@ public class AdRequestActivity extends BaseActivity {
                     if (croppedUri != null) {
                         // ✅ Only keep locally — NO VPS upload here
                         templateUri = croppedUri;
-                        imgTemplate.setImageURI(croppedUri);
-                        imgTemplate.setVisibility(ImageView.VISIBLE);
-                        View tp = findViewById(R.id.templatePlaceholder);
-                        if (tp != null)
-                            tp.setVisibility(View.GONE);
-                        tvReCropHint.setVisibility(View.VISIBLE);
+                        showTemplatePreview(false);
                         toast(R.string.msg_crop_success);
                     }
                 } else if (result.getResultCode() == UCrop.RESULT_ERROR && result.getData() != null) {
@@ -79,6 +85,47 @@ public class AdRequestActivity extends BaseActivity {
                         toast("Crop Error: " + err.getMessage());
                 }
             });
+
+    ImageView icPlayVideo;
+
+    private void showTemplatePreview(boolean isVideo) {
+        if (templateUri == null) return;
+        
+        imgTemplate.setVisibility(View.VISIBLE);
+        View tp = findViewById(R.id.templatePlaceholder);
+        if (tp != null) tp.setVisibility(View.GONE);
+        tvReCropHint.setVisibility(isVideo ? View.GONE : View.VISIBLE);
+
+        if (isVideo) {
+            icPlayVideo.setVisibility(View.VISIBLE);
+            // Load thumbnail frame
+            com.bumptech.glide.Glide.with(this)
+                    .asBitmap()
+                    .load(templateUri)
+                    .frame(1000000)
+                    .into(imgTemplate);
+            
+            // Clicking play icon or thumbnail opens full video preview
+            View.OnClickListener playListener = v -> {
+                Intent i = new Intent(this, ImagePreviewActivity.class);
+                i.putExtra("img", templateUri.toString());
+                i.putExtra("is_video", true);
+                startActivity(i);
+            };
+            imgTemplate.setOnClickListener(playListener);
+            icPlayVideo.setOnClickListener(playListener);
+        } else {
+            icPlayVideo.setVisibility(View.GONE);
+            imgTemplate.setImageURI(templateUri);
+            
+            // Restore re-crop listener for images
+            imgTemplate.setOnClickListener(v -> {
+                if (templateOriginalUri != null) {
+                    startCropForTemplate(templateOriginalUri);
+                }
+            });
+        }
+    }
 
     // ─── Image Picker for PROOF ────────────────────────────────────────────────
     ActivityResultLauncher<Intent> proofPicker = registerForActivityResult(
@@ -109,8 +156,6 @@ public class AdRequestActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle b) {
         super.onCreate(b);
-        // Allow screenshots on the advertisement request page as requested by user
-        getWindow().clearFlags(android.view.WindowManager.LayoutParams.FLAG_SECURE);
         setContentView(R.layout.activity_ad_request);
 
         // This initializes the bottom nav from the layout
@@ -120,10 +165,13 @@ public class AdRequestActivity extends BaseActivity {
         tvReCropHint = findViewById(R.id.tvReCropHint);
         imgTemplate = findViewById(R.id.imgTemplate);
         imgProof = findViewById(R.id.imgProof);
+        icPlayVideo = findViewById(R.id.icPlayVideo);
         btnUploadTemplate = findViewById(R.id.btnUploadTemplate);
         btnUploadProof = findViewById(R.id.btnUploadProof);
         btnSubmit = findViewById(R.id.btnSubmitAd);
         progressBar = findViewById(R.id.progressBar);
+        tvUploadPercent = findViewById(R.id.tvUploadPercent);
+        uploadProgressContainer = findViewById(R.id.uploadProgressContainer);
 
         // Back button
         View btnBack = findViewById(R.id.btnBack);
@@ -140,12 +188,8 @@ public class AdRequestActivity extends BaseActivity {
 
         btnUploadTemplate.setOnClickListener(v -> pickTemplateImage());
 
-        // Tap preview → re-crop from original
-        imgTemplate.setOnClickListener(v -> {
-            if (templateOriginalUri != null) {
-                startCropForTemplate(templateOriginalUri);
-            }
-        });
+        // Note: Template preview click is now handled inside showTemplatePreview()
+        // based on image vs video type.
 
         btnUploadProof.setOnClickListener(v -> pickProofImage());
 
@@ -193,8 +237,9 @@ public class AdRequestActivity extends BaseActivity {
 
     private void pickTemplateImage() {
         Intent i = new Intent(Intent.ACTION_GET_CONTENT);
-        i.setType("image/*");
-        i.putExtra(Intent.EXTRA_MIME_TYPES, new String[] { "image/jpeg", "image/jpg", "image/png" });
+        i.setType("*/*");
+        String[] mimeTypes = { "image/*", "video/*" };
+        i.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
         templatePicker.launch(i);
     }
 
@@ -313,7 +358,15 @@ public class AdRequestActivity extends BaseActivity {
                 r.proofPath = proofUrl;
                 r.status = "pending";
                 r.time = System.currentTimeMillis();
-
+                
+                String mime = getContentResolver().getType(templateUri);
+                String lowerUri = templateUri.toString().toLowerCase();
+                boolean isVid = (mime != null && mime.startsWith("video/")) || 
+                                lowerUri.contains(".mp4") || lowerUri.contains(".mov") || 
+                                lowerUri.contains(".mkv") || lowerUri.contains(".webm") || 
+                                lowerUri.contains(".3gp");
+                r.type = isVid ? "video" : "image";
+                
                 adRef.child(id).setValue(r)
                         .addOnSuccessListener(u -> {
 
@@ -364,7 +417,11 @@ public class AdRequestActivity extends BaseActivity {
         btnSubmit.setText(submitting
                 ? getString(R.string.msg_uploading_wait)
                 : getString(R.string.btn_submit_adv_request));
-        progressBar.setVisibility(submitting ? View.VISIBLE : View.GONE);
+        if (uploadProgressContainer != null) {
+            uploadProgressContainer.setVisibility(submitting ? View.VISIBLE : View.GONE);
+        }
+        if (progressBar != null && submitting) progressBar.setProgress(0);
+        if (tvUploadPercent != null && submitting) tvUploadPercent.setText("Uploading\u2026 0%");
     }
 
     // ─── Helpers ───────────────────────────────────────────────────────────────
@@ -374,6 +431,11 @@ public class AdRequestActivity extends BaseActivity {
                 (mimeType.equals("image/jpeg") ||
                         mimeType.equals("image/jpg") ||
                         mimeType.equals("image/png"));
+    }
+
+    private boolean isValidMedia(String mimeType) {
+        return mimeType != null &&
+                (mimeType.startsWith("image/") || mimeType.startsWith("video/"));
     }
 
     void toast(int resId) {
@@ -395,41 +457,79 @@ public class AdRequestActivity extends BaseActivity {
     private void uploadImageToServer(Uri uri, UploadCallback callback) {
         new Thread(() -> {
             try {
+                // ✅ Check size limit (50MB for advertisements)
+                long limit = 50L * 1024 * 1024;
+                long fileSize = -1;
+                try (android.content.res.AssetFileDescriptor afd = getContentResolver().openAssetFileDescriptor(uri, "r")) {
+                    if (afd != null) fileSize = afd.getLength();
+                } catch (Exception ignored) {}
+
+                if (fileSize > limit) {
+                    runOnUiThread(() -> callback.onError("File is too big. Max limit is 50MB."));
+                    return;
+                }
+
                 String boundary = "----RMPLUS" + System.currentTimeMillis();
                 String mimeType = getContentResolver().getType(uri);
-                if (mimeType == null)
-                    mimeType = "image/jpeg";
+                if (mimeType == null) mimeType = "image/jpeg";
+
+                // Determine extension
+                String ext = ".jpg";
+                if (mimeType.contains("png")) ext = ".png";
+                else if (mimeType.startsWith("video/")) ext = ".mp4";
+                String fileName = "ad_" + System.currentTimeMillis() + ext;
 
                 java.net.URL url = new java.net.URL("http://187.77.184.84/upload.php");
                 java.net.HttpURLConnection conn = (java.net.HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("POST");
                 conn.setDoOutput(true);
                 conn.setDoInput(true);
+                
+                String header = "--" + boundary + "\r\n" +
+                        "Content-Disposition: form-data; name=\"file\"; filename=\"" + fileName + "\"\r\n" +
+                        "Content-Type: " + mimeType + "\r\n\r\n";
+                String footer = "\r\n--" + boundary + "--\r\n";
+
+                // ✅ Fixed length streaming: prevents OutOfMemoryError AND provides Content-Length for PHP!
+                // PHP does not populate $_FILES for chunked encoding without a Content-Length.
+                if (fileSize > 0) {
+                    long totalLength = header.getBytes("UTF-8").length + fileSize + footer.getBytes("UTF-8").length;
+                    conn.setFixedLengthStreamingMode(totalLength);
+                } else {
+                    conn.setChunkedStreamingMode(65536);
+                }
+                
                 conn.setRequestProperty("Connection", "Keep-Alive");
                 conn.setRequestProperty("Content-Type",
                         "multipart/form-data; boundary=" + boundary);
 
-                // Determine extension
-                String ext = ".jpg";
-                if (mimeType.contains("png"))
-                    ext = ".png";
-                String fileName = "ad_" + System.currentTimeMillis() + ext;
+                java.io.OutputStream rawOut = conn.getOutputStream();
+                java.io.DataOutputStream out = new java.io.DataOutputStream(
+                        new java.io.BufferedOutputStream(rawOut, 65536));
 
-                java.io.DataOutputStream out = new java.io.DataOutputStream(conn.getOutputStream());
-
-                out.writeBytes("--" + boundary + "\r\n");
-                out.writeBytes("Content-Disposition: form-data; name=\"file\";" +
-                        " filename=\"" + fileName + "\"\r\n");
-                out.writeBytes("Content-Type: " + mimeType + "\r\n\r\n");
+                out.write(header.getBytes("UTF-8"));
 
                 InputStream input = getContentResolver().openInputStream(uri);
-                byte[] buffer = new byte[4096];
+                // ✅ 64KB buffer — 16x larger than before, dramatically speeds up video uploads
+                byte[] buffer = new byte[65536];
+                long uploaded = 0;
+                final long total = fileSize;
                 int len;
-                while ((len = input.read(buffer)) != -1)
+                while ((len = input.read(buffer)) != -1) {
                     out.write(buffer, 0, len);
+                    uploaded += len;
+                    if (total > 0) {
+                        final int pct = (int) (uploaded * 100 / total);
+                        runOnUiThread(() -> {
+                            if (progressBar != null) progressBar.setProgress(pct);
+                            if (tvUploadPercent != null)
+                                tvUploadPercent.setText("Uploading\u2026 " + pct + "%");
+                        });
+                    }
+                }
                 input.close();
 
-                out.writeBytes("\r\n--" + boundary + "--\r\n");
+                out.write(footer.getBytes("UTF-8"));
                 out.flush();
                 out.close();
 
@@ -443,11 +543,15 @@ public class AdRequestActivity extends BaseActivity {
                         res.append(line);
                     reader.close();
 
-                    org.json.JSONObject json = new org.json.JSONObject(res.toString());
-                    if (json.has("url")) {
-                        callback.onSuccess(json.getString("url"));
-                    } else {
-                        callback.onError("Server rejected: " + res);
+                    try {
+                        org.json.JSONObject json = new org.json.JSONObject(res.toString());
+                        if (json.has("url")) {
+                            callback.onSuccess(json.getString("url"));
+                        } else {
+                            callback.onError("Server rejected: " + res);
+                        }
+                    } catch (org.json.JSONException e) {
+                        callback.onError("Server returned an invalid response (file might be too large for VPS limits).");
                     }
                 } else {
                     callback.onError("HTTP " + code);
@@ -455,7 +559,7 @@ public class AdRequestActivity extends BaseActivity {
 
             } catch (Exception e) {
                 e.printStackTrace();
-                callback.onError(e.getMessage());
+                runOnUiThread(() -> callback.onError(e.getMessage()));
             }
         }).start();
     }

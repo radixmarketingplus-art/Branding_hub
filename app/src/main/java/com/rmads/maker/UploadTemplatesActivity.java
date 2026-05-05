@@ -48,6 +48,7 @@ public class UploadTemplatesActivity extends BaseActivity {
     Uri selectedImageUri, originalImageUri;
     LinearLayout dateContainer, subSectionContainer;
     ImageView previewImage;
+    android.widget.VideoView videoPreview;
     TextView btnPickDate, btnPickExpiry; // Changed from Button to TextView, added btnPickExpiry
     long expiryTime = System.currentTimeMillis() + (7L * 24 * 60 * 60 * 1000); // Default 7 days
     String selectedDate = "";
@@ -74,27 +75,29 @@ public class UploadTemplatesActivity extends BaseActivity {
                     if (sourceUri != null) {
                         originalImageUri = sourceUri;
                         int pos = spinnerSection.getSelectedItemPosition();
-                        String sectionKey = (pos >= 0 && pos < sectionKeys.size()) ? sectionKeys.get(pos) : "";
+                        String sectionKey = getSelectedSectionKey();
+                        String mimeType = getContentResolver().getType(sourceUri);
+                        String uriStr = sourceUri.toString().toLowerCase();
+                        
+                        boolean isVideo = (mimeType != null && mimeType.startsWith("video/")) || 
+                                          uriStr.contains(".mp4") || uriStr.contains(".mkv") || uriStr.contains(".webm") || uriStr.contains(".mov") || uriStr.contains(".3gp");
 
-                        if (sectionKey.equalsIgnoreCase("Reel Maker")) {
+                        if (isVideo) {
+                            // 🎬 Skip crop for videos
                             selectedImageUri = sourceUri;
-                            previewImage.setVisibility(View.VISIBLE);
-                            placeholderLayout.setVisibility(View.GONE);
-                            btnChangeMedia.setVisibility(View.VISIBLE);
-
-                            com.bumptech.glide.Glide.with(this)
-                                    .load(selectedImageUri)
-                                    .into(previewImage);
-
-                            icPlayVideo.setVisibility(View.VISIBLE);
-                            toast(R.string.msg_video_selected);
+                            showVideoPreview();
+                            if (sectionKey.equalsIgnoreCase("Reel Maker")) {
+                                toast(R.string.msg_video_selected);
+                            } else {
+                                toast("Video advertisement selected");
+                            }
                         } else if (sectionKey.equalsIgnoreCase("Business Frame")) {
+                            // 🚫 SKIP UCROP only for Business Frame
                             selectedImageUri = sourceUri;
-                            previewImage.setVisibility(View.VISIBLE);
-                            placeholderLayout.setVisibility(View.GONE);
-                            btnChangeMedia.setVisibility(View.VISIBLE);
-                            previewImage.setImageURI(selectedImageUri);
+                            showImagePreview();
                         } else {
+                            // 🖼️ Restore crop for all other images (including Advertisement)
+                            originalImageUri = sourceUri;
                             startCrop(sourceUri);
                         }
                     }
@@ -152,6 +155,7 @@ public class UploadTemplatesActivity extends BaseActivity {
         spinnerSubSection = findViewById(R.id.spinnerSubSection);
         btnSelectImage = findViewById(R.id.btnSelectImage);
         previewImage = findViewById(R.id.previewImage);
+        videoPreview = findViewById(R.id.videoPreview);
         btnSave = findViewById(R.id.btnSave);
         dateContainer = findViewById(R.id.dateContainer);
         subSectionContainer = findViewById(R.id.subSectionContainer);
@@ -366,8 +370,11 @@ public class UploadTemplatesActivity extends BaseActivity {
 
             // ---------- TYPE & SIZE VALIDATION ----------
             String mimeType = getContentResolver().getType(selectedImageUri);
+            String uriStr = selectedImageUri.toString().toLowerCase();
+            boolean isVideo = (mimeType != null && mimeType.startsWith("video/")) || 
+                              uriStr.contains(".mp4") || uriStr.contains(".mkv") || uriStr.contains(".webm") || uriStr.contains(".mov");
 
-            if (sectionKey.equalsIgnoreCase("Reel Maker")) {
+            if (sectionKey.equalsIgnoreCase("Reel Maker") || (sectionKey.equalsIgnoreCase("Advertisement") && isVideo)) {
                 // Video Validation
                 String uriString = selectedImageUri.toString().toLowerCase();
                 if (mimeType == null && !uriString.contains(".mp4") && !uriString.contains(".mkv")
@@ -379,38 +386,39 @@ public class UploadTemplatesActivity extends BaseActivity {
                 // Size check is handled inside uploadImageToServer
                 
                 // Check if Reel Maker video is 9:16 (vertical reel) or something similar.
-                try {
-                    android.media.MediaMetadataRetriever retriever = new android.media.MediaMetadataRetriever();
-                    retriever.setDataSource(this, selectedImageUri);
-                    String widthStr = retriever.extractMetadata(android.media.MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH);
-                    String heightStr = retriever.extractMetadata(android.media.MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT);
-                    String rotationStr = retriever.extractMetadata(android.media.MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION);
-                    
-                    if (widthStr != null && heightStr != null) {
-                        int width = Integer.parseInt(widthStr);
-                        int height = Integer.parseInt(heightStr);
-                        int rotation = rotationStr != null ? Integer.parseInt(rotationStr) : 0;
+                if (sectionKey.equalsIgnoreCase("Reel Maker")) {
+                    try {
+                        android.media.MediaMetadataRetriever retriever = new android.media.MediaMetadataRetriever();
+                        retriever.setDataSource(this, selectedImageUri);
+                        String widthStr = retriever.extractMetadata(android.media.MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH);
+                        String heightStr = retriever.extractMetadata(android.media.MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT);
+                        String rotationStr = retriever.extractMetadata(android.media.MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION);
                         
-                        if (rotation == 90 || rotation == 270) {
-                            int temp = width;
-                            width = height;
-                            height = temp;
+                        if (widthStr != null && heightStr != null) {
+                            int width = Integer.parseInt(widthStr);
+                            int height = Integer.parseInt(heightStr);
+                            int rotation = rotationStr != null ? Integer.parseInt(rotationStr) : 0;
+                            
+                            if (rotation == 90 || rotation == 270) {
+                                int temp = width;
+                                width = height;
+                                height = temp;
+                            }
+                            
+                            // Allow 9:16 strictly (or very close to it)
+                            // width / height should be ~ 0.5625 (9/16)
+                            float ratio = (float) width / height;
+                            if (ratio > 0.6f) { // it is wider than 9:16 (e.g., 1:1 is 1.0, 16:9 is 1.77)
+                                Toast.makeText(this, R.string.msg_video_ratio_error, Toast.LENGTH_SHORT).show();
+                                return;
+                            }
                         }
-                        
-                        // Allow 9:16 strictly (or very close to it)
-                        // width / height should be ~ 0.5625 (9/16)
-                        float ratio = (float) width / height;
-                        if (ratio > 0.6f) { // it is wider than 9:16 (e.g., 1:1 is 1.0, 16:9 is 1.77)
-                            Toast.makeText(this, R.string.msg_video_ratio_error, Toast.LENGTH_SHORT).show();
-                            return;
-                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
             } else {
                 // Image Validation
-                String uriStr = selectedImageUri.toString().toLowerCase();
                 boolean isImage = (mimeType != null && mimeType.startsWith("image/"))
                         || uriStr.contains(".jpg") || uriStr.contains(".jpeg") || uriStr.contains(".png");
 
@@ -575,6 +583,16 @@ public class UploadTemplatesActivity extends BaseActivity {
                         String link = editAdLink.getText().toString().trim();
                         AdvertisementItem adItem = new AdvertisementItem(imageUrl, link, expiryTime, "Admin", System.currentTimeMillis());
                         adItem.id = templateId;
+                        
+                        // ✅ Set type based on extension
+                        String lowerUrl = imageUrl.toLowerCase();
+                        if (lowerUrl.endsWith(".mp4") || lowerUrl.endsWith(".mkv") || lowerUrl.endsWith(".webm") || 
+                            lowerUrl.endsWith(".mov") || lowerUrl.endsWith(".3gp")) {
+                            adItem.type = "video";
+                        } else {
+                            adItem.type = "image";
+                        }
+                        
                         dbRef.child(templateId).setValue(adItem);
                         NotificationHelper.sendBroadcast(UploadTemplatesActivity.this, templateId, getString(R.string.title_notif_new_ad), getString(R.string.msg_notif_new_ad), "OPEN_AD", templateId, expiryTime);
                         Type t = new TypeToken<ArrayList<AdvertisementItem>>() {}.getType();
@@ -665,8 +683,8 @@ public class UploadTemplatesActivity extends BaseActivity {
         android.content.ContentResolver resolver = getContentResolver();
         int pos = spinnerSection.getSelectedItemPosition();
         String sectionKey = (pos >= 0 && pos < sectionKeys.size()) ? sectionKeys.get(pos) : "";
-        boolean isReel = sectionKey.equalsIgnoreCase("Reel Maker");
-        long limit = (isReel ? 50L : 15L) * 1024 * 1024;
+        boolean isLargeMedia = sectionKey.equalsIgnoreCase("Reel Maker") || sectionKey.equalsIgnoreCase("Advertisement");
+        long limit = (isLargeMedia ? 50L : 15L) * 1024 * 1024;
 
         new Thread(() -> {
             try {
@@ -681,7 +699,7 @@ public class UploadTemplatesActivity extends BaseActivity {
                 }
 
                 String mimeType = resolver.getType(imageUri);
-                if (mimeType == null) mimeType = isReel ? "video/mp4" : "image/jpeg";
+                if (mimeType == null) mimeType = isLargeMedia ? "video/mp4" : "image/jpeg";
 
                 String boundary = "----RMPLUS" + System.currentTimeMillis();
                 java.net.HttpURLConnection conn = (java.net.HttpURLConnection) new java.net.URL("http://187.77.184.84/upload.php").openConnection();
@@ -694,8 +712,8 @@ public class UploadTemplatesActivity extends BaseActivity {
                 conn.setRequestProperty("Connection", "Keep-Alive");
                 conn.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
 
-                String ext = isReel ? ".mp4" : ".jpg";
-                if (mimeType.contains("png")) ext = ".png";
+                String ext = isLargeMedia ? ".mp4" : ".jpg";
+                if (mimeType != null && mimeType.contains("png")) ext = ".png";
 
                 String head = "--" + boundary + "\r\n" +
                               "Content-Disposition: form-data; name=\"file\"; filename=\"up_" + System.currentTimeMillis() + ext + "\"\r\n" +
@@ -775,14 +793,27 @@ public class UploadTemplatesActivity extends BaseActivity {
                 });
     }
 
-    private void pickMedia() {
+    private String getSelectedSectionKey() {
         int pos = spinnerSection.getSelectedItemPosition();
-        if (pos < 0 || pos >= sectionKeys.size()) return;
-        String sectionKey = sectionKeys.get(pos);
+        if (pos >= 0 && pos < sectionKeys.size()) {
+            return sectionKeys.get(pos);
+        }
+        return "";
+    }
+
+    private void pickMedia() {
+        String sectionKey = getSelectedSectionKey();
+        if (sectionKey.isEmpty()) return;
         Intent i;
         if (sectionKey.equalsIgnoreCase("Reel Maker")) {
             i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Video.Media.EXTERNAL_CONTENT_URI);
             i.setType("video/*");
+        } else if (sectionKey.equalsIgnoreCase("Advertisement")) {
+            i = new Intent(Intent.ACTION_GET_CONTENT);
+            i.setType("*/*");
+            String[] mimeTypes = {"image/*", "video/*"};
+            i.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
+            i.addCategory(Intent.CATEGORY_OPENABLE);
         } else if (sectionKey.equalsIgnoreCase("Business Frame")) {
             i = new Intent(Intent.ACTION_GET_CONTENT);
             i.setType("image/png");
@@ -876,5 +907,50 @@ public class UploadTemplatesActivity extends BaseActivity {
         void onSuccess(String imageUrl);
 
         void onError(String message);
+    }
+    private void showImagePreview() {
+        previewImage.setVisibility(View.VISIBLE);
+        videoPreview.setVisibility(View.GONE);
+        placeholderLayout.setVisibility(View.GONE);
+        btnChangeMedia.setVisibility(View.VISIBLE);
+        icPlayVideo.setVisibility(View.GONE);
+        com.bumptech.glide.Glide.with(this).load(selectedImageUri).into(previewImage);
+
+        // Reset click listener
+        previewImage.setOnClickListener(null);
+    }
+
+    private void showVideoPreview() {
+        previewImage.setVisibility(View.VISIBLE);
+        videoPreview.setVisibility(View.GONE);
+        placeholderLayout.setVisibility(View.GONE);
+        btnChangeMedia.setVisibility(View.VISIBLE);
+        icPlayVideo.setVisibility(View.VISIBLE);
+
+        // Load a thumbnail frame from the local video URI
+        com.bumptech.glide.Glide.with(this)
+                .asBitmap()
+                .load(selectedImageUri)
+                .frame(1000000) // 1 second in
+                .into(previewImage);
+
+        // Set click listener to open Video Preview Activity
+        View.OnClickListener playListener = v -> {
+            Intent i = new Intent(this, ImagePreviewActivity.class);
+            i.putExtra("img", selectedImageUri.toString());
+            i.putExtra("is_video", true);
+            startActivity(i);
+        };
+        previewImage.setOnClickListener(playListener);
+        icPlayVideo.setOnClickListener(playListener);
+
+        // Fix size for Reel Maker (9:16 aspect ratio look)
+        String sectionKey = getSelectedSectionKey();
+        if (sectionKey.equalsIgnoreCase("Reel Maker")) {
+            previewImage.getLayoutParams().height = (int) (400 * getResources().getDisplayMetrics().density);
+        } else {
+            previewImage.getLayoutParams().height = (int) (200 * getResources().getDisplayMetrics().density);
+        }
+        previewImage.requestLayout();
     }
 }

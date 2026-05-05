@@ -256,6 +256,18 @@
                             android:layout_height="match_parent"
                             android:scaleType="centerCrop"
                             android:src="@drawable/bg_upload_zone_ad"/>
+
+                        <!-- Play Button Overlay -->
+                        <ImageView
+                            android:id="@+id/icPlayVideo"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_play_video"
+                            android:visibility="gone"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:alpha="0.8" />
                     </com.google.android.material.card.MaterialCardView>
 
                     <!-- PAYMENT PROOF PREVIEW -->

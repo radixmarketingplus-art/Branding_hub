@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="nav_client_info">क्लाइंट जानकारी</string>
+    <string name="title_client_info">क्लाइंट जानकारी</string>
+    <string name="desc_client_info">सेवाओं के लिए अपने व्यवसाय का विवरण भरें</string>
+    <string name="hint_name">नाम</string>
+    <string name="hint_contact">संपर्क नंबर</string>
+    <string name="ci_hint_email">ईमेल आईडी</string>
+    <string name="hint_business_name">व्यवसाय का नाम</string>
+    <string name="hint_business_cat">व्यवसाय श्रेणी / प्रकार</string>
+    <string name="label_select_service">सेवा चुनें</string>
+    <string name="opt_digital_app">डिजिटल एप्लिकेशन</string>
+    <string name="opt_web_dev">वेबसाइट डेवलपमेंट</string>
+    <string name="opt_app_dev">ऐप डेवलपमेंट</string>
+    <string name="opt_graphic_design">ग्राफिक पोस्ट डिज़ाइन</string>
+    <string name="opt_other_services">अन्य सेवाएं</string>
+    <string name="ci_hint_description">विवरण</string>
+    <string name="hint_remark">टिप्पणी</string>
+    <string name="btn_submit_client_info">जमा करें</string>
+    <string name="msg_please_fill_details">कृपया सभी आवश्यक विवरण भरें</string>
+    <string name="msg_client_info_sent">क्लाइंट की जानकारी सफलतापूर्वक भेजी गई</string>
+    <string name="title_client_info_requests">क्लाइंट जानकारी अनुरोध</string>
+    <string name="desc_client_info_requests">सभी क्लाइंट जानकारी अनुरोधों का प्रबंधन करें</string>
+    <string name="btn_complete">पूर्ण करें</string>
+    <string name="btn_completed">पूर्ण हो गया</string>
+    <string name="msg_confirm_complete">क्या आप वाकई सुनिश्चित हैं कि यह अनुरोध पूर्ण हो गया है?</string>
+    <string name="msg_marked_completed">पूर्ण चिह्नित किया गया</string>
+    <string name="msg_confirm_delete_ci">क्या आप वाकई इस अनुरोध को हटाना चाहते हैं?</string>
+    <string name="msg_deleted_success_ci">अनुरोध सफलतापूर्वक हटा दिया गया</string>
+    <string name="title_complete_request">पूर्ण चिह्नित करें</string>
+    <string name="title_delete_request">अनुरोध हटाएँ</string>
+    <string name="title_notif_client_info">नया क्लाइंट जानकारी अनुरोध</string>
+    <string name="msg_notif_client_info">एक उपयोगकर्ता ने नया क्लाइंट जानकारी अनुरोध भेजा है।</string>
+    <string name="msg_accept_confirm_ci">क्या आप इस अनुरोध को स्वीकार करना चाहते हैं?</string>
+    <string name="msg_reject_confirm_ci">क्या आप इस अनुरोध को अस्वीकार करना चाहते हैं?</string>
+    <string name="msg_request_accepted_ci">अनुरोध स्वीकार कर लिया गया</string>
+    <string name="msg_request_rejected_ci">अनुरोध अस्वीकार कर दिया गया</string>
+    <string name="btn_accepted">स्वीकृत</string>
+    <string name="btn_rejected">अस्वीकृत</string>
+</resources>

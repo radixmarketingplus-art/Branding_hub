@@ -25,7 +25,7 @@ public class MyDesignActivity extends BaseActivity {
     RecyclerView recycler;
     TextView txtTitle;
 
-    TextView txtLikes, txtFav, txtEdits, txtSaved;
+    TextView txtLikes, txtEdits, txtSaved;
     View tabUnderline;
     ProgressBar progress;
 
@@ -54,7 +54,6 @@ public class MyDesignActivity extends BaseActivity {
         recycler = findViewById(R.id.recycler);
 
         txtLikes = findViewById(R.id.txtLikes);
-        txtFav   = findViewById(R.id.txtFav);
         txtEdits = findViewById(R.id.txtEdits);
         txtSaved = findViewById(R.id.txtSaved);
 
@@ -114,7 +113,6 @@ public class MyDesignActivity extends BaseActivity {
         setTitle();
 
         txtLikes.setOnClickListener(v -> switchTab("likes", txtLikes));
-        txtFav.setOnClickListener(v -> switchTab("favorites", txtFav));
         txtEdits.setOnClickListener(v -> switchTab("edits", txtEdits));
         txtSaved.setOnClickListener(v -> switchTab("saves", txtSaved));
     }
@@ -148,13 +146,12 @@ public class MyDesignActivity extends BaseActivity {
                 com.google.android.material.R.attr.colorOnSurface);
 
         txtLikes.setTextColor(inactive);
-        txtFav.setTextColor(inactive);
         txtEdits.setTextColor(inactive);
         txtSaved.setTextColor(inactive);
 
         switch (currentType) {
             case "likes": txtLikes.setTextColor(0xFF4A6CF7); break;
-            case "favorites": txtFav.setTextColor(0xFF4A6CF7); break;
+
             case "edits": txtEdits.setTextColor(0xFF4A6CF7); break;
             case "saves": txtSaved.setTextColor(0xFF4A6CF7); break;
         }
@@ -165,7 +162,7 @@ public class MyDesignActivity extends BaseActivity {
     void setTitle() {
         switch (currentType) {
             case "likes": txtTitle.setText(R.string.title_my_likes); break;
-            case "favorites": txtTitle.setText(R.string.title_my_favorite); break;
+
             case "edits": txtTitle.setText(R.string.title_my_edits); break;
             case "saves": txtTitle.setText(R.string.title_my_saved); break;
         }

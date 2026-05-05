@@ -1,4 +1,9 @@
 <resources>
+    <string name="greeting_morning">सुप्रभात</string>
+    <string name="greeting_afternoon">शुभ दोपहर</string>
+    <string name="greeting_evening">शुभ संध्या</string>
+    <string name="greeting_night">शुभ रात्रि</string>
+    <string name="welcome_rm_ads_maker">RM Ads Maker में आपका स्वागत है</string>
     <string name="app_name">RM Ads Maker</string>
     <string name="splash_tagline">अपने व्यवसाय को डिजिटल रूप से बढ़ाएं</string>
     <string name="desc_app_logo">ऐप लोगो</string>
@@ -570,6 +575,8 @@
     <string name="msg_reset_link_sent">रिसेट लिंक ईमेल पर भेज दिया गया है</string>
     <string name="msg_login_again">कृपया फिर से लॉगिन करें</string>
     <string name="title_share_using">इसके जरिए साझा करें</string>
+    <string name="msg_confirm_save_changes">क्या आप इन परिवर्तनों को सहेजना चाहते हैं?</string>
+    <string name="msg_update_failed">अपडेट विफल रहा</string>
     <string name="msg_delete_confirm">इसे वापस नहीं लिया जा सकता। क्या आप वाकई हटाना चाहते हैं?</string>
     <string name="share_msg_body">%1$s - अपने व्यवसाय को डिजिटल रूप से बढ़ाएं! \n\nडाउनलोड लिंक: https://play.google.com/store/apps/details?id=%2$s</string>
     <string name="user_not_logged_in">यूज़र लॉग इन नहीं है</string>
@@ -879,31 +886,18 @@
     <!-- Structured Terms -->
     <string name="title_terms">नियम और शर्तें</string>
     <string name="app_version_label">संस्करण 1.0.0 (स्थिर)</string>
-<<<<<<< Updated upstream
+
     <string name="terms_intro">RM Ads Maker में आपका स्वागत है। हमारी सेवाओं का उपयोग करने से पहले कृपया हमारे नियमों और शर्तों को ध्यान से पढ़ें।</string>
     <string name="terms_section_usage_title">एप्लिकेशन का उपयोग</string>
     <string name="terms_section_usage_desc">RM Ads Maker का उपयोग करके, आप इस एप्लिकेशन का दुरुपयोग न करने के लिए सहमत हैं। प्लेटफॉर्म के भीतर किसी भी अवैध या अनधिकृत गतिविधियों की अनुमति नहीं है।</string>
 
     <string name="terms_section_fees_title">सदस्यता और धनवापसी</string>
     <string name="terms_section_fees_desc">RM Ads Maker को भुगतान किए गए सभी सदस्यता शुल्क गैर-वापसीयोग्य हैं। कृपया खरीदने से पहले सही प्लान चुनना सुनिश्चित करें।</string>
-=======
-    <string name="terms_intro">RM Plus में आपका स्वागत है। हमारी सेवाओं का उपयोग करने से पहले कृपया हमारे नियमों और शर्तों को ध्यान से पढ़ें।</string>
-    <string name="terms_section_usage_title">एप्लिकेशन का उपयोग</string>
-    <string name="terms_section_usage_desc">RM Plus का उपयोग करके, आप इस एप्लिकेशन का दुरुपयोग न करने के लिए सहमत हैं। प्लेटफॉर्म के भीतर किसी भी अवैध या अनधिकृत गतिविधियों की अनुमति नहीं है।</string>
-
-    <string name="terms_section_fees_title">सदस्यता और धनवापसी</string>
-    <string name="terms_section_fees_desc">RM Plus को भुगतान किए गए सभी सदस्यता शुल्क गैर-वापसीयोग्य हैं। कृपया खरीदने से पहले सही प्लान चुनना सुनिश्चित करें।</string>
->>>>>>> Stashed changes
-
-    <string name="terms_section_admin_title">खाता प्रबंधन</string>
+        <string name="terms_section_admin_title">खाता प्रबंधन</string>
     <string name="terms_section_admin_desc">इन शर्तों के किसी भी दुरुपयोग या उल्लंघन के मामले में एडमिन के पास खातों को निलंबित या समाप्त करने का अधिकार सुरक्षित है।</string>
 
     <string name="terms_section_ip_title">बौद्धिक संपदा</string>
-<<<<<<< Updated upstream
     <string name="terms_section_ip_desc">इस एप्लिकेशन के भीतर सभी सामग्री, ग्राफिक्स और बौद्धिक संपदा विशेष रूप से RM Ads Maker की संपत्ति है।</string>
-=======
-    <string name="terms_section_ip_desc">इस एप्लिकेशन के भीतर सभी सामग्री, ग्राफिक्स और बौद्धिक संपदा विशेष रूप से RM Plus की संपत्ति है।</string>
->>>>>>> Stashed changes
 
     <string name="terms_section_update_title">पॉलिसी अपडेट</string>
     <string name="terms_section_update_desc">इन शर्तों को बिना किसी पूर्व सूचना के किसी भी समय अपडेट या संशोधित किया जा सकता है। कृपया नियमित रूप से जाँच करें।</string>
@@ -925,7 +919,6 @@
 
     <string name="privacy_section_support_title">सहायता और सहायता</string>
     <string name="privacy_section_support_desc">यदि आपकी गोपनीयता के संबंध में आपके कोई प्रश्न हैं, तो कृपया हमारी सहायता टीम से संपर्क करें।</string>
-<<<<<<< Updated upstream
     <string name="msg_check_latest_update">लेटेस्ट अपडेट सेक्शन में नया डिज़ाइन देखें!</string>
     <string name="title_notif_new_ad">नया प्रीमियम विज्ञापन</string>
     <string name="msg_notif_new_ad">हमारा नवीनतम प्रायोजित विज्ञापन देखें!</string>
@@ -971,5 +964,41 @@
     <string name="title_add_festival">त्योहार जोड़ें</string>
     <string name="msg_festival_name_empty">त्योहार का नाम खाली नहीं हो सकता</string>
     <string name="btn_add">जोड़ें</string>
+
+    <!-- Search Headers -->
+    <string name="search_header_recent">हालिया खोजें</string>
+    <string name="search_header_trending">ट्रेंडिंग टेम्पलेट्स</string>
+    <string name="search_header_popular">लोकप्रिय श्रेणियां</string>
+    <string name="ph_search_query">सर्च क्वेरी</string>
+
+    <!-- Categories for Search -->
+    <string name="cat_festival">त्योहार</string>
+    <string name="cat_jewelry">आभूषण/गहने</string>
+    <string name="cat_real_estate">रियल एस्टेट</string>
+    <string name="cat_education">शिक्षा</string>
+    <string name="cat_health">स्वास्थ्य</string>
+    <string name="cat_birthday">जन्मदिन</string>
+    <string name="cat_restaurant">होटल/खाना</string>
+    <string name="cat_gym">जिम/फिटनेस</string>
+
+    <!-- Manage Templates / Editor -->
+    <string name="title_image_options">इमेज विकल्प</string>
+    <string name="back_desc">पीछे</string>
+    <string name="btn_bold">B</string>
+    <string name="btn_italic">I</string>
+    <string name="btn_underline">U</string>
+    <string name="format_percentage">%1$d%%</string>
+
+    <!-- Fonts -->
+    <string name="font_default_sans">डिफ़ॉल्ट सैंस</string>
+    <string name="font_serif">सेरिफ</string>
+    <string name="font_monospace">मोनोस्पेस</string>
+    <string name="font_cursive">लॉबस्टर (कर्सिव)</string>
+    <string name="font_handwriting">पेसिफिको (हैंडराइटिंग)</string>
+    <string name="font_heavy">एंटोन (हैवी)</string>
+    <string name="font_display">राइटियस (डिस्प्ले)</string>
+    <string name="font_bebas">बेबास नेउ</string>
+    <string name="font_medium">मीडियम</string>
+    <string name="font_black">ब्लैक</string>
 
 </resources>

@@ -310,7 +310,7 @@ public class UserDetailActivity extends BaseActivity {
     private void confirmSave() {
         new AlertDialog.Builder(this)
                 .setTitle(R.string.btn_save_changes)
-                .setMessage("Are you sure you want to save these changes?")
+                .setMessage(R.string.msg_confirm_save_changes)
                 .setPositiveButton(R.string.yes, (d, w) -> {
                     if (croppedUri != null) {
                         btnSave.setEnabled(false);
@@ -369,7 +369,7 @@ public class UserDetailActivity extends BaseActivity {
                 runOnUiThread(() -> {
                     btnSave.setEnabled(true);
                     btnSave.setText(R.string.btn_save_changes);
-                    Toast.makeText(this, "Upload failed", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, R.string.msg_upload_failed, Toast.LENGTH_SHORT).show();
                 });
             }
         }).start();
@@ -410,11 +410,11 @@ public class UserDetailActivity extends BaseActivity {
 
         userRef.updateChildren(updates).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                Toast.makeText(UserDetailActivity.this, "User updated successfully", Toast.LENGTH_SHORT).show();
+                Toast.makeText(UserDetailActivity.this, R.string.msg_profile_updated, Toast.LENGTH_SHORT).show();
                 NotificationHelper.send(this, uid, "Profile Updated", "Your profile has been updated by an administrator.", "OPEN_EDIT_PROFILE", "", 0);
                 finish();
             } else {
-                Toast.makeText(UserDetailActivity.this, "Update failed", Toast.LENGTH_SHORT).show();
+                Toast.makeText(UserDetailActivity.this, R.string.msg_update_failed, Toast.LENGTH_SHORT).show();
             }
         });
     }

@@ -248,8 +248,8 @@ public class SubscriptionRequestsActivity extends BaseActivity {
                 new android.app.AlertDialog.Builder(SubscriptionRequestsActivity.this)
                         .setTitle(R.string.title_delete_plan)
                         .setMessage(getString(R.string.msg_confirm_delete_plan, p.duration))
-                        .setPositiveButton("Yes", (d, w) -> deletePlan(p))
-                        .setNegativeButton("No", null)
+                        .setPositiveButton(R.string.btn_yes, (d, w) -> deletePlan(p))
+                        .setNegativeButton(R.string.btn_no, null)
                         .show();
             }
         });

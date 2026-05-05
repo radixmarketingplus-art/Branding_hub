@@ -40,7 +40,6 @@ public class TemplateGalleryActivity extends BaseActivity {
     ArrayList<String> categories = new ArrayList<>();
     String ALL_KEY = "All";
     String currentCategory = ALL_KEY;
-
     @Override
     protected void onCreate(Bundle b) {
         super.onCreate(b);
@@ -79,16 +78,28 @@ public class TemplateGalleryActivity extends BaseActivity {
         );
 
         adapter = new TemplateGridAdapter(allTemplatesModel, R.layout.item_grid_square, template -> {
+            boolean isAd = template.category != null && template.category.equalsIgnoreCase("Advertisement");
 
-            Intent i = new Intent(
-                    TemplateGalleryActivity.this,
-                    TemplatePreviewActivity.class
-            );
+            Intent i;
+            if (isAd) {
+                String path = template.url != null ? template.url.toLowerCase() : "";
+                boolean isVideo = "video".equalsIgnoreCase(template.type) ||
+                                  path.endsWith(".mp4") || path.endsWith(".mkv") || path.endsWith(".webm") || path.endsWith(".mov") || path.endsWith(".3gp");
+
+                if (isVideo) {
+                    i = new Intent(TemplateGalleryActivity.this, TemplatePreviewActivity.class);
+                } else {
+                    i = new Intent(TemplateGalleryActivity.this, ImagePreviewActivity.class);
+                    i.putExtra("img", template.url);
+                }
+            } else {
+                i = new Intent(TemplateGalleryActivity.this, TemplatePreviewActivity.class);
+            }
+
             i.putExtra("id", template.id);
-            i.putExtra("path", template.url); // for instant glide load
+            i.putExtra("path", template.url);
             i.putExtra("category", template.category);
             startActivity(i);
-
         });
         recycler.setAdapter(adapter);
 

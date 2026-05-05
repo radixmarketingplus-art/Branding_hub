@@ -185,31 +185,7 @@
                 android:layout_marginBottom="40dp">
 
                 <!-- [Actions remain same as before] -->
-                <LinearLayout
-                    android:id="@+id/btnFav"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:background="?attr/selectableItemBackground">
-                    <ImageView
-                        android:id="@+id/imgFav"
-                        android:layout_width="26dp"
-                        android:layout_height="26dp"
-                        android:src="@android:drawable/btn_star_big_off"
-                        app:tint="@color/text_secondary" />
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/btn_fav"
-                        android:textSize="12sp"
-                        android:fontFamily="sans-serif-bold"
-                        android:textColor="@color/text_secondary"
-                        android:layout_marginTop="4dp" />
-                </LinearLayout>
+
 
                 <LinearLayout
                     android:id="@+id/btnLike"

@@ -244,6 +244,13 @@
                     android:visibility="gone"
                     tools:visibility="visible" />
 
+                <VideoView
+                    android:id="@+id/videoPreview"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:layout_gravity="center"
+                    android:visibility="gone" />
+
                 <ImageView
                     android:id="@+id/icPlayVideo"
                     android:layout_width="64dp"

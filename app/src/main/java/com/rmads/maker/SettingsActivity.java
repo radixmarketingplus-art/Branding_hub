@@ -68,47 +68,72 @@ public class SettingsActivity extends BaseActivity {
         // }
 
         // ================= NOTIFICATION PREF =================
-
-        prefs = getSharedPreferences("app_settings", MODE_PRIVATE);
-
+        prefs = getSharedPreferences("APP_DATA", MODE_PRIVATE);
         boolean notifEnabled = prefs.getBoolean("notifications", true);
-
         notificationSwitch.setChecked(notifEnabled);
-        // Apply subscription on app start
-        if (notifEnabled) {
-            FirebaseMessaging.getInstance()
-                    .subscribeToTopic("all");
-        } else {
-            FirebaseMessaging.getInstance()
-                    .unsubscribeFromTopic("all");
-        }
 
-        notificationSwitch.setOnCheckedChangeListener(
-                (buttonView, isChecked) -> {
+        notificationSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                // 1. Check System Permission (Android 13+)
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+                    if (androidx.core.content.ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) 
+                            != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                        
+                        // If they denied it before, we might need to send them to settings
+                        if (androidx.core.app.ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.POST_NOTIFICATIONS)) {
+                            // User denied it once, show standard prompt again
+                            androidx.core.app.ActivityCompat.requestPermissions(this, 
+                                    new String[]{android.Manifest.permission.POST_NOTIFICATIONS}, 101);
+                        } else {
+                            // User denied it permanently or we need to explain
+                            new AlertDialog.Builder(this)
+                                    .setTitle(R.string.title_notif_permission)
+                                    .setMessage(R.string.msg_notif_permission_settings)
+                                    .setPositiveButton(R.string.btn_settings, (d, w) -> {
+                                        Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                                        intent.setData(Uri.fromParts("package", getPackageName(), null));
+                                        startActivity(intent);
+                                    })
+                                    .setNegativeButton(R.string.cancel, (d, w) -> notificationSwitch.setChecked(false))
+                                    .show();
+                        }
+                        return; // Wait for permission
+                    }
+                }
 
-                    prefs.edit()
-                            .putBoolean("notifications", isChecked)
-                            .apply();
+                // 2. Enable in Prefs
+                prefs.edit().putBoolean("notifications", true).apply();
 
-                    if (isChecked) {
+                // 3. Subscribe to broadcast topic
+                FirebaseMessaging.getInstance().subscribeToTopic("all_users");
 
-                        FirebaseMessaging.getInstance()
-                                .subscribeToTopic("all");
-
-                        Toast.makeText(this,
-                                R.string.msg_notif_enabled,
-                                Toast.LENGTH_SHORT).show();
-
-                    } else {
-
-                        FirebaseMessaging.getInstance()
-                                .unsubscribeFromTopic("all");
-
-                        Toast.makeText(this,
-                                R.string.msg_notif_disabled,
-                                Toast.LENGTH_SHORT).show();
+                // 4. Refresh FCM Token
+                FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        MyFirebaseMessagingService.saveFcmTokenToFirebase(this, task.getResult());
                     }
                 });
+
+                Toast.makeText(this, R.string.msg_notif_enabled, Toast.LENGTH_SHORT).show();
+            } else {
+                prefs.edit().putBoolean("notifications", false).apply();
+                
+                // 1. Unsubscribe from topics
+                FirebaseMessaging.getInstance().unsubscribeFromTopic("all_users");
+                FirebaseMessaging.getInstance().unsubscribeFromTopic("all");
+
+                // 2. 🛡️ AGGRESSIVE: Delete the notification channel
+                // This stops the system from showing background notifications for this app
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                    android.app.NotificationManager manager = (android.app.NotificationManager) getSystemService(android.content.Context.NOTIFICATION_SERVICE);
+                    if (manager != null) {
+                        manager.deleteNotificationChannel("rmplus_channel");
+                    }
+                }
+
+                Toast.makeText(this, R.string.msg_notif_disabled, Toast.LENGTH_SHORT).show();
+            }
+        });
 
         // ================= CHANGE PASSWORD =================
 

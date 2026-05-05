@@ -343,7 +343,7 @@ public class LoginActivity extends BaseActivity {
                                                             com.google.firebase.messaging.FirebaseMessaging.getInstance()
                                                                     .getToken()
                                                                     .addOnSuccessListener(token -> {
-                                                                            MyFirebaseMessagingService.saveFcmTokenToFirebase(token);
+                                                                            MyFirebaseMessagingService.saveFcmTokenToFirebase(LoginActivity.this, token);
                                                                             com.google.firebase.messaging.FirebaseMessaging.getInstance()
                                                                                 .subscribeToTopic("all_users");
                                                                     });

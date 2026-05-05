@@ -60,10 +60,7 @@
                     style="@style/StatDetailTab"
                     android:text="@string/tab_likes" />
 
-                <TextView
-                    android:id="@+id/tabFav"
-                    style="@style/StatDetailTab"
-                    android:text="@string/tab_favorite" />
+
 
                 <TextView
                     android:id="@+id/tabEdit"

@@ -60,6 +60,10 @@ public class HomeActivity extends BaseActivity {
 
     ArrayList<Integer> fallback;
     View skTrending, skFestival;
+    AdvertisementAdapter adAdapter;
+    private boolean isCurrentVideoPlaying = false;
+    private ArrayList<Object> currentTrendingList = new ArrayList<>();
+    private RecyclerView.OnScrollListener trendingScrollListener;
 
     // ==================================================
 
@@ -126,12 +130,23 @@ public class HomeActivity extends BaseActivity {
         // ================= HORIZONTAL =================
         setupHorizontal(R.id.rvTrending);
         setupHorizontal(R.id.rvFestivalCards);
-        // Dynamic horizontal lists will be setup programmatically
+
+        // 🚀 RecyclerView Performance Optimizations (Reduces Lag)
+        rvTrending.setHasFixedSize(true);
+        rvTrending.setItemViewCacheSize(20);
+        rvTrending.setDrawingCacheEnabled(true);
+        rvTrending.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+        rvTrending.setNestedScrollingEnabled(false); // Optimization for NestedScrollView
+        
+        rvFestivalCards.setHasFixedSize(true);
+        rvFestivalCards.setItemViewCacheSize(20);
+        rvFestivalCards.setNestedScrollingEnabled(false);
 
         // ================= FESTIVAL DATES =================
         RecyclerView rvDates = findViewById(R.id.rvFestivalDates);
-        rvDates.setLayoutManager(
-                new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
+        LinearLayoutManager dateLM = new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false);
+        dateLM.setInitialPrefetchItemCount(7);
+        rvDates.setLayoutManager(dateLM);
 
         festivalDateAdapter = new FestivalDateAdapter(
                 getNext7Days(),
@@ -151,8 +166,8 @@ public class HomeActivity extends BaseActivity {
         trendingSnapHelper = new PagerSnapHelper();
         trendingSnapHelper.attachToRecyclerView(rvTrending);
 
-        trendingHandler = new Handler();
-        trendingRunnable = () -> autoScrollTrending();
+        trendingHandler = new Handler(android.os.Looper.getMainLooper());
+        trendingRunnable = () -> autoScrollTrending(false);
         // Removed redundant postDelayed here, will start in onResume
 
         btnAll.setVisibility(View.VISIBLE); // Show it permanently as a gallery link
@@ -216,6 +231,41 @@ public class HomeActivity extends BaseActivity {
             // If only onboarding (no success popup), start directly
             new Handler().postDelayed(this::startSpotlightOnboarding, 800);
         }
+
+        // Scroll listener: only used to update active video position on manual swipe
+        trendingScrollListener = new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
+                    // User started dragging: stop timer, restart after they lift
+                    if (trendingHandler != null) {
+                        android.util.Log.d("CarouselAutoScroll", "SCROLL_STATE_DRAGGING: removing callbacks");
+                        trendingHandler.removeCallbacks(trendingRunnable);
+                    }
+                } else if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    LinearLayoutManager lm = (LinearLayoutManager) recyclerView.getLayoutManager();
+                    if (lm == null) return;
+                    int pos = RecyclerView.NO_POSITION;
+                    View snapView = trendingSnapHelper.findSnapView(lm);
+                    if (snapView != null) {
+                        pos = lm.getPosition(snapView);
+                    }
+                    if (pos == RecyclerView.NO_POSITION) pos = lm.findFirstCompletelyVisibleItemPosition();
+                    if (pos == RecyclerView.NO_POSITION) pos = lm.findFirstVisibleItemPosition();
+
+                    if (pos != RecyclerView.NO_POSITION && currentTrendingList != null && pos < currentTrendingList.size()) {
+                        android.util.Log.d("CarouselAutoScroll", "SCROLL_STATE_IDLE fired. Settled at position: " + pos);
+                        if (rvTrending.getAdapter() instanceof AdvertisementAdapter) {
+                            ((AdvertisementAdapter) rvTrending.getAdapter()).updateActivePosition(pos);
+                        }
+                        // After user's manual swipe settles, restart the 5s timer fresh
+                        isCurrentVideoPlaying = false; 
+                        startAdAutoScroll();
+                    }
+                }
+            }
+        };
+        rvTrending.addOnScrollListener(trendingScrollListener);
     }
 
     private void checkAndShowAppOpenOffer() {
@@ -545,19 +595,69 @@ public class HomeActivity extends BaseActivity {
                             String url = d.hasChild("imagePath") ? d.child("imagePath").getValue(String.class)
                                     : d.child("url").getValue(String.class);
                             String link = d.child("link").getValue(String.class);
-                            if (url != null)
-                                adList.add(new AdvertisementItem(d.getKey(), url, link != null ? link : ""));
+                            String type = d.child("type").getValue(String.class);
+                            if (url != null) {
+                                AdvertisementItem adItem = new AdvertisementItem(d.getKey(), url, link != null ? link : "");
+                                if (type != null) adItem.type = type;
+                                adList.add(adItem);
+                            }
                         }
 
                         if (!adList.isEmpty()) {
                             // USE ADVERTISEMENT ADAPTER
-                            ArrayList<AdvertisementItem> infiniteList = new ArrayList<>();
+                            ArrayList<Object> infiniteList = new ArrayList<>();
                             int size = adList.size();
                             for (int i = 0; i < 1000; i++)
                                 infiniteList.add(adList.get(i % size));
                             trendingOriginalSize = size;
-                            rvTrending.setAdapter(new AdvertisementAdapter(infiniteList));
+                            currentTrendingList = infiniteList;
                             
+                            ArrayList<AdvertisementItem> castedList = new ArrayList<>();
+                            for(Object o : infiniteList) castedList.add((AdvertisementItem)o);
+                            
+                            adAdapter = new AdvertisementAdapter(castedList);
+                            adAdapter.setListener(new AdvertisementAdapter.OnMediaStateListener() {
+                                @Override
+                                public void onVideoStarted() {
+                                    isCurrentVideoPlaying = true;
+                                    // Video is playing — STOP the timer.
+                                    // The carousel will wait for onVideoEnded() to scroll to the next item.
+                                    if (trendingHandler != null) {
+                                        android.util.Log.d("CarouselAutoScroll", "onVideoStarted: removing callbacks");
+                                        trendingHandler.removeCallbacks(trendingRunnable);
+                                    }
+                                }
+
+                                @Override
+                                public void onVideoEnded() {
+                                    isCurrentVideoPlaying = false;
+                                    // Video ended — slide to next immediately (after 500ms)
+                                    if (trendingHandler != null) {
+                                        android.util.Log.d("CarouselAutoScroll", "onVideoEnded: removing callbacks");
+                                        trendingHandler.removeCallbacks(trendingRunnable);
+                                        trendingHandler.postDelayed(() -> {
+                                            android.util.Log.d("CarouselAutoScroll", "onVideoEnded: forcing scroll now");
+                                            autoScrollTrending(true);
+                                        }, 500);
+                                    }
+                                }
+
+                                @Override
+                                public void onVideoError() {
+                                    isCurrentVideoPlaying = false;
+                                    // Video failed — slide after 2s
+                                    if (trendingHandler != null) {
+                                        android.util.Log.d("CarouselAutoScroll", "onVideoError: removing callbacks");
+                                        trendingHandler.removeCallbacks(trendingRunnable);
+                                        trendingHandler.postDelayed(() -> {
+                                            android.util.Log.d("CarouselAutoScroll", "onVideoError: forcing scroll now");
+                                            autoScrollTrending(true);
+                                        }, 2000);
+                                    }
+                                }
+                            });
+                            rvTrending.setAdapter(adAdapter);
+
                             // 🚀 START FROM MIDDLE TO SHOW INFINITE CAROUSEL PROPERLY FROM LAUNCH
                             int startPos = (500 / size) * size;
                             rvTrending.scrollToPosition(startPos);
@@ -569,47 +669,56 @@ public class HomeActivity extends BaseActivity {
                                         rvTrending.scrollBy(snapDistance[0], snapDistance[1]);
                                     }
                                 }
+                                if (adAdapter != null) adAdapter.updateActivePosition(startPos);
+                                // ✅ Start the simple 5s auto-scroll loop
+                                startAdAutoScroll();
                             });
 
                             // ✨ HIGHLIGHT & SCROLL IF TARGET AD ID MATCHES
                             if (targetAdId != null) {
                                 // Pause auto-scroller while highlighting
-                                if (trendingHandler != null)
+                                if (trendingHandler != null) {
+                                    android.util.Log.d("CarouselAutoScroll", "targetAdId logic: removing callbacks");
                                     trendingHandler.removeCallbacks(trendingRunnable);
+                                }
 
                                 int searchStart = (500 / size) * size;
                                 for (int i = searchStart; i < infiniteList.size(); i++) {
-                                    if (infiniteList.get(i).id != null && infiniteList.get(i).id.equals(targetAdId)) {
-                                        final int finalPos = i;
-                                        if (rvTrending.getAdapter() instanceof AdvertisementAdapter) {
-                                            AdvertisementAdapter adp = (AdvertisementAdapter) rvTrending.getAdapter();
-                                            adp.setHighlightPos(finalPos);
+                                    Object obj = infiniteList.get(i);
+                                    if (obj instanceof AdvertisementItem) {
+                                        AdvertisementItem ad = (AdvertisementItem) obj;
+                                        if (ad.id != null && ad.id.equals(targetAdId)) {
+                                            final int finalPos = i;
+                                            if (rvTrending.getAdapter() instanceof AdvertisementAdapter) {
+                                                AdvertisementAdapter adp = (AdvertisementAdapter) rvTrending.getAdapter();
+                                                adp.setHighlightPos(finalPos);
 
-                                            mainScroll.smoothScrollTo(0, 0); // Ads are at the top
-                                            rvTrending.postDelayed(() -> {
-                                                rvTrending.scrollToPosition(finalPos);
-                                                rvTrending.post(() -> {
-                                                    View view = rvTrending.getLayoutManager().findViewByPosition(finalPos);
-                                                    if (view != null) {
-                                                        int[] snapDistance = trendingSnapHelper.calculateDistanceToFinalSnap(rvTrending.getLayoutManager(), view);
-                                                        if (snapDistance != null && (snapDistance[0] != 0 || snapDistance[1] != 0)) {
-                                                            rvTrending.scrollBy(snapDistance[0], snapDistance[1]);
+                                                mainScroll.smoothScrollTo(0, 0); // Ads are at the top
+                                                rvTrending.postDelayed(() -> {
+                                                    rvTrending.scrollToPosition(finalPos);
+                                                    rvTrending.post(() -> {
+                                                        View view = rvTrending.getLayoutManager().findViewByPosition(finalPos);
+                                                        if (view != null) {
+                                                            int[] snapDistance = trendingSnapHelper.calculateDistanceToFinalSnap(rvTrending.getLayoutManager(), view);
+                                                            if (snapDistance != null && (snapDistance[0] != 0 || snapDistance[1] != 0)) {
+                                                                rvTrending.scrollBy(snapDistance[0], snapDistance[1]);
+                                                            }
                                                         }
-                                                    }
-                                                });
+                                                    });
 
-                                                new Handler().postDelayed(() -> {
-                                                    adp.setHighlightPos(-1);
-                                                    targetAdId = null;
-                                                    // Resume auto-scroller
-                                                    if (trendingHandler != null) {
-                                                        trendingHandler.removeCallbacks(trendingRunnable);
-                                                        trendingHandler.postDelayed(trendingRunnable, 3000);
-                                                    }
-                                                }, 4000);
-                                            }, 400);
+                                                    new Handler().postDelayed(() -> {
+                                                        adp.setHighlightPos(-1);
+                                                        targetAdId = null;
+                                                        // Resume auto-scroller
+                                                        if (trendingHandler != null) {
+                                                            isCurrentVideoPlaying = false;
+                                                            startAdAutoScroll();
+                                                        }
+                                                    }, 4000);
+                                                }, 400);
+                                            }
+                                            break;
                                         }
-                                        break;
                                     }
                                 }
                             }
@@ -627,29 +736,37 @@ public class HomeActivity extends BaseActivity {
                             if (trendList.isEmpty())
                                 return;
                             trendingOriginalSize = trendList.size();
-                            ArrayList<TemplateModel> infiniteList = new ArrayList<>();
+                            ArrayList<Object> infiniteList = new ArrayList<>();
                             for (int i = 0; i < 1000; i++)
                                 infiniteList.add(trendList.get(i % trendingOriginalSize));
-                            rvTrending.setAdapter(new TemplateGridAdapter(infiniteList, t -> {
+                            currentTrendingList = infiniteList;
+
+                            ArrayList<TemplateModel> castedTrend = new ArrayList<>();
+                            for(Object o : infiniteList) castedTrend.add((TemplateModel)o);
+
+                            rvTrending.setAdapter(new TemplateGridAdapter(castedTrend, t -> {
                                 Intent i = new Intent(HomeActivity.this, TemplatePreviewActivity.class);
                                 i.putExtra("id", t.id);
                                 i.putExtra("path", t.url);
                                 i.putExtra("category", "Trending Now");
                                 startActivity(i);
                             }));
-                        }
-                        // 🚀 START CAROUSEL FROM MIDDLE WITH PERFECT CENTERING
-                        trendingPos = 500;
-                        rvTrending.scrollToPosition(trendingPos);
-                        rvTrending.post(() -> {
-                            View view = rvTrending.getLayoutManager().findViewByPosition(trendingPos);
-                            if (view != null) {
-                                int[] snapDistance = trendingSnapHelper.calculateDistanceToFinalSnap(rvTrending.getLayoutManager(), view);
-                                if (snapDistance != null && (snapDistance[0] != 0 || snapDistance[1] != 0)) {
-                                    rvTrending.scrollBy(snapDistance[0], snapDistance[1]);
+
+                            // 🚀 START CAROUSEL FROM MIDDLE WITH PERFECT CENTERING
+                            trendingPos = 500;
+                            rvTrending.scrollToPosition(trendingPos);
+                            rvTrending.post(() -> {
+                                View view = rvTrending.getLayoutManager().findViewByPosition(trendingPos);
+                                if (view != null) {
+                                    int[] snapDistance = trendingSnapHelper.calculateDistanceToFinalSnap(rvTrending.getLayoutManager(), view);
+                                    if (snapDistance != null && (snapDistance[0] != 0 || snapDistance[1] != 0)) {
+                                        rvTrending.scrollBy(snapDistance[0], snapDistance[1]);
+                                    }
                                 }
-                            }
-                        });
+                                // ✅ Start the simple 5s auto-scroll loop (fallback)
+                                startAdAutoScroll();
+                            });
+                        }
                     }
 
                     @Override
@@ -669,25 +786,87 @@ public class HomeActivity extends BaseActivity {
 
     // ================= TRENDING =================
 
-    void autoScrollTrending() {
+    // ================= AUTO-SCROLL (SIMPLE TIMER LOOP) =================
+    // This uses a simple self-scheduling timer. No dependency on IDLE events.
+    // 1. Timer fires -> scroll to next -> schedule timer again for 5s later.
+    // 2. User drags -> timer cancelled -> IDLE fires -> timer restarted.
+    // This guarantees the chain NEVER breaks.
 
-        RecyclerView.LayoutManager lm = rvTrending.getLayoutManager();
-        if (!(lm instanceof LinearLayoutManager))
+    void startAdAutoScroll() {
+        if (trendingHandler == null) return;
+        android.util.Log.d("CarouselAutoScroll", "startAdAutoScroll: scheduling timer for 5000ms");
+        trendingHandler.removeCallbacks(trendingRunnable);
+        trendingHandler.postDelayed(trendingRunnable, 5000);
+    }
+
+    void autoScrollTrending(boolean force) {
+        android.util.Log.d("CarouselAutoScroll", "autoScrollTrending called with force=" + force);
+        if (isFinishing() || isDestroyed()) return;
+        if (rvTrending == null || rvTrending.getAdapter() == null) return;
+        LinearLayoutManager lm = (LinearLayoutManager) rvTrending.getLayoutManager();
+        if (lm == null) return;
+
+        int current = RecyclerView.NO_POSITION;
+        View snapView = trendingSnapHelper.findSnapView(lm);
+        if (snapView != null) {
+            current = lm.getPosition(snapView);
+        }
+        if (current == RecyclerView.NO_POSITION) current = lm.findFirstCompletelyVisibleItemPosition();
+        if (current == RecyclerView.NO_POSITION) current = lm.findFirstVisibleItemPosition();
+        
+        android.util.Log.d("CarouselAutoScroll", "Current position evaluated as: " + current);
+        if (current == RecyclerView.NO_POSITION) return;
+
+        boolean isVideo = isVideoItem(current);
+        android.util.Log.d("CarouselAutoScroll", "isVideoItem(" + current + ") = " + isVideo + ", isCurrentVideoPlaying = " + isCurrentVideoPlaying);
+
+        // If it's a video and we're NOT forcing a scroll (e.g. from 5s timer), then wait.
+        // But we MUST re-schedule the timer so it keeps checking/moving for images.
+        if (!force && (isCurrentVideoPlaying || isVideo)) {
+            android.util.Log.d("CarouselAutoScroll", "Skipping scroll because current item is a video. Re-scheduling timer.");
+            startAdAutoScroll();
             return;
-
-        LinearLayoutManager layoutManager = (LinearLayoutManager) lm;
-
-        int current = layoutManager.findFirstCompletelyVisibleItemPosition();
-
-        if (current == RecyclerView.NO_POSITION) {
-            current = layoutManager.findFirstVisibleItemPosition();
         }
 
-        trendingPos = current + 1;
+        int total = rvTrending.getAdapter().getItemCount();
+        if (total <= 0) return;
 
-        rvTrending.smoothScrollToPosition(trendingPos);
+        int next = (current + 1) >= total ? 500 : (current + 1);
+        android.util.Log.d("CarouselAutoScroll", "Initiating smoothScrollToPosition to next: " + next);
 
-        trendingHandler.postDelayed(trendingRunnable, 3000);
+        rvTrending.smoothScrollToPosition(next);
+
+        // Reset the video playing flag when we move to a new item.
+        // If the new item is a video, its listener will set this back to true.
+        isCurrentVideoPlaying = false;
+
+        // Do NOT call updateActivePosition here! 
+        // Calling notifyItemChanged while smooth scrolling will abort the scroll animation.
+        // The SCROLL_STATE_IDLE listener will naturally handle updateActivePosition when the scroll finishes.
+
+        // Schedule the NEXT check after 5 more seconds
+        startAdAutoScroll();
+    }
+
+    private boolean isVideoItem(int position) {
+        if (currentTrendingList == null || position < 0 || position >= currentTrendingList.size()) return false;
+        Object item = currentTrendingList.get(position);
+        if (item instanceof AdvertisementItem) {
+            AdvertisementItem ad = (AdvertisementItem) item;
+            if (ad.type != null && ad.type.equalsIgnoreCase("video")) return true;
+            if (ad.imagePath != null) {
+                String path = ad.imagePath.toLowerCase();
+                return path.contains(".mp4") || path.contains(".mkv") || path.contains(".webm") || path.contains(".mov") || path.contains(".3gp");
+            }
+        } else if (item instanceof TemplateModel) {
+            TemplateModel tm = (TemplateModel) item;
+            if (tm.type != null && (tm.type.equalsIgnoreCase("video") || tm.type.equalsIgnoreCase("VIDEO"))) return true;
+            if (tm.url != null) {
+                String path = tm.url.toLowerCase();
+                return path.contains(".mp4") || path.contains(".mkv") || path.contains(".webm") || path.contains(".mov") || path.contains(".3gp");
+            }
+        }
+        return false;
     }
 
     void setTrending() {
@@ -1247,11 +1426,11 @@ public class HomeActivity extends BaseActivity {
         }
         loadAllFestivalCardsLive(); // "All" is selected by default — load all upcoming festivals
 
-        loadHeroSectionLive(); // Merged loadAdvertisementLive and loadTrendingLive
+        loadHeroSectionLive(); // Reloads ads and starts the 5s auto-scroll loop
 
-        if (trendingHandler != null) {
-            trendingHandler.removeCallbacks(trendingRunnable);
-            trendingHandler.postDelayed(trendingRunnable, 3000);
+        // Also restart auto-scroll immediately if adapter is already set (returning from another screen)
+        if (rvTrending.getAdapter() != null && rvTrending.getAdapter().getItemCount() > 0) {
+            startAdAutoScroll();
         }
     }
 
@@ -1259,8 +1438,22 @@ public class HomeActivity extends BaseActivity {
     protected void onPause() {
         super.onPause();
 
-        if (trendingHandler != null)
+        if (rvTrending.getAdapter() instanceof AdvertisementAdapter) {
+            ((AdvertisementAdapter) rvTrending.getAdapter()).onPause();
+        }
+
+        if (trendingHandler != null) {
+            android.util.Log.d("CarouselAutoScroll", "onPause: removing callbacks");
             trendingHandler.removeCallbacks(trendingRunnable);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (rvTrending.getAdapter() instanceof AdvertisementAdapter) {
+            ((AdvertisementAdapter) rvTrending.getAdapter()).releaseAll();
+        }
+        super.onDestroy();
     }
 
     void toast(String msg) {

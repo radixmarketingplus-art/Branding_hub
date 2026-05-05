@@ -39,6 +39,14 @@
             app:tint="@color/white"
             android:elevation="4dp" />
 
+        <ProgressBar
+            android:id="@+id/loadingProgress"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            android:elevation="2dp" />
+
     </FrameLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -55,6 +55,8 @@ public class FestivalCardAdapter
                 .load(item.imagePath)
                 .placeholder(android.R.drawable.ic_menu_gallery)
                 .error(android.R.drawable.ic_menu_report_image)
+                .centerCrop()
+                .override(300, 300) // Square items, 300x300 is enough for grid
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(h.img);
 

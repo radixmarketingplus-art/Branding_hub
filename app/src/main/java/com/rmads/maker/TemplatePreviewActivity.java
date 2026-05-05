@@ -39,10 +39,10 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 public class TemplatePreviewActivity extends BaseActivity {
 
     ImageView img;
-    View btnLike, btnEditBottom, btnSave, btnFav;
+    View btnLike, btnEditBottom, btnSave;
     com.google.android.material.button.MaterialButton btnEdit;
     ImageView btnSearch, btnBack;
-    ImageView imgLike, imgFav;
+    ImageView imgLike;
     View layPlay, previewBottomShadow;
     android.widget.VideoView videoView;
     RecyclerView rvSimilar;
@@ -64,7 +64,6 @@ public class TemplatePreviewActivity extends BaseActivity {
     DatabaseReference rootRef;
 
     boolean isLiked = false;
-    boolean isFav = false;
     String templateType = "image"; // Default to image
 
     @Override
@@ -77,12 +76,10 @@ public class TemplatePreviewActivity extends BaseActivity {
         btnEditBottom = findViewById(R.id.btnEditBottom);
         btnEdit = findViewById(R.id.btnEdit);
         btnSearch = findViewById(R.id.btnSearch);
-        btnFav = findViewById(R.id.btnFav);
         btnSave = findViewById(R.id.btnSave);
         layPlay = findViewById(R.id.layPlay);
         previewBottomShadow = findViewById(R.id.previewBottomShadow);
         imgLike = findViewById(R.id.imgLike);
-        imgFav = findViewById(R.id.imgFav);
         videoView = findViewById(R.id.vPreview);
         rvSimilar = findViewById(R.id.rvSimilar);
         previewContainer = findViewById(R.id.previewContainer);
@@ -142,7 +139,7 @@ public class TemplatePreviewActivity extends BaseActivity {
                     // 🧹 SELF-CLEANING: If template is deleted from main nodes,
                     // remove it from user's history too to avoid "blank" items.
                     if (uid != null) {
-                        String[] types = { "likes", "favorites", "edits", "saves" };
+                        String[] types = { "likes", "edits", "saves" };
                         for (String type : types) {
                             rootRef.child("user_activity").child(uid).child(type).child(templateId).removeValue();
                         }
@@ -211,9 +208,8 @@ public class TemplatePreviewActivity extends BaseActivity {
 
 
     void initUI() {
-        // Detect Video
-        boolean isVideo = "Reel Maker".equalsIgnoreCase(category) ||
-                (path != null && (path.toLowerCase().endsWith(".mp4") || path.toLowerCase().endsWith(".webm")));
+        // Detect Video (Robust check)
+        boolean isVideo = isVideo();
 
         if (isVideo) {
             layPlay.setVisibility(android.view.View.VISIBLE);
@@ -289,7 +285,6 @@ public class TemplatePreviewActivity extends BaseActivity {
         layPlay.setOnClickListener(v -> playVideo());
 
         loadLikeStatus();
-        loadFavoriteStatus();
         loadSimilarTemplates();
 
         // SEARCH
@@ -298,8 +293,7 @@ public class TemplatePreviewActivity extends BaseActivity {
         // LIKE
         btnLike.setOnClickListener(v -> toggleLike());
 
-        // FAVORITE
-        btnFav.setOnClickListener(v -> toggleFavorite());
+
 
         // EDIT
         btnEdit.setOnClickListener(v -> performEditAction());
@@ -401,24 +395,7 @@ public class TemplatePreviewActivity extends BaseActivity {
                         });
     }
 
-    void loadFavoriteStatus() {
-        rootRef.child("template_activity")
-                .child(templateId)
-                .child("favorites")
-                .child(uid)
-                .addListenerForSingleValueEvent(
-                        new ValueEventListener() {
-                            public void onDataChange(DataSnapshot s) {
-                                if (s.exists()) {
-                                    isFav = true;
-                                    imgFav.setColorFilter(Color.YELLOW);
-                                }
-                            }
 
-                            public void onCancelled(DatabaseError e) {
-                            }
-                        });
-    }
 
     // =====================================================
 
@@ -458,41 +435,7 @@ public class TemplatePreviewActivity extends BaseActivity {
         }
     }
 
-    void toggleFavorite() {
 
-        isFav = !isFav;
-
-        if (isFav) {
-            imgFav.setColorFilter(Color.YELLOW);
-
-            rootRef.child("template_activity")
-                    .child(templateId)
-                    .child("favorites")
-                    .child(uid)
-                    .setValue(System.currentTimeMillis());
-
-            rootRef.child("user_activity")
-                    .child(uid)
-                    .child("favorites")
-                    .child(templateId)
-                    .setValue(path);
-
-        } else {
-            imgFav.clearColorFilter();
-
-            rootRef.child("template_activity")
-                    .child(templateId)
-                    .child("favorites")
-                    .child(uid)
-                    .removeValue();
-
-            rootRef.child("user_activity")
-                    .child(uid)
-                    .child("favorites")
-                    .child(templateId)
-                    .removeValue();
-        }
-    }
 
     // =====================================================
 
@@ -560,8 +503,15 @@ public class TemplatePreviewActivity extends BaseActivity {
 
     private boolean isVideo() {
         if ("video".equalsIgnoreCase(templateType)) return true;
-        return "Reel Maker".equalsIgnoreCase(category) ||
-                (path != null && (path.toLowerCase().endsWith(".mp4") || path.toLowerCase().endsWith(".webm") || path.toLowerCase().contains("video")));
+        
+        String lowerPath = path != null ? path.toLowerCase() : "";
+        boolean hasVideoExt = lowerPath.endsWith(".mp4") || lowerPath.endsWith(".mkv") || 
+                              lowerPath.endsWith(".webm") || lowerPath.endsWith(".mov") || 
+                              lowerPath.contains("video");
+                              
+        return "Reel Maker".equalsIgnoreCase(category) || 
+               "Advertisement".equalsIgnoreCase(category) || 
+               hasVideoExt;
     }
 
     void handleVideoAction(boolean isShare) {

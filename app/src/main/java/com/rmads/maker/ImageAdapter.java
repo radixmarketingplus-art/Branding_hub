@@ -107,8 +107,22 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.VH> {
                 return;
             }
 
-            // 🔁 ALL OTHER CATEGORIES (OLD FLOW SAFE)
-            Intent i = new Intent(v.getContext(), TemplatePreviewActivity.class);
+            boolean isAd = "Advertisement".equalsIgnoreCase(category);
+            Intent i;
+
+            if (isAd) {
+                String path = isUri ? uriList.get(position).toLowerCase() : "";
+                boolean isVideo = path.endsWith(".mp4") || path.endsWith(".mkv") || path.endsWith(".webm") || path.endsWith(".mov") || path.endsWith(".3gp");
+
+                if (isVideo) {
+                    i = new Intent(v.getContext(), TemplatePreviewActivity.class);
+                } else {
+                    i = new Intent(v.getContext(), ImagePreviewActivity.class);
+                    i.putExtra("img", isUri ? uriList.get(position) : null);
+                }
+            } else {
+                i = new Intent(v.getContext(), TemplatePreviewActivity.class);
+            }
 
             if (isUri) {
                 i.putExtra("path", uriList.get(position));

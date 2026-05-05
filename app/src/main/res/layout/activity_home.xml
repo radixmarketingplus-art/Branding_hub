@@ -44,64 +44,77 @@
                     android:orientation="vertical"
                     android:paddingBottom="80dp">
 
-                    <!-- TRENDING / SPONSORED ADS -->
+                    <!-- ADVERTISEMENT SECTION -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:layout_marginTop="0dp"
-                        android:paddingHorizontal="24dp">
+                        android:orientation="vertical"
+                        android:background="@color/primary_soft"
+                        android:paddingVertical="0dp"
+                        android:layout_marginTop="12dp">
 
-
-                        <TextView
-                            android:id="@+id/btnAdsSeeAll"
-                            android:text="@string/btn_see_all"
-                            android:visibility="gone"
-                            android:textColor="?attr/colorPrimary"
-                            android:textSize="14sp"
-                            android:fontFamily="sans-serif-medium"
-                            android:background="?attr/selectableItemBackgroundBorderless"
-                            android:padding="4dp"
+                        <!-- TRENDING / SPONSORED ADS -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_width="wrap_content"/>
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginTop="0dp"
+                            android:paddingHorizontal="24dp">
+
+
+                            <TextView
+                                android:id="@+id/btnAdsSeeAll"
+                                android:text="@string/btn_see_all"
+                                android:visibility="gone"
+                                android:textColor="?attr/colorPrimary"
+                                android:textSize="14sp"
+                                android:fontFamily="sans-serif-medium"
+                                android:background="?attr/selectableItemBackgroundBorderless"
+                                android:paddingHorizontal="0dp"
+                                android:paddingVertical="4dp"
+                                android:layout_height="wrap_content"
+                                android:layout_width="wrap_content"/>
+                        </LinearLayout>
+
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="176dp"
+                            android:layout_marginTop="0dp">
+
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/rvTrending"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:clipToPadding="false"
+                                android:paddingHorizontal="20dp"
+                                android:overScrollMode="never" />
+
+                            <LinearLayout
+                                android:id="@+id/skTrending"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:orientation="horizontal"
+                                android:paddingHorizontal="24dp"
+                                android:visibility="visible">
+                                <View android:layout_width="380dp" android:layout_height="match_parent" android:background="@drawable/bg_skeleton" android:layout_marginEnd="16dp"/>
+                                <View android:layout_width="380dp" android:layout_height="match_parent" android:background="@drawable/bg_skeleton" /> 
+                            </LinearLayout>
+                        </FrameLayout>
                     </LinearLayout>
 
-                    <FrameLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="176dp"
-                        android:layout_marginTop="0dp">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:text="@string/title_sponsored_ads"
+                            android:textSize="11sp"
+                            android:fontFamily="sans-serif-medium"
+                            android:textColor="@color/text_primary"
+                            android:alpha="0.4"
+                            android:layout_marginTop="0dp" />
+                   
 
-                        <androidx.recyclerview.widget.RecyclerView
-                            android:id="@+id/rvTrending"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:clipToPadding="false"
-                            android:paddingHorizontal="20dp"
-                            android:overScrollMode="never" />
-
-                        <LinearLayout
-                            android:id="@+id/skTrending"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:orientation="horizontal"
-                            android:paddingHorizontal="24dp"
-                            android:visibility="visible">
-                            <View android:layout_width="380dp" android:layout_height="match_parent" android:background="@drawable/bg_skeleton" android:layout_marginEnd="16dp"/>
-                            <View android:layout_width="380dp" android:layout_height="match_parent" android:background="@drawable/bg_skeleton" /> 
-                        </LinearLayout>
-                    </FrameLayout>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:text="@string/title_sponsored_ads"
-                        android:textSize="11sp"
-                        android:fontFamily="sans-serif-medium"
-                        android:textColor="@color/text_primary"
-                        android:alpha="0.4"
-                        android:layout_marginTop="0dp" />
 
                     <!-- FESTIVAL CALENDAR SECTION -->
                     <LinearLayout
@@ -116,7 +129,7 @@
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
                             android:gravity="center_vertical"
-                            android:paddingHorizontal="24dp">
+                            android:paddingHorizontal="12dp">
 
                             <TextView
                                 android:id="@+id/txtFestivalTitle"
@@ -124,8 +137,8 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:text="@string/title_festival_calendar"
-                                android:textSize="18sp"
-                                android:fontFamily="sans-serif-black"
+                                android:textSize="16sp"
+                                android:fontFamily="sans-serif-medium"
                                 android:textColor="@color/text_primary" />
 
                             <TextView
@@ -135,7 +148,7 @@
                                 android:textSize="14sp"
                                 android:textColor="?attr/colorPrimary"
                                 android:background="?attr/selectableItemBackgroundBorderless"
-                                android:paddingHorizontal="12dp"
+                                android:paddingHorizontal="0dp"
                                 android:paddingVertical="4dp"
                                 android:layout_height="wrap_content"
                                 android:layout_width="wrap_content"/>
@@ -149,13 +162,13 @@
                             android:minHeight="64dp"
                             android:layout_marginTop="0dp"
                             android:clipToPadding="false"
-                            android:paddingHorizontal="20dp"
+                            android:paddingHorizontal="12dp"
                             android:overScrollMode="never"/>
 
                         <!-- FESTIVAL CARDS -->
                         <FrameLayout
                             android:layout_width="match_parent"
-                            android:layout_height="155dp"
+                            android:layout_height="130dp"
                             android:layout_marginTop="0dp">
 
                             <androidx.recyclerview.widget.RecyclerView
@@ -163,7 +176,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:clipToPadding="false"
-                                android:paddingHorizontal="20dp"
+                                android:paddingHorizontal="12dp"
                                 android:overScrollMode="never"/>
 
                             <LinearLayout
@@ -171,11 +184,11 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:orientation="horizontal"
-                                android:paddingHorizontal="24dp"
+                                android:paddingHorizontal="12dp"
                                 android:visibility="visible">
-                                <View android:layout_width="140dp" android:layout_height="match_parent" android:background="@drawable/bg_skeleton" android:layout_marginEnd="12dp"/>
-                                <View android:layout_width="140dp" android:layout_height="match_parent" android:background="@drawable/bg_skeleton" android:layout_marginEnd="12dp"/>
-                                <View android:layout_width="140dp" android:layout_height="match_parent" android:background="@drawable/bg_skeleton" />
+                                <View android:layout_width="115dp" android:layout_height="match_parent" android:background="@drawable/bg_skeleton" android:layout_marginEnd="12dp"/>
+                                <View android:layout_width="115dp" android:layout_height="match_parent" android:background="@drawable/bg_skeleton" android:layout_marginEnd="12dp"/>
+                                <View android:layout_width="115dp" android:layout_height="match_parent" android:background="@drawable/bg_skeleton" />
                             </LinearLayout>
                         </FrameLayout>
                     </LinearLayout>

@@ -20,7 +20,6 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- HEADER (MATCHING ADMIN PANEL/GALLERY) -->
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="64dp">
@@ -46,7 +45,6 @@
                     android:textColor="@color/text_primary" />
             </RelativeLayout>
 
-            <!-- MODERN SEARCH PILL (MATCHING USER LIST) -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
@@ -110,7 +108,6 @@
                         app:tint="@color/primary"
                         android:background="?attr/selectableItemBackgroundBorderless" />
                     
-                    <!-- Search button hidden in this pill for automated search -->
                     <ImageButton
                         android:id="@+id/btnSearch"
                         android:layout_width="0dp"
@@ -122,52 +119,149 @@
         </LinearLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
-    <LinearLayout
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <!-- GRID -->
+        <!-- SEARCH RESULTS GRID -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerSearch"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipToPadding="false"
             android:padding="8dp"
-            android:paddingBottom="100dp"
+            android:visibility="gone"
             android:overScrollMode="never" />
 
-    </LinearLayout>
+        <!-- SUGGESTIONS VIEW -->
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/suggestionsView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="visible">
 
-    <!-- EMPTY STATE (MATCHING USER LIST) -->
-    <LinearLayout
-        android:id="@+id/emptyView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:padding="24dp"
-        android:visibility="gone">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingBottom="100dp">
 
-        <ImageView
-            android:layout_width="120dp"
-            android:layout_height="120dp"
-            android:src="@android:drawable/ic_menu_search"
-            android:alpha="0.2"
-            app:tint="@color/text_secondary" />
+                <!-- RECENT SEARCHES -->
+                <LinearLayout
+                    android:id="@+id/sectionRecent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginTop="16dp"
+                    android:visibility="gone">
+                    
+                    <TextView
+                        android:id="@+id/txtHeaderRecent"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/search_header_recent"
+                        android:fontFamily="sans-serif-black"
+                        android:textSize="16sp"
+                        android:textColor="@color/text_primary"
+                        android:layout_marginHorizontal="24dp"
+                        android:layout_marginBottom="8dp"/>
 
-        <TextView
-            android:id="@+id/txtEmpty"
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recyclerRecent"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:nestedScrollingEnabled="false"
+                        android:overScrollMode="never"/>
+                </LinearLayout>
+
+                <!-- RECOMMENDED FOR YOU -->
+                <LinearLayout
+                    android:id="@+id/sectionRecommended"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginTop="24dp">
+                    
+                    <TextView
+                        android:id="@+id/txtHeaderTrending"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/search_header_trending"
+                        android:fontFamily="sans-serif-black"
+                        android:textSize="16sp"
+                        android:textColor="@color/text_primary"
+                        android:layout_marginHorizontal="24dp"
+                        android:layout_marginBottom="8dp"/>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recyclerRecommended"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:nestedScrollingEnabled="false"
+                        android:overScrollMode="never"/>
+                </LinearLayout>
+
+                <!-- POPULAR SERVICES (CHIPS) -->
+                <LinearLayout
+                    android:id="@+id/sectionPopular"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginTop="24dp">
+                    
+                    <TextView
+                        android:id="@+id/txtHeaderPopular"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/search_header_popular"
+                        android:fontFamily="sans-serif-black"
+                        android:textSize="16sp"
+                        android:textColor="@color/text_primary"
+                        android:layout_marginHorizontal="24dp"
+                        android:layout_marginBottom="12dp"/>
+
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/chipGroupPopular"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="24dp"
+                        app:chipSpacingVertical="8dp"
+                        app:chipSpacingHorizontal="8dp"/>
+                </LinearLayout>
+
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+
+        <!-- EMPTY STATE -->
+        <LinearLayout
+            android:id="@+id/emptyView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@string/msg_no_templates"
-            android:fontFamily="sans-serif-medium"
-            android:textSize="14sp"
-            android:textColor="@color/text_secondary"
-            android:gravity="center" />
-    </LinearLayout>
+            android:layout_gravity="center"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="24dp"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:src="@android:drawable/ic_menu_search"
+                android:alpha="0.2"
+                app:tint="@color/text_secondary" />
+
+            <TextView
+                android:id="@+id/txtEmpty"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/msg_no_templates"
+                android:fontFamily="sans-serif-medium"
+                android:textSize="14sp"
+                android:textColor="@color/text_secondary"
+                android:gravity="center" />
+        </LinearLayout>
+    </FrameLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

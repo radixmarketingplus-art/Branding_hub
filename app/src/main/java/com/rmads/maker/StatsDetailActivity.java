@@ -20,7 +20,7 @@ public class StatsDetailActivity extends BaseActivity {
     StatUserAdapter adapter;
     ArrayList<StatUserItem> list = new ArrayList<>();
 
-    TextView tabLike, tabFav, tabEdit, tabSave, tabShare;
+    TextView tabLike, tabEdit, tabSave, tabShare;
 
     String templateKey;
     String currentType = "likes";
@@ -46,13 +46,12 @@ public class StatsDetailActivity extends BaseActivity {
         recycler.setAdapter(adapter);
 
         tabLike = findViewById(R.id.tabLike);
-        tabFav  = findViewById(R.id.tabFav);
         tabEdit = findViewById(R.id.tabEdit);
         tabSave = findViewById(R.id.tabSave);
         tabShare = findViewById(R.id.tabShare);
 
         tabLike.setOnClickListener(v -> switchTab("likes"));
-        tabFav.setOnClickListener(v -> switchTab("favorites"));
+
         tabEdit.setOnClickListener(v -> switchTab("edits"));
         tabSave.setOnClickListener(v -> switchTab("saves"));
         tabShare.setOnClickListener(v -> switchTab("shares"));
@@ -82,13 +81,12 @@ public class StatsDetailActivity extends BaseActivity {
 
     void updateUI() {
         reset(tabLike);
-        reset(tabFav);
         reset(tabEdit);
         reset(tabSave);
         reset(tabShare);
 
         if (currentType.equals("likes")) select(tabLike);
-        else if (currentType.equals("favorites")) select(tabFav);
+
         else if (currentType.equals("edits")) select(tabEdit);
         else if (currentType.equals("saves")) select(tabSave);
         else if (currentType.equals("shares")) select(tabShare);

@@ -205,6 +205,16 @@
                             android:clickable="true"
                             android:focusable="true"
                             android:visibility="gone" />
+
+                        <!-- Play Button Overlay -->
+                        <ImageView
+                            android:id="@+id/icPlayVideo"
+                            android:layout_width="60dp"
+                            android:layout_height="60dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_play_video"
+                            android:visibility="gone"
+                            android:alpha="0.8" />
                     </FrameLayout>
 
                     <TextView
@@ -415,13 +425,36 @@
                         app:backgroundTint="@null"
                         android:background="@drawable/bg_button_gradient_main" />
 
-                    <ProgressBar
-                        android:id="@+id/progressBar"
-                        android:layout_width="wrap_content"
+                    <!-- Upload progress bar — determinate for videos, shows real % -->
+                    <LinearLayout
+                        android:id="@+id/uploadProgressContainer"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
+                        android:orientation="vertical"
                         android:layout_marginTop="16dp"
-                        android:visibility="gone" />
+                        android:visibility="gone">
+
+                        <ProgressBar
+                            android:id="@+id/progressBar"
+                            style="@android:style/Widget.ProgressBar.Horizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="8dp"
+                            android:max="100"
+                            android:progress="0"
+                            android:progressTint="?attr/colorPrimary"
+                            android:progressBackgroundTint="#1A000000" />
+
+                        <TextView
+                            android:id="@+id/tvUploadPercent"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:text="Uploading… 0%"
+                            android:textSize="12sp"
+                            android:fontFamily="sans-serif-medium"
+                            android:textColor="?attr/colorOnSurfaceVariant"
+                            android:layout_marginTop="6dp" />
+                    </LinearLayout>
 
                 </LinearLayout>
             </androidx.core.widget.NestedScrollView>

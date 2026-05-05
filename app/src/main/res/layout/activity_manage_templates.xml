@@ -31,7 +31,7 @@
                 android:src="@drawable/ic_back"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:padding="12dp"
-                android:contentDescription="Back"
+                android:contentDescription="@string/back_desc"
                 app:tint="@color/text_primary" />
 
             <TextView
@@ -132,58 +132,25 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="20dp">
+                    android:padding="16dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:gravity="center">
+                        android:gravity="center"
+                        android:layout_marginBottom="12dp">
+                        
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnColor"
                             style="@style/Widget.Material3.Button.TonalButton"
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
                             android:layout_height="wrap_content"
                             android:text="@string/btn_color"
-                            app:cornerRadius="12dp" />
-                            <SeekBar
-                                android:id="@+id/seekTextSize"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:layout_marginStart="16dp"
-                                android:max="100"/>
-                        </LinearLayout>
-                        
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
-                        android:orientation="horizontal"
-                        android:gravity="center">
-                        <TextView
-                            android:text="@string/label_rotate"
-                            android:fontFamily="sans-serif-bold"
-                            android:textColor="?attr/colorOnSurface"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
-                        <SeekBar
-                            android:id="@+id/seekTextRotate"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:layout_marginStart="16dp"
-                            android:progress="180"
-                            android:max="360"/>
-                    </LinearLayout>
-                        
-                    <!-- Text Formatting Controls -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        android:orientation="horizontal"
-                        android:gravity="center">
+                            app:icon="@drawable/ic_edit"
+                            app:cornerRadius="12dp"
+                            android:layout_marginEnd="8dp" />
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnFont"
@@ -192,64 +159,76 @@
                             android:layout_weight="1"
                             android:layout_height="wrap_content"
                             android:text="@string/label_font"
-                            android:insetTop="0dp"
-                            android:insetBottom="0dp"
-                            app:cornerRadius="12dp"
-                            android:layout_marginEnd="8dp" />
+                            app:icon="@android:drawable/ic_menu_edit"
+                            app:cornerRadius="12dp" />
+                    </LinearLayout>
+                        
+                    <!-- Text Formatting Row -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center"
+                        android:layout_marginBottom="12dp">
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnBold"
                             style="@style/Widget.Material3.Button.TonalButton"
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
                             android:layout_height="wrap_content"
-                            android:minWidth="48dp"
-                            android:text="B"
+                            android:text="@string/btn_bold"
                             android:textStyle="bold"
-                            android:insetTop="0dp"
-                            android:insetBottom="0dp"
-                            android:paddingHorizontal="12dp"
                             app:cornerRadius="12dp"
                             android:layout_marginEnd="4dp" />
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnItalic"
                             style="@style/Widget.Material3.Button.TonalButton"
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
                             android:layout_height="wrap_content"
-                            android:minWidth="48dp"
-                            android:text="I"
+                            android:text="@string/btn_italic"
                             android:textStyle="italic"
-                            android:insetTop="0dp"
-                            android:insetBottom="0dp"
-                            android:paddingHorizontal="12dp"
                             app:cornerRadius="12dp"
                             android:layout_marginEnd="4dp" />
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnUnderline"
                             style="@style/Widget.Material3.Button.TonalButton"
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
                             android:layout_height="wrap_content"
-                            android:minWidth="48dp"
-                            android:text="U"
-                            android:insetTop="0dp"
-                            android:insetBottom="0dp"
-                            android:paddingHorizontal="12dp"
+                            android:text="@string/btn_underline"
                             app:cornerRadius="12dp" />
                     </LinearLayout>
 
-                    <!-- LAYER CONTROLS (TEXT) -->
+                    <!-- Layer Controls -->
                     <LinearLayout
                         android:id="@+id/textLayerControlsLayout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
                         android:orientation="horizontal"
                         android:gravity="center">
 
                         <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnTextSendBack"
+                            android:id="@+id/btnDeleteText"
                             style="@style/Widget.Material3.Button.TonalButton"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content"
+                            android:text="@string/btn_delete"
+                            android:textSize="12sp"
+                            android:layout_marginEnd="8dp"
+                            app:icon="@drawable/ic_delete"
+                            app:iconTint="@color/white"
+                            android:textColor="@color/white"
+                            app:backgroundTint="@android:color/holo_red_dark"
+                            app:cornerRadius="12dp" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnTextSendBack"
+                            style="@style/Widget.Material3.Button.OutlinedButton"
                             android:layout_width="0dp"
                             android:layout_weight="1"
                             android:layout_height="wrap_content"
@@ -260,13 +239,12 @@
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnTextBringFront"
-                            style="@style/Widget.Material3.Button.TonalButton"
+                            style="@style/Widget.Material3.Button.OutlinedButton"
                             android:layout_width="0dp"
                             android:layout_weight="1"
                             android:layout_height="wrap_content"
                             android:text="@string/btn_bring_to_front"
                             android:textSize="12sp"
-                            android:layout_marginStart="8dp"
                             app:cornerRadius="12dp" />
                     </LinearLayout>
                 </LinearLayout>
@@ -292,60 +270,41 @@
                     android:orientation="vertical"
                     android:padding="20dp">
                     
-                    <LinearLayout
+                    <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center">
-                        <TextView
-                            android:text="@string/label_size"
-                            android:fontFamily="sans-serif-bold"
-                            android:textColor="?attr/colorOnSurface"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
-                        <SeekBar
-                            android:id="@+id/seekImageSize"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:layout_marginStart="16dp"
-                            android:progress="40"
-                            android:max="100"/>
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
-                        android:orientation="horizontal"
-                        android:gravity="center">
-                        <TextView
-                            android:text="@string/label_rotate"
-                            android:fontFamily="sans-serif-bold"
-                            android:textColor="?attr/colorOnSurface"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
-                        <SeekBar
-                            android:id="@+id/seekImageRotate"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:layout_marginStart="16dp"
-                            android:progress="180"
-                            android:max="360"/>
-                    </LinearLayout>
+                        android:text="@string/title_image_options"
+                        android:gravity="center"
+                        android:fontFamily="sans-serif-black"
+                        android:textSize="16sp"
+                        android:layout_marginBottom="16dp"
+                        android:textColor="@color/text_primary"/>
 
                     <LinearLayout
                         android:id="@+id/imageLayerControlsLayout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
                         android:orientation="horizontal"
                         android:gravity="center">
 
                         <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnSendBack"
+                            android:id="@+id/btnDeleteImage"
                             style="@style/Widget.Material3.Button.TonalButton"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content"
+                            android:text="@string/btn_delete"
+                            android:textSize="12sp"
+                            android:layout_marginEnd="8dp"
+                            app:icon="@drawable/ic_delete"
+                            app:iconTint="@color/white"
+                            android:textColor="@color/white"
+                            app:backgroundTint="@android:color/holo_red_dark"
+                            app:cornerRadius="12dp" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnSendBack"
+                            style="@style/Widget.Material3.Button.OutlinedButton"
                             android:layout_width="0dp"
                             android:layout_weight="1"
                             android:layout_height="wrap_content"
@@ -356,13 +315,12 @@
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnBringFront"
-                            style="@style/Widget.Material3.Button.TonalButton"
+                            style="@style/Widget.Material3.Button.OutlinedButton"
                             android:layout_width="0dp"
                             android:layout_weight="1"
                             android:layout_height="wrap_content"
                             android:text="@string/btn_bring_to_front"
                             android:textSize="12sp"
-                            android:layout_marginStart="8dp"
                             app:cornerRadius="12dp" />
                     </LinearLayout>
                 </LinearLayout>

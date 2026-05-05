@@ -1,6 +1,7 @@
 package com.rmads.maker;
 
 import android.content.Intent;
+import android.media.tv.AdRequest;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.*;
@@ -33,6 +34,7 @@ public class AdRequestDetailActivity extends BaseActivity {
     TextView txtTitle, txtDesc, txtStatus, txtTime, txtExpiryDate;
 
     ImageView imgTemplate, imgProof;
+    View icPlayVideo;
 
     Button btnApprove, btnReject;
     Spinner spinnerDuration;
@@ -61,6 +63,7 @@ public class AdRequestDetailActivity extends BaseActivity {
 
         imgTemplate = findViewById(R.id.imgTemplate);
         imgProof = findViewById(R.id.imgProof);
+        icPlayVideo = findViewById(R.id.icPlayVideo);
 
         btnApprove = findViewById(R.id.btnApprove);
         btnReject = findViewById(R.id.btnReject);
@@ -142,19 +145,44 @@ public class AdRequestDetailActivity extends BaseActivity {
                                 }
 
                                 // TEMPLATE IMAGE
-                                if (r.templatePath != null &&
-                                        !r.templatePath.isEmpty()) {
+                                if (r.templatePath != null && !r.templatePath.isEmpty()) {
 
                                     imgTemplate.setVisibility(View.VISIBLE);
-                                    loadImageFromUrl(r.templatePath, imgTemplate);
 
-                                    imgTemplate.setOnClickListener(v -> {
-                                        Intent i = new Intent(
-                                                AdRequestDetailActivity.this,
-                                                ImagePreviewActivity.class);
+                                    // ✅ Primary: use the saved "type" field from Firebase
+                                    // ✅ Fallback: infer from URL extension
+                                    String lowerPath = r.templatePath.toLowerCase();
+                                    boolean isVideo = "video".equalsIgnoreCase(r.type)
+                                            || lowerPath.contains(".mp4")
+                                            || lowerPath.contains(".mov")
+                                            || lowerPath.contains(".mkv")
+                                            || lowerPath.contains(".webm")
+                                            || lowerPath.contains(".3gp");
+
+                                    if (isVideo) {
+                                        // For video: show thumbnail via Glide + show play button
+                                        com.bumptech.glide.Glide.with(AdRequestDetailActivity.this)
+                                                .asBitmap()
+                                                .load(r.templatePath)
+                                                .frame(1000000)
+                                                .placeholder(android.R.drawable.ic_menu_gallery)
+                                                .into(imgTemplate);
+                                        if (icPlayVideo != null) icPlayVideo.setVisibility(View.VISIBLE);
+                                    } else {
+                                        // For image: load normally, hide play button
+                                        loadImageFromUrl(r.templatePath, imgTemplate);
+                                        if (icPlayVideo != null) icPlayVideo.setVisibility(View.GONE);
+                                    }
+
+                                    // Click on image or play button → open ImagePreviewActivity
+                                    View.OnClickListener previewListener = v -> {
+                                        Intent i = new Intent(AdRequestDetailActivity.this, ImagePreviewActivity.class);
                                         i.putExtra("img", r.templatePath);
+                                        i.putExtra("is_video", isVideo);
                                         startActivity(i);
-                                    });
+                                    };
+                                    imgTemplate.setOnClickListener(previewListener);
+                                    if (icPlayVideo != null) icPlayVideo.setOnClickListener(previewListener);
                                 }
 
                                 // PAYMENT PROOF IMAGE
@@ -277,13 +305,16 @@ public class AdRequestDetailActivity extends BaseActivity {
 //    }
 
     void changeStatus(String s) {
+        
+        android.app.ProgressDialog pd = new android.app.ProgressDialog(this);
+        pd.setMessage("Processing...");
+        pd.setCancelable(false);
+        pd.show();
 
         DatabaseReference ref =
                 FirebaseDatabase.getInstance()
                         .getReference("advertisement_requests")
                         .child(requestId);
-
-        ref.child("status").setValue(s);
 
         // ==========================================
         // ✅ IF ACCEPTED → ADD TO HOME PAGE
@@ -315,17 +346,19 @@ public class AdRequestDetailActivity extends BaseActivity {
             );
         }
 
-        Toast.makeText(this,
-                R.string.msg_updated,
-                Toast.LENGTH_SHORT).show();
-
-        finish();
+        ref.child("status").setValue(s).addOnCompleteListener(task -> {
+            if (pd.isShowing()) pd.dismiss();
+            Toast.makeText(this, R.string.msg_updated, Toast.LENGTH_SHORT).show();
+            finish();
+        });
     }
 
     void saveToHomeAdvertisement() {
 
         if (r.templatePath == null || r.templatePath.isEmpty()) return;
-        if (r.adLink == null || r.adLink.isEmpty()) return;
+        
+        // Link is optional, ensure it's at least an empty string
+        String safeLink = r.adLink != null ? r.adLink : "";
 
         // --- STRUCTURED FIREBASE SAVE ---
         String section = "Advertisement";
@@ -338,7 +371,7 @@ public class AdRequestDetailActivity extends BaseActivity {
 
         AdvertisementItem adItem = new AdvertisementItem(
                 r.templatePath,
-                r.adLink,
+                safeLink,
                 expiryTime,
                 r.userName != null ? r.userName : "User",
                 r.time
@@ -346,6 +379,15 @@ public class AdRequestDetailActivity extends BaseActivity {
         adItem.uid = r.uid; // Set UID for expiry notifications
         adItem.id = templateId; // Important for redirection highlight
         adItem.requestId = r.requestId; // 🔥 Save the original request ID
+        // ✅ Preserve the media type so home carousel shows play button correctly
+        String lowerPath = r.templatePath != null ? r.templatePath.toLowerCase() : "";
+        boolean isVideo = "video".equalsIgnoreCase(r.type)
+                || lowerPath.contains(".mp4")
+                || lowerPath.contains(".mov")
+                || lowerPath.contains(".mkv")
+                || lowerPath.contains(".webm")
+                || lowerPath.contains(".3gp");
+        adItem.type = isVideo ? "video" : "image";
 
         // 1. Firebase
         dbRef.child(templateId).setValue(adItem);

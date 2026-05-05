@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="nav_client_info">Client Info</string>
+    <string name="title_client_info">Client Information</string>
+    <string name="desc_client_info">Fill in your business details for services</string>
+    <string name="hint_name">Name</string>
+    <string name="hint_contact">Contact Number</string>
+    <string name="ci_hint_email">Email ID</string>
+    <string name="hint_business_name">Business Name</string>
+    <string name="hint_business_cat">Business Category / Type</string>
+    <string name="label_select_service">Select Service</string>
+    <string name="opt_digital_app">Digital Application</string>
+    <string name="opt_web_dev">Website Development</string>
+    <string name="opt_app_dev">App Development</string>
+    <string name="opt_graphic_design">Graphic Post Design</string>
+    <string name="opt_other_services">Other Services</string>
+    <string name="ci_hint_description">Description</string>
+    <string name="hint_remark">Remark</string>
+    <string name="btn_submit_client_info">Submit</string>
+    <string name="msg_please_fill_details">Please fill all required details</string>
+    <string name="msg_client_info_sent">Client Info sent successfully</string>
+    <string name="title_client_info_requests">Client Info Requests</string>
+    <string name="desc_client_info_requests">Manage all client information requests</string>
+    <string name="btn_complete">Complete</string>
+    <string name="btn_completed">Completed</string>
+    <string name="msg_confirm_complete">Are you sure this request is completed?</string>
+    <string name="msg_marked_completed">Marked as completed</string>
+    <string name="msg_confirm_delete_ci">Are you sure you want to delete this request?</string>
+    <string name="msg_deleted_success_ci">Request deleted successfully</string>
+    <string name="title_complete_request">Mark as Completed</string>
+    <string name="title_delete_request">Delete Request</string>
+    <string name="title_notif_client_info">New Client Info Request</string>
+    <string name="msg_notif_client_info">A user has submitted a new client info request.</string>
+    <string name="msg_accept_confirm_ci">Do you want to accept this request?</string>
+    <string name="msg_reject_confirm_ci">Do you want to reject this request?</string>
+    <string name="msg_request_accepted_ci">Request Accepted</string>
+    <string name="msg_request_rejected_ci">Request Rejected</string>
+    <string name="btn_accepted">Accepted</string>
+    <string name="btn_rejected">Rejected</string>
+</resources>

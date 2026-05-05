@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/screen_bg"
+    android:fitsSystemWindows="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <!-- HEADER -->
+        <com.google.android.material.appbar.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/screen_bg"
+            app:elevation="0dp"
+            android:outlineProvider="none">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:paddingHorizontal="12dp">
+
+                <ImageView
+                    android:id="@+id/btnBack"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_centerVertical="true"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_back"
+                    app:tint="?android:textColorPrimary" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:text="Manage Services"
+                    android:textSize="18sp"
+                    android:fontFamily="sans-serif-black"
+                    android:textColor="?android:textColorPrimary" />
+
+            </RelativeLayout>
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:overScrollMode="never">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="24dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Add New Service"
+                    android:textSize="16sp"
+                    android:fontFamily="sans-serif-bold"
+                    android:layout_marginBottom="16dp" />
+
+                <EditText
+                    android:id="@+id/etServiceEn"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:hint="Service Name (English)"
+                    android:background="@drawable/bg_input_2"
+                    android:paddingHorizontal="16dp"
+                    android:layout_marginBottom="12dp"
+                    android:singleLine="true" />
+
+                <EditText
+                    android:id="@+id/etServiceHi"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:hint="Service Name (Hindi)"
+                    android:background="@drawable/bg_input_2"
+                    android:paddingHorizontal="16dp"
+                    android:layout_marginBottom="20dp"
+                    android:singleLine="true" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnAdd"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:text="ADD SERVICE"
+                    android:fontFamily="sans-serif-black"
+                    app:cornerRadius="12dp"
+                    android:layout_marginBottom="32dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Existing Services"
+                    android:textSize="16sp"
+                    android:fontFamily="sans-serif-bold"
+                    android:layout_marginBottom="12dp" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerServices"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:nestedScrollingEnabled="false"
+                    android:overScrollMode="never" />
+
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+
+    </LinearLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

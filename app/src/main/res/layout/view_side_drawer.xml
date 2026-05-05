@@ -225,6 +225,40 @@
                     android:paddingVertical="4dp">
 
                     <LinearLayout
+                        android:id="@+id/drawerClientInfo"
+                        style="@style/SettingsItemStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp">
+                        <ImageView
+                            style="@style/SettingsIconStyle"
+                            android:src="@drawable/ic_edit"
+                            app:tint="?attr/colorPrimary" />
+                        <TextView
+                            style="@style/SettingsTextStyle"
+                            android:text="@string/nav_client_info"
+                            android:fontFamily="sans-serif-bold" />
+                    </LinearLayout>
+
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginHorizontal="16dp" android:background="#0D000000" />
+
+                    <LinearLayout
+                        android:id="@+id/drawerMyServiceRequests"
+                        style="@style/SettingsItemStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp">
+                        <ImageView
+                            style="@style/SettingsIconStyle"
+                            android:src="@drawable/ic_clipboard_list"
+                            app:tint="?attr/colorPrimary" />
+                        <TextView
+                            style="@style/SettingsTextStyle"
+                            android:text="@string/title_my_requests"
+                            android:fontFamily="sans-serif-bold" />
+                    </LinearLayout>
+
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginHorizontal="16dp" android:background="#0D000000" />
+
+                    <LinearLayout
                         android:id="@+id/drawerSettings"
                         style="@style/SettingsItemStyle"
                         android:layout_width="match_parent"

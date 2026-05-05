@@ -59,8 +59,6 @@ public class ManageTemplatesActivity extends BaseActivity {
     String uName, uMobile, uEmail, uProfileUrl;
 
     static final int PICK_IMAGE = 101;
-    SeekBar seekTextSize, seekImageSize;
-    SeekBar seekTextRotate, seekImageRotate;
 
     String originalPath;
     String templateId;
@@ -76,6 +74,7 @@ public class ManageTemplatesActivity extends BaseActivity {
     ScaleGestureDetector scaleGestureDetector;
     float lastPanX, lastPanY;
     boolean isPanningCanvas = false;
+    boolean isTransformingOverlay = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +83,8 @@ public class ManageTemplatesActivity extends BaseActivity {
 
         // ==== Bind ====
         canvas = findViewById(R.id.canvas);
+        canvas.setClipChildren(false);
+        canvas.setClipToPadding(false);
         imgTemplate = findViewById(R.id.imgTemplate);
         videoTemplate = findViewById(R.id.videoTemplate);
         canvasContainer = findViewById(R.id.canvasContainer);
@@ -93,10 +94,7 @@ public class ManageTemplatesActivity extends BaseActivity {
         btnColor = findViewById(R.id.btnColor);
         textControls = findViewById(R.id.textControls);
         imageControls = findViewById(R.id.imageControls);
-        seekTextSize = findViewById(R.id.seekTextSize);
-        seekImageSize = findViewById(R.id.seekImageSize);
-        seekTextRotate = findViewById(R.id.seekTextRotate);
-        seekImageRotate = findViewById(R.id.seekImageRotate);
+        imageControls = findViewById(R.id.imageControls);
         btnFrame = findViewById(R.id.btnFrame);
         frameControls = findViewById(R.id.frameControls);
         rvFrames = findViewById(R.id.rvFrames);
@@ -108,8 +106,10 @@ public class ManageTemplatesActivity extends BaseActivity {
         btnBringFront = findViewById(R.id.btnBringFront);
         btnTextSendBack = findViewById(R.id.btnTextSendBack);
         btnTextBringFront = findViewById(R.id.btnTextBringFront);
-        textLayerControlsLayout = findViewById(R.id.textLayerControlsLayout);
         imageLayerControlsLayout = findViewById(R.id.imageLayerControlsLayout);
+        findViewById(R.id.btnDeleteText).setOnClickListener(v -> deleteActiveOverlay());
+        findViewById(R.id.btnDeleteImage).setOnClickListener(v -> deleteActiveOverlay());
+        isTransformingOverlay = false;
 
         btnFont = findViewById(R.id.btnFont);
         btnBold = findViewById(R.id.btnBold);
@@ -312,84 +312,7 @@ public class ManageTemplatesActivity extends BaseActivity {
         btnFont.setOnClickListener(v -> showFontPicker());
 
         // ==== SEEKBARS ====
-        seekTextSize.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if (fromUser && activeContent instanceof TextView) {
-                    float newSize = 10 + (progress * 2);
-                    ((TextView) activeContent).setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, newSize);
-                }
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-            }
-        });
-
-        seekTextRotate.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if (fromUser && activeOverlay != null && activeContent instanceof TextView) {
-                    float rotation = progress - 180; // center is 0 degrees
-                    activeOverlay.setRotation(rotation);
-                }
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-            }
-        });
-
-        seekImageSize.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if (fromUser && activeOverlay != null && activeContent instanceof ImageView) {
-                    float scale = 0.1f + (progress / 40f);
-                    activeOverlay.setScaleX(scale);
-                    activeOverlay.setScaleY(scale);
-
-                    if (((ViewGroup) activeOverlay).getChildCount() > 1) {
-                        View btnDel = ((ViewGroup) activeOverlay).getChildAt(1);
-                        btnDel.setScaleX(1.0f / scale);
-                        btnDel.setScaleY(1.0f / scale);
-                    }
-                }
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-            }
-        });
-
-        seekImageRotate.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if (fromUser && activeOverlay != null && activeContent instanceof ImageView) {
-                    float rotation = progress - 180; // center is 0 degrees
-                    activeOverlay.setRotation(rotation);
-                }
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-            }
-        });
+        // SeekBars removed, now using gestures
 
         // ==== COLOR ====
         btnColor.setOnClickListener(v -> {
@@ -426,15 +349,12 @@ public class ManageTemplatesActivity extends BaseActivity {
     }
 
     // ================= TEXT EDIT =================
-    void showTextEditor(TextView target) {
-        AlertDialog.Builder b = new AlertDialog.Builder(this);
-        EditText input = new EditText(this);
-        input.setText(target.getText());
-        b.setTitle(R.string.ph_edit_text);
-        b.setView(input);
-        b.setPositiveButton(R.string.btn_apply,
-                (d, w) -> target.setText(input.getText()));
-        b.show();
+    private void deleteActiveOverlay() {
+        if (activeOverlay != null) {
+            View toRemove = activeOverlay;
+            deselectAll();
+            canvas.removeView(toRemove);
+        }
     }
 
     // ================= PICK IMAGE =================
@@ -486,7 +406,7 @@ public class ManageTemplatesActivity extends BaseActivity {
         tv.setText(R.string.ph_edit_text);
         tv.setTextSize(24);
         tv.setTextColor(Color.BLACK);
-        tv.setPadding(30, 30, 30, 30);
+        tv.setPadding(0, 0, 0, 0); // No internal padding for tight fit
         addOverlay(tv, false);
     }
 
@@ -495,7 +415,7 @@ public class ManageTemplatesActivity extends BaseActivity {
                 this);
         iv.setImageURI(uri);
         iv.setAdjustViewBounds(true);
-        iv.setPadding(30, 30, 30, 30);
+        iv.setPadding(0, 0, 0, 0); // No internal padding for tight fit
         iv.setScaleType(ImageView.ScaleType.FIT_CENTER);
         
         // Store path for state recovery
@@ -519,50 +439,34 @@ public class ManageTemplatesActivity extends BaseActivity {
     private void addOverlay(View content, boolean isImage) {
         deselectAll();
 
-        FrameLayout wrapper = new FrameLayout(this);
-        wrapper.setLayoutParams(
-                new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-
-        // Content
-        wrapper.addView(content);
-
-        // Delete Button
-        ImageView btnDel = new ImageView(this);
-        btnDel.setImageResource(R.drawable.ic_delete);
-        btnDel.setBackgroundResource(R.drawable.shape_circle);
-        btnDel.setBackgroundTintList(android.content.res.ColorStateList.valueOf(Color.RED));
-        btnDel.setPadding(10, 10, 10, 10);
-        FrameLayout.LayoutParams delParams = new FrameLayout.LayoutParams(60, 60);
-        delParams.gravity = android.view.Gravity.TOP | android.view.Gravity.END;
-        btnDel.setLayoutParams(delParams);
-        btnDel.setOnClickListener(v -> {
-            if (activeOverlay == wrapper) {
-                deselectAll();
-            }
-            ((ViewGroup) wrapper.getParent()).removeView(wrapper);
-        });
-        wrapper.addView(btnDel);
-
-        wrapper.setX(200);
-        wrapper.setY(200);
-        canvas.addView(wrapper);
-
-        enableDrag(wrapper, content);
-        setActive(wrapper);
+        TransformableOverlay overlay = new TransformableOverlay(this);
+        overlay.setContent(content);
+        
+        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        overlay.setLayoutParams(lp);
+        
+        overlay.setX(200);
+        overlay.setY(200);
+        
+        overlay.setOnOverlayClickListener(o -> setActive(o));
+        
+        canvas.addView(overlay);
+        setActive(overlay);
 
         content.setOnClickListener(v -> {
-            if (activeOverlay == wrapper) {
+            if (activeOverlay == overlay) {
                 if (!isImage) {
                     showTextEditor((TextView) content);
                 } else {
                     Object tag = content.getTag();
                     int currentShape = tag instanceof Integer ? (Integer) tag : 0;
-                    int nextShape = (currentShape + 1) % 2; // Only Rect(0) and Circle(1)
+                    int nextShape = (currentShape + 1) % 2; 
                     content.setTag(nextShape);
                     applyShape((com.google.android.material.imageview.ShapeableImageView) content, nextShape);
                 }
             } else {
-                setActive(wrapper);
+                setActive(overlay);
             }
         });
     }
@@ -587,19 +491,14 @@ public class ManageTemplatesActivity extends BaseActivity {
         dialog.show();
     }
 
-    private void setActive(View wrapper) {
+    private void setActive(View view) {
         deselectAll();
-        activeOverlay = wrapper;
-
-        if (wrapper == null)
-            return;
-
-        activeContent = ((FrameLayout) wrapper).getChildAt(0);
-
-        // Show handles
-        if (((FrameLayout) wrapper).getChildCount() > 1) {
-            ((FrameLayout) wrapper).getChildAt(1).setVisibility(View.VISIBLE); // Delete
-        }
+        if (!(view instanceof TransformableOverlay)) return;
+        
+        activeOverlay = view;
+        TransformableOverlay overlay = (TransformableOverlay) view;
+        overlay.setSelected(true);
+        activeContent = overlay.getContent();
 
         if (activeContent instanceof TextView) {
             textControls.setVisibility(View.VISIBLE);
@@ -607,14 +506,6 @@ public class ManageTemplatesActivity extends BaseActivity {
             frameControls.setVisibility(View.GONE);
 
             TextView tv = (TextView) activeContent;
-            float currentSize = tv.getTextSize();
-            int progress = (int) ((currentSize - 10) / 2);
-            seekTextSize.setProgress(Math.max(0, Math.min(100, progress)));
-
-            float rotation = wrapper.getRotation() + 180;
-            seekTextRotate.setProgress(Math.max(0, Math.min(360, (int) rotation)));
-
-            // Sync text styles
             int style = tv.getTypeface() != null ? tv.getTypeface().getStyle() : android.graphics.Typeface.NORMAL;
             btnBold.setBackgroundTintList(android.content.res.ColorStateList.valueOf(
                     (style & android.graphics.Typeface.BOLD) != 0
@@ -632,73 +523,35 @@ public class ManageTemplatesActivity extends BaseActivity {
             imageControls.setVisibility(View.VISIBLE);
             textControls.setVisibility(View.GONE);
             frameControls.setVisibility(View.GONE);
-
-            float currentScale = wrapper.getScaleX();
-            int progress = (int) ((currentScale - 0.1f) * 40f);
-            seekImageSize.setProgress(Math.max(0, Math.min(100, progress)));
-
-            float rotation = wrapper.getRotation() + 180;
-            seekImageRotate.setProgress(Math.max(0, Math.min(360, (int) rotation)));
         }
     }
 
     private void deselectAll() {
-        if (canvas == null)
-            return;
+        if (canvas == null) return;
         for (int i = 0; i < canvas.getChildCount(); i++) {
             View child = canvas.getChildAt(i);
-            if (child instanceof FrameLayout && child != dynamicFrameContainer) {
-                if (((FrameLayout) child).getChildCount() > 1) {
-                    ((FrameLayout) child).getChildAt(1).setVisibility(View.GONE);
-                }
+            if (child instanceof TransformableOverlay) {
+                ((TransformableOverlay) child).setSelected(false);
             }
         }
         activeOverlay = null;
         activeContent = null;
-        if (textControls != null)
-            textControls.setVisibility(View.GONE);
-        if (imageControls != null)
-            imageControls.setVisibility(View.GONE);
-        if (frameControls != null)
-            frameControls.setVisibility(View.GONE);
+        if (textControls != null) textControls.setVisibility(View.GONE);
+        if (imageControls != null) imageControls.setVisibility(View.GONE);
+        if (frameControls != null) frameControls.setVisibility(View.GONE);
+        isTransformingOverlay = false;
     }
 
-    // ================= DRAG & RESIZE =================
-    void enableDrag(View wrapper, View content) {
-        content.setOnTouchListener(new View.OnTouchListener() {
-            float dX, dY;
-            float startX, startY;
 
-            @Override
-            public boolean onTouch(View v, MotionEvent e) {
-                switch (e.getActionMasked()) {
-                    case MotionEvent.ACTION_DOWN:
-                        if (activeOverlay != wrapper)
-                            setActive(wrapper);
-                        dX = wrapper.getX() - e.getRawX();
-                        dY = wrapper.getY() - e.getRawY();
-                        startX = e.getRawX();
-                        startY = e.getRawY();
-                        return true;
-                    case MotionEvent.ACTION_MOVE:
-                        wrapper.setX(e.getRawX() + dX);
-                        wrapper.setY(e.getRawY() + dY);
-                        return true;
-                    case MotionEvent.ACTION_UP:
-                        float diffX = Math.abs(e.getRawX() - startX);
-                        float diffY = Math.abs(e.getRawY() - startY);
-                        if (diffX < 10 && diffY < 10) {
-                            if (activeOverlay == wrapper) {
-                                v.performClick();
-                            } else {
-                                setActive(wrapper);
-                            }
-                        }
-                        return true;
-                }
-                return false;
-            }
-        });
+    void showTextEditor(TextView target) {
+        AlertDialog.Builder b = new AlertDialog.Builder(this);
+        EditText input = new EditText(this);
+        input.setText(target.getText());
+        b.setTitle(R.string.ph_edit_text);
+        b.setView(input);
+        b.setPositiveButton(R.string.btn_apply,
+                (d, w) -> target.setText(input.getText()));
+        b.show();
     }
 
     // ================= SAVE IMAGE =================
@@ -765,7 +618,7 @@ public class ManageTemplatesActivity extends BaseActivity {
         layout.addView(pb);
 
         TextView progressText = new TextView(this);
-        progressText.setText("0%");
+        progressText.setText(getString(R.string.format_percentage, 0));
         progressText.setGravity(android.view.Gravity.END);
         progressText.setPadding(0, 10, 0, 0);
         layout.addView(progressText);
@@ -791,7 +644,7 @@ public class ManageTemplatesActivity extends BaseActivity {
             final int p = progress;
             runOnUiThread(() -> {
                 pb.setProgress(p);
-                progressText.setText(p + "%");
+                progressText.setText(getString(R.string.format_percentage, p));
             });
         });
 
@@ -929,9 +782,9 @@ public class ManageTemplatesActivity extends BaseActivity {
         TextView tv = (TextView) activeContent;
 
         String[] fontNames = {
-                "Default Sans", "Serif", "Monospace",
-                "Lobster (Cursive)", "Pacifico (Handwriting)", "Anton (Heavy)",
-                "Righteous (Display)", "Bebas Neue", "Medium", "Black"
+                getString(R.string.font_default_sans), getString(R.string.font_serif), getString(R.string.font_monospace),
+                getString(R.string.font_cursive), getString(R.string.font_handwriting), getString(R.string.font_heavy),
+                getString(R.string.font_display), getString(R.string.font_bebas), getString(R.string.font_medium), getString(R.string.font_black)
         };
 
         new AlertDialog.Builder(this)
@@ -1266,14 +1119,16 @@ public class ManageTemplatesActivity extends BaseActivity {
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
-        if (scaleGestureDetector != null) {
+        // Only allow canvas zoom if we are NOT transforming an overlay
+        if (scaleGestureDetector != null && !isTransformingOverlay) {
             scaleGestureDetector.onTouchEvent(ev);
         }
 
         int action = ev.getActionMasked();
 
         // Multi-touch Pan (e.g. 2 fingers)
-        if (ev.getPointerCount() > 1) {
+        // CRITICAL FIX: Only intercept if we are NOT transforming an overlay!
+        if (ev.getPointerCount() > 1 && !isTransformingOverlay) {
             isPanningCanvas = false; // Reset 1-finger pan
             if (action == MotionEvent.ACTION_POINTER_DOWN) {
                 lastPanX = ev.getX(0);
@@ -1421,7 +1276,7 @@ public class ManageTemplatesActivity extends BaseActivity {
                     tv.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, (float) obj.getDouble("size"));
                     int style = obj.optInt("style", 0);
                     tv.setTypeface(android.graphics.Typeface.defaultFromStyle(style));
-                    tv.setPadding(30, 30, 30, 30);
+                    tv.setPadding(0, 0, 0, 0);
                     
                     addOverlay(tv, false);
                     View wrapper = activeOverlay;
@@ -1438,7 +1293,7 @@ public class ManageTemplatesActivity extends BaseActivity {
                     com.google.android.material.imageview.ShapeableImageView iv = new com.google.android.material.imageview.ShapeableImageView(this);
                     iv.setTag(R.id.tag_image_path, path);
                     iv.setAdjustViewBounds(true);
-                    iv.setPadding(30, 30, 30, 30);
+                    iv.setPadding(0, 0, 0, 0);
                     iv.setScaleType(ImageView.ScaleType.FIT_CENTER);
                     
                     Glide.with(this).load(path).into(iv);

@@ -35,8 +35,6 @@ public class BaseActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Security: Prevent screenshots and screen recording across the app
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
         
         // 🔥 Real-time Account Existence Check (for Global Logout on Deletion)
         startAccountExistenceObserver();
@@ -73,6 +71,11 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     private void handleGlobalLogout() {
+        // ✅ Remove observer first to prevent double-redirect from PERMISSION_DENIED
+        if (accountExistenceRef != null && accountExistenceListener != null) {
+            accountExistenceRef.removeEventListener(accountExistenceListener);
+        }
+
         // Clear local session and redirect
         FirebaseAuth.getInstance().signOut();
         getSharedPreferences("APP_DATA", MODE_PRIVATE).edit()
@@ -93,6 +96,12 @@ public class BaseActivity extends AppCompatActivity {
 
     private ValueEventListener accountExistenceListener;
     private DatabaseReference accountExistenceRef;
+
+    private ValueEventListener drawerListener;
+    private DatabaseReference drawerRef;
+
+    private ValueEventListener badgeListener;
+    private DatabaseReference personalRef, broadcastRef, readBroadcastRef;
 
     protected void setupBase(String role, int selectedItemId) {
 
@@ -139,7 +148,7 @@ public class BaseActivity extends AppCompatActivity {
                 SharedPreferences sp = getSharedPreferences("APP_DATA", MODE_PRIVATE);
                 String cachedName = sp.getString("user_name", "");
                 if (!cachedName.isEmpty()) {
-                    txtGreeting.setText(cachedName);
+                    txtGreeting.setText(getGreeting() + ", " + cachedName);
                 }
 
                 FirebaseDatabase.getInstance()
@@ -153,7 +162,7 @@ public class BaseActivity extends AppCompatActivity {
                                         : getString(R.string.default_user);
                                 
                                 if (!displayName.equals(cachedName)) {
-                                    txtGreeting.setText(displayName);
+                                    txtGreeting.setText(getGreeting() + ", " + displayName);
                                     sp.edit().putString("user_name", displayName).apply();
                                 }
                             }
@@ -179,12 +188,29 @@ public class BaseActivity extends AppCompatActivity {
                 });
 
             // ================= HEADER BADGE =================
-            if (uid != null && headerBadge != null) {
-                refreshNotificationBadge(uid);
+            if (uid != null) {
+                if (headerBadge != null) {
+                    refreshNotificationBadge(uid);
+                }
                 
-                // ✅ Ensure user is subscribed for background broadcast push
-                com.google.firebase.messaging.FirebaseMessaging.getInstance()
-                        .subscribeToTopic("all_users");
+                // ✅ Check user preference for broadcast topic
+                SharedPreferences prefs = getSharedPreferences("APP_DATA", MODE_PRIVATE);
+                if (prefs.getBoolean("notifications", true)) {
+                    // 1. Subscribe to broadcast topic
+                    com.google.firebase.messaging.FirebaseMessaging.getInstance()
+                            .subscribeToTopic("all_users");
+
+                    // 2. Refresh FCM Token
+                    com.google.firebase.messaging.FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
+                        if (task.isSuccessful() && task.getResult() != null) {
+                            MyFirebaseMessagingService.saveFcmTokenToFirebase(this, task.getResult());
+                        }
+                    });
+                } else {
+                    // 2. 🛡️ Explicitly UNSUBSCRIBE if disabled (Safety check)
+                    com.google.firebase.messaging.FirebaseMessaging.getInstance().unsubscribeFromTopic("all_users");
+                    com.google.firebase.messaging.FirebaseMessaging.getInstance().unsubscribeFromTopic("all");
+                }
             }
         }
 
@@ -232,6 +258,21 @@ public class BaseActivity extends AppCompatActivity {
                 }
                 return true;
             });
+        }
+    }
+
+    private String getGreeting() {
+        java.util.Calendar c = java.util.Calendar.getInstance();
+        int timeOfDay = c.get(java.util.Calendar.HOUR_OF_DAY);
+
+        if (timeOfDay >= 0 && timeOfDay < 12) {
+            return getString(R.string.greeting_morning);
+        } else if (timeOfDay >= 12 && timeOfDay < 17) {
+            return getString(R.string.greeting_afternoon);
+        } else if (timeOfDay >= 17 && timeOfDay < 21) {
+            return getString(R.string.greeting_evening);
+        } else {
+            return getString(R.string.greeting_night);
         }
     }
 
@@ -300,30 +341,31 @@ public class BaseActivity extends AppCompatActivity {
 
         String uid = FirebaseAuth.getInstance().getUid();
         if (uid != null) {
-            FirebaseDatabase.getInstance().getReference("users").child(uid)
-                    .addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot s) {
-                            if (nameTxt != null)
-                                nameTxt.setText(s.child("name").getValue(String.class));
-                            if (emailTxt != null)
-                                emailTxt.setText(s.child("email").getValue(String.class));
-                            if (mobileTxt != null)
-                                mobileTxt.setText(s.child("mobile").getValue(String.class));
-                            String url = s.child("profileImage").getValue(String.class);
-                            if (url != null && !url.isEmpty() && profileImg != null) {
-                                Glide.with(BaseActivity.this)
-                                        .load(url)
-                                        .placeholder(R.drawable.ic_profile)
-                                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                                        .into(profileImg);
-                            }
-                        }
+            drawerRef = FirebaseDatabase.getInstance().getReference("users").child(uid);
+            drawerListener = new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot s) {
+                    if (nameTxt != null)
+                        nameTxt.setText(s.child("name").getValue(String.class));
+                    if (emailTxt != null)
+                        emailTxt.setText(s.child("email").getValue(String.class));
+                    if (mobileTxt != null)
+                        mobileTxt.setText(s.child("mobile").getValue(String.class));
+                    String url = s.child("profileImage").getValue(String.class);
+                    if (url != null && !url.isEmpty() && profileImg != null) {
+                        Glide.with(BaseActivity.this)
+                                .load(url)
+                                .placeholder(R.drawable.ic_profile)
+                                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                                .into(profileImg);
+                    }
+                }
 
-                        @Override
-                        public void onCancelled(DatabaseError e) {
-                        }
-                    });
+                @Override
+                public void onCancelled(DatabaseError e) {
+                }
+            };
+            drawerRef.addValueEventListener(drawerListener);
         }
 
         if (darkSwitch != null) {
@@ -333,8 +375,10 @@ public class BaseActivity extends AppCompatActivity {
             darkSwitch.setOnCheckedChangeListener((v, isChecked) -> {
                 int newMode = isChecked ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO;
                 sp.edit().putInt("night_mode", newMode).apply();
-                AppCompatDelegate.setDefaultNightMode(newMode);
+                
+                // Delay slightly to let drawer close animation finish/start before recreation
                 drawer.closeDrawer(Gravity.START);
+                v.postDelayed(() -> AppCompatDelegate.setDefaultNightMode(newMode), 200);
             });
         }
 
@@ -357,6 +401,20 @@ public class BaseActivity extends AppCompatActivity {
                 drawer.closeDrawer(Gravity.START);
                 showLanguageDialog();
             });
+        View clientInfo = findViewById(R.id.drawerClientInfo);
+        if (clientInfo != null)
+            clientInfo.setOnClickListener(v -> {
+                drawer.closeDrawer(Gravity.START);
+                startActivity(new Intent(this, ClientInfoActivity.class));
+            });
+
+        View myServiceReq = findViewById(R.id.drawerMyServiceRequests);
+        if (myServiceReq != null)
+            myServiceReq.setOnClickListener(v -> {
+                drawer.closeDrawer(Gravity.START);
+                startActivity(new Intent(this, MyServiceRequestsActivity.class));
+            });
+
         View settings = findViewById(R.id.drawerSettings);
         if (settings != null)
             settings.setOnClickListener(v -> {
@@ -388,6 +446,12 @@ public class BaseActivity extends AppCompatActivity {
         if (logout != null)
             logout.setOnClickListener(v -> {
                 drawer.closeDrawer(Gravity.START);
+                
+                // ✅ Remove observer first to prevent double-redirect from PERMISSION_DENIED
+                if (accountExistenceRef != null && accountExistenceListener != null) {
+                    accountExistenceRef.removeEventListener(accountExistenceListener);
+                }
+
                 FirebaseAuth.getInstance().signOut();
                 getSharedPreferences("APP_DATA", MODE_PRIVATE).edit()
                         .remove("isLoggedIn")
@@ -441,8 +505,8 @@ public class BaseActivity extends AppCompatActivity {
         darkSwitch.setOnCheckedChangeListener((v, isChecked) -> {
             int newMode = isChecked ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO;
             sp.edit().putInt("night_mode", newMode).apply();
-            AppCompatDelegate.setDefaultNightMode(newMode);
             sheet.dismiss();
+            v.postDelayed(() -> AppCompatDelegate.setDefaultNightMode(newMode), 200);
         });
 
         view.findViewById(R.id.menuEdit).setOnClickListener(v -> {
@@ -456,6 +520,14 @@ public class BaseActivity extends AppCompatActivity {
         view.findViewById(R.id.menuLanguage).setOnClickListener(v -> {
             sheet.dismiss();
             showLanguageDialog();
+        });
+        view.findViewById(R.id.menuClientInfo).setOnClickListener(v -> {
+            sheet.dismiss();
+            startActivity(new Intent(this, ClientInfoActivity.class));
+        });
+        view.findViewById(R.id.menuMyServiceRequests).setOnClickListener(v -> {
+            sheet.dismiss();
+            startActivity(new Intent(this, MyServiceRequestsActivity.class));
         });
         view.findViewById(R.id.menuSettings).setOnClickListener(v -> {
             sheet.dismiss();
@@ -480,6 +552,12 @@ public class BaseActivity extends AppCompatActivity {
         });
         view.findViewById(R.id.menuLogout).setOnClickListener(v -> {
             sheet.dismiss();
+            
+            // ✅ Remove observer first to prevent double-redirect from PERMISSION_DENIED
+            if (accountExistenceRef != null && accountExistenceListener != null) {
+                accountExistenceRef.removeEventListener(accountExistenceListener);
+            }
+
             FirebaseAuth.getInstance().signOut();
             getSharedPreferences("APP_DATA", MODE_PRIVATE).edit()
                     .remove("isLoggedIn")
@@ -616,11 +694,11 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     private void refreshNotificationBadge(String uid) {
-        DatabaseReference personalRef = FirebaseDatabase.getInstance().getReference("notifications").child(uid);
-        DatabaseReference broadcastRef = FirebaseDatabase.getInstance().getReference("broadcast_notifications");
-        DatabaseReference readBroadcastRef = FirebaseDatabase.getInstance().getReference("read_broadcasts").child(uid);
+        personalRef = FirebaseDatabase.getInstance().getReference("notifications").child(uid);
+        broadcastRef = FirebaseDatabase.getInstance().getReference("broadcast_notifications");
+        readBroadcastRef = FirebaseDatabase.getInstance().getReference("read_broadcasts").child(uid);
 
-        ValueEventListener badgeListener = new ValueEventListener() {
+        badgeListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 readBroadcastRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -804,6 +882,14 @@ public class BaseActivity extends AppCompatActivity {
     protected void onDestroy() {
         if (accountExistenceRef != null && accountExistenceListener != null) {
             accountExistenceRef.removeEventListener(accountExistenceListener);
+        }
+        if (drawerRef != null && drawerListener != null) {
+            drawerRef.removeEventListener(drawerListener);
+        }
+        if (badgeListener != null) {
+            if (personalRef != null) personalRef.removeEventListener(badgeListener);
+            if (broadcastRef != null) broadcastRef.removeEventListener(badgeListener);
+            if (readBroadcastRef != null) readBroadcastRef.removeEventListener(badgeListener);
         }
         super.onDestroy();
     }
